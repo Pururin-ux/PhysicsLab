@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Exam Missions - PhysicsLab 2.0 Prototype</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <main>
+      <section class="hero section" aria-labelledby="hero-title">
+        <div>
+          <p class="eyebrow">Direction C - Exam Missions</p>
+          <h1 id="hero-title">PhysicsLab 2.0: ЦЭ/ЦТ как карта навыков</h1>
+          <p class="lead">
+            Подготовка выглядит как спокойный маршрут миссий: освоить идею,
+            поймать ловушку, решить demo-задачу и пройти exam-check без
+            лидербордов, штрафов и тревожных таймеров.
+          </p>
+          <div class="actions">
+            <a class="button primary" href="#chapter-demo">Открыть миссию</a>
+            <a class="button secondary" href="../index.html">К обзору</a>
+          </div>
+        </div>
+
+        <aside class="mission-map" aria-label="Skill map preview">
+          <div class="map-header">
+            <strong>Skill map</strong>
+            <span>prototype/demo</span>
+          </div>
+          <div class="node done">Единицы</div>
+          <div class="node current">График x(t)</div>
+          <div class="node">Скорость</div>
+          <div class="node">Exam-check A</div>
+          <div class="node">Exam-check B</div>
+        </aside>
+      </section>
+
+      <section class="section learning" aria-labelledby="learning-title">
+        <div class="section-head">
+          <p class="eyebrow">Как устроено обучение</p>
+          <h2 id="learning-title">Миссия не давит, а показывает следующий шаг</h2>
+        </div>
+        <div class="mission-steps">
+          <article><span>01</span><h3>Briefing</h3><p>Что за навык и зачем он в ЦЭ/ЦТ.</p></article>
+          <article><span>02</span><h3>Tool</h3><p>Формула, единицы, график и условия.</p></article>
+          <article><span>03</span><h3>Trap</h3><p>Типичная ошибка до самостоятельной задачи.</p></article>
+          <article><span>04</span><h3>Check</h3><p>Квиз и demo-exam без штрафов.</p></article>
+        </div>
+      </section>
+
+      <section class="section" aria-labelledby="modules-title">
+        <div class="section-head">
+          <p class="eyebrow">Модули и главы</p>
+          <h2 id="modules-title">Карточки показывают навык, вес и прогресс</h2>
+        </div>
+        <div class="module-grid">
+          <article class="module-card">
+            <div class="module-top"><span>Механика</span><b>10/30</b></div>
+            <h3>Графики движения</h3>
+            <p>Mission: читать x(t), v(t), знак скорости и наклон.</p>
+            <div class="bar"><span style="width: 52%"></span></div>
+          </article>
+          <article class="module-card">
+            <div class="module-top"><span>МКТ</span><b>7/30</b></div>
+            <h3>Газовые законы</h3>
+            <p>Mission: связать p, V, T и выбрать процесс.</p>
+            <div class="bar"><span style="width: 24%"></span></div>
+          </article>
+          <article class="module-card">
+            <div class="module-top"><span>Электро</span><b>9/30</b></div>
+            <h3>Цепи</h3>
+            <p>Mission: не путать ток, напряжение и сопротивление.</p>
+            <div class="bar"><span style="width: 16%"></span></div>
+          </article>
+        </div>
+      </section>
+
+      <section class="section chapter" id="chapter-demo" aria-labelledby="chapter-title">
+        <div class="briefing">
+          <div>
+            <p class="eyebrow">Demo-миссия - prototype only</p>
+            <h2 id="chapter-title">Mission: прочитать график x(t)</h2>
+            <p>
+              Навык для ЦЭ/ЦТ: по графику координаты понять знак скорости,
+              найти значение координаты и не спутать график с траекторией.
+            </p>
+          </div>
+          <div class="coach-card" aria-label="Mascot placeholder">
+            <div class="coach-shape" aria-hidden="true"></div>
+            <strong>Mascot placeholder</strong>
+            <span>Экзаменатор: "Сначала оси, потом вывод. Без паники."</span>
+          </div>
+        </div>
+
+        <article class="panel contract">
+          <p class="label">Learning contract</p>
+          <div class="contract-grid">
+            <div><b>Prereq</b><span>координата, время, скорость</span></div>
+            <div><b>Skill</b><span>читать наклон и значение x(t)</span></div>
+            <div><b>Format</b><span>A: выбор ответа, B: число с единицами</span></div>
+          </div>
+        </article>
+
+        <div class="chapter-grid">
+          <article class="panel formula-card">
+            <p class="label">Mission tool</p>
+            <div class="formula">x = x<sub>0</sub> + vt</div>
+            <p>
+              Если скорость постоянна, график x(t) - прямая. Наклон связан со
+              скоростью, а точка на линии дает координату в выбранный момент.
+            </p>
+          </article>
+
+          <article class="panel trap-card">
+            <p class="label">Trap alert</p>
+            <h3>Ловушка: линия вниз не означает движение вниз</h3>
+            <p>
+              В этой миссии важно читать названия осей. Вертикальная ось -
+              координата, горизонтальная - время.
+            </p>
+          </article>
+        </div>
+
+        <article class="panel worked">
+          <p class="label">Worked example - prototype/demo</p>
+          <h3>На графике x(0) = 1 м, x(3 c) = 10 м. Найди скорость.</h3>
+          <div class="mission-solution">
+            <div><b>Шаг 1</b><span>v = delta x / delta t</span></div>
+            <div><b>Шаг 2</b><span>delta x = 10 - 1 = 9 м</span></div>
+            <div><b>Шаг 3</b><span>v = 9 / 3 = 3 м/с</span></div>
+          </div>
+          <p class="review">Demo original, authorReviewRequired: true.</p>
+        </article>
+
+        <article class="panel sim">
+          <div>
+            <p class="label">Training room mockup</p>
+            <h3>Предскажи -> измени -> наблюдай -> объясни</h3>
+            <p>
+              Ученик выбирает знак скорости, затем смотрит, как меняется наклон
+              линии. Симуляция готовит к вопросу по графику, а не просто мигает.
+            </p>
+            <div class="chips">
+              <span>v > 0</span>
+              <span>v = 0</span>
+              <span>v < 0</span>
+            </div>
+          </div>
+          <div class="mission-graph" aria-label="Mock exam graph">
+            <span class="axis y"></span>
+            <span class="axis x"></span>
+            <span class="line"></span>
+            <span class="target"></span>
+          </div>
+        </article>
+
+        <div class="chapter-grid">
+          <article class="panel quiz">
+            <p class="label">Checkpoint quiz</p>
+            <h3>Если график x(t) горизонтальный, что это значит?</h3>
+            <button type="button">Координата не меняется</button>
+            <button type="button">Тело ускоряется</button>
+            <p>Feedback: горизонтальная x(t) значит v = 0.</p>
+          </article>
+
+          <article class="panel exam">
+            <p class="label">Exam-check</p>
+            <h3>Формат ЦЭ/ЦТ</h3>
+            <p>
+              Demo-вопрос A: выбрать знак скорости по наклону. Demo-вопрос B:
+              найти координату через 4 секунды по формуле.
+            </p>
+          </article>
+        </div>
+
+        <article class="panel summary">
+          <p class="label">Mission summary</p>
+          <h3>Освоено без давления</h3>
+          <ul>
+            <li>Сначала читаем оси графика.</li>
+            <li>Наклон x(t) связан со скоростью.</li>
+            <li>Ошибки в checkpoint объясняют следующий шаг.</li>
+          </ul>
+        </article>
+      </section>
+    </main>
+  </body>
+</html>

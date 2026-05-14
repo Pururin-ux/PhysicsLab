@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Manga Physics Notebook - PhysicsLab 2.0 Prototype</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <main class="page">
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="panel hero-panel">
+          <p class="eyebrow">Direction B - Manga Physics Notebook</p>
+          <h1 id="hero-title">PhysicsLab 2.0 как интерактивный манга-конспект</h1>
+          <p class="lead">
+            Тема раскрывается кадрами: ловушка, объяснение, формула, график,
+            demo-задача и проверка. Манга-вайб есть, но текст остается главным.
+          </p>
+          <div class="actions">
+            <a class="button primary" href="#chapter-demo">Смотреть demo-главу</a>
+            <a class="button secondary" href="../index.html">К обзору</a>
+          </div>
+        </div>
+        <aside class="manga-strip" aria-label="Manga strip placeholder">
+          <div class="strip-panel big">
+            <span class="placeholder-head" aria-hidden="true"></span>
+            <strong>Mascot placeholder</strong>
+            <p>"График не карта. Сейчас поймаем эту ловушку."</p>
+          </div>
+          <div class="strip-panel">
+            <b>Trap</b>
+            <p>Линия вниз не значит, что тело падает.</p>
+          </div>
+          <div class="strip-panel">
+            <b>Check</b>
+            <p>Смотри на наклон x(t).</p>
+          </div>
+        </aside>
+      </section>
+
+      <section class="learning-row" aria-labelledby="learning-title">
+        <div class="panel">
+          <p class="eyebrow">Как устроено обучение</p>
+          <h2 id="learning-title">Разбор по кадрам, без хаоса</h2>
+          <p>
+            Каждый кадр отвечает за один шаг: сначала типичная ошибка, затем
+            новая модель, после этого формула, график и короткая проверка.
+          </p>
+        </div>
+        <div class="beat-grid">
+          <article><span>01</span><b>Ситуация</b><p>Что ученик видит в задаче.</p></article>
+          <article><span>02</span><b>Ловушка</b><p>Почему мозг выбирает неверный путь.</p></article>
+          <article><span>03</span><b>Физика</b><p>Какая модель заменяет ошибку.</p></article>
+          <article><span>04</span><b>Проверка</b><p>Квиз и exam-check без штрафов.</p></article>
+        </div>
+      </section>
+
+      <section class="modules" aria-labelledby="modules-title">
+        <div class="section-title">
+          <p class="eyebrow">Модули и главы</p>
+          <h2 id="modules-title">Карточки как страницы конспекта</h2>
+        </div>
+        <div class="chapter-cards">
+          <article>
+            <span class="chapter-num">01</span>
+            <h3>Физический язык</h3>
+            <p>Единицы, графики, векторы, перевод условия в схему.</p>
+          </article>
+          <article class="featured">
+            <span class="chapter-num">02</span>
+            <h3>Механика</h3>
+            <p>Движение, силы, энергия и ловушки с графиками.</p>
+          </article>
+          <article>
+            <span class="chapter-num">03</span>
+            <h3>Электричество</h3>
+            <p>Цепи, ток, напряжение, сопротивление и схемы.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="chapter-demo" id="chapter-demo" aria-labelledby="chapter-title">
+        <div class="section-title">
+          <p class="eyebrow">Demo-глава - prototype only</p>
+          <h2 id="chapter-title">Равномерное движение в трех кадрах</h2>
+        </div>
+
+        <div class="intro-grid">
+          <article class="panel intro-panel">
+            <h3>Intro</h3>
+            <p>
+              Если скорость постоянна, координата меняется равномерно. На
+              графике x(t) это прямая, а ее наклон связан со скоростью.
+            </p>
+          </article>
+          <article class="speech-panel">
+            <strong>Mascot placeholder</strong>
+            <p>"Сейчас не зубрим. Смотрим, что делает линия."</p>
+          </article>
+        </div>
+
+        <article class="panel contract">
+          <h3>Learning contract</h3>
+          <ul>
+            <li>Разобрать формулу x = x0 + vt.</li>
+            <li>Понять, почему график x(t) не равен траектории.</li>
+            <li>Решить demo-задачу с единицами СИ.</li>
+          </ul>
+        </article>
+
+        <div class="manga-grid">
+          <article class="formula-panel">
+            <p class="label">Formula card</p>
+            <div class="formula">x = x<sub>0</sub> + vt</div>
+            <div class="var-list">
+              <span>x, x0 - координата, м</span>
+              <span>v - скорость, м/с</span>
+              <span>t - время, с</span>
+            </div>
+          </article>
+
+          <article class="trap-panel">
+            <p class="label">Trap card</p>
+            <h3>График скорости - не путь тела по комнате</h3>
+            <p>
+              Это зависимость величины от времени. Сначала читаем подписи осей,
+              потом делаем вывод.
+            </p>
+          </article>
+        </div>
+
+        <article class="worked-example">
+          <p class="label">Worked example - prototype/demo</p>
+          <h3>Через 4 с тело оказалось на 14 м. Старт был в 2 м. Какая скорость?</h3>
+          <div class="solution-panels">
+            <div><b>Кадр 1</b><span>14 = 2 + v * 4</span></div>
+            <div><b>Кадр 2</b><span>12 = 4v</span></div>
+            <div><b>Кадр 3</b><span>v = 3 м/с</span></div>
+          </div>
+          <p class="review-note">Demo original, authorReviewRequired: true.</p>
+        </article>
+
+        <article class="simulation-panel">
+          <div>
+            <p class="label">Simulation panel mockup</p>
+            <h3>Предскажи -> измени -> наблюдай -> объясни</h3>
+            <p>
+              Выбери, какой будет линия x(t), если скорость станет отрицательной.
+              Затем сравни ответ с графиком.
+            </p>
+          </div>
+          <div class="notebook-graph" aria-label="Mock graph">
+            <span class="axis-y"></span>
+            <span class="axis-x"></span>
+            <span class="line-up"></span>
+            <span class="line-down"></span>
+          </div>
+        </article>
+
+        <div class="manga-grid">
+          <article class="quiz-panel">
+            <p class="label">Quiz card</p>
+            <h3>Что показывает наклон графика x(t)?</h3>
+            <button type="button">Скорость</button>
+            <button type="button">Путь на карте</button>
+            <p>Feedback: если оси x и t, наклон связан со скоростью.</p>
+          </article>
+
+          <article class="exam-panel">
+            <p class="label">Exam block</p>
+            <h3>ЦЭ/ЦТ mini-check</h3>
+            <p>
+              Demo-формат: по графику x(t) определить знак скорости и выбрать
+              корректное утверждение.
+            </p>
+          </article>
+        </div>
+
+        <article class="summary-panel">
+          <p class="label">Summary</p>
+          <h3>Финальный кадр</h3>
+          <p>
+            Формула работает для постоянной скорости. Наклон x(t) показывает
+            скорость. Любой график сначала читаем по осям.
+          </p>
+        </article>
+      </section>
+    </main>
+  </body>
+</html>
