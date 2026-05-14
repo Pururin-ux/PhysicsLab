@@ -1,0 +1,364 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Dark Anime Lab v2 - PhysicsLab 2.0 Prototype</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <header class="topbar" aria-label="Prototype navigation">
+      <a class="brand" href="../index.html" aria-label="Back to prototypes overview">
+        <span class="brand-mark" aria-hidden="true">PL</span>
+        <span>PhysicsLab 2.0</span>
+      </a>
+      <nav aria-label="Page sections">
+        <a href="#learning">Как учим</a>
+        <a href="#modules">Модули</a>
+        <a href="#chapter-demo">Demo-глава</a>
+        <a href="#exam-layer">ЦЭ/ЦТ</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero section" aria-labelledby="hero-title">
+        <div class="hero-copy">
+          <p class="eyebrow">Dark Anime Lab v2 - production direction</p>
+          <h1 id="hero-title">PhysicsLab: физика без режима скуки</h1>
+          <p class="lead">
+            Интерактивный учебник-тренажер для школьников Беларуси: формулы,
+            графики, задачи, симуляции и подготовка к ЦЭ/ЦТ в темной лаборатории,
+            где ошибка становится подсказкой.
+          </p>
+          <div class="hero-actions">
+            <a class="button primary" href="#chapter-demo">Посмотреть demo-главу</a>
+            <a class="button ghost" href="#learning">Как работает обучение</a>
+          </div>
+          <div class="trust-row" aria-label="Prototype notes">
+            <span>prototype/demo</span>
+            <span>authorReviewRequired</span>
+            <span>без реальных ассетов</span>
+          </div>
+        </div>
+
+        <aside class="lab-stage" aria-label="Interactive lab preview mockup">
+          <div class="stage-head">
+            <div>
+              <strong>Lab cockpit</strong>
+              <span>Глава: график x(t)</span>
+            </div>
+            <span class="live-pill">Focus mode ready</span>
+          </div>
+
+          <div class="cockpit-grid">
+            <div class="mission-mini">
+              <p class="mini-label">Current skill</p>
+              <h2>Читать наклон x(t)</h2>
+              <p>Сначала оси, потом знак скорости.</p>
+            </div>
+            <div class="formula-mini">
+              <span>x = x0 + vt</span>
+              <small>только при постоянной скорости</small>
+            </div>
+          </div>
+
+          <div class="hero-graph" aria-hidden="true">
+            <span class="axis axis-y"></span>
+            <span class="axis axis-x"></span>
+            <span class="graph-line"></span>
+            <span class="graph-point"></span>
+            <span class="axis-label label-y">x, м</span>
+            <span class="axis-label label-x">t, c</span>
+          </div>
+
+          <div class="live-values" aria-label="Mock live values">
+            <span><b>x</b> 17 м</span>
+            <span><b>v</b> 3 м/с</span>
+            <span><b>t</b> 5 c</span>
+          </div>
+        </aside>
+      </section>
+
+      <section class="section learning-system" id="learning" aria-labelledby="learning-title">
+        <div class="section-head">
+          <p class="eyebrow">Как работает обучение</p>
+          <h2 id="learning-title">Не лекция, а учебный маршрут</h2>
+          <p>
+            Каждая глава строится вокруг навыка. Ученик не просто читает тему,
+            а проходит цепочку: понять смысл, увидеть график, разобрать ошибку,
+            потрогать симуляцию и применить это в exam-check.
+          </p>
+        </div>
+        <div class="learning-rail" aria-label="Learning flow">
+          <article>
+            <span>01</span>
+            <h3>Contract</h3>
+            <p>Что нужно знать и что получится после главы.</p>
+          </article>
+          <article>
+            <span>02</span>
+            <h3>Formula + graph</h3>
+            <p>Формула не одна: рядом смысл, единицы и оси.</p>
+          </article>
+          <article>
+            <span>03</span>
+            <h3>Trap clinic</h3>
+            <p>Типичная ошибка объясняется до самостоятельной задачи.</p>
+          </article>
+          <article>
+            <span>04</span>
+            <h3>Lab action</h3>
+            <p>Предскажи, измени параметр, наблюдай, объясни.</p>
+          </article>
+          <article>
+            <span>05</span>
+            <h3>Exam-check</h3>
+            <p>Связь с ЦЭ/ЦТ без давления и штрафов.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section" id="modules" aria-labelledby="modules-title">
+        <div class="section-head">
+          <p class="eyebrow">Модули</p>
+          <h2 id="modules-title">Карточки ведут к навыкам, а не к стенам текста</h2>
+        </div>
+        <div class="module-grid">
+          <article class="module-card active">
+            <div class="module-top">
+              <span>Механика</span>
+              <b>examWeight: high</b>
+            </div>
+            <h3>Графики движения</h3>
+            <p>Навык: отличать график зависимости от траектории и читать наклон.</p>
+            <div class="skill-tags">
+              <span>x(t)</span>
+              <span>v(t)</span>
+              <span>единицы</span>
+            </div>
+            <div class="progress-line" aria-label="42 percent complete"><span style="width: 42%"></span></div>
+          </article>
+          <article class="module-card">
+            <div class="module-top">
+              <span>Силы</span>
+              <b>planned</b>
+            </div>
+            <h3>Законы Ньютона</h3>
+            <p>Навык: выбрать ось, силы и знак ускорения без магии.</p>
+            <div class="skill-tags">
+              <span>F</span>
+              <span>m</span>
+              <span>a</span>
+            </div>
+            <div class="progress-line" aria-label="12 percent complete"><span style="width: 12%"></span></div>
+          </article>
+          <article class="module-card">
+            <div class="module-top">
+              <span>Электро</span>
+              <b>planned</b>
+            </div>
+            <h3>Цепи</h3>
+            <p>Навык: видеть, где ток один, а где напряжение делится.</p>
+            <div class="skill-tags">
+              <span>I</span>
+              <span>U</span>
+              <span>R</span>
+            </div>
+            <div class="progress-line" aria-label="8 percent complete"><span style="width: 8%"></span></div>
+          </article>
+        </div>
+      </section>
+
+      <section class="section lab-layout" id="chapter-demo" aria-labelledby="chapter-title">
+        <div class="chapter-header">
+          <div>
+            <p class="eyebrow">Demo-глава - prototype only</p>
+            <h2 id="chapter-title">Равномерное движение: связь формулы и графика</h2>
+            <p>
+              Вертикальный срез показывает будущие компоненты PhysicsLab 2.0:
+              FormulaCard, MisconceptionCard, WorkedExample, SimulationPanel,
+              QuizCard, ExamBlock, Progress/Mission layer и CharacterBubble.
+            </p>
+          </div>
+          <aside class="character-bubble" aria-label="CharacterBubble placeholder">
+            <div class="mascot" aria-hidden="true"></div>
+            <div>
+              <p class="bubble-role">CharacterBubble - лаборант</p>
+              <p>
+                "Формула не кусается. Сначала смотрим, что означает каждый
+                символ, потом запускаем demo-лабораторию."
+              </p>
+            </div>
+          </aside>
+        </div>
+
+        <article class="panel contract-card">
+          <div class="card-head">
+            <p class="component-label">Learning contract</p>
+            <span>estimatedTime: 20-25 минут</span>
+          </div>
+          <div class="contract-grid">
+            <div><b>Prerequisite</b><span>координата, время, скорость, единицы СИ</span></div>
+            <div><b>Outcomes</b><span>читать x(t), находить v, проверять смысл ответа</span></div>
+            <div><b>Exam use</b><span>часть A: график, часть B: численный ответ</span></div>
+          </div>
+        </article>
+
+        <div class="two-col">
+          <article class="panel formula-card">
+            <div class="card-head">
+              <p class="component-label">FormulaCard</p>
+              <span>authorReviewRequired</span>
+            </div>
+            <div class="formula-main">x = x<sub>0</sub> + vt</div>
+            <p>
+              Координата через время t равна начальной координате плюс
+              перемещение при постоянной скорости.
+            </p>
+            <div class="formula-detail-grid">
+              <div><b>x, x0</b><span>координата, м</span></div>
+              <div><b>v</b><span>скорость, м/с</span></div>
+              <div><b>t</b><span>время, c</span></div>
+            </div>
+            <div class="condition-row">
+              <span>Работает: v постоянна</span>
+              <span>Не подходит: есть ускорение</span>
+            </div>
+          </article>
+
+          <article class="panel graph-card" aria-label="Formula graph relation">
+            <div class="card-head">
+              <p class="component-label">Representation bridge</p>
+              <span>x(t)</span>
+            </div>
+            <div class="component-graph" aria-hidden="true">
+              <span class="axis axis-y"></span>
+              <span class="axis axis-x"></span>
+              <span class="graph-line"></span>
+              <span class="graph-point"></span>
+              <span class="axis-label label-y">x</span>
+              <span class="axis-label label-x">t</span>
+            </div>
+            <p>Наклон прямой связан со скоростью. Чем линия круче, тем больше модуль v.</p>
+          </article>
+        </div>
+
+        <article class="panel misconception-card">
+          <div class="manga-corner">Trap</div>
+          <div>
+            <p class="component-label">MisconceptionCard с manga-приемом</p>
+            <h3>Ловушка: график x(t) - это не дорога по карте</h3>
+            <p>
+              Ошибка кажется логичной, потому что линия выглядит как путь. Но
+              это график зависимости координаты от времени. Сначала читаем оси,
+              потом делаем вывод о движении.
+            </p>
+          </div>
+          <aside class="mini-speech">
+            <strong>Mascot placeholder</strong>
+            <span>"Если оси x и t, это не рисунок маршрута. Это история координаты."</span>
+          </aside>
+        </article>
+
+        <article class="panel worked-example">
+          <div class="card-head">
+            <p class="component-label">WorkedExample - prototype/demo</p>
+            <span>source: original demo</span>
+          </div>
+          <h3>Тело стартует из точки 2 м и движется со скоростью 3 м/с. Где оно через 5 с?</h3>
+          <div class="steps-grid">
+            <div><b>1. Дано</b><span>x0 = 2 м, v = 3 м/с, t = 5 c</span></div>
+            <div><b>2. Закон</b><span>x = x0 + vt, скорость постоянна</span></div>
+            <div><b>3. Подстановка</b><span>x = 2 + 3 * 5 = 17 м</span></div>
+            <div><b>4. Проверка</b><span>м/с * с = м, единицы сходятся</span></div>
+          </div>
+          <p class="success-note">Ответ: 17 м. authorReviewRequired: true.</p>
+        </article>
+
+        <article class="panel simulation-panel">
+          <div class="sim-copy">
+            <div class="card-head">
+              <p class="component-label">SimulationPanel</p>
+              <span>predict -> manipulate -> observe -> explain</span>
+            </div>
+            <h3>Лаборатория наклона</h3>
+            <p>
+              Перед переключением сценария ученик предсказывает, как изменится
+              линия x(t). После наблюдения объясняет знак скорости и переносит
+              вывод на demo-задачу.
+            </p>
+            <div class="sim-flow">
+              <span>1. Предскажи</span>
+              <span>2. Измени v</span>
+              <span>3. Наблюдай x(t)</span>
+              <span>4. Объясни</span>
+            </div>
+          </div>
+          <div class="sim-board" aria-label="Simulation mockup">
+            <div class="track">
+              <span class="track-line"></span>
+              <span class="cart"></span>
+              <span class="ghost-cart"></span>
+            </div>
+            <div class="sim-graph">
+              <span class="axis axis-y"></span>
+              <span class="axis axis-x"></span>
+              <span class="line-positive"></span>
+              <span class="line-zero"></span>
+              <span class="line-negative"></span>
+              <span class="axis-label label-y">x, м</span>
+              <span class="axis-label label-x">t, c</span>
+            </div>
+          </div>
+        </article>
+
+        <div class="two-col">
+          <article class="panel quiz-card">
+            <div class="card-head">
+              <p class="component-label">QuizCard</p>
+              <span>feedback-first</span>
+            </div>
+            <h3>Если x(t) - горизонтальная линия, что это значит?</h3>
+            <button type="button">Координата не меняется, значит v = 0</button>
+            <button type="button">Тело движется быстрее</button>
+            <p class="feedback-note">
+              Feedback: горизонтальная линия имеет нулевой наклон, значит
+              скорость равна нулю.
+            </p>
+          </article>
+
+          <article class="panel exam-block" id="exam-layer">
+            <div class="card-head">
+              <p class="component-label">ExamBlock + mission layer</p>
+              <span>ЦЭ/ЦТ</span>
+            </div>
+            <h3>Exam-check без паники</h3>
+            <p>
+              Часть A: выбрать знак скорости по наклону. Часть B: найти
+              координату по формуле и записать численный ответ в метрах.
+            </p>
+            <div class="exam-map">
+              <span class="done">Единицы</span>
+              <span class="current">x(t)</span>
+              <span>v(t)</span>
+              <span>Смешанные графики</span>
+            </div>
+          </article>
+        </div>
+
+        <article class="panel summary-card">
+          <div class="card-head">
+            <p class="component-label">Summary + next step</p>
+            <span>retrieval-ready</span>
+          </div>
+          <ul>
+            <li>Формула x = x0 + vt работает при постоянной скорости.</li>
+            <li>Наклон графика x(t) связан со скоростью.</li>
+            <li>График зависимости не равен траектории движения.</li>
+            <li>Следующий шаг: сравнить равномерное и равноускоренное движение.</li>
+          </ul>
+        </article>
+      </section>
+    </main>
+  </body>
+</html>
