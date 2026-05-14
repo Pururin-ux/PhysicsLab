@@ -1,0 +1,613 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Badge from "../components/ui/Badge.astro";
+import Button from "../components/ui/Button.astro";
+import SectionHeader from "../components/ui/SectionHeader.astro";
+import SurfaceCard from "../components/ui/SurfaceCard.astro";
+import CharacterBubble from "../components/learning/CharacterBubble.astro";
+import ExamBlock from "../components/learning/ExamBlock.astro";
+import FormulaCard from "../components/learning/FormulaCard.astro";
+import MisconceptionCard from "../components/learning/MisconceptionCard.astro";
+import QuizCard from "../components/learning/QuizCard.astro";
+import SimulationPanel from "../components/learning/SimulationPanel.astro";
+import WorkedExample from "../components/learning/WorkedExample.astro";
+
+type FormulaVariable = {
+  symbol: string;
+  label: string;
+  units: string;
+  tone?: "position" | "velocity" | "time" | "acceleration";
+};
+
+type MissionItem = {
+  label: string;
+  state?: "done" | "current" | "next";
+};
+
+const formulaVariables: FormulaVariable[] = [
+  { symbol: "x, x0", label: "координата", units: "м", tone: "position" },
+  { symbol: "v", label: "скорость", units: "м/с", tone: "velocity" },
+  { symbol: "t", label: "время", units: "с", tone: "time" }
+];
+
+const workedSteps = [
+  { title: "Дано", body: "x0 = 2 м, v = 3 м/с, t = 5 с" },
+  { title: "Закон", body: "x = x0 + vt, скорость постоянна" },
+  { title: "Подстановка", body: "x = 2 + 3 * 5 = 17 м" },
+  { title: "Проверка", body: "м/с * с = м, единицы сходятся" }
+];
+
+const navItems = [
+  { href: "#learning", label: "Как учим" },
+  { href: "#modules", label: "Модули" },
+  { href: "#chapter-demo", label: "Demo-глава" },
+  { href: "#exam-layer", label: "ЦЭ/ЦТ" }
+];
+
+const missionItems: MissionItem[] = [
+  { label: "Единицы", state: "done" },
+  { label: "x(t)", state: "current" },
+  { label: "v(t)", state: "next" },
+  { label: "Смешанные графики", state: "next" }
+];
+---
+
+<BaseLayout
+  title="PhysicsLab 2.0 Lab Preview"
+  description="Astro foundation preview for PhysicsLab 2.0 Dark Anime Lab."
+  navItems={navItems}
+>
+  <section class="section hero-lab" aria-labelledby="hero-title">
+    <SurfaceCard variant="mission">
+      <div class="hero-copy">
+        <p class="eyebrow">Dark Anime Lab foundation</p>
+        <h1 id="hero-title">PhysicsLab: физика без режима скуки</h1>
+        <p class="lead">
+          Astro foundation для будущего интерактивного учебника-тренажера:
+          темная лаборатория, формулы рядом с графиками, demo-задачи,
+          симуляции и спокойная подготовка к ЦЭ/ЦТ.
+        </p>
+        <div class="hero-actions">
+          <Button href="#chapter-demo">Посмотреть demo-главу</Button>
+          <Button href="#learning" variant="ghost">Как работает обучение</Button>
+        </div>
+        <div class="trust-row" aria-label="Prototype notes">
+          <Badge tone="accent">prototype/demo</Badge>
+          <Badge tone="info">authorReviewRequired</Badge>
+          <Badge>без реальных ассетов</Badge>
+        </div>
+      </div>
+    </SurfaceCard>
+
+    <SurfaceCard variant="lab">
+      <aside class="lab-stage" aria-label="Interactive lab preview mockup">
+        <div class="stage-head">
+          <div>
+            <strong>Lab cockpit</strong>
+            <span>Глава: график x(t)</span>
+          </div>
+          <Badge tone="accent">focus-ready</Badge>
+        </div>
+        <div class="cockpit-grid">
+          <div class="mission-mini">
+            <p class="mini-label">Current skill</p>
+            <h2>Читать наклон x(t)</h2>
+            <p>Сначала оси, потом знак скорости.</p>
+          </div>
+          <div class="formula-mini">
+            <span>x = x0 + vt</span>
+            <small>только при постоянной скорости</small>
+          </div>
+        </div>
+        <div class="hero-graph" aria-label="Mock graph x(t)">
+          <span class="axis axis-y"></span>
+          <span class="axis axis-x"></span>
+          <span class="graph-line"></span>
+          <span class="graph-point"></span>
+          <span class="axis-label label-y">x, м</span>
+          <span class="axis-label label-x">t, с</span>
+        </div>
+        <div class="live-values" aria-label="Mock live values">
+          <span><b>x</b> 17 м</span>
+          <span><b>v</b> 3 м/с</span>
+          <span><b>t</b> 5 с</span>
+        </div>
+      </aside>
+    </SurfaceCard>
+  </section>
+
+  <section class="section" id="learning" aria-labelledby="learning-title">
+    <SectionHeader
+      eyebrow="Как работает обучение"
+      title="Не лекция, а маршрут навыка"
+      description="Каждая глава ведет ученика от смысла к действию: контракт, формула, график, ловушка, пример, симуляция, квиз и exam-check."
+    />
+    <div class="learning-rail" aria-label="Learning flow">
+      <SurfaceCard>
+        <span class="rail-number">01</span>
+        <h3>Contract</h3>
+        <p>Ученик заранее видит цель, prerequisites и формат проверки.</p>
+      </SurfaceCard>
+      <SurfaceCard>
+        <span class="rail-number">02</span>
+        <h3>Formula + graph</h3>
+        <p>Формула идет рядом с переменными, единицами и графиком.</p>
+      </SurfaceCard>
+      <SurfaceCard variant="danger">
+        <span class="rail-number">03</span>
+        <h3>Trap clinic</h3>
+        <p>Типичная ошибка объясняется до самостоятельной задачи.</p>
+      </SurfaceCard>
+      <SurfaceCard variant="lab">
+        <span class="rail-number">04</span>
+        <h3>Lab action</h3>
+        <p>Предскажи, измени параметр, наблюдай и объясни.</p>
+      </SurfaceCard>
+      <SurfaceCard variant="mission">
+        <span class="rail-number">05</span>
+        <h3>Exam-check</h3>
+        <p>ЦЭ/ЦТ-связь появляется спокойно, без рейтингов и штрафов.</p>
+      </SurfaceCard>
+    </div>
+  </section>
+
+  <section class="section" id="modules" aria-labelledby="modules-title">
+    <SectionHeader
+      eyebrow="Модули"
+      title="Карточки ведут к навыкам, а не к стенам текста"
+      description="Этот слой остается prototype-only, но показывает будущий ритм module cards, progress и examWeight."
+    />
+    <div class="module-grid">
+      <SurfaceCard variant="mission">
+        <div class="module-top">
+          <span>Механика</span>
+          <Badge tone="accent">examWeight: high</Badge>
+        </div>
+        <h3>Графики движения</h3>
+        <p>Навык: отличать график зависимости от траектории и читать наклон.</p>
+        <div class="skill-tags">
+          <Badge tone="info">x(t)</Badge>
+          <Badge tone="accent">v(t)</Badge>
+          <Badge>единицы</Badge>
+        </div>
+        <div class="progress-line" aria-label="42 percent complete"><span style="width: 42%"></span></div>
+      </SurfaceCard>
+      <SurfaceCard>
+        <div class="module-top">
+          <span>Силы</span>
+          <Badge>planned</Badge>
+        </div>
+        <h3>Законы Ньютона</h3>
+        <p>Навык: выбрать ось, силы и знак ускорения без магии.</p>
+        <div class="skill-tags">
+          <Badge>F</Badge>
+          <Badge>m</Badge>
+          <Badge>a</Badge>
+        </div>
+        <div class="progress-line" aria-label="12 percent complete"><span style="width: 12%"></span></div>
+      </SurfaceCard>
+      <SurfaceCard>
+        <div class="module-top">
+          <span>Электро</span>
+          <Badge>planned</Badge>
+        </div>
+        <h3>Цепи</h3>
+        <p>Навык: видеть, где ток один, а где напряжение делится.</p>
+        <div class="skill-tags">
+          <Badge>I</Badge>
+          <Badge>U</Badge>
+          <Badge>R</Badge>
+        </div>
+        <div class="progress-line" aria-label="8 percent complete"><span style="width: 8%"></span></div>
+      </SurfaceCard>
+    </div>
+  </section>
+
+  <section class="section chapter-demo" id="chapter-demo" aria-labelledby="chapter-title">
+    <div class="chapter-header">
+      <div>
+        <p class="eyebrow">Demo-глава - prototype only</p>
+        <h2 id="chapter-title">Равномерное движение: связь формулы и графика</h2>
+        <p>
+          Это не новая production-глава, а Astro preview. Demo-физика простая,
+          оригинальная и помечена как authorReviewRequired.
+        </p>
+      </div>
+      <CharacterBubble role="лаборант" speaker="Mascot placeholder">
+        Формула не кусается. Сначала смотрим, что означает каждый символ,
+        потом запускаем demo-лабораторию.
+      </CharacterBubble>
+    </div>
+
+    <SurfaceCard>
+      <div class="contract-grid">
+        <div><b>Prerequisite</b><span>координата, время, скорость, единицы СИ</span></div>
+        <div><b>Outcomes</b><span>читать x(t), находить v, проверять смысл ответа</span></div>
+        <div><b>Exam use</b><span>часть A: график, часть B: численный ответ</span></div>
+      </div>
+    </SurfaceCard>
+
+    <div class="grid-two">
+      <FormulaCard
+        title="FormulaCard"
+        formula="x = x0 + vt"
+        meaning="Координата через время t равна начальной координате плюс перемещение при постоянной скорости."
+        variables={formulaVariables}
+        conditions={["v постоянна"]}
+        notFor={["есть ускорение"]}
+      />
+
+      <SurfaceCard variant="lab">
+        <p class="eyebrow">Representation bridge</p>
+        <h3>Формула и график рядом</h3>
+        <div class="component-graph" aria-label="Mock graph x(t)">
+          <span class="axis axis-y"></span>
+          <span class="axis axis-x"></span>
+          <span class="graph-line"></span>
+          <span class="graph-point"></span>
+          <span class="axis-label label-y">x</span>
+          <span class="axis-label label-x">t</span>
+        </div>
+        <p>Наклон прямой связан со скоростью. Чем линия круче, тем больше модуль v.</p>
+      </SurfaceCard>
+    </div>
+
+    <MisconceptionCard
+      title="График x(t) - это не дорога по карте"
+      misconception="Линия на графике воспринимается как путь тела в пространстве."
+      why="Она правда похожа на маршрут, особенно если линия идет вверх или вниз."
+      correction="Это зависимость координаты от времени. Сначала читаем оси, затем делаем вывод о скорости."
+      checkPrompt="Mini-check: если линия x(t) идет вниз, что можно сказать о знаке скорости?"
+      characterLine="Если оси x и t, это история координаты, а не рисунок маршрута."
+    />
+
+    <WorkedExample
+      title="WorkedExample - prototype/demo"
+      prompt="Тело стартует из точки 2 м и движется со скоростью 3 м/с. Где оно через 5 с?"
+      steps={workedSteps}
+      answer="Ответ: 17 м. authorReviewRequired: true."
+    />
+
+    <SimulationPanel
+      title="Лаборатория наклона"
+      description="Перед переключением сценария ученик предсказывает, как изменится линия x(t). После наблюдения объясняет знак скорости и переносит вывод на demo-задачу."
+    />
+
+    <div class="grid-two">
+      <QuizCard
+        title="QuizCard - prototype/demo"
+        prompt="Если x(t) - горизонтальная линия, что это значит?"
+        options={[
+          { text: "Координата не меняется, значит v = 0", correct: true },
+          { text: "Тело движется быстрее" }
+        ]}
+        feedback="Feedback: горизонтальная линия имеет нулевой наклон, значит скорость равна нулю."
+      />
+
+      <ExamBlock
+        title="Exam-check без паники"
+        description="Часть A: выбрать знак скорости по наклону. Часть B: найти координату по формуле и записать численный ответ в метрах."
+        formats={["A: выбор ответа", "B: численный ответ"]}
+        traps={["не спутать график с траекторией", "проверить единицы перед ответом"]}
+        missionItems={missionItems}
+      />
+    </div>
+
+    <SurfaceCard variant="success">
+      <p class="eyebrow">Summary + next step</p>
+      <ul>
+        <li>Формула x = x0 + vt работает при постоянной скорости.</li>
+        <li>Наклон графика x(t) связан со скоростью.</li>
+        <li>График зависимости не равен траектории движения.</li>
+        <li>Следующий шаг: сравнить равномерное и равноускоренное движение.</li>
+      </ul>
+    </SurfaceCard>
+  </section>
+</BaseLayout>
+
+<style>
+  .hero-lab {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(360px, 0.86fr);
+    gap: var(--pl-space-6);
+    align-items: stretch;
+    min-height: calc(100vh - 70px);
+    padding-top: var(--pl-space-10);
+  }
+
+  .hero-copy {
+    display: flex;
+    min-height: 100%;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .lead {
+    max-width: 760px;
+    font-size: clamp(1.08rem, 2vw, 1.24rem);
+  }
+
+  .hero-actions,
+  .trust-row,
+  .skill-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--pl-space-2);
+  }
+
+  .trust-row {
+    margin-top: var(--pl-space-5);
+  }
+
+  .lab-stage {
+    display: grid;
+    gap: var(--pl-space-4);
+    min-height: 520px;
+  }
+
+  .stage-head,
+  .module-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--pl-space-4);
+  }
+
+  .stage-head div {
+    display: grid;
+    gap: var(--pl-space-1);
+  }
+
+  .stage-head span,
+  .module-top > span {
+    color: var(--pl-text-muted);
+  }
+
+  .cockpit-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(220px, 0.7fr);
+    gap: var(--pl-space-4);
+  }
+
+  .mission-mini,
+  .formula-mini {
+    padding: var(--pl-space-4);
+    border: 1px solid var(--pl-border);
+    border-radius: var(--pl-radius);
+    background: rgba(255, 255, 255, 0.035);
+  }
+
+  .mini-label {
+    margin-bottom: var(--pl-space-2);
+    color: var(--pl-accent);
+    font-size: 0.78rem;
+    font-weight: 900;
+    text-transform: uppercase;
+  }
+
+  .mission-mini h2 {
+    margin-bottom: var(--pl-space-2);
+    font-size: clamp(1.4rem, 3vw, 2rem);
+  }
+
+  .formula-mini {
+    display: grid;
+    align-content: center;
+    gap: var(--pl-space-2);
+    text-align: center;
+  }
+
+  .formula-mini span {
+    font-family: "Cascadia Mono", "JetBrains Mono", Consolas, monospace;
+    font-size: clamp(1.6rem, 4vw, 2.4rem);
+    color: var(--pl-text);
+  }
+
+  .formula-mini small {
+    color: var(--pl-text-muted);
+  }
+
+  .hero-graph,
+  .component-graph {
+    position: relative;
+    min-height: 260px;
+    overflow: hidden;
+    border: 1px solid var(--pl-border);
+    border-radius: var(--pl-radius);
+    background:
+      linear-gradient(rgba(88, 216, 255, 0.065) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(88, 216, 255, 0.065) 1px, transparent 1px),
+      #0b1018;
+    background-size: 30px 30px;
+  }
+
+  .component-graph {
+    min-height: 240px;
+    margin-bottom: var(--pl-space-4);
+  }
+
+  .axis,
+  .graph-line,
+  .graph-point,
+  .axis-label {
+    position: absolute;
+    display: block;
+  }
+
+  .axis-y {
+    top: 24px;
+    bottom: 42px;
+    left: 44px;
+    width: 2px;
+    background: rgba(244, 247, 251, 0.56);
+  }
+
+  .axis-x {
+    right: 28px;
+    bottom: 52px;
+    left: 34px;
+    height: 2px;
+    background: rgba(244, 247, 251, 0.56);
+  }
+
+  .graph-line {
+    right: 42px;
+    bottom: 88px;
+    left: 58px;
+    height: 4px;
+    border-radius: 999px;
+    background: var(--pl-cyan);
+    transform: rotate(-18deg);
+    transform-origin: left center;
+    box-shadow: 0 0 24px rgba(88, 216, 255, 0.28);
+  }
+
+  .graph-point {
+    right: 92px;
+    bottom: 154px;
+    width: 18px;
+    height: 18px;
+    border: 3px solid #0b1018;
+    border-radius: 50%;
+    background: var(--pl-accent);
+  }
+
+  .axis-label {
+    color: var(--pl-text-muted);
+    font-size: 0.86rem;
+  }
+
+  .label-y {
+    top: 18px;
+    left: 54px;
+  }
+
+  .label-x {
+    right: 26px;
+    bottom: 24px;
+  }
+
+  .live-values {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--pl-space-2);
+  }
+
+  .live-values span {
+    flex: 1 1 120px;
+    min-height: 42px;
+    padding: 10px 12px;
+    border: 1px solid var(--pl-border);
+    border-radius: var(--pl-radius);
+    color: var(--pl-text-muted);
+    background: rgba(255, 255, 255, 0.04);
+  }
+
+  .live-values b {
+    color: var(--pl-accent);
+  }
+
+  .learning-rail,
+  .module-grid,
+  .contract-grid {
+    display: grid;
+    gap: var(--pl-space-5);
+  }
+
+  .learning-rail {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+
+  .rail-number {
+    display: inline-grid;
+    place-items: center;
+    min-width: 42px;
+    min-height: 34px;
+    margin-bottom: var(--pl-space-4);
+    border-radius: 999px;
+    color: #12130d;
+    background: var(--pl-accent);
+    font-weight: 900;
+  }
+
+  .module-grid,
+  .contract-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .module-top > span {
+    color: var(--pl-accent);
+    font-weight: 900;
+  }
+
+  .progress-line {
+    height: 10px;
+    margin-top: var(--pl-space-5);
+    overflow: hidden;
+    border-radius: 999px;
+    background: #0a1018;
+  }
+
+  .progress-line span {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, var(--pl-green), var(--pl-accent), var(--pl-cyan));
+  }
+
+  .chapter-demo {
+    display: grid;
+    gap: var(--pl-space-5);
+  }
+
+  .chapter-header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(320px, 0.85fr);
+    gap: var(--pl-space-5);
+    align-items: stretch;
+  }
+
+  .contract-grid div {
+    display: grid;
+    gap: var(--pl-space-2);
+    padding: var(--pl-space-4);
+    border: 1px solid var(--pl-border);
+    border-radius: var(--pl-radius);
+    background: rgba(255, 255, 255, 0.035);
+  }
+
+  .contract-grid span {
+    color: var(--pl-text-muted);
+    line-height: 1.5;
+  }
+
+  @media (max-width: 1040px) {
+    .learning-rail {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .module-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 900px) {
+    .hero-lab,
+    .cockpit-grid,
+    .chapter-header,
+    .contract-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .hero-lab {
+      min-height: auto;
+      padding-top: var(--pl-space-6);
+    }
+
+    .learning-rail {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

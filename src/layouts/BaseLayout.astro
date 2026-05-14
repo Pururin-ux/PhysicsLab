@@ -1,0 +1,50 @@
+---
+import "../styles/global.css";
+
+type NavItem = {
+  href: string;
+  label: string;
+};
+
+interface Props {
+  title?: string;
+  description?: string;
+  navItems?: NavItem[];
+}
+
+const {
+  title = "PhysicsLab 2.0",
+  description = "PhysicsLab 2.0 Dark Anime Lab foundation.",
+  navItems = [
+    { href: "/lab-preview/#learning", label: "Как учим" },
+    { href: "/lab-preview/#modules", label: "Модули" },
+    { href: "/lab-preview/#chapter-demo", label: "Demo-глава" },
+    { href: "/lab-preview/#exam-layer", label: "ЦЭ/ЦТ" }
+  ]
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <title>{title}</title>
+  </head>
+  <body>
+    <header class="topbar" aria-label="PhysicsLab navigation">
+      <a class="brand" href="/lab-preview/" aria-label="PhysicsLab 2.0 lab preview">
+        <span class="brand-mark" aria-hidden="true">PL</span>
+        <span>PhysicsLab 2.0</span>
+      </a>
+      <nav aria-label="Page sections">
+        {navItems.map((item) => <a href={item.href}>{item.label}</a>)}
+      </nav>
+    </header>
+    <main>
+      <slot />
+    </main>
+  </body>
+</html>
+

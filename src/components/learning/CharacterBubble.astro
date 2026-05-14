@@ -1,0 +1,106 @@
+---
+interface Props {
+  role?: string;
+  speaker?: string;
+  tone?: "lab" | "mentor" | "warning" | "exam";
+}
+
+const { role = "лаборант", speaker = "Mascot placeholder", tone = "lab" } = Astro.props;
+---
+
+<aside class:list={["character-bubble", `character-bubble--${tone}`]} aria-label={`${speaker}: ${role}`}>
+  <div class="mascot" aria-hidden="true"></div>
+  <div>
+    <p class="bubble-role">CharacterBubble - {role}</p>
+    <strong>{speaker}</strong>
+    <p><slot /></p>
+  </div>
+</aside>
+
+<style>
+  .character-bubble {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: var(--pl-space-4);
+    align-items: center;
+    padding: var(--pl-space-5);
+    border: 1px solid rgba(181, 156, 255, 0.42);
+    border-radius: var(--pl-radius);
+    background:
+      linear-gradient(135deg, rgba(181, 156, 255, 0.14), transparent 44%),
+      var(--pl-surface);
+    box-shadow: var(--pl-shadow);
+  }
+
+  .character-bubble--warning {
+    border-color: rgba(255, 107, 107, 0.42);
+  }
+
+  .character-bubble--exam {
+    border-color: rgba(255, 216, 77, 0.5);
+  }
+
+  .mascot {
+    position: relative;
+    width: 92px;
+    height: 118px;
+    border: 1px solid rgba(181, 156, 255, 0.5);
+    border-radius: 46px 46px 18px 18px;
+    background:
+      linear-gradient(135deg, rgba(255, 216, 77, 0.35), transparent 46%),
+      #263142;
+  }
+
+  .mascot::before,
+  .mascot::after {
+    content: "";
+    position: absolute;
+  }
+
+  .mascot::before {
+    top: 18px;
+    left: 21px;
+    width: 48px;
+    height: 42px;
+    border-radius: 50%;
+    background: var(--pl-bg-lab);
+  }
+
+  .mascot::after {
+    right: 16px;
+    bottom: 20px;
+    left: 16px;
+    height: 28px;
+    border: 2px solid var(--pl-accent);
+    border-radius: 999px;
+  }
+
+  .bubble-role {
+    margin-bottom: var(--pl-space-2);
+    color: var(--pl-violet);
+    font-size: 0.86rem;
+    font-weight: 900;
+    text-transform: uppercase;
+  }
+
+  strong {
+    display: block;
+    margin-bottom: var(--pl-space-2);
+  }
+
+  p:last-child {
+    margin-bottom: 0;
+  }
+
+  @media (max-width: 600px) {
+    .character-bubble {
+      grid-template-columns: 1fr;
+    }
+
+    .mascot {
+      width: 76px;
+      height: 96px;
+    }
+  }
+</style>
+

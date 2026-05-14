@@ -1,0 +1,111 @@
+---
+import Badge from "../ui/Badge.astro";
+import SurfaceCard from "../ui/SurfaceCard.astro";
+
+type Step = {
+  title: string;
+  body: string;
+};
+
+interface Props {
+  title: string;
+  prompt: string;
+  steps: Step[];
+  answer: string;
+  source?: string;
+  reviewStatus?: string;
+}
+
+const {
+  title,
+  prompt,
+  steps,
+  answer,
+  source = "prototype/demo original",
+  reviewStatus = "authorReviewRequired"
+} = Astro.props;
+---
+
+<SurfaceCard>
+  <div class="card-head">
+    <p class="component-label">{title}</p>
+    <Badge tone="info">{reviewStatus}</Badge>
+  </div>
+  <h3>{prompt}</h3>
+  <div class="steps-grid">
+    {
+      steps.map((step, index) => (
+        <div>
+          <b>{index + 1}. {step.title}</b>
+          <span>{step.body}</span>
+        </div>
+      ))
+    }
+  </div>
+  <p class="answer-note">{answer}</p>
+  <p class="source-note">source: {source}</p>
+</SurfaceCard>
+
+<style>
+  .card-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--pl-space-4);
+  }
+
+  .component-label {
+    margin: 0 0 var(--pl-space-3);
+    color: var(--pl-accent);
+    font-size: 0.78rem;
+    font-weight: 900;
+    text-transform: uppercase;
+  }
+
+  .steps-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--pl-space-4);
+  }
+
+  .steps-grid div {
+    display: grid;
+    gap: var(--pl-space-2);
+    padding: var(--pl-space-4);
+    border: 1px solid var(--pl-border);
+    border-radius: var(--pl-radius);
+    background: rgba(255, 255, 255, 0.035);
+  }
+
+  .steps-grid span {
+    color: var(--pl-text-muted);
+    line-height: 1.5;
+  }
+
+  .answer-note {
+    margin: var(--pl-space-4) 0 0;
+    padding: var(--pl-space-4);
+    border-radius: var(--pl-radius);
+    color: var(--pl-green);
+    background: rgba(110, 231, 168, 0.1);
+  }
+
+  .source-note {
+    margin: var(--pl-space-3) 0 0;
+    color: var(--pl-text-soft);
+    font-size: 0.92rem;
+  }
+
+  @media (max-width: 980px) {
+    .steps-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 640px) {
+    .steps-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+

@@ -1,0 +1,233 @@
+---
+import Badge from "../ui/Badge.astro";
+import SurfaceCard from "../ui/SurfaceCard.astro";
+
+interface Props {
+  title: string;
+  description: string;
+  steps?: string[];
+  controls?: string[];
+  reviewStatus?: string;
+}
+
+const {
+  title,
+  description,
+  steps = ["Предскажи", "Измени v", "Наблюдай x(t)", "Объясни"],
+  controls = ["v > 0", "v = 0", "v < 0"],
+  reviewStatus = "authorReviewRequired"
+} = Astro.props;
+---
+
+<SurfaceCard variant="lab">
+  <div class="simulation-panel">
+    <div class="sim-copy">
+      <div class="card-head">
+        <p class="component-label">SimulationPanel</p>
+        <Badge tone="info">{reviewStatus}</Badge>
+      </div>
+      <h3>{title}</h3>
+      <p>{description}</p>
+      <div class="sim-flow" aria-label="Simulation learning flow">
+        {steps.map((step, index) => <span>{index + 1}. {step}</span>)}
+      </div>
+      <div class="control-row" aria-label="Prototype controls">
+        {controls.map((control) => <button type="button">{control}</button>)}
+      </div>
+    </div>
+    <div class="sim-board" aria-label="Simulation mockup">
+      <div class="track" aria-hidden="true">
+        <span class="track-line"></span>
+        <span class="cart"></span>
+        <span class="ghost-cart"></span>
+      </div>
+      <div class="sim-graph" aria-label="Mock graph x(t)">
+        <span class="axis axis-y"></span>
+        <span class="axis axis-x"></span>
+        <span class="line-positive"></span>
+        <span class="line-zero"></span>
+        <span class="line-negative"></span>
+        <span class="axis-label label-y">x, м</span>
+        <span class="axis-label label-x">t, c</span>
+      </div>
+    </div>
+  </div>
+</SurfaceCard>
+
+<style>
+  .simulation-panel {
+    display: grid;
+    grid-template-columns: minmax(0, 0.82fr) minmax(320px, 1fr);
+    gap: var(--pl-space-5);
+    align-items: stretch;
+  }
+
+  .card-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--pl-space-4);
+  }
+
+  .component-label {
+    margin: 0 0 var(--pl-space-3);
+    color: var(--pl-accent);
+    font-size: 0.78rem;
+    font-weight: 900;
+    text-transform: uppercase;
+  }
+
+  .sim-flow,
+  .control-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--pl-space-2);
+    margin-top: var(--pl-space-4);
+  }
+
+  .sim-flow span,
+  .control-row button {
+    display: inline-flex;
+    align-items: center;
+    min-height: 36px;
+    padding: 7px 11px;
+    border: 1px solid var(--pl-border);
+    border-radius: 999px;
+    color: var(--pl-text-muted);
+    background: rgba(255, 255, 255, 0.04);
+    font-weight: 750;
+  }
+
+  .control-row button {
+    color: var(--pl-text);
+  }
+
+  .sim-board {
+    display: grid;
+    gap: var(--pl-space-4);
+  }
+
+  .track,
+  .sim-graph {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--pl-border);
+    border-radius: var(--pl-radius);
+    background:
+      linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+      #0b1018;
+    background-size: 28px 28px;
+  }
+
+  .track {
+    min-height: 112px;
+  }
+
+  .track-line {
+    position: absolute;
+    right: 24px;
+    bottom: 34px;
+    left: 24px;
+    height: 3px;
+    background: rgba(244, 247, 251, 0.42);
+  }
+
+  .cart,
+  .ghost-cart {
+    position: absolute;
+    bottom: 42px;
+    width: 46px;
+    height: 26px;
+    border-radius: var(--pl-radius);
+  }
+
+  .cart {
+    left: 44%;
+    background: var(--pl-accent);
+  }
+
+  .ghost-cart {
+    left: 20%;
+    border: 1px dashed rgba(255, 216, 77, 0.62);
+    background: rgba(255, 216, 77, 0.12);
+  }
+
+  .sim-graph {
+    min-height: 230px;
+  }
+
+  .axis,
+  .line-positive,
+  .line-zero,
+  .line-negative,
+  .axis-label {
+    position: absolute;
+    display: block;
+  }
+
+  .axis-y {
+    top: 24px;
+    bottom: 42px;
+    left: 44px;
+    width: 2px;
+    background: rgba(244, 247, 251, 0.56);
+  }
+
+  .axis-x {
+    right: 28px;
+    bottom: 52px;
+    left: 34px;
+    height: 2px;
+    background: rgba(244, 247, 251, 0.56);
+  }
+
+  .line-positive,
+  .line-zero,
+  .line-negative {
+    right: 34px;
+    left: 56px;
+    height: 4px;
+    border-radius: 999px;
+    transform-origin: left center;
+  }
+
+  .line-positive {
+    bottom: 80px;
+    background: var(--pl-cyan);
+    transform: rotate(-17deg);
+  }
+
+  .line-zero {
+    bottom: 128px;
+    background: var(--pl-green);
+  }
+
+  .line-negative {
+    bottom: 176px;
+    background: var(--pl-red);
+    transform: rotate(15deg);
+  }
+
+  .axis-label {
+    color: var(--pl-text-muted);
+    font-size: 0.86rem;
+  }
+
+  .label-y {
+    top: 18px;
+    left: 54px;
+  }
+
+  .label-x {
+    right: 26px;
+    bottom: 24px;
+  }
+
+  @media (max-width: 900px) {
+    .simulation-panel {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+

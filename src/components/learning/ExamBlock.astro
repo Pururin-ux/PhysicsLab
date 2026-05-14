@@ -1,0 +1,104 @@
+---
+import Badge from "../ui/Badge.astro";
+import SurfaceCard from "../ui/SurfaceCard.astro";
+
+interface Props {
+  title: string;
+  description: string;
+  formats?: string[];
+  traps?: string[];
+  missionItems?: Array<{ label: string; state?: "done" | "current" | "next" }>;
+}
+
+const {
+  title,
+  description,
+  formats = [],
+  traps = [],
+  missionItems = []
+} = Astro.props;
+---
+
+<SurfaceCard variant="mission">
+  <div class="card-head">
+    <p class="component-label">ExamBlock</p>
+    <Badge tone="accent">ЦЭ/ЦТ</Badge>
+  </div>
+  <h3>{title}</h3>
+  <p>{description}</p>
+  {formats.length > 0 && (
+    <div class="chip-row" aria-label="Exam formats">
+      {formats.map((format) => <Badge tone="info">{format}</Badge>)}
+    </div>
+  )}
+  {traps.length > 0 && (
+    <ul class="trap-list">
+      {traps.map((trap) => <li>{trap}</li>)}
+    </ul>
+  )}
+  {missionItems.length > 0 && (
+    <div class="mission-map" aria-label="Progress mission map">
+      {
+        missionItems.map((item) => (
+          <span class:list={[item.state ? `mission-map__item--${item.state}` : ""]}>
+            {item.label}
+          </span>
+        ))
+      }
+    </div>
+  )}
+</SurfaceCard>
+
+<style>
+  .card-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--pl-space-4);
+  }
+
+  .component-label {
+    margin: 0 0 var(--pl-space-3);
+    color: var(--pl-accent);
+    font-size: 0.78rem;
+    font-weight: 900;
+    text-transform: uppercase;
+  }
+
+  .chip-row,
+  .mission-map {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--pl-space-2);
+    margin-top: var(--pl-space-4);
+  }
+
+  .trap-list {
+    display: grid;
+    gap: var(--pl-space-2);
+    margin: var(--pl-space-4) 0 0;
+    padding-left: var(--pl-space-5);
+  }
+
+  .mission-map span {
+    display: inline-flex;
+    align-items: center;
+    min-height: 34px;
+    padding: 6px 10px;
+    border: 1px solid var(--pl-border);
+    border-radius: 999px;
+    color: var(--pl-text-muted);
+    background: rgba(255, 255, 255, 0.04);
+  }
+
+  .mission-map__item--done {
+    border-color: rgba(110, 231, 168, 0.5);
+    color: var(--pl-green);
+  }
+
+  .mission-map__item--current {
+    border-color: rgba(255, 216, 77, 0.56);
+    color: var(--pl-accent);
+  }
+</style>
+

@@ -1,0 +1,116 @@
+---
+import SurfaceCard from "../ui/SurfaceCard.astro";
+
+interface Props {
+  title: string;
+  misconception: string;
+  why: string;
+  correction: string;
+  checkPrompt?: string;
+  characterLine?: string;
+}
+
+const { title, misconception, why, correction, checkPrompt, characterLine } = Astro.props;
+---
+
+<SurfaceCard variant="danger">
+  <div class="misconception-card">
+    <div class="manga-corner" aria-hidden="true">Trap</div>
+    <div>
+      <p class="component-label">MisconceptionCard</p>
+      <h3>{title}</h3>
+      <div class="trap-steps">
+        <p><b>Ловушка:</b> {misconception}</p>
+        <p><b>Почему кажется правдой:</b> {why}</p>
+        <p><b>Физическая модель:</b> {correction}</p>
+      </div>
+      {checkPrompt && <p class="check-prompt">{checkPrompt}</p>}
+    </div>
+    {
+      characterLine && (
+        <aside class="mini-speech">
+          <strong>Mascot placeholder</strong>
+          <span>{characterLine}</span>
+        </aside>
+      )
+    }
+  </div>
+</SurfaceCard>
+
+<style>
+  .misconception-card {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(240px, 0.5fr);
+    gap: var(--pl-space-5);
+    overflow: hidden;
+  }
+
+  .component-label {
+    margin: 0 0 var(--pl-space-3);
+    color: var(--pl-red);
+    font-size: 0.78rem;
+    font-weight: 900;
+    text-transform: uppercase;
+  }
+
+  .manga-corner {
+    position: absolute;
+    top: calc(var(--pl-space-6) * -1);
+    right: calc(var(--pl-space-6) * -1);
+    padding: 8px 14px;
+    border-bottom: 1px solid rgba(255, 107, 107, 0.55);
+    border-left: 1px solid rgba(255, 107, 107, 0.55);
+    border-radius: 0 0 0 var(--pl-radius);
+    color: #1a0b0b;
+    background: var(--pl-red);
+    font-weight: 900;
+  }
+
+  .trap-steps {
+    display: grid;
+    gap: var(--pl-space-2);
+  }
+
+  .trap-steps p {
+    margin-bottom: 0;
+  }
+
+  .trap-steps b {
+    color: var(--pl-text);
+  }
+
+  .check-prompt {
+    margin: var(--pl-space-4) 0 0;
+    padding: var(--pl-space-4);
+    border-radius: var(--pl-radius);
+    color: var(--pl-text);
+    background: rgba(255, 107, 107, 0.1);
+  }
+
+  .mini-speech {
+    align-self: center;
+    padding: var(--pl-space-4);
+    border: 2px solid rgba(244, 247, 251, 0.84);
+    border-radius: var(--pl-radius);
+    color: var(--pl-text);
+    background:
+      linear-gradient(135deg, rgba(181, 156, 255, 0.16), transparent 50%),
+      #111720;
+    box-shadow: 7px 7px 0 rgba(255, 216, 77, 0.12);
+  }
+
+  .mini-speech span {
+    display: block;
+    margin-top: var(--pl-space-2);
+    color: var(--pl-text-muted);
+    line-height: 1.5;
+  }
+
+  @media (max-width: 860px) {
+    .misconception-card {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+

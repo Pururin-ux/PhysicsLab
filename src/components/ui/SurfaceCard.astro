@@ -1,0 +1,57 @@
+---
+interface Props {
+  variant?: "default" | "lab" | "danger" | "success" | "mission";
+}
+
+const { variant = "default" } = Astro.props;
+---
+
+<article class:list={["surface-card", `surface-card--${variant}`]}>
+  <slot />
+</article>
+
+<style>
+  .surface-card {
+    padding: var(--pl-space-6);
+    border: 1px solid var(--pl-border);
+    border-radius: var(--pl-radius);
+    background:
+      linear-gradient(135deg, rgba(255, 216, 77, 0.055), transparent 38%),
+      var(--pl-surface);
+    box-shadow: var(--pl-shadow);
+  }
+
+  .surface-card--lab {
+    background:
+      linear-gradient(180deg, rgba(88, 216, 255, 0.085), transparent 42%),
+      #0c121b;
+  }
+
+  .surface-card--danger {
+    border-color: rgba(255, 107, 107, 0.5);
+    background:
+      linear-gradient(135deg, rgba(255, 107, 107, 0.12), transparent 42%),
+      var(--pl-surface);
+  }
+
+  .surface-card--success {
+    border-color: rgba(110, 231, 168, 0.5);
+    background:
+      linear-gradient(135deg, rgba(110, 231, 168, 0.1), transparent 42%),
+      var(--pl-surface);
+  }
+
+  .surface-card--mission {
+    border-color: rgba(255, 216, 77, 0.56);
+    background:
+      linear-gradient(135deg, rgba(255, 216, 77, 0.09), transparent 44%),
+      var(--pl-surface);
+  }
+
+  @media (max-width: 600px) {
+    .surface-card {
+      padding: var(--pl-space-5);
+    }
+  }
+</style>
+

@@ -1,0 +1,53 @@
+---
+interface Props {
+  tone?: "accent" | "muted" | "info" | "success" | "danger" | "violet";
+}
+
+const { tone = "muted" } = Astro.props;
+---
+
+<span class:list={["badge", `badge--${tone}`]}>
+  <slot />
+</span>
+
+<style>
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    min-height: 34px;
+    padding: 6px 10px;
+    border: 1px solid var(--pl-border);
+    border-radius: 999px;
+    color: var(--pl-text-muted);
+    background: rgba(255, 255, 255, 0.04);
+    font-size: 0.9rem;
+    font-weight: 750;
+    line-height: 1.25;
+  }
+
+  .badge--accent {
+    border-color: rgba(255, 216, 77, 0.56);
+    color: var(--pl-accent);
+  }
+
+  .badge--info {
+    border-color: rgba(88, 216, 255, 0.5);
+    color: var(--pl-cyan);
+  }
+
+  .badge--success {
+    border-color: rgba(110, 231, 168, 0.5);
+    color: var(--pl-green);
+  }
+
+  .badge--danger {
+    border-color: rgba(255, 107, 107, 0.5);
+    color: var(--pl-red);
+  }
+
+  .badge--violet {
+    border-color: rgba(181, 156, 255, 0.5);
+    color: var(--pl-violet);
+  }
+</style>
+

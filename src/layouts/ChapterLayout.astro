@@ -1,0 +1,50 @@
+---
+import BaseLayout from "./BaseLayout.astro";
+import Badge from "../components/ui/Badge.astro";
+import SurfaceCard from "../components/ui/SurfaceCard.astro";
+import CharacterBubble from "../components/learning/CharacterBubble.astro";
+
+interface Props {
+  title: string;
+  eyebrow?: string;
+  description?: string;
+  status?: string;
+  reviewStatus?: string;
+  meta?: string[];
+  characterRole?: string;
+  characterLine?: string;
+}
+
+const {
+  title,
+  eyebrow = "Demo-глава",
+  description = "",
+  status = "prototype/demo",
+  reviewStatus = "authorReviewRequired",
+  meta = [],
+  characterRole = "лаборант",
+  characterLine = "Сначала связываем формулу, единицы и график, потом трогаем симуляцию."
+} = Astro.props;
+---
+
+<BaseLayout title={`${title} | PhysicsLab 2.0`} description={description}>
+  <section class="section chapter-shell">
+    <div class="chapter-hero">
+      <SurfaceCard variant="lab">
+        <p class="eyebrow">{eyebrow}</p>
+        <h1>{title}</h1>
+        {description && <p>{description}</p>}
+        <div class="chapter-meta" aria-label="Chapter metadata">
+          <Badge tone="accent">{status}</Badge>
+          <Badge tone="info">{reviewStatus}</Badge>
+          {meta.map((item) => <Badge tone="muted">{item}</Badge>)}
+        </div>
+      </SurfaceCard>
+      <CharacterBubble role={characterRole} speaker="Mascot placeholder">
+        {characterLine}
+      </CharacterBubble>
+    </div>
+    <slot />
+  </section>
+</BaseLayout>
+

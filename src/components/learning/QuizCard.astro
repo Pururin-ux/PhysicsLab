@@ -1,0 +1,79 @@
+---
+import Badge from "../ui/Badge.astro";
+import SurfaceCard from "../ui/SurfaceCard.astro";
+
+type Option = {
+  text: string;
+  correct?: boolean;
+};
+
+interface Props {
+  title: string;
+  prompt: string;
+  options: Option[];
+  feedback: string;
+  reviewStatus?: string;
+}
+
+const {
+  title,
+  prompt,
+  options,
+  feedback,
+  reviewStatus = "authorReviewRequired"
+} = Astro.props;
+---
+
+<SurfaceCard>
+  <div class="card-head">
+    <p class="component-label">{title}</p>
+    <Badge tone="info">{reviewStatus}</Badge>
+  </div>
+  <h3>{prompt}</h3>
+  <div class="option-list">
+    {options.map((option) => <button type="button">{option.text}</button>)}
+  </div>
+  <p class="feedback-note">{feedback}</p>
+</SurfaceCard>
+
+<style>
+  .card-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--pl-space-4);
+  }
+
+  .component-label {
+    margin: 0 0 var(--pl-space-3);
+    color: var(--pl-accent);
+    font-size: 0.78rem;
+    font-weight: 900;
+    text-transform: uppercase;
+  }
+
+  .option-list {
+    display: grid;
+    gap: var(--pl-space-2);
+  }
+
+  .option-list button {
+    width: 100%;
+    min-height: 44px;
+    padding: 12px 14px;
+    border: 1px solid var(--pl-border);
+    border-radius: var(--pl-radius);
+    color: var(--pl-text);
+    background: rgba(255, 255, 255, 0.04);
+    text-align: left;
+  }
+
+  .feedback-note {
+    margin: var(--pl-space-4) 0 0;
+    padding: var(--pl-space-4);
+    border-radius: var(--pl-radius);
+    color: var(--pl-green);
+    background: rgba(110, 231, 168, 0.1);
+  }
+</style>
+

@@ -1,0 +1,51 @@
+---
+interface Props {
+  href?: string;
+  variant?: "primary" | "ghost" | "quiet";
+  type?: "button" | "submit" | "reset";
+}
+
+const { href, variant = "primary", type = "button" } = Astro.props;
+const classes = ["pl-button", `pl-button--${variant}`];
+---
+
+{
+  href ? (
+    <a href={href} class:list={classes}><slot /></a>
+  ) : (
+    <button type={type} class:list={classes}><slot /></button>
+  )
+}
+
+<style>
+  .pl-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 12px 16px;
+    border: 1px solid var(--pl-border-strong);
+    border-radius: var(--pl-radius);
+    font-weight: 850;
+    line-height: 1.2;
+    text-decoration: none;
+  }
+
+  .pl-button--primary {
+    border-color: var(--pl-accent);
+    color: #12130d;
+    background: var(--pl-accent);
+  }
+
+  .pl-button--ghost {
+    color: var(--pl-text);
+    background: rgba(255, 255, 255, 0.04);
+  }
+
+  .pl-button--quiet {
+    border-color: transparent;
+    color: var(--pl-text-muted);
+    background: transparent;
+  }
+</style>
+
