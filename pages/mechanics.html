@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Глава 02: Равномерное прямолинейное движение — интерактивный урок с визуализацией, примерами и проверкой понимания.">
+    <title>КИНЕМАТИКА // РАВНОМЕРНОЕ ДВИЖЕНИЕ</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@300;400;700&family=Merriweather:ital,wght@0,300;0,700;1,300;1,700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                        math: ['Merriweather', 'serif'],
+                    },
+                    colors: {
+                        bg: '#050505',
+                        card: '#111',
+                        accent: '#ffee00',
+                        blue: '#3b82f6',
+                        red: '#ef4444',
+                        pos: '#f59e0b',
+                        vel: '#38bdf8',
+                        time: '#34d399',
+                        acc: '#f87171',
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        .latex { font-family: 'Merriweather', serif; font-style: italic; }
+        .latex-norm { font-family: 'Merriweather', serif; font-style: normal; }
+        .reading-copy { line-height: 1.75; letter-spacing: 0.01em; }
+
+        .quiz-option {
+            display: block;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 0.75rem;
+            padding: 0.75rem 0.875rem;
+            transition: border-color .2s, background-color .2s;
+            cursor: pointer;
+        }
+        .quiz-option:hover { border-color: rgba(255,238,0,0.5); background: rgba(255,255,255,0.03); }
+        .quiz-option input { margin-right: 0.5rem; }
+        .quiz-option.correct { border-color: #22c55e !important; background: rgba(34,197,94,0.08) !important; }
+        .quiz-option.incorrect { border-color: #ef4444 !important; background: rgba(239,68,68,0.06) !important; }
+
+        .key-term { font-weight: 600; color: #fff; border-bottom: 1px dashed rgba(255,255,255,0.35); }
+
+        .formula-inline {
+            font-family: 'Merriweather', serif; font-style: italic;
+            padding: 0.05rem 0.35rem; border-radius: 0.35rem;
+            background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12);
+        }
+
+        .semantic-badge {
+            font-size: 0.65rem; font-weight: 700; text-transform: uppercase;
+            letter-spacing: .08em; border-radius: 999px;
+            padding: 0.2rem 0.5rem; border: 1px solid currentColor;
+        }
+
+        .symbol-pos { color: #f59e0b; }
+        .symbol-vel { color: #38bdf8; }
+        .symbol-time { color: #34d399; }
+        .symbol-acc { color: #f87171; }
+
+        *:focus-visible { outline: 2px solid #ffee00; outline-offset: 2px; }
+
+        /* Контракт-блок */
+        .contract-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+        .contract-item { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 14px; }
+
+        /* Блок решения */
+        .solution-step { border-left: 2px solid rgba(255,238,0,0.3); padding-left: 16px; margin-bottom: 16px; }
+        .solution-step-num {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 22px; height: 22px; border-radius: 50%;
+            background: rgba(255,238,0,0.15); color: #ffee00;
+            font-size: 11px; font-weight: 700; margin-right: 8px;
+        }
+
+        /* Персонаж */
+        .assistant-bubble {
+            background: #fff; color: #000;
+            padding: 12px 16px; border-radius: 14px;
+            border: 2px solid #000;
+            box-shadow: 5px 5px 0px 0px rgba(255,238,0,1);
+            font-size: 12px; font-weight: 600;
+            max-width: 260px; position: relative;
+        }
+        .assistant-bubble::before {
+            content: ''; position: absolute;
+            top: -8px; left: 20px;
+            width: 0; height: 0;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-bottom: 8px solid #000;
+        }
+
+        /* Мост к следующей главе */
+        .bridge-card {
+            background: linear-gradient(135deg, rgba(255,238,0,0.05), rgba(59,130,246,0.05));
+            border: 1px solid rgba(255,238,0,0.2);
+        }
+
+        /* Визуализация — задание */
+        .viz-task {
+            background: rgba(56,189,248,0.06);
+            border: 1px solid rgba(56,189,248,0.2);
+            border-radius: 12px; padding: 12px 16px;
+        }
+
+        /* Анимация сокращения единиц */
+        .uc-cancel {
+            text-decoration: line-through;
+            text-decoration-color: #ffffff;
+            text-decoration-thickness: 4px;
+            color: #6b7280 !important;
+            transition: all 0.35s ease;
+        }
+        .uc-highlight {
+            color: #fff !important;
+            font-weight: 900;
+            background: rgba(251,146,60,0.25);
+            border-radius: 4px;
+            outline: 2px solid #fb923c;
+            text-shadow: 0 0 12px rgba(251,146,60,0.9);
+            transition: all 0.25s ease;
+        }
+        .uc-fade { opacity: 0; transition: opacity 0.5s ease; }
+        .uc-show { opacity: 1; transition: opacity 0.5s ease; }
+
+        /* Область графика v(t) */
+        .area-under-graph {
+            background: repeating-linear-gradient(45deg, rgba(56,189,248,0.06), rgba(56,189,248,0.06) 4px, transparent 4px, transparent 8px);
+        }
+    </style>
+</head>
+<body class="bg-bg text-gray-300 font-sans antialiased overflow-x-hidden selection:bg-accent selection:text-black">
+
+    <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-0 focus:left-0 focus:bg-accent focus:text-black focus:px-4 focus:py-2 focus:z-[100] focus:font-bold">
+        Перейти к содержимому
+    </a>
+
+    <nav class="fixed top-0 w-full z-50 bg-bg/90 backdrop-blur-md border-b border-white/10" aria-label="Главная навигация">
+        <div class="max-w-7xl mx-auto px-6 h-16 flex justify-between items-center">
+            <a href="mechanics-menu.html" class="text-xs md:text-sm text-gray-500 hover:text-white transition-colors tracking-widest font-bold">← ОГЛАВЛЕНИЕ МЕХАНИКИ</a>
+            <div class="text-lg font-bold tracking-tight">PHYSICS<span class="text-accent">.LAB</span> // КИНЕМАТИКА</div>
+            <div class="w-10"></div>
+        </div>
+    </nav>
+
+    <main id="main-content" class="max-w-6xl mx-auto px-6 pt-32 pb-20">
+
+        <!-- ════════════════════════════════════════════════════════ -->
+        <!-- HEADER + КОНТРАКТ                                       -->
+        <!-- ════════════════════════════════════════════════════════ -->
+        <header class="mb-12">
+            <div class="inline-block px-3 py-1 border border-accent/30 rounded-full text-accent text-xs mb-4 tracking-widest uppercase">
+                Глава 02
+            </div>
+            <h1 class="text-4xl md:text-6xl font-bold text-white mb-6 tracking-tight leading-tight">
+                ПРЯМОЛИНЕЙНОЕ<br>
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-accent to-yellow-600">РАВНОМЕРНОЕ ДВИЖЕНИЕ</span>
+            </h1>
+            <p class="text-lg text-gray-400 max-w-3xl border-l-2 border-accent pl-6 leading-relaxed reading-copy">
+                Это движение с <strong class="key-term">постоянной скоростью</strong> (<span class="latex symbol-vel">v</span> = const).
+                Тело за любые равные промежутки времени проходит одинаковое расстояние. Ускорение отсутствует (<span class="latex symbol-acc">a</span> = 0).
+            </p>
+
+            <div class="mt-6 flex flex-wrap gap-2 mb-8">
+                <span class="semantic-badge symbol-pos">x — координата</span>
+                <span class="semantic-badge symbol-vel">v — скорость</span>
+                <span class="semantic-badge symbol-time">t — время</span>
+                <span class="semantic-badge symbol-acc">a — ускорение</span>
+            </div>
+
+            <!-- Контракт с учеником -->
+            <div class="bg-black/40 border border-white/10 rounded-2xl p-6" id="chapter-contract">
+                <h2 class="text-white font-bold mb-4 text-sm uppercase tracking-widest">🎯 Контракт главы</h2>
+                <div class="contract-grid">
+                    <div class="contract-item">
+                        <div class="text-accent text-xs font-bold mb-2">⏱ ВРЕМЯ</div>
+                        <div class="text-white text-sm">~15 минут</div>
+                    </div>
+                    <div class="contract-item">
+                        <div class="text-purple-400 text-xs font-bold mb-2">📋 ПРЕРЕКВИЗИТЫ</div>
+                        <div class="text-sm"><a href="chapter-01.html" class="text-purple-400 hover:text-purple-300 underline underline-offset-2">Глава 01</a> — путь, перемещение, система отсчёта</div>
+                    </div>
+                    <div class="contract-item">
+                        <div class="text-green-400 text-xs font-bold mb-2">✅ ПОСЛЕ ЭТОЙ ГЛАВЫ ТЫ СМОЖЕШЬ</div>
+                        <ul class="text-sm space-y-1">
+                            <li>• Записать уравнение <span class="font-math italic">x = x₀ + vt</span></li>
+                            <li>• Построить и прочитать графики <span class="font-math italic">x(t)</span> и <span class="font-math italic">v(t)</span></li>
+                            <li>• Определить скорость по наклону графика</li>
+                            <li>• Решить задачу на движение с полным оформлением</li>
+                        </ul>
+                    </div>
+                    <div class="contract-item">
+                        <div class="text-blue-400 text-xs font-bold mb-2">🔗 ПРИГОДИТСЯ В</div>
+                        <div class="text-sm">
+                            <a href="chapter-03.html" class="text-blue-400 hover:text-blue-300 underline underline-offset-2">Глава 03 (РУПД)</a> — те же графики, но с ускорением
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- ════════════════════════════════════════════════════════ -->
+        <!-- ТЕОРИЯ: АНАЛОГИЯ С АЛГЕБРОЙ                            -->
+        <!-- ════════════════════════════════════════════════════════ -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start mb-16">
+            <div class="lg:col-span-8 space-y-10">
+
+                <section id="theory-base" class="bg-gray-900/40 border border-white/10 rounded-xl p-6" aria-labelledby="theory-base-title">
+                    <h3 id="theory-base-title" class="text-accent font-bold mb-4 flex items-center gap-2">
+                        <span class="text-lg">📐</span> ЭТО ПРОСТО ЛИНЕЙНАЯ ФУНКЦИЯ
+                    </h3>
+                    <p class="text-sm text-gray-400 mb-6 leading-relaxed reading-copy">
+                        Вспомни алгебру, 7 класс. Вы строили график прямой линии: <strong class="text-white font-math">y = kx + b</strong>.
+                        В физике всё то же самое, просто буквы поменялись. График координаты от времени — это всегда ПРЯМАЯ.
+                    </p>
+
+                    <div class="grid grid-cols-2 gap-px bg-white/10 rounded-lg overflow-hidden border border-white/10">
+                        <div class="bg-black/50 p-4">
+                            <div class="text-gray-500 text-xs uppercase mb-1 tracking-widest">Алгебра</div>
+                            <div class="text-xl text-white font-math mb-2">y = kx + b</div>
+                            <ul class="text-xs space-y-2 text-gray-400 font-math">
+                                <li><span class="text-white italic">y</span> — Функция</li>
+                                <li><span class="text-white italic">x</span> — Аргумент</li>
+                                <li><span class="text-blue italic">k</span> — Угловой коэффициент (наклон)</li>
+                                <li><span class="text-gray-500 italic">b</span> — Свободный член (сдвиг)</li>
+                            </ul>
+                        </div>
+                        <div class="bg-black/50 p-4">
+                            <div class="text-accent text-xs uppercase mb-1 tracking-widest">Физика</div>
+                            <div class="text-xl font-math mb-2"><span class="symbol-pos">x</span> = <span class="symbol-vel">v</span><span class="symbol-time">t</span> + <span class="text-gray-300">x₀</span></div>
+                            <ul class="text-xs space-y-2 text-gray-400 font-math">
+                                <li><span class="symbol-pos italic">x</span> — Координата (м)</li>
+                                <li><span class="symbol-time italic">t</span> — Время (с)</li>
+                                <li><span class="symbol-vel italic">v</span> — Скорость (м/с)</li>
+                                <li><span class="text-gray-500 italic">x₀</span> — Начальная координата (м)</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Размерный анализ — анимация -->
+                    <div class="mt-6 bg-black/30 border border-white/5 rounded-lg p-4">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="text-xs text-gray-500 font-bold uppercase tracking-widest">🔍 Проверка единиц (всегда проверяй!)</div>
+                            <button id="uc-replay-btn" class="text-[10px] text-gray-600 hover:text-accent transition-colors border border-white/10 hover:border-accent/40 rounded px-2 py-0.5">↺ ещё раз</button>
+                        </div>
+
+                        <!-- Шаг 1: формула с единицами -->
+                        <div id="uc-step1" class="font-math text-2xl flex items-center flex-wrap gap-x-3 gap-y-3 min-h-[3.5rem]">
+                            <span class="symbol-pos italic font-bold">x</span>
+                            <span class="text-gray-500">=</span>
+                            <!-- Дробь м/с -->
+                            <span class="inline-flex flex-col items-center leading-tight">
+                                <span class="symbol-vel font-bold border-b-2 border-white/40 px-2 pb-0.5 text-xl">м</span>
+                                <span id="uc-denom" class="symbol-time font-bold px-2 pt-0.5 text-xl">с</span>
+                            </span>
+                            <span class="text-gray-400 text-lg">·</span>
+                            <span id="uc-factor" class="symbol-time font-bold text-2xl">с</span>
+                            <span class="text-gray-400 text-lg">+</span>
+                            <span class="text-gray-300 font-bold text-2xl">м</span>
+                        </div>
+
+                        <!-- Шаг 2: результат после сокращения -->
+                        <div id="uc-step2" class="uc-fade font-math text-2xl flex items-center flex-wrap gap-x-3 gap-y-2 mt-3">
+                            <span class="symbol-pos italic font-bold">x</span>
+                            <span class="text-gray-500">=</span>
+                            <span class="text-white font-bold">м</span>
+                            <span class="text-gray-400">+</span>
+                            <span class="text-white font-bold">м</span>
+                        </div>
+
+                        <!-- Шаг 3: итог -->
+                        <div id="uc-step3" class="uc-fade font-math text-2xl flex items-center flex-wrap gap-x-3 gap-y-2 mt-1">
+                            <span class="symbol-pos italic font-bold">x</span>
+                            <span class="text-gray-500">=</span>
+                            <span class="text-accent font-bold text-3xl">м</span>
+                            <span class="text-green-400 font-bold text-2xl">✅</span>
+                        </div>
+
+                        <p class="text-xs text-gray-500 mt-3">Секунды в числителе и знаменателе сокращаются. Если единицы не сходятся — в формуле ошибка.</p>
+                    </div>
+                </section>
+
+                <!-- Основная формула с тултипами -->
+                <section id="formula-core" class="bg-card border border-white/10 rounded-2xl p-10 relative overflow-visible group/panel z-10" aria-labelledby="formula-core-title">
+                    <div class="absolute top-0 left-0 w-1 h-full bg-accent"></div>
+                    <div id="formula-core-title" class="text-xs font-bold text-gray-600 mb-8 uppercase tracking-widest">Основное уравнение кинематики</div>
+
+                    <div class="flex flex-wrap items-center gap-2 md:gap-6 text-4xl md:text-6xl font-bold text-white select-none font-math">
+                        <div class="relative group cursor-help p-2 hover:bg-white/5 rounded">
+                            <span class="symbol-pos group-hover:text-accent transition-colors italic">x</span>
+                            <div class="absolute top-full mt-2 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-black border border-accent text-accent text-xs px-3 py-2 rounded shadow-xl whitespace-nowrap z-50 pointer-events-none font-mono">
+                                <span class="font-bold block">КОНЕЧНАЯ КООРДИНАТА</span>
+                                Где тело окажется? (м)
+                            </div>
+                        </div>
+                        <span class="text-gray-600 latex-norm">=</span>
+                        <div class="relative group cursor-help p-2 hover:bg-white/5 rounded">
+                            <span class="text-gray-400 group-hover:text-white transition-colors italic">x₀</span>
+                            <div class="absolute top-full mt-2 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-black border border-white text-white text-xs px-3 py-2 rounded shadow-xl whitespace-nowrap z-50 pointer-events-none font-mono">
+                                <span class="font-bold block">НАЧАЛЬНАЯ ТОЧКА</span>
+                                Где мы были при t=0? (м)
+                            </div>
+                        </div>
+                        <span class="text-accent animate-pulse latex-norm">+</span>
+                        <div class="relative group cursor-help p-2 hover:bg-white/5 rounded">
+                            <span class="symbol-vel group-hover:text-white transition-colors italic">v</span>
+                            <div class="absolute top-full mt-2 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-black border border-blue text-blue text-xs px-3 py-2 rounded shadow-xl whitespace-nowrap z-50 pointer-events-none font-mono">
+                                <span class="font-bold block">СКОРОСТЬ</span>
+                                Тангенс угла наклона (м/с)
+                            </div>
+                        </div>
+                        <span class="text-gray-600 latex-norm">·</span>
+                        <div class="relative group cursor-help p-2 hover:bg-white/5 rounded">
+                            <span class="symbol-time group-hover:text-accent transition-colors italic">t</span>
+                            <div class="absolute top-full mt-2 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-black border border-gray-500 text-gray-300 text-xs px-3 py-2 rounded shadow-xl whitespace-nowrap z-50 pointer-events-none font-mono">
+                                <span class="font-bold block">ВРЕМЯ</span>
+                                Длительность движения (с)
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Таблица знаков скорости -->
+                <section aria-labelledby="signs-table-title">
+                    <h3 id="signs-table-title" class="sr-only">Знаки скорости и поведение графика</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm border-collapse">
+                            <thead>
+                                <tr class="border-b border-white/20 text-gray-400 uppercase text-xs">
+                                    <th class="py-3 font-bold">Ситуация</th>
+                                    <th class="py-3 font-bold">Знак <span class="latex">v</span></th>
+                                    <th class="py-3 font-bold">График <span class="latex">x(t)</span></th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-gray-300">
+                                <tr class="border-b border-white/5 hover:bg-white/5 transition-colors">
+                                    <td class="py-3 pr-4">Едем вперёд (вдоль оси X)</td>
+                                    <td class="py-3 symbol-vel font-bold font-math">v &gt; 0</td>
+                                    <td class="py-3">Прямая идёт <span class="text-accent">ВВЕРХ</span> ↗</td>
+                                </tr>
+                                <tr class="border-b border-white/5 hover:bg-white/5 transition-colors">
+                                    <td class="py-3 pr-4">Стоим на месте</td>
+                                    <td class="py-3 text-gray-500 font-bold font-math">v = 0</td>
+                                    <td class="py-3">Горизонтальная линия →</td>
+                                </tr>
+                                <tr class="border-b border-white/5 hover:bg-white/5 transition-colors">
+                                    <td class="py-3 pr-4">Едем назад (против оси X)</td>
+                                    <td class="py-3 symbol-acc font-bold font-math">v &lt; 0</td>
+                                    <td class="py-3">Прямая идёт <span class="symbol-acc">ВНИЗ</span> ↘</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+            </div>
+
+            <!-- Персонаж -->
+            <div class="lg:col-span-4 flex justify-center lg:justify-end relative mt-10 lg:mt-0">
+                <div class="relative w-full max-w-[300px] animate-float">
+                    <img src="../assets/manga-girl.png"
+                         alt="Помощница объясняет: чем круче наклон графика, тем больше скорость"
+                         class="relative z-10 w-full h-auto grayscale contrast-125 border-2 border-white/10 rounded-lg shadow-2xl transform rotate-1">
+                    <div class="absolute -bottom-8 -left-12 z-20 assistant-bubble" id="assistant-msg-1">
+                        Чем круче наклон графика, тем больше скорость! Если график крутой как гора — ты летишь. 🏔️
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ════════════════════════════════════════════════════════ -->
+        <!-- ПЕРЕМЕЩЕНИЕ VS ПУТЬ + ГРАФИК v(t)                      -->
+        <!-- ════════════════════════════════════════════════════════ -->
+        <section class="border-t border-white/10 pt-12 mb-16" id="displacement-vs-path" aria-labelledby="disp-path-title">
+            <h2 id="disp-path-title" class="text-2xl font-bold text-white mb-3">ПЕРЕМЕЩЕНИЕ, ПУТЬ И ГРАФИК <span class="font-math italic symbol-vel">v(t)</span></h2>
+            <p class="text-sm text-gray-500 mb-8 max-w-3xl reading-copy">
+                В равномерном движении перемещение и путь совпадают по модулю. Но это частный случай! В Главе 03 (РУПД), когда тело меняет направление, путь и перемещение будут разными. Запомни разницу сейчас.
+            </p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <!-- Перемещение vs Путь -->
+                <div class="bg-card border border-white/10 rounded-xl p-6">
+                    <h3 class="text-white font-bold mb-4 text-sm">📏 В чём разница?</h3>
+                    <div class="space-y-4 text-sm">
+                        <div class="flex gap-3">
+                            <div class="w-2 h-2 rounded-full bg-blue-400 mt-1.5 shrink-0"></div>
+                            <div>
+                                <div class="text-white font-semibold">Перемещение <span class="font-math italic">Δx = x − x₀</span></div>
+                                <div class="text-gray-400 mt-1">Вектор из начальной точки в конечную. Может быть <span class="symbol-acc">отрицательным</span> (если едем назад).</div>
+                            </div>
+                        </div>
+                        <div class="flex gap-3">
+                            <div class="w-2 h-2 rounded-full bg-green-400 mt-1.5 shrink-0"></div>
+                            <div>
+                                <div class="text-white font-semibold">Путь <span class="font-math italic">S = |Δx|</span></div>
+                                <div class="text-gray-400 mt-1">Длина траектории. Всегда ≥ 0. В РПД: <span class="font-math italic">S = |v| · t</span>.</div>
+                            </div>
+                        </div>
+                        <div class="bg-black/30 border border-white/5 rounded-lg p-3 text-xs text-gray-400">
+                            💡 <strong class="text-white">В РПД</strong> перемещение = ±путь (знак зависит от направления). В РУПД с разворотом — нет!
+                        </div>
+                    </div>
+                </div>
+
+                <!-- График v(t) -->
+                <div class="bg-card border border-white/10 rounded-xl p-6">
+                    <h3 class="text-white font-bold mb-4 text-sm">📊 График <span class="font-math italic symbol-vel">v(t)</span> — горизонтальная линия</h3>
+                    <div class="text-sm text-gray-400 mb-4 reading-copy">
+                        Скорость постоянна → график <span class="font-math italic">v(t)</span> — это горизонтальная прямая. А <strong class="text-white">площадь под графиком</strong> = перемещению.
+                    </div>
+                    <!-- ASCII-визуализация графика v(t) -->
+                    <div class="bg-black/40 rounded-lg p-4 font-mono text-xs">
+                        <div class="text-gray-500 mb-1">v (м/с)</div>
+                        <div class="flex items-end gap-0 h-24 relative">
+                            <!-- Ось Y -->
+                            <div class="absolute left-4 top-0 bottom-0 w-px bg-white/20"></div>
+                            <!-- Линия v = 5 -->
+                            <div class="absolute left-4 right-4 top-4 h-px bg-blue-400"></div>
+                            <div class="absolute left-0 top-2 text-blue-400 text-[10px]">5</div>
+                            <!-- Заштрихованная область -->
+                            <div class="absolute left-4 right-4 top-4 bottom-4 area-under-graph rounded-sm"></div>
+                            <!-- Ось X -->
+                            <div class="absolute left-4 right-4 bottom-4 h-px bg-white/20"></div>
+                            <!-- Подпись площади -->
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <span class="text-blue-300/70 text-[10px]">S = v · t = перемещение</span>
+                            </div>
+                        </div>
+                        <div class="text-gray-500 text-right mt-1">t (с)</div>
+                    </div>
+                    <div class="mt-3 text-xs text-gray-500">
+                        🔑 <strong class="text-white">Ключевая идея:</strong> площадь прямоугольника = <span class="font-math">v × t</span> = перемещение. Эта идея будет <em>критична</em> в Главе 03, где фигура станет треугольником и трапецией.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ════════════════════════════════════════════════════════ -->
+        <!-- РЕШЁННЫЙ ПРИМЕР                                         -->
+        <!-- ════════════════════════════════════════════════════════ -->
+        <section class="border-t border-white/10 pt-12 mb-16" id="solved-example" aria-labelledby="example-title">
+            <h2 id="example-title" class="text-2xl font-bold text-white mb-3">РАЗБОР ЗАДАЧИ</h2>
+            <p class="text-sm text-gray-500 mb-8 max-w-3xl reading-copy">
+                Полное оформление от «Дано» до «Ответ» — именно так нужно писать на контрольной и экзамене.
+            </p>
+
+            <div class="bg-card border border-white/10 rounded-2xl p-6 md:p-8 relative">
+                <div class="absolute top-0 left-0 w-1 h-full bg-accent rounded-l-2xl"></div>
+
+                <!-- Условие -->
+                <div class="mb-8">
+                    <div class="text-xs text-accent font-bold uppercase tracking-widest mb-3">📝 Условие</div>
+                    <p class="text-gray-300 reading-copy">
+                        Автомобиль начинает движение из точки <span class="font-math italic">x₀ = 20</span> м и едет равномерно со скоростью <span class="font-math italic">v = 15</span> м/с.
+                        Определи координату автомобиля через <span class="font-math italic">t = 4</span> с.
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <!-- Дано -->
+                    <div>
+                        <div class="text-xs text-gray-500 font-bold uppercase tracking-widest mb-3">Дано</div>
+                        <div class="bg-black/40 rounded-lg p-4 font-math text-sm space-y-1 border-l-2 border-accent/30">
+                            <div><span class="text-gray-400 italic">x₀</span> = 20 м</div>
+                            <div><span class="symbol-vel italic">v</span> = 15 м/с</div>
+                            <div><span class="symbol-time italic">t</span> = 4 с</div>
+                            <div class="border-t border-white/10 pt-1 mt-2">
+                                <span class="symbol-pos italic">x</span> — ?
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Решение -->
+                    <div class="md:col-span-2">
+                        <div class="text-xs text-gray-500 font-bold uppercase tracking-widest mb-3">Решение</div>
+
+                        <div class="solution-step">
+                            <p class="text-sm text-gray-300">
+                                <span class="solution-step-num">1</span>
+                                <strong class="text-white">Выбираем формулу.</strong> Движение равномерное → используем уравнение РПД:
+                            </p>
+                            <div class="font-math text-lg text-white mt-2 ml-8">
+                                <span class="symbol-pos italic">x</span> = <span class="text-gray-400 italic">x₀</span> + <span class="symbol-vel italic">v</span> · <span class="symbol-time italic">t</span>
+                            </div>
+                        </div>
+
+                        <div class="solution-step">
+                            <p class="text-sm text-gray-300">
+                                <span class="solution-step-num">2</span>
+                                <strong class="text-white">Подставляем числа:</strong>
+                            </p>
+                            <div class="font-math text-lg text-white mt-2 ml-8">
+                                <span class="symbol-pos italic">x</span> = 20 + 15 · 4
+                            </div>
+                        </div>
+
+                        <div class="solution-step">
+                            <p class="text-sm text-gray-300">
+                                <span class="solution-step-num">3</span>
+                                <strong class="text-white">Считаем:</strong>
+                            </p>
+                            <div class="font-math text-lg text-white mt-2 ml-8">
+                                <span class="symbol-pos italic">x</span> = 20 + 60 = <span class="text-accent font-bold">80 м</span>
+                            </div>
+                        </div>
+
+                        <div class="solution-step">
+                            <p class="text-sm text-gray-300">
+                                <span class="solution-step-num">4</span>
+                                <strong class="text-white">Проверяем единицы:</strong>
+                            </p>
+                            <div class="font-math text-sm text-gray-400 mt-2 ml-8">
+                                м + (м/с) · с = м + м = м ✅
+                            </div>
+                        </div>
+
+                        <div class="bg-accent/10 border border-accent/30 rounded-lg p-4 mt-4">
+                            <div class="text-xs text-accent font-bold uppercase tracking-widest mb-1">Ответ</div>
+                            <div class="font-math text-lg text-white">
+                                <span class="symbol-pos italic">x</span> = <span class="text-accent font-bold">80 м</span>
+                            </div>
+                            <div class="text-xs text-gray-400 mt-1">Через 4 секунды автомобиль окажется в точке с координато�� 80 метров.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Комментарий персонажа -->
+                <div class="mt-6 flex items-start gap-4">
+                    <img src="../assets/manga-girl.png" alt="" aria-hidden="true" class="w-24 h-24 rounded-xl object-cover grayscale contrast-125 shrink-0">
+                    <div class="assistant-bubble" id="assistant-msg-2">
+                        Заметь: мы подставляли числа <em>с единицами</em> и проверили, что всё сократилось. На экзамене это спасает от глупых ошибок! 🛡️
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ════════════════════════════════════════════════════════ -->
+        <!-- ВИЗУАЛИЗАЦИЯ                                            -->
+        <!-- ════════════════════════════════════════════════════════ -->
+        <section id="visualization" class="border-t border-white/10 pt-12 mb-16" aria-labelledby="viz-title">
+            <h2 id="viz-title" class="text-2xl font-bold text-white mb-3">ВИЗУАЛИЗАЦИЯ</h2>
+            <p class="text-sm text-gray-500 mb-4 max-w-2xl reading-copy">
+                Начало координат (<span class="latex symbol-pos">x</span>=0) — в центре экрана.
+                Влево — отрицательные координаты, вправо — положительные.
+                Слева — графики <span class="font-math italic">x(t)</span> и <span class="font-math italic">v(t)</span>, справа — анимация движения точки.
+            </p>
+
+            <!-- Задание к визуализации -->
+            <div class="viz-task mb-6">
+                <div class="text-xs text-blue-400 font-bold uppercase tracking-widest mb-2">🧪 Задание к визуализации</div>
+                <ol class="text-sm text-gray-300 space-y-2 list-decimal list-inside">
+                    <li>Включи <strong class="text-white">«Движение вперёд»</strong> и заметь: график <span class="font-math italic">x(t)</span> идёт вверх, координата растёт.</li>
+                    <li>Переключи на <strong class="text-white">«Движение назад»</strong> — график пошёл вниз. Подставь значения <span class="font-math italic symbol-pos">x</span> и <span class="font-math italic symbol-time">t</span> из «ДАННЫЕ» в формулу <span class="font-math italic">x = x₀ + vt</span>. Совпало?</li>
+                    <li>Включи <strong class="text-white">«Покой»</strong> — график стал горизонтальным. Почему координата не меняется?</li>
+                </ol>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+
+                <div class="bg-card border border-white/10 rounded-xl p-4 flex flex-col justify-center space-y-4 h-[500px]">
+                    <div class="text-xs text-gray-500 font-bold uppercase tracking-widest mb-2">Выберите сценарий:</div>
+
+                    <button id="btn-fwd" class="scenario-btn w-full py-4 px-4 border border-blue/50 text-white rounded bg-blue/10 hover:bg-blue hover:border-blue transition-all text-sm font-bold text-left active-scenario relative overflow-hidden group" data-scenario="forward">
+                        <span class="relative z-10">1. ДВИЖЕНИЕ ВПЕРЁД</span>
+                        <span class="block text-[10px] text-gray-400 font-normal mt-1 relative z-10 font-math">v = 5 м/с (график вверх ↗)</span>
+                    </button>
+
+                    <button id="btn-still" class="scenario-btn w-full py-4 px-4 border border-white/10 text-gray-400 rounded hover:bg-white/10 transition-all text-sm font-bold text-left" data-scenario="still">
+                        <span>2. ПОКОЙ</span>
+                        <span class="block text-[10px] text-gray-500 font-normal mt-1 relative z-10 font-math">v = 0 м/с (горизонталь →)</span>
+                    </button>
+
+                    <button id="btn-back" class="scenario-btn w-full py-4 px-4 border border-white/10 text-gray-400 rounded hover:bg-white/10 transition-all text-sm font-bold text-left" data-scenario="backward">
+                        <span>3. ДВИЖЕНИЕ НАЗАД</span>
+                        <span class="block text-[10px] text-gray-500 font-normal mt-1 relative z-10 font-math">v = -5 м/с (график вниз ↘)</span>
+                    </button>
+
+                    <div class="mt-auto pt-4 border-t border-white/10">
+                        <div class="text-[10px] text-gray-500 mb-2">ДАННЫЕ:</div>
+                        <div class="font-mono text-sm"><span class="symbol-pos">x</span> = <span id="live-x" class="symbol-pos font-bold">0.0</span> м</div>
+                        <div class="font-mono text-sm mt-1"><span class="symbol-time">t</span> = <span id="live-t" class="symbol-time">0.0</span> с</div>
+                        <div class="font-mono text-sm mt-1"><span class="symbol-vel">v</span> = <span id="live-v" class="symbol-vel">5.0</span> м/с</div>
+                    </div>
+                </div>
+
+                <div id="canvas-wrapper" class="lg:col-span-3 h-[500px] bg-card rounded-xl border border-white/10 overflow-hidden relative shadow-2xl">
+                    <!-- p5.js canvas рендерится сюда -->
+                    <noscript>
+                        <div class="flex items-center justify-center h-full text-gray-500 text-sm p-8 text-center">
+                            Для работы визуализации необходимо включить JavaScript в настройках браузера.
+                        </div>
+                    </noscript>
+                </div>
+            </div>
+
+            <!-- Комментарий персонажа к визуализации -->
+            <div class="mt-6 flex items-start gap-4">
+                <img src="../assets/manga-girl.png" alt="" aria-hidden="true" class="w-24 h-24 rounded-xl object-cover grayscale contrast-125 shrink-0">
+                <div class="assistant-bubble" id="assistant-msg-viz">
+                    Видишь, как точка на графике <span class="font-math italic">x(t)</span> рисует прямую линию? Наклон этой прямой — и есть скорость! Переключи сценарий и сравни наклоны. 📈
+                </div>
+            </div>
+        </section>
+
+        <!-- ════════════════════════════════════════════════════════ -->
+        <!-- ПРОВЕРКА ПОНИМАНИЯ (КВИЗ)                               -->
+        <!-- ════════════════════════════════════════════════════════ -->
+        <section class="border-t border-white/10 pt-12 mb-16" id="knowledge-check" aria-labelledby="quiz-title">
+            <div class="max-w-5xl">
+                <h2 id="quiz-title" class="text-2xl font-bold text-white mb-3">ПРОВЕРКА ПОНИМАНИЯ</h2>
+                <p class="text-sm text-gray-500 mb-8 reading-copy">
+                    Проверь себя: ответь без подсказок, потом проверь. Активное воспроизведение укрепляет понимание в 3 раза лучше, чем перечитывание.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5" id="quiz-block">
+
+                <!-- Вопрос 1: узнавание -->
+                <article class="bg-card border border-white/10 rounded-xl p-5" data-quiz="q1" data-correct="a">
+                    <div class="flex items-center gap-2 mb-2">
+                        <div class="text-xs uppercase tracking-widest text-accent">Вопрос 1</div>
+                        <span class="text-[10px] text-gray-600 border border-white/10 rounded-full px-2 py-0.5">Узнавание</span>
+                    </div>
+                    <h3 class="text-white font-semibold mb-4">Если <span class="font-math italic">v &gt; 0</span>, как выглядит график <span class="font-math italic">x(t)</span>?</h3>
+                    <fieldset class="space-y-2 text-sm text-gray-300">
+                        <label class="quiz-option" data-value="a"><input type="radio" name="q1" value="a"> Прямая идёт вверх ↗</label>
+                        <label class="quiz-option" data-value="b"><input type="radio" name="q1" value="b"> Горизонтальная линия</label>
+                        <label class="quiz-option" data-value="c"><input type="radio" name="q1" value="c"> Прямая идёт вниз ↘</label>
+                    </fieldset>
+                    <div class="quiz-explanation hidden mt-3 text-xs text-gray-400 bg-black/30 rounded-lg p-3"></div>
+                </article>
+
+                <!-- Вопрос 2: понимание -->
+                <article class="bg-card border border-white/10 rounded-xl p-5" data-quiz="q2" data-correct="b">
+                    <div class="flex items-center gap-2 mb-2">
+                        <div class="text-xs uppercase tracking-widest text-accent">Вопрос 2</div>
+                        <span class="text-[10px] text-gray-600 border border-white/10 rounded-full px-2 py-0.5">Понимание</span>
+                    </div>
+                    <h3 class="text-white font-semibold mb-4">Что означает <span class="font-math italic">x₀</span> в формуле <span class="font-math">x = x₀ + vt</span>?</h3>
+                    <fieldset class="space-y-2 text-sm text-gray-300">
+                        <label class="quiz-option" data-value="a"><input type="radio" name="q2" value="a"> Конечная координата</label>
+                        <label class="quiz-option" data-value="b"><input type="radio" name="q2" value="b"> Начальная координата (при <span class="font-math">t = 0</span>)</label>
+                        <label class="quiz-option" data-value="c"><input type="radio" name="q2" value="c"> Модуль скорости</label>
+                    </fieldset>
+                    <div class="quiz-explanation hidden mt-3 text-xs text-gray-400 bg-black/30 rounded-lg p-3"></div>
+                </article>
+
+                <!-- Вопрос 3: применение -->
+                <article class="bg-card border border-white/10 rounded-xl p-5" data-quiz="q3" data-correct="b">
+                    <div class="flex items-center gap-2 mb-2">
+                        <div class="text-xs uppercase tracking-widest text-accent">Вопрос 3</div>
+                        <span class="text-[10px] text-gray-600 border border-white/10 rounded-full px-2 py-0.5">Применение</span>
+                    </div>
+                    <h3 class="text-white font-semibold mb-4">Тело стартует из <span class="font-math">x₀ = 0</span> и движется с <span class="font-math">v = −5</span> м/с. Где оно через 2 с?</h3>
+                    <fieldset class="space-y-2 text-sm text-gray-300">
+                        <label class="quiz-option" data-value="a"><input type="radio" name="q3" value="a"> <span class="font-math">x = +10</span> м</label>
+                        <label class="quiz-option" data-value="b"><input type="radio" name="q3" value="b"> <span class="font-math">x = −10</span> м</label>
+                        <label class="quiz-option" data-value="c"><input type="radio" name="q3" value="c"> <span class="font-math">x = 0</span> м</label>
+                    </fieldset>
+                    <div class="quiz-explanation hidden mt-3 text-xs text-gray-400 bg-black/30 rounded-lg p-3"></div>
+                </article>
+
+                <!-- Вопрос 4: анализ графика -->
+                <article class="bg-card border border-white/10 rounded-xl p-5" data-quiz="q4" data-correct="b">
+                    <div class="flex items-center gap-2 mb-2">
+                        <div class="text-xs uppercase tracking-widest text-accent">Вопрос 4</div>
+                        <span class="text-[10px] text-orange-400 border border-orange-400/30 rounded-full px-2 py-0.5">Анализ графика</span>
+                    </div>
+                    <h3 class="text-white font-semibold mb-4">
+                        На графике <span class="font-math italic">x(t)</span> прямая проходит через точки
+                        <span class="font-math">(0 с; 3 м)</span> и <span class="font-math">(4 с; −5 м)</span>. Чему равна скорость?
+                    </h3>
+                    <fieldset class="space-y-2 text-sm text-gray-300">
+                        <label class="quiz-option" data-value="a"><input type="radio" name="q4" value="a"> <span class="font-math">v = +2</span> м/с</label>
+                        <label class="quiz-option" data-value="b"><input type="radio" name="q4" value="b"> <span class="font-math">v = −2</span> м/с</label>
+                        <label class="quiz-option" data-value="c"><input type="radio" name="q4" value="c"> <span class="font-math">v = −8</span> м/с</label>
+                        <label class="quiz-option" data-value="d"><input type="radio" name="q4" value="d"> <span class="font-math">v = +0.5</span> м/с</label>
+                    </fieldset>
+                    <div class="quiz-explanation hidden mt-3 text-xs text-gray-400 bg-black/30 rounded-lg p-3"></div>
+                </article>
+
+                <!-- Вопрос 5: задача на встречу -->
+                <article class="bg-card border border-white/10 rounded-xl p-5 md:col-span-2" data-quiz="q5" data-correct="c">
+                    <div class="flex items-center gap-2 mb-2">
+                        <div class="text-xs uppercase tracking-widest text-accent">Вопрос 5</div>
+                        <span class="text-[10px] text-red-400 border border-red-400/30 rounded-full px-2 py-0.5">Задача повышенного уровня</span>
+                    </div>
+                    <h3 class="text-white font-semibold mb-4">
+                        Два автомобиля выезжают одновременно навстречу друг другу: первый из точки <span class="font-math">x₁ = 0</span> со скоростью <span class="font-math">v₁ = 20</span> м/с,
+                        второй из точки <span class="font-math">x₂ = 200</span> м со скоростью <span class="font-math">v₂ = −30</span> м/с. Через сколько секунд о��и встретятся?
+                    </h3>
+                    <fieldset class="space-y-2 text-sm text-gray-300">
+                        <label class="quiz-option" data-value="a"><input type="radio" name="q5" value="a"> <span class="font-math">t = 10</span> с</label>
+                        <label class="quiz-option" data-value="b"><input type="radio" name="q5" value="b"> <span class="font-math">t = 6.7</span> с</label>
+                        <label class="quiz-option" data-value="c"><input type="radio" name="q5" value="c"> <span class="font-math">t = 4</span> с</label>
+                        <label class="quiz-option" data-value="d"><input type="radio" name="q5" value="d"> <span class="font-math">t = 5</span> с</label>
+                    </fieldset>
+                    <div class="quiz-explanation hidden mt-3 text-xs text-gray-400 bg-black/30 rounded-lg p-3"></div>
+                </article>
+            </div>
+
+            <div class="mt-6 flex flex-wrap items-center gap-3">
+                <button id="check-quiz-btn" class="px-5 py-3 border border-accent text-accent hover:bg-accent hover:text-black rounded-lg transition-colors font-semibold text-sm">
+                    ПРОВЕРИТЬ ОТВЕТЫ
+                </button>
+                <button id="reset-quiz-btn" class="px-5 py-3 border border-white/20 text-gray-300 hover:bg-white/10 rounded-lg transition-colors font-semibold text-sm">
+                    СБРОСИТЬ
+                </button>
+                <p class="text-xs text-gray-500">Если ошибка — прочитай разбор, перескажи правило своими словами и попробуй ещё раз.</p>
+            </div>
+
+            <div id="quiz-feedback" class="hidden mt-5 bg-black/40 border border-white/10 rounded-xl p-5">
+                <div id="quiz-score" class="text-lg font-bold text-white mb-3"></div>
+                <div id="quiz-comment" class="text-sm text-gray-400"></div>
+            </div>
+        </section>
+
+        <!-- ════════════════════════════════════════════════════════ -->
+        <!-- МОСТ К СЛЕДУЮЩЕЙ ГЛАВЕ                                  -->
+        <!-- ════════════════════════════════════════════════════════ -->
+        <section class="mb-16" id="chapter-bridge" aria-labelledby="bridge-title">
+            <div class="bridge-card rounded-2xl p-6 md:p-8">
+                <h2 id="bridge-title" class="text-xl font-bold text-white mb-4">📍 Куда дальше?</h2>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Где ты сейчас -->
+                    <div class="bg-black/30 rounded-xl p-4 border border-white/5">
+                        <div class="text-xs text-green-400 font-bold uppercase tracking-widest mb-2">✅ Ты прошёл</div>
+                        <div class="text-white font-semibold">Глава 02 — РПД</div>
+                        <ul class="text-xs text-gray-400 mt-2 space-y-1">
+                            <li>• Скорость постоянна</li>
+                            <li>• График <span class="font-math italic">x(t)</span> — прямая</li>
+                            <li>• График <span class="font-math italic">v(t)</span> — горизонталь</li>
+                            <li>• <span class="font-math italic">x = x₀ + vt</span></li>
+                        </ul>
+                    </div>
+
+                    <!-- Связь -->
+                    <div class="bg-black/30 rounded-xl p-4 border border-white/5 flex flex-col justify-center">
+                        <div class="text-xs text-accent font-bold uppercase tracking-widest mb-2">💡 Связь</div>
+                        <p class="text-sm text-gray-300 reading-copy">
+                            Всё, что ты узнал о наклоне графика = скорость, работает и в РУПД.
+                            Но там <strong class="text-white">наклон сам меняется со временем</strong> — потому что появляется ускорение.
+                            График <span class="font-math italic">x(t)</span> станет параболой, а <span class="font-math italic">v(t)</span> — наклонной прямой.
+                        </p>
+                    </div>
+
+                    <!-- Следующая глава -->
+                    <a href="chapter-03.html" class="bg-black/30 rounded-xl p-4 border border-accent/20 hover:border-accent/50 transition-colors group block">
+                        <div class="text-xs text-accent font-bold uppercase tracking-widest mb-2">➡️ Следующая</div>
+                        <div class="text-white font-semibold group-hover:text-accent transition-colors">Глава 03 — РУПД ⚠️</div>
+                        <p class="text-xs text-gray-400 mt-2">
+                            Скорость меняется, появляется ускорение.
+                            Три новые формулы, момент разворота тела и ловушки РИКЗ.
+                        </p>
+                        <div class="text-accent text-sm mt-3 font-bold group-hover:translate-x-1 transition-transform inline-block">
+                            Перейти →
+                        </div>
+                    </a>
+                </div>
+
+                <!-- Финальный комментарий персонажа -->
+                <div class="mt-6 flex items-start gap-4">
+                    <img src="../assets/manga-girl.png" alt="" aria-hidden="true" class="w-24 h-24 rounded-xl object-cover grayscale contrast-125 shrink-0">
+                    <div class="assistant-bubble" id="assistant-msg-final">
+                        Отличная работа! Эта глава была разминкой — прямая линия, постоянная скорость.
+                        В следующей главе будет <em>намного</em> интереснее: тела будут ускоряться, тормозить и даже разворачиваться! 🚀
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="border-t border-white/10 py-6 text-center text-xs text-gray-500">
+        <p>PHYSICS.LAB © 2026 — Интерактивный курс механики</p>
+    </footer>
+
+    <!-- Внешний скрипт визуализации -->
+    <script src="../js/mechanics.js"></script>
+
+    <!-- Квиз и сценарии — встроенный скрипт -->
+    <script>
+    (function () {
+        'use strict';
+
+        // ═══════════════════════════════════════════════════════════
+        // ДАННЫЕ КВИЗА
+        // ═══════════════════════════════════════════════════════════
+          const QUIZ_DATA = {
+            q1: {
+                correct: 'a',
+                explanations: {
+                    a: '✅ Верно! Положительная скорость означает движение вдоль оси X — координата растёт, график поднимается.',
+                    b: '❌ Горизонтальная линия — это покой (v = 0). Если v > 0, тело движется, координата меняется.',
+                    c: '❌ Прямая вниз — это отрицательная скорость (v < 0), движение назад. А у нас v > 0.'
+                }
+            },
+            q2: {
+                correct: 'b',
+                explanations: {
+                    a: '❌ Конечная координата — это x (левая часть формулы). x₀ — это где тело находилось в начальный момент (t = 0).',
+                    b: '✅ Верно! x₀ — начальная координата, то есть положение тела при t = 0. В алгебре это «b» — свободный член.',
+                    c: '❌ Модуль скорости — это |v|. x₀ — начальная координата, измеряется в метрах, а не в м/с.'
+                }
+            },
+            q3: {
+                correct: 'b',
+                explanations: {
+                    a: '❌ Ты забыл про знак! v = −5 м/с, значит x = 0 + (−5) · 2 = −10 м, а ��е +10.',
+                    b: '✅ Верно! x = x₀ + vt = 0 + (−5) · 2 = −10 м. Отрицательная координата — тело сместилось влево от начала.',
+                    c: '❌ Тело движется (v ≠ 0), значит координата обязательно изменится. x = 0 только если v = 0.'
+                }
+            },
+            q4: {
+                correct: 'b',
+                explanations: {
+                    a: '❌ Знак неверный. Координата уменьшается (от 3 до −5), значит скорость отрицательная.',
+                    b: '✅ Верно! v = Δx / Δt = (−5 − 3) / (4 − 0) = −8 / 4 = −2 м/с. Скорость — это тангенс угла наклона графика x(t).',
+                    c: '❌ Ты посчитал только числитель (Δx = −8), но забыл разделить на Δt = 4 с.',
+                    d: '❌ Формула v = Δx/Δt, а не Δt/Δx. Проверь: (−5 − 3) / (4 − 0) = −2, а не 0.5.'
+                }
+            },
+            q5: {
+                correct: 'c',
+                explanations: {
+                    a: '❌ Ты разделил расстояние только на одну скорость: 200/20 = 10. Но едут ОБА навстречу!',
+                    b: '❌ Возможно, ты разделил 200 на 30. Нужно приравнять координаты: x₁ = x₂.',
+                    c: '✅ Верно! Приравниваем: 20t = 200 + (−30)t → 20t = 200 − 30t → 50t = 200 → t = 4 с. Они сближаются со скоростью |20| + |30| = 50 м/с.',
+                    d: '❌ Проверь алгебру. 20t = 200 − 30t → 50t = 200 → t = 4, а не 5.'
+                }
+            }
+        };
+
+        // ═══════════════════════════════════════════════════════════
+        // ЛОГИКА КВИЗА
+        // ═══════════════════════════════════════════════════════════
+        const checkBtn = document.getElementById('check-quiz-btn');
+        const resetBtn = document.getElementById('reset-quiz-btn');
+        const feedbackEl = document.getElementById('quiz-feedback');
+        const scoreEl = document.getElementById('quiz-score');
+        const commentEl = document.getElementById('quiz-comment');
+
+        function getSelectedAnswer(name) {
+            const checked = document.querySelector(`input[name="${name}"]:checked`);
+            return checked ? checked.value : null;
+        }
+
+        function checkQuiz() {
+            let correct = 0;
+            const total = Object.keys(QUIZ_DATA).length;
+
+            Object.entries(QUIZ_DATA).forEach(([qName, qData]) => {
+                const article = document.querySelector(`[data-quiz="${qName}"]`);
+                if (!article) return;
+
+                const selected = getSelectedAnswer(qName);
+                const explanationEl = article.querySelector('.quiz-explanation');
+                const options = article.querySelectorAll('.quiz-option');
+
+                // Сбрасываем стили
+                options.forEach(opt => {
+                    opt.classList.remove('correct', 'incorrect');
+                });
+
+                if (selected === null) {
+                    // Не ответил
+                    if (explanationEl) {
+                        explanationEl.textContent = '⚠️ Ты не выбрал ответ. Попробуй!';
+                        explanationEl.classList.remove('hidden');
+                    }
+                    return;
+                }
+
+                // Подсвечиваем правильный и неправильный
+                options.forEach(opt => {
+                    const val = opt.dataset.value;
+                    if (val === qData.correct) {
+                        opt.classList.add('correct');
+                    } else if (val === selected && selected !== qData.correct) {
+                        opt.classList.add('incorrect');
+                    }
+                });
+
+                if (selected === qData.correct) {
+                    correct++;
+                }
+
+                // Показываем объяснение
+                if (explanationEl) {
+                    explanationEl.innerHTML = qData.explanations[selected] || '';
+                    explanationEl.classList.remove('hidden');
+                }
+            });
+
+            // Общий результат
+            feedbackEl.classList.remove('hidden');
+            const percent = Math.round((correct / total) * 100);
+
+            let emoji, comment;
+            if (percent === 100) {
+                emoji = '🎉';
+                comment = 'Идеально! Ты полностью освоил равномерное движение. Переходи к Главе 03!';
+            } else if (percent >= 60) {
+                emoji = '👍';
+                comment = 'Хороший результат! Прочитай разборы ошибок и попробуй ещё раз — закрепишь на 100%.';
+            } else {
+                emoji = '💪';
+                comment = 'Не страшно! Перечитай теорию выше, особенно таблицу знаков скорости, и попробуй снова.';
+            }
+
+            scoreEl.textContent = `${emoji} Результат: ${correct} из ${total} (${percent}%)`;
+            commentEl.textContent = comment;
+
+            // Скроллим к результату
+            feedbackEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        function resetQuiz() {
+            Object.keys(QUIZ_DATA).forEach(qName => {
+                const article = document.querySelector(`[data-quiz="${qName}"]`);
+                if (!article) return;
+
+                // Сбрасываем радиокнопки
+                article.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
+
+                // Сбрасываем стили
+                article.querySelectorAll('.quiz-option').forEach(opt => {
+                    opt.classList.remove('correct', 'incorrect');
+                });
+
+                // Прячем объяснения
+                const expl = article.querySelector('.quiz-explanation');
+                if (expl) {
+                    expl.classList.add('hidden');
+                    expl.textContent = '';
+                }
+            });
+
+            feedbackEl.classList.add('hidden');
+        }
+
+        if (checkBtn) checkBtn.addEventListener('click', checkQuiz);
+        if (resetBtn) resetBtn.addEventListener('click', resetQuiz);
+
+        // ═══════════════════════════════════════════════════════════
+        // АНИМАЦИЯ СОКРАЩЕНИЯ ЕДИНИЦ
+        // ═══════════════════════════════════════════════════════════
+        (function initUnitAnim() {
+            const denom   = document.getElementById('uc-denom');
+            const factor  = document.getElementById('uc-factor');
+            const step2   = document.getElementById('uc-step2');
+            const step3   = document.getElementById('uc-step3');
+            const replay  = document.getElementById('uc-replay-btn');
+            if (!denom) return;
+
+            let timers = [];
+
+            function clearTimers() {
+                timers.forEach(clearTimeout);
+                timers = [];
+            }
+
+            function reset() {
+                clearTimers();
+                denom.classList.remove('uc-highlight', 'uc-cancel');
+                factor.classList.remove('uc-highlight', 'uc-cancel');
+                step2.classList.remove('uc-show'); step2.classList.add('uc-fade');
+                step3.classList.remove('uc-show'); step3.classList.add('uc-fade');
+            }
+
+            function play() {
+                reset();
+                // Шаг 1 (0.8с): подсветить обе «с»
+                timers.push(setTimeout(() => {
+                    denom.classList.add('uc-highlight');
+                    factor.classList.add('uc-highlight');
+                }, 800));
+
+                // Шаг 2 (2с): зачеркнуть
+                timers.push(setTimeout(() => {
+                    denom.classList.remove('uc-highlight'); denom.classList.add('uc-cancel');
+                    factor.classList.remove('uc-highlight'); factor.classList.add('uc-cancel');
+                }, 2000));
+
+                // Шаг 3 (3.2с): показать упрощённую запись
+                timers.push(setTimeout(() => {
+                    step2.classList.remove('uc-fade'); step2.classList.add('uc-show');
+                }, 3200));
+
+                // Шаг 4 (4.2с): итог
+                timers.push(setTimeout(() => {
+                    step3.classList.remove('uc-fade'); step3.classList.add('uc-show');
+                }, 4200));
+            }
+
+            // Запуск при попадании блока в зону видимости
+            const observer = new IntersectionObserver((entries) => {
+                if (entries[0].isIntersecting) {
+                    play();
+                    observer.disconnect();
+                }
+            }, { threshold: 0.5 });
+            const section = document.getElementById('theory-base');
+            if (section) observer.observe(section);
+
+            if (replay) replay.addEventListener('click', play);
+        })();
+
+        // ═══════════════════════════════════════════════════════════
+        // СЦЕНАРИИ ВИЗУАЛИЗАЦИИ
+        // ═══════════════════════════════════════════════════════════
+        const scenarioBtns = document.querySelectorAll('.scenario-btn');
+
+        scenarioBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const scenario = btn.dataset.scenario;
+                if (!scenario) return;
+
+                // Обновляем активную кнопку
+                scenarioBtns.forEach(b => {
+                    b.classList.remove('active-scenario', 'bg-blue/10', 'border-blue/50', 'text-white');
+                    b.classList.add('border-white/10', 'text-gray-400');
+                });
+                btn.classList.add('active-scenario', 'bg-blue/10', 'border-blue/50', 'text-white');
+                btn.classList.remove('border-white/10', 'text-gray-400');
+
+                // Обновляем отображение скорости
+                const liveV = document.getElementById('live-v');
+                if (liveV) {
+                    const speeds = { forward: '5.0', still: '0.0', backward: '-5.0' };
+                    liveV.textContent = speeds[scenario] || '0.0';
+                }
+
+                // Вызываем внешнюю функцию из mechanics.js если она существует
+                if (typeof window.setScenario === 'function') {
+                    window.setScenario(scenario);
+                }
+            });
+        });
+
+    })();
+    </script>
+</body>
+</html>

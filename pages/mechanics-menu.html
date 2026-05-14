@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Интерактивный курс механики: кинематика, динамика, статика. Изучай физику по главам с отслеживанием прогресса.">
+    <title>МЕХАНИКА // ОГЛАВЛЕНИЕ</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        bg: '#050505',
+                        card: '#111',
+                        accent: '#ffee00',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            position: relative;
+            background-image:
+                radial-gradient(800px 320px at 10% -5%, rgba(59, 130, 246, 0.11), transparent 60%),
+                radial-gradient(700px 300px at 90% 0%, rgba(251, 191, 36, 0.09), transparent 62%);
+            background-attachment: fixed;
+        }
+
+        main { position: relative; }
+
+        .hero-soft-glow {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            background:
+                radial-gradient(500px 220px at 20% 8%, rgba(255, 238, 0, 0.06), transparent 70%),
+                radial-gradient(460px 220px at 78% 22%, rgba(56, 189, 248, 0.06), transparent 72%);
+            z-index: -1;
+            filter: blur(2px);
+        }
+
+        .panel-surface {
+            background: linear-gradient(180deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.015) 100%);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.22), inset 0 1px 0 rgba(255,255,255,0.04);
+        }
+
+        .section-title {
+            position: relative;
+            display: inline-block;
+            padding-bottom: 6px;
+        }
+        .section-title::after {
+            content: '';
+            position: absolute;
+            left: 0; bottom: 0;
+            width: 56px; height: 2px;
+            border-radius: 999px;
+            background: linear-gradient(90deg, rgba(255,238,0,0.9), rgba(255,238,0,0.15));
+        }
+
+        *:focus-visible {
+            outline: 2px solid #ffee00;
+            outline-offset: 2px;
+        }
+
+        /* ── Карточка-ссылка ── */
+        .chapter-card {
+            position: relative;
+            display: block;
+            text-decoration: none;
+            color: inherit;
+            transition: border-color .2s ease, background-color .2s ease, transform .2s ease, box-shadow .2s ease;
+        }
+        .chapter-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, rgba(255,255,255,0.05), rgba(255,255,255,0.2), rgba(255,255,255,0.05));
+            opacity: .65;
+            pointer-events: none;
+        }
+        .chapter-card:hover,
+        .chapter-card:focus-visible {
+            border-color: rgba(255,238,0,.45) !important;
+            background-color: rgba(255,255,255,.035);
+            transform: translateY(-1px);
+            box-shadow: 0 8px 18px rgba(0,0,0,0.2);
+        }
+        .chapter-card[data-status="in-progress"] {
+            border-color: rgba(59,130,246,0.5) !important;
+            box-shadow: 0 0 0 1px rgba(59,130,246,0.2);
+        }
+        .chapter-card[data-status="completed"] {
+            border-color: rgba(34,197,94,0.5) !important;
+        }
+        .chapter-card[data-status="completed"]::after {
+            content: '✓';
+            position: absolute;
+            top: 12px; right: 12px;
+            color: #22c55e;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        /* ── Бейджи ── */
+        .level-badge {
+            font-size: 10px; font-weight: 700;
+            letter-spacing: .08em; text-transform: uppercase;
+            border-radius: 999px; padding: 2px 8px;
+            border: 1px solid transparent;
+        }
+        .level-basic  { color: #60a5fa; background: rgba(59,130,246,.12);  border-color: rgba(59,130,246,.45); }
+        .level-advanced { color: #fb923c; background: rgba(249,115,22,.12); border-color: rgba(249,115,22,.45); }
+        .trap-badge {
+            font-size: 10px; font-weight: 700;
+            letter-spacing: .08em; text-transform: uppercase;
+            border-radius: 999px; padding: 2px 8px;
+            color: #fbbf24; background: rgba(251,191,36,.12);
+            border: 1px solid rgba(251,191,36,.4);
+        }
+        .dep-badge {
+            font-size: 10px; font-weight: 600;
+            letter-spacing: .04em;
+            border-radius: 999px; padding: 2px 8px;
+            color: #a78bfa; background: rgba(139,92,246,.10);
+            border: 1px solid rgba(139,92,246,.35);
+        }
+
+        /* ── Прогресс ── */
+        .progress-track {
+            width: 100%; height: 7px;
+            border-radius: 999px;
+            background: rgba(255,255,255,.1);
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%; border-radius: 999px;
+            transition: width .2s ease;
+            background: linear-gradient(90deg, #3b82f6 0%, #22c55e 100%);
+        }
+        .recall-check {
+            width: 18px; height: 18px;
+            accent-color: #ffee00;
+            cursor: pointer;
+        }
+        .recall-label {
+            display: inline-flex; align-items: center; gap: 6px;
+            color: #d1d5db;
+            padding: 6px; margin: -6px;
+            border-radius: 4px; cursor: pointer;
+            transition: background-color 0.15s ease;
+        }
+        .recall-label:hover { background-color: rgba(255,255,255,0.05); }
+
+        .section-divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,.14) 20%, rgba(255,255,255,.14) 80%, transparent 100%);
+        }
+
+        /* ── Skip link ── */
+        .skip-link {
+            position: absolute; top: -40px; left: 0;
+            background: #ffee00; color: #000;
+            padding: 8px 16px; z-index: 100;
+            font-weight: bold; transition: top 0.2s;
+        }
+        .skip-link:focus { top: 0; }
+
+        /* ── Кнопка сброса ── */
+        .reset-btn {
+            font-size: 11px; color: #ef4444;
+            background: transparent;
+            border: 1px solid rgba(239,68,68,0.3);
+            padding: 4px 10px; border-radius: 6px;
+            cursor: pointer; transition: all 0.15s ease;
+        }
+        .reset-btn:hover {
+            background: rgba(239,68,68,0.1);
+            border-color: rgba(239,68,68,0.5);
+        }
+
+        /* ── Раскрываемый блок ловушки ── */
+        .trap-details summary {
+            cursor: pointer;
+            list-style: none;
+            font-size: 12px;
+            color: #fbbf24;
+            padding: 4px 0;
+            transition: color .15s;
+        }
+        .trap-details summary::-webkit-details-marker { display: none; }
+        .trap-details summary::before {
+            content: '▸ ';
+            display: inline-block;
+            transition: transform .15s;
+        }
+        .trap-details[open] summary::before { transform: rotate(90deg); }
+        .trap-details .trap-content {
+            font-size: 12px;
+            color: #d1d5db;
+            padding: 6px 0 2px 14px;
+            border-left: 2px solid rgba(251,191,36,.25);
+            margin-left: 2px;
+        }
+
+        /* ── Маршруты ── */
+        .route-btn {
+            font-size: 12px; font-weight: 600;
+            padding: 6px 14px; border-radius: 999px;
+            border: 1px solid rgba(255,255,255,.15);
+            background: transparent;
+            color: #d1d5db;
+            cursor: pointer;
+            transition: all .15s ease;
+            white-space: nowrap;
+        }
+        .route-btn:hover { border-color: rgba(255,238,0,.4); color: #fff; }
+        .route-btn.active {
+            background: rgba(255,238,0,.12);
+            border-color: rgba(255,238,0,.5);
+            color: #ffee00;
+        }
+
+        /* ── Скрытие карточек при фильтрации ── */
+        .chapter-card.dimmed {
+            opacity: 0.25;
+            pointer-events: none;
+            transform: scale(0.98);
+        }
+
+        /* ── Тост «в разработке» ── */
+        .toast-coming-soon {
+            position: fixed;
+            bottom: 28px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            opacity: 0;
+            pointer-events: none;
+            z-index: 300;
+            background: #111;
+            border: 1px solid rgba(255,238,0,0.45);
+            color: #fff;
+            padding: 12px 20px;
+            border-radius: 14px;
+            font-size: 13px;
+            font-weight: 600;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+            white-space: nowrap;
+            transition: opacity 0.25s ease, transform 0.25s ease;
+        }
+        .toast-coming-soon.visible {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* ── Сообщение завершения раздела ── */
+        .section-complete-msg {
+            display: none;
+            margin-top: 16px;
+            padding: 12px 16px;
+            border-radius: 12px;
+            background: rgba(34,197,94,.08);
+            border: 1px solid rgba(34,197,94,.3);
+            font-size: 13px;
+            color: #bbf7d0;
+            line-height: 1.5;
+        }
+        .section-complete-msg.visible { display: block; }
+    </style>
+</head>
+<body class="bg-bg text-gray-300 font-sans antialiased selection:bg-accent selection:text-black">
+    <a href="#main-content" class="skip-link">Перейти к содержимому</a>
+
+    <nav class="fixed top-0 w-full z-50 bg-bg/90 backdrop-blur-md border-b border-white/10" role="navigation" aria-label="Главная навигация">
+        <div class="max-w-6xl mx-auto px-6 h-16 flex justify-between items-center">
+            <a href="index.html" class="text-xs md:text-sm text-gray-400 hover:text-white transition-colors tracking-widest font-bold">← ГЛАВНАЯ</a>
+            <div class="text-base md:text-lg font-bold tracking-tight">PHYSICS<span class="text-accent">.LAB</span> // МЕХАНИКА</div>
+            <div class="w-10"></div>
+        </div>
+    </nav>
+
+    <main id="main-content" class="max-w-6xl mx-auto px-6 pt-28 pb-16" role="main">
+        <div class="hero-soft-glow" aria-hidden="true"></div>
+
+        <header class="mb-10">
+            <div class="inline-block px-3 py-1 border border-accent/30 rounded-full text-accent text-xs mb-4 tracking-widest uppercase">Оглавление раздела</div>
+            <h1 class="text-3xl md:text-5xl font-extrabold text-white tracking-tight">МЕХАНИКА: ПУТЬ ПО ГЛАВАМ</h1>
+            <p class="text-gray-300 mt-4 max-w-3xl leading-relaxed">Изучаем темы по порядку: сначала Кинематика, затем Динамика, потом Статика. Выбери маршрут или проходи все главы подряд.</p>
+        </header>
+
+        <!-- ════════════════════════════════════════════ -->
+        <!-- МАРШРУТЫ                                     -->
+        <!-- ════════════════════════════════════════════ -->
+        <section class="mb-6 bg-black/40 border border-white/10 rounded-2xl p-5 panel-surface" aria-labelledby="routes-title">
+            <h2 id="routes-title" class="text-white font-bold mb-1">Маршруты</h2>
+            <p class="text-sm text-gray-400 mb-4">Выбери свой путь — карточки, не входящие в маршрут, станут полупрозрачными.</p>
+            <div class="flex flex-wrap gap-2" role="radiogroup" aria-label="Выбор маршрута обучения">
+                <button class="route-btn active" data-route="all">🟢 Полный курс</button>
+                <button class="route-btn" data-route="traps">⚠️ Ловушки РИКЗ</button>
+                <button class="route-btn" data-route="advanced">🟠 Продвинутый трек</button>
+                <button class="route-btn" data-route="exam">🎯 Экспресс к экзамену</button>
+            </div>
+        </section>
+
+        <!-- ════════════════════════════════════════════ -->
+        <!-- ПАНЕЛЬ ПРОГРЕССА                             -->
+        <!-- ════════════════════════════════════════════ -->
+        <section class="mb-6 bg-black/40 border border-white/10 rounded-2xl p-5 panel-surface" aria-labelledby="dashboard-title">
+            <div class="flex items-center justify-between gap-3 mb-4 flex-wrap">
+                <h2 id="dashboard-title" class="text-white font-bold">Панель прогресса</h2>
+                <div class="flex items-center gap-3">
+                    <span id="progress-total-text" class="text-xs uppercase tracking-widest text-accent" aria-live="polite">Курс: 0%</span>
+                    <button id="reset-progress" class="reset-btn" aria-label="Сбросить весь прогресс обучения">Сбросить</button>
+                </div>
+            </div>
+            <p id="progress-motivation" class="text-sm text-gray-300 mb-3" aria-live="polite">Начни с основ: открой Главу 01 и отметь первый шаг.</p>
+            <div class="progress-track mb-4" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" aria-label="Общий прогресс курса">
+                <div id="progress-total-fill" class="progress-fill" style="width:0%"></div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                <div class="border border-white/10 rounded-xl p-3">
+                    <div class="text-gray-200 mb-2 font-medium">Кинематика</div>
+                    <div class="progress-track" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" aria-label="Прогресс раздела Кинематика">
+                        <div id="progress-kinematics-fill" class="progress-fill" style="width:0%"></div>
+                    </div>
+                    <div id="progress-kinematics-text" class="text-xs text-gray-400 mt-2">0%</div>
+                </div>
+                <div class="border border-white/10 rounded-xl p-3">
+                    <div class="text-gray-200 mb-2 font-medium">Динамика</div>
+                    <div class="progress-track" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" aria-label="Прогресс раздела Динамика">
+                        <div id="progress-dynamics-fill" class="progress-fill" style="width:0%"></div>
+                    </div>
+                    <div id="progress-dynamics-text" class="text-xs text-gray-400 mt-2">0%</div>
+                </div>
+                <div class="border border-white/10 rounded-xl p-3">
+                    <div class="text-gray-200 mb-2 font-medium">Статика</div>
+                    <div class="progress-track" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" aria-label="Прогресс раздела Статика">
+                        <div id="progress-statics-fill" class="progress-fill" style="width:0%"></div>
+                    </div>
+                    <div id="progress-statics-text" class="text-xs text-gray-400 mt-2">0%</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ════════════════════════════════════════════ -->
+        <!-- ГЛАВЫ                                        -->
+        <!-- ════════════════════════════════════════════ -->
+        <section class="space-y-6" aria-label="Список глав">
+
+            <!-- ── Кинематика ── -->
+            <article class="bg-card border border-white/10 rounded-2xl p-6 panel-surface" data-section="kinematics" aria-labelledby="section-kinematics">
+                <div class="flex items-center justify-between gap-4 mb-4">
+                    <h2 id="section-kinematics" class="text-2xl font-bold text-white section-title">1. Кинематика</h2>
+                    <span class="text-xs uppercase tracking-widest text-accent">Главы 01–06</span>
+                </div>
+                <p class="text-sm text-gray-300 leading-relaxed mb-5">
+                    Здесь закладывается навык работы с векторами и графиками — фундамент для всей дальнейшей физики.
+                </p>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" role="list">
+
+                    <!-- Глава 01 -->
+                    <a href="chapter-01.html" class="chapter-card border border-white/10 rounded-xl p-4"
+                       data-chapter="01" data-level="basic" data-routes="all,exam"
+                       role="listitem" aria-label="Глава 01: Основные понятия и относительность движения">
+                        <div class="text-xs font-mono text-gray-400 mb-2">ГЛАВА 01</div>
+                        <h3 class="font-semibold text-white">Основные понятия и относительность движения</h3>
+                        <p class="text-sm text-gray-300 mt-2">
+                            <strong class="text-white">Результат:</strong> отличаешь путь от перемещения, складываешь скорости в разных системах отсчёта и решаешь задачи на относительное движение.
+                        </p>
+                    </a>
+
+                    <!-- Глава 02 -->
+                    <a href="mechanics.html" class="chapter-card border border-white/10 rounded-xl p-4"
+                       data-chapter="02" data-level="basic" data-routes="all,exam"
+                       data-requires="01"
+                       role="listitem" aria-label="Глава 02: Равномерное прямолинейное движение">
+                        <div class="text-xs font-mono text-gray-400 mb-2">ГЛАВА 02</div>
+                        <h3 class="font-semibold text-white">Равномерное прямолинейное движение (РПД)</h3>
+                        <p class="text-sm text-gray-300 mt-2">
+                            <strong class="text-white">Результат:</strong> записываешь уравнение координаты, строишь и читаешь графики <span class="font-mono">x(t)</span>, <span class="font-mono">v(t)</span>, определяешь по ним параметры движения.
+                        </p>
+                    </a>
+
+                    <!-- Глава 03 ⚠️ -->
+                    <a href="chapter-03.html" class="chapter-card border border-white/10 rounded-xl p-4"
+                       data-chapter="03" data-level="basic" data-trap="true" data-routes="all,traps,exam"
+                       data-requires="02"
+                       role="listitem" aria-label="Глава 03: РУПД. Внимание: ловушка РИКЗ">
+                        <div class="text-xs font-mono text-gray-400 mb-2">ГЛАВА 03</div>
+                        <h3 class="font-semibold text-white">⚠️ Равноускоренное прямолинейное движение (РУПД)</h3>
+                        <p class="text-sm text-gray-300 mt-2">
+                            <strong class="text-white">Результат:</strong> уверенно работаешь с тремя уравнениями РУПД, находишь момент разворота тела и не путаешь знаки.
+                        </p>
+                        <details class="trap-details mt-2">
+                            <summary>Типичная ловушка</summary>
+                            <div class="trap-content">Разворот тела: скорость = 0, но ускорение ≠ 0. В задачах РИКЗ часто дают отрицательную начальную скорость — ошибка со знаком обнуляет ответ.</div>
+                        </details>
+                    </a>
+
+                    <!-- Глава 04 -->
+                    <a href="chapter-04.html" class="chapter-card border border-white/10 rounded-xl p-4"
+                       data-chapter="04" data-level="basic" data-routes="all,exam"
+                       data-requires="03"
+                       role="listitem" aria-label="Глава 04: Свободное падение">
+                        <div class="text-xs font-mono text-gray-400 mb-2">ГЛАВА 04</div>
+                        <h3 class="font-semibold text-white">Свободное падение и движение вертикально вверх</h3>
+                        <p class="text-sm text-gray-300 mt-2">
+                            <strong class="text-white">Результат:</strong> применяешь формулы РУПД с <span class="font-mono">a = g</span>, решаешь задачи на бросок вверх, время полёта и максимальную высоту.
+                        </p>
+                    </a>
+
+                    <!-- Глава 05 -->
+                    <a href="chapter-05.html" class="chapter-card border border-white/10 rounded-xl p-4"
+                       data-chapter="05" data-level="advanced" data-routes="all,advanced"
+                       data-requires="03,04"
+                       role="listitem" aria-label="Глава 05: Бросок горизонтально и под углом. Повышенный уровень">
+                        <div class="text-xs font-mono text-gray-400 mb-2">ГЛАВА 05</div>
+                        <h3 class="font-semibold text-white">Бросок горизонтально и под углом</h3>
+                        <p class="text-sm text-gray-300 mt-2">
+                            <strong class="text-white">Результат:</strong> раскладываешь движение на независимые компоненты по X и Y, решаешь задачи уровня IV–V на дальность, высоту и угол падения.
+                        </p>
+                    </a>
+
+                    <!-- Глава 06 -->
+                    <a href="chapter-06.html" class="chapter-card border border-white/10 rounded-xl p-4"
+                       data-chapter="06" data-level="basic" data-routes="all,exam"
+                       data-requires="01"
+                       role="listitem" aria-label="Глава 06: Кинематика движения по окружности">
+                        <div class="text-xs font-mono text-gray-400 mb-2">ГЛАВА 06</div>
+                        <h3 class="font-semibold text-white">Кинематика движения по окружности</h3>
+                        <p class="text-sm text-gray-300 mt-2">
+                            <strong class="text-white">Результат:</strong> связываешь линейные и угловые величины, находишь центростремительное ускорение и период обращения.
+                        </p>
+                    </a>
+                </div>
+                <div class="section-complete-msg" data-section-msg="kinematics">
+                    ✅ <strong>Кинематика пройдена!</strong> Ты освоил язык описания движения. Теперь в Динамике узнаешь, <em>почему</em> тела движутся именно так. Убедись, что уверенно решаешь РУПД (Глава 03) — это фундамент для второго закона Ньютона.
+                </div>
+            </article>
+
+            <div class="section-divider" role="separator"></div>
+
+            <!-- ── Динамика ── -->
+            <article class="bg-card border border-white/10 rounded-2xl p-6 panel-surface" data-section="dynamics" aria-labelledby="section-dynamics">
+                <div class="flex items-center justify-between gap-4 mb-4">
+                    <h2 id="section-dynamics" class="text-2xl font-bold text-white section-title">2. Динамика (Причины движения)</h2>
+                    <span class="text-xs uppercase tracking-widest text-accent">Главы 07–12</span>
+                </div>
+                <p class="text-sm text-gray-300 leading-relaxed mb-5">
+                    Фокус на алгоритме расстановки сил и поэтапном решении задач на второй закон Ньютона.
+                </p>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" role="list">
+
+                    <!-- Глава 07 -->
+                    <a href="chapter-07.html" class="chapter-card border border-white/10 rounded-xl p-4"
+                       data-chapter="07" data-level="basic" data-routes="all,exam"
+                       data-requires="03"
+                       role="listitem" aria-label="Глава 07: Законы Ньютона и силы в механике">
+                        <div class="text-xs font-mono text-gray-400 mb-2">ГЛАВА 07</div>
+                        <h3 class="font-semibold text-white">Законы Ньютона и силы в механике</h3>
+                        <p class="text-sm text-gray-300 mt-2">
+                            <strong class="text-white">Результат:</strong> формулируешь три закона Ньютона, различаешь силы тяжести, упругости, трения и нормальной реакции, правильно рисуешь их на схеме.
+                        </p>
+                    </a>
+
+                    <!-- Глава 08 -->
+                    <a href="chapter-08.html" class="chapter-card border border-white/10 rounded-xl p-4"
+                       data-chapter="08" data-level="basic" data-routes="all,exam"
+                       data-requires="07"
+                       role="listitem" aria-label="Глава 08: Применение законов Ньютона: горизонтальное движение">
+                        <div class="text-xs font-mono text-gray-400 mb-2">ГЛАВА 08</div>
+                        <h3 class="font-semibold text-white">Применение законов Ньютона: горизонтальное движение</h3>
+                        <p class="text-sm text-gray-300 mt-2">
+                            <strong class="text-white">Результат:</strong> уверенно применяешь алгоритм — выбор осей → проекции сил → уравнение → ответ — к задачам на горизонтальное движение с трением.
+                        </p>
+                    </a>
+
+                    <!-- Глава 09 -->
+                    <a href="chapter-09.html" class="chapter-card border border-white/10 rounded-xl p-4"
+                       data-chapter="09" data-level="basic" data-routes="all,exam"
+                       data-requires="08"
+                       role="listitem" aria-label="Глава 09: Движение по наклонной плоскости">
+                        <div class="text-xs font-mono text-gray-400 mb-2">ГЛАВА 09</div>
+                        <h3 class="font-semibold text-white">Движение по наклонной плоскости</h3>
+                        <p class="text-sm text-gray-300 mt-2">
+                            <strong class="text-white">Результат:</strong> раскладываешь силу тяжести на составляющие вдоль и перпендикулярно плоскости, решаешь задачи с углом наклона и трением.
+                        </p>
+                    </a>
+
+                    <!-- Глава 10 -->
+                    <a href="chapter-10.html" class="chapter-card border border-white/10 rounded-xl p-4"
+                       data-chapter="10" data-level="advanced" data-routes="all,advanced"
+                       data-requires="08,09"
+                       role="listitem" aria-label="Глава 10: Движение системы связанных тел. Повышенный уровень">
+                        <div class="text-xs font-mono text-gray-400 mb-2">ГЛАВА 10</div>
+                        <h3 class="font-semibold text-white">Движение системы связанных тел</h3>
+                        <p class="text-sm text-gray-300 mt-2">
+                            <strong class="text-white">Результат:</strong> составляешь систему уравнений для нескольких тел, связанных нитями и блоками, и находишь ускорение и натяжение.
+                        </p>
+                    </a>
+
+                    <!-- Глава 11 ⚠️ -->
+                    <a href="chapter-11.html" class="chapter-card border border-white/10 rounded-xl p-4"
+                       data-chapter="11" data-level="advanced" data-trap="true" data-routes="all,traps,advanced,exam"
+                       data-requires="06,08"
+                       role="listitem" aria-label="Глава 11: Движение по окружности под действием нескольких сил. Повышенный уровень. Ловушка РИКЗ">
+                        <div class="text-xs font-mono text-gray-400 mb-2">ГЛАВА 11</div>
+                        <h3 class="font-semibold text-white">⚠️ Движение по окружности под действием нескольких сил</h3>
+                        <p class="text-sm text-gray-300 mt-2">
+                            <strong class="text-white">Результат:</strong> решаешь задачи на конический маятник, движение по мосту и закруглению, правильно записываешь второй закон Ньютона в проекции на радиус.
+                        </p>
+                        <details class="trap-details mt-2">
+                            <summary>Типичная ловушка</summary>
+                            <div class="trap-content">«Центробежная сила» — это НЕ реальная сила. В задачах РИКЗ нужно записывать второй закон Ньютона с реальными силами (тяжесть, натяжение, реакция опоры), а центростремительное ускорение — в правую часть.</div>
+                        </details>
+                    </a>
+
+                    <!-- Глава 12 -->
+                    <a href="chapter-12.html" class="chapter-card border border-white/10 rounded-xl p-4"
+                       data-chapter="12" data-level="basic" data-routes="all,exam"
+                       data-requires="06,07"
+                       role="listitem" aria-label="Глава 12: Закон всемирного тяготения">
+                        <div class="text-xs font-mono text-gray-400 mb-2">ГЛАВА 12</div>
+                        <h3 class="font-semibold text-white">Закон всемирного тяготения</h3>
+                        <p class="text-sm text-gray-300 mt-2">
+                            <strong class="text-white">Результат:</strong> вычисляешь гравитационную силу, орбитальную скорость спутника и понимаешь физический смысл первой и второй космических скоростей.
+                        </p>
+                    </a>
+                </div>
+                <div class="section-complete-msg" data-section-msg="dynamics">
+                    ✅ <strong>Динамика пройдена!</strong> Ты знаешь, какие силы управляют движением и как их считать. Статика — следующий шаг: те же силы, но в равновесии. В РИКЗ задачи на моменты встречались в части B в 3 из 4 вариантов за последние годы.
+                </div>
+            </article>
+
+            <div class="section-divider" role="separator"></div>
+
+            <!-- ── Статика ── -->
+            <article class="bg-card border border-white/10 rounded-2xl p-6 panel-surface" data-section="statics" aria-labelledby="section-statics">
+                <div class="flex items-center justify-between gap-4 mb-4">
+                    <h2 id="section-statics" class="text-2xl font-bold text-white section-title">3. Статика (Равновесие)</h2>
+                    <span class="text-xs uppercase tracking-widest text-accent">Главы 13–15</span>
+                </div>
+                <p class="text-sm text-gray-300 leading-relaxed mb-5">
+                    Этот раздел часто недооценивают, а зря: в РИКЗ 2024–2025 задачи на моменты сил встречались в части B в 3 из 4 вариантов. Без статики теряешь 6–8 баллов.
+                </p>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" role="list">
+
+                    <!-- Глава 13 -->
+                    <a href="chapter-13.html" class="chapter-card border border-white/10 rounded-xl p-4"
+                       data-chapter="13" data-level="basic" data-routes="all,exam"
+                       data-requires="07"
+                       role="listitem" aria-label="Глава 13: Условия равновесия тел">
+                        <div class="text-xs font-mono text-gray-400 mb-2">ГЛАВА 13</div>
+                        <h3 class="font-semibold text-white">Условия равновесия тел</h3>
+                        <p class="text-sm text-gray-300 mt-2">
+                            <strong class="text-white">Результат:</strong> применяешь оба условия равновесия, вычисляешь момент силы относительно любой точки и решаешь задачи на балки и стержни.
+                        </p>
+                    </a>
+
+                    <!-- Глава 14 -->
+                    <a href="chapter-14.html" class="chapter-card border border-white/10 rounded-xl p-4"
+                       data-chapter="14" data-level="basic" data-routes="all,exam"
+                       data-requires="13"
+                       role="listitem" aria-label="Глава 14: Простые механизмы">
+                        <div class="text-xs font-mono text-gray-400 mb-2">ГЛАВА 14</div>
+                        <h3 class="font-semibold text-white">Простые механизмы</h3>
+                        <p class="text-sm text-gray-300 mt-2">
+                            <strong class="text-white">Результат:</strong> определяешь выигрыш в силе для рычагов и блоков, применяешь «золотое правило» механики и понимаешь, почему нельзя выиграть в работе.
+                        </p>
+                    </a>
+
+                    <!-- Глава 15 -->
+                    <a href="chapter-15.html" class="chapter-card border border-white/10 rounded-xl p-4"
+                       data-chapter="15" data-level="basic" data-routes="all"
+                       data-requires="13"
+                       role="listitem" aria-label="Глава 15: Виды равновесия и центр тяжести">
+                        <div class="text-xs font-mono text-gray-400 mb-2">ГЛАВА 15</div>
+                        <h3 class="font-semibold text-white">Виды равновесия и центр тяжести</h3>
+                        <p class="text-sm text-gray-300 mt-2">
+                            <strong class="text-white">Результат:</strong> классифицируешь равновесие (устойчивое, неустойчивое, безразличное), находишь центр тяжести и оцениваешь устойчивость конструкции.
+                        </p>
+                    </a>
+                </div>
+                <div class="section-complete-msg" data-section-msg="statics">
+                    🎉 <strong>Статика пройдена — весь раздел «Механика» завершён!</strong> Ты владеешь полным инструментарием: ��писание движения, причины движения и равновесие. Рекомендуем пройти итоговый тест по всему разделу.
+                </div>
+            </article>
+        </section>
+    </main>
+
+    <footer class="border-t border-white/10 py-6 text-center text-xs text-gray-500">
+        <p>PHYSICS.LAB © 2026 — Интерактивный курс механики</p>
+    </footer>
+
+    <script>
+        (function initChapterProgress() {
+            'use strict';
+
+            // ═══════════════════════════════════════════════════════════
+            // КОНСТАНТЫ
+            // ═══════════════════════════════════════════════════════════
+            const STORAGE_PREFIX = 'physicslab.mechanics.chapter.';
+            const STEPS_PER_CHAPTER = 3;
+            const STEP_NAMES = ['theory', 'tasks', 'recall'];
+            const STEP_LABELS = {
+                theory: 'Теория прочитана',
+                tasks: 'Задачи решены',
+                recall: 'Повторение пройдено'
+            };
+            const DEBOUNCE_DELAY = 300;
+
+            const MOTIVATION_MESSAGES = [
+                { threshold: 0,   message: 'Начни с основ: открой Главу 01 и отметь первый шаг.' },
+                { threshold: 10,  message: 'Хороший старт! Держи темп и закрой базовые главы Кинематики.' },
+                { threshold: 40,  message: 'Отличный прогресс! Пора укрепить сложные главы с пометкой ⚠️.' },
+                { threshold: 80,  message: 'Сильный результат! Осталось закрепить материал через повторение.' },
+                { threshold: 100, message: '🎉 Поздравляем! Курс механики полностью пройден!' }
+            ];
+
+            // ═══════════════════════════════════════════════════════════
+            // АВТОМАТИЧЕСКОЕ ПОСТРОЕНИЕ КАРТЫ РАЗДЕЛОВ ИЗ DOM
+            // ═══════════════════════════════════════════════════════════
+            const sectionMap = {};
+            document.querySelectorAll('[data-section]').forEach(el => {
+                const key = el.dataset.section;
+                const chapters = [...el.querySelectorAll('.chapter-card')]
+                    .map(c => c.dataset.chapter).filter(Boolean);
+                sectionMap[key] = {
+                    chapters,
+                    fillId: `progress-${key}-fill`,
+                    textId: `progress-${key}-text`,
+                    msgSelector: `[data-section-msg="${key}"]`
+                };
+            });
+
+            // ═══════════════════════════════════════════════════════════
+            // УТИЛИТЫ LOCALSTORAGE
+            // ═══════════════════════════════════════════════════════════
+            const pendingUpdates = new Map();
+            let storageTimeout = null;
+
+            function scheduleStorage(key, value) {
+                pendingUpdates.set(key, value);
+                clearTimeout(storageTimeout);
+                storageTimeout = setTimeout(() => {
+                    pendingUpdates.forEach((v, k) => {
+                        try { localStorage.setItem(k, v); }
+                        catch (e) { console.warn('localStorage недоступен:', e); }
+                    });
+                    pendingUpdates.clear();
+                }, DEBOUNCE_DELAY);
+            }
+
+            function getStorage(key) {
+                try { return localStorage.getItem(key); }
+                catch { return null; }
+            }
+
+            function clearAllProgress() {
+                try {
+                    Object.keys(localStorage)
+                        .filter(k => k.startsWith(STORAGE_PREFIX))
+                        .forEach(k => localStorage.removeItem(k));
+                } catch (e) { console.warn('Не удалось очистить:', e); }
+            }
+
+            function getMotivation(percent) {
+                let msg = MOTIVATION_MESSAGES[0].message;
+                for (const item of MOTIVATION_MESSAGES) {
+                    if (percent >= item.threshold) msg = item.message;
+                }
+                return msg;
+            }
+
+            // ═══════════════════════════════════════════════════════════
+            // ПРОГРЕСС
+            // ═══════════════════════════════════════════════════════════
+            function getChapterDone(chapterId) {
+                return STEP_NAMES.reduce((s, step) =>
+                    s + (getStorage(`${STORAGE_PREFIX}${chapterId}.${step}`) === '1' ? 1 : 0), 0);
+            }
+
+            function updateCardStatus(card, done) {
+                if (done === 0) card.removeAttribute('data-status');
+                else if (done === STEPS_PER_CHAPTER) card.dataset.status = 'completed';
+                else card.dataset.status = 'in-progress';
+            }
+
+            function updateCardProgress(card) {
+                const id = card.dataset.chapter;
+                const checks = card.querySelectorAll('.recall-check');
+                const done = Array.from(checks).filter(cb => cb.checked).length;
+                const pct = Math.round((done / STEPS_PER_CHAPTER) * 100);
+
+                const fill = card.querySelector('.progress-fill');
+                const label = card.querySelector('.progress-label');
+                if (fill) fill.style.width = `${pct}%`;
+                if (label) label.textContent = `${pct}%`;
+
+                updateCardStatus(card, done);
+
+                checks.forEach(cb => {
+                    scheduleStorage(`${STORAGE_PREFIX}${id}.${cb.dataset.step}`, cb.checked ? '1' : '0');
+                });
+
+                updateDashboard();
+            }
+
+            function updateSectionProgress(key) {
+                const sec = sectionMap[key];
+                if (!sec) return { done: 0, total: 0 };
+
+                const done = sec.chapters.reduce((s, ch) => s + getChapterDone(ch), 0);
+                const total = sec.chapters.length * STEPS_PER_CHAPTER;
+                const pct = total === 0 ? 0 : Math.round((done / total) * 100);
+
+                const fill = document.getElementById(sec.fillId);
+                const text = document.getElementById(sec.textId);
+                if (fill) {
+                    fill.style.width = `${pct}%`;
+                    fill.closest('.progress-track')?.setAttribute('aria-valuenow', pct);
+                }
+                if (text) text.textContent = `${pct}%`;
+
+                // Сообщение о завершении раздела
+                const msg = document.querySelector(sec.msgSelector);
+                if (msg) {
+                    msg.classList.toggle('visible', pct === 100);
+                }
+
+                return { done, total };
+            }
+
+            function updateDashboard() {
+                const results = Object.keys(sectionMap).map(k => updateSectionProgress(k));
+                const totalDone = results.reduce((s, r) => s + r.done, 0);
+                const totalAll = results.reduce((s, r) => s + r.total, 0);
+                const totalPct = totalAll === 0 ? 0 : Math.round((totalDone / totalAll) * 100);
+
+                const fill = document.getElementById('progress-total-fill');
+                const text = document.getElementById('progress-total-text');
+                const motiv = document.getElementById('progress-motivation');
+
+                if (fill) {
+                    fill.style.width = `${totalPct}%`;
+                    fill.closest('.progress-track')?.setAttribute('aria-valuenow', totalPct);
+                }
+                if (text) text.textContent = `Курс: ${totalPct}%`;
+                if (motiv) motiv.textContent = getMotivation(totalPct);
+            }
+
+            // ═══════════════════════════════════════════════════════════
+            // ИНИЦИАЛИЗАЦИЯ КАРТОЧЕК
+            // ═══════════════════════════════════════════════════════════
+            const allCards = document.querySelectorAll('.chapter-card');
+
+            allCards.forEach(card => {
+                const id = card.dataset.chapter;
+                const level = card.dataset.level === 'advanced' ? 'advanced' : 'basic';
+                const hasTrap = card.dataset.trap === 'true';
+                const requires = card.dataset.requires;
+
+                const levelText = level === 'advanced' ? 'Повышенный' : 'Базовый';
+                const levelClass = level === 'advanced' ? 'level-advanced' : 'level-basic';
+
+                // Бейдж зависимости
+                let depHtml = '';
+                if (requires) {
+                    const deps = requires.split(',').map(d => d.trim());
+                    depHtml = `<span class="dep-badge">Нужны: ${deps.map(d => 'Гл.' + d).join(', ')}</span>`;
+                }
+
+                const widget = document.createElement('div');
+                widget.className = 'mt-4 pt-3 border-t border-white/10';
+                widget.innerHTML = `
+                    <div class="flex flex-wrap items-center gap-2 mb-2">
+                        <span class="level-badge ${levelClass}">${levelText}</span>
+                        ${hasTrap ? '<span class="trap-badge">⚠️ Ловушка</span>' : ''}
+                        ${depHtml}
+                        <span class="text-[11px] text-gray-400 progress-label ml-auto">0%</span>
+                    </div>
+                    <div class="progress-track" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" aria-label="Прогресс главы ${id}">
+                        <div class="progress-fill" style="width:0%"></div>
+                    </div>
+                    <fieldset class="grid grid-cols-3 gap-2 mt-3 text-[11px] border-0 p-0">
+                        <legend class="sr-only">Отметки прогресса для главы ${id}</legend>
+                        ${STEP_NAMES.map(step => `
+                            <label class="recall-label" for="ch${id}-${step}">
+                                <input type="checkbox"
+                                       id="ch${id}-${step}"
+                                       class="recall-check"
+                                       data-step="${step}"
+                                       aria-label="Глава ${id}: ${STEP_LABELS[step]}">
+                                ${STEP_LABELS[step]}
+                            </label>
+                        `).join('')}
+                    </fieldset>
+                `;
+
+                card.appendChild(widget);
+
+                // Блокируем всплытие кликов из виджета
+                widget.addEventListener('click', e => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                });
+
+                // Восстанавливаем состояние
+                card.querySelectorAll('.recall-check').forEach(cb => {
+                    cb.checked = getStorage(`${STORAGE_PREFIX}${id}.${cb.dataset.step}`) === '1';
+                    cb.addEventListener('change', () => updateCardProgress(card));
+                });
+
+                updateCardProgress(card);
+            });
+
+            // ═══════════════════════════════════════════════════════════
+            // МАРШРУТЫ (ФИЛЬТРАЦИЯ)
+            // ═══════════════════════════════════════════════════════════
+            const routeBtns = document.querySelectorAll('.route-btn');
+
+            function applyRoute(route) {
+                routeBtns.forEach(btn => btn.classList.toggle('active', btn.dataset.route === route));
+
+                allCards.forEach(card => {
+                    if (route === 'all') {
+                        card.classList.remove('dimmed');
+                    } else {
+                        const routes = (card.dataset.routes || '').split(',').map(r => r.trim());
+                        card.classList.toggle('dimmed', !routes.includes(route));
+                    }
+                });
+            }
+
+            routeBtns.forEach(btn => {
+                btn.addEventListener('click', () => applyRoute(btn.dataset.route));
+            });
+
+            // ═══════════════════════════════════════════════════════════
+            // КНОПКА СБРОСА ПРОГРЕССА
+            // ═══════════════════════════════════════════════════════════
+            const resetBtn = document.getElementById('reset-progress');
+            if (resetBtn) {
+                resetBtn.addEventListener('click', () => {
+                    if (confirm('Сбросить весь прогресс? Это действие нельзя отменить.')) {
+                        clearAllProgress();
+                        allCards.forEach(card => {
+                            card.querySelectorAll('.recall-check').forEach(cb => cb.checked = false);
+                            updateCardProgress(card);
+                        });
+                    }
+                });
+            }
+
+            updateDashboard();
+
+            // ═══════════════════════════════════════════════════════════
+            // ЗАГЛУШКА ДЛЯ НЕСУЩЕСТВУЮЩИХ ГЛАВ
+            // ═══════════════════════════════════════════════════════════
+            const AVAILABLE_PAGES = new Set(['mechanics.html']);
+            const toast = document.getElementById('toast-coming-soon');
+            let toastTimer;
+
+            function showToast() {
+                if (!toast) return;
+                clearTimeout(toastTimer);
+                toast.classList.add('visible');
+                toastTimer = setTimeout(() => toast.classList.remove('visible'), 3000);
+            }
+
+            allCards.forEach(card => {
+                const href = (card.getAttribute('href') || '').split('/').pop();
+                if (!AVAILABLE_PAGES.has(href)) {
+                    card.addEventListener('click', e => {
+                        e.preventDefault();
+                        showToast();
+                    });
+                    // Визуальный индикатор в правом верхнем углу карточки
+                    const lockTag = document.createElement('span');
+                    lockTag.textContent = '🔒';
+                    lockTag.className = 'absolute top-3 right-3 text-sm';
+                    lockTag.setAttribute('aria-label', 'Глава ещё в разработке');
+                    card.style.position = 'relative';
+                    card.appendChild(lockTag);
+                }
+            });
+
+        })();
+    </script>
+
+    <!-- Тост: глава в разработке -->
+    <div id="toast-coming-soon" class="toast-coming-soon" role="status" aria-live="polite">
+        🛠️ Эта глава ещё в разработке — скоро откроется!
+    </div>
+</body>
+</html>
