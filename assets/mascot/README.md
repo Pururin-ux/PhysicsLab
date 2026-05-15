@@ -80,3 +80,8 @@
 - проверить mobile layout;
 - убедиться, что маскот не повышает cognitive load.
 
+## Следующий шаг: production web assets
+
+Текущие `concepts/*.png` не подключать напрямую в интерфейс. Для будущего UI нужна отдельная подготовка прозрачных, оптимизированных web-версий в `assets/mascot/ui/`.
+
+План подготовки, целевые размеры, требования к alpha-каналу, кропу, alt-тексту и mobile описаны в [production-plan.md](production-plan.md).

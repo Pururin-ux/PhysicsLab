@@ -12,12 +12,25 @@ const {
   tone = "lab",
   state = "calm"
 } = Astro.props;
+
+type MascotState = NonNullable<Props["state"]>;
+
+const stateLabels: Record<MascotState, string> = {
+  calm: "спокойная подсказка",
+  encouraging: "поддержка",
+  surprised: "неожиданный факт",
+  thinking: "размышление",
+  warning: "предупреждение"
+};
+
+const stateLabel = stateLabels[state];
 ---
 
 <aside
   class:list={["character-bubble", `character-bubble--${tone}`, `character-bubble--state-${state}`]}
   data-mascot-state={state}
-  aria-label={`${speaker}: ${role}`}
+  data-mascot-label={stateLabel}
+  aria-label={`${speaker}: ${role}, ${stateLabel}`}
 >
   <div class="mascot" aria-hidden="true" data-state={state}></div>
   <div>
