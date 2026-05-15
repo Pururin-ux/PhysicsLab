@@ -18,11 +18,11 @@ body {
     "Segoe UI", sans-serif;
   color: var(--pl-text);
   background:
-    radial-gradient(circle at 16% 6%, rgba(255, 216, 77, 0.08), transparent 28rem),
-    radial-gradient(circle at 82% 12%, rgba(88, 216, 255, 0.08), transparent 26rem),
-    linear-gradient(rgba(255, 255, 255, 0.024) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.024) 1px, transparent 1px),
-    linear-gradient(180deg, #070910, var(--pl-bg-lab) 48%, #070910);
+    radial-gradient(circle at 12% 4%, rgba(255, 216, 77, 0.06), transparent 24rem),
+    radial-gradient(circle at 86% 10%, rgba(88, 216, 255, 0.06), transparent 24rem),
+    linear-gradient(rgba(255, 255, 255, 0.018) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.018) 1px, transparent 1px),
+    linear-gradient(180deg, var(--pl-bg-deep), var(--pl-bg-lab) 46%, var(--pl-bg-deep));
   background-size: auto, auto, 44px 44px, 44px 44px, auto;
 }
 
@@ -68,14 +68,14 @@ h3 {
 h1 {
   max-width: 900px;
   margin-bottom: var(--pl-space-5);
-  font-size: clamp(2.55rem, 7vw, 5.8rem);
-  line-height: 0.96;
+  font-size: clamp(2.35rem, 5.4vw, 5rem);
+  line-height: 1.02;
 }
 
 h2 {
   margin-bottom: var(--pl-space-4);
-  font-size: clamp(2rem, 4.4vw, 3.4rem);
-  line-height: 1.06;
+  font-size: clamp(1.8rem, 3.5vw, 3rem);
+  line-height: 1.1;
 }
 
 h3 {
@@ -87,8 +87,8 @@ h3 {
 p,
 li {
   color: var(--pl-text-muted);
-  font-size: 1rem;
-  line-height: 1.65;
+  font-size: 1.02rem;
+  line-height: 1.66;
 }
 
 ul,
@@ -99,7 +99,8 @@ ol {
 .section {
   width: min(var(--pl-max-width), calc(100% - 32px));
   margin: 0 auto;
-  padding: var(--pl-space-20) 0;
+  padding: clamp(var(--pl-space-16), 8vw, 88px) 0;
+  scroll-margin-top: 88px;
 }
 
 .stack {
@@ -120,17 +121,18 @@ ol {
 }
 
 .topbar {
-  position: sticky;
-  top: 0;
+  position: static;
   z-index: 20;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: var(--pl-space-5);
   width: min(var(--pl-max-width), calc(100% - 32px));
-  min-height: 68px;
+  min-height: 62px;
   margin: 0 auto;
-  padding: var(--pl-space-3) 0;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(168, 190, 213, 0.1);
+  background: rgba(7, 9, 16, 0.72);
   backdrop-filter: blur(18px);
 }
 
@@ -146,8 +148,8 @@ ol {
 .brand-mark {
   display: grid;
   place-items: center;
-  width: 38px;
-  height: 38px;
+  width: 34px;
+  height: 34px;
   border: 1px solid rgba(255, 216, 77, 0.62);
   border-radius: var(--pl-radius);
   color: #12130d;
@@ -162,12 +164,12 @@ ol {
 }
 
 .topbar nav a {
-  min-height: 36px;
-  padding: 8px 10px;
+  min-height: 34px;
+  padding: 7px 10px;
   border: 1px solid transparent;
   border-radius: 999px;
   color: var(--pl-text-muted);
-  font-size: 0.94rem;
+  font-size: 0.9rem;
   text-decoration: none;
 }
 
@@ -215,13 +217,23 @@ ol {
 
 @media (max-width: 720px) {
   .topbar {
-    position: static;
     align-items: flex-start;
     flex-direction: column;
+    gap: var(--pl-space-2);
+    padding-top: var(--pl-space-3);
   }
 
   .topbar nav {
+    width: 100%;
+    flex-wrap: nowrap;
     justify-content: flex-start;
+    overflow-x: auto;
+    padding-bottom: 2px;
+  }
+
+  .topbar nav a {
+    flex: 0 0 auto;
+    font-size: 0.84rem;
   }
 }
 
@@ -232,11 +244,16 @@ ol {
   }
 
   .section {
-    padding: var(--pl-space-12) 0;
+    padding: 44px 0;
   }
 
   h1 {
-    font-size: clamp(2.4rem, 16vw, 4rem);
+    font-size: clamp(2.25rem, 13vw, 3.35rem);
+  }
+
+  p,
+  li {
+    font-size: 1rem;
   }
 }
 

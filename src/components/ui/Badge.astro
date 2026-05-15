@@ -14,19 +14,19 @@ const { tone = "muted" } = Astro.props;
   .badge {
     display: inline-flex;
     align-items: center;
-    min-height: 34px;
-    padding: 6px 10px;
-    border: 1px solid var(--pl-border);
+    min-height: 30px;
+    padding: 5px 9px;
+    border: 1px solid var(--pl-border-soft);
     border-radius: 999px;
     color: var(--pl-text-muted);
     background: rgba(255, 255, 255, 0.04);
-    font-size: 0.9rem;
+    font-size: 0.84rem;
     font-weight: 750;
     line-height: 1.25;
   }
 
   .badge--accent {
-    border-color: rgba(255, 216, 77, 0.56);
+    border-color: rgba(255, 216, 77, 0.46);
     color: var(--pl-accent);
   }
 
@@ -50,4 +50,3 @@ const { tone = "muted" } = Astro.props;
     color: var(--pl-violet);
   }
 </style>
-

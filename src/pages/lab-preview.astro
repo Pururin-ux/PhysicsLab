@@ -58,26 +58,22 @@ const missionItems: MissionItem[] = [
   navItems={navItems}
 >
   <section class="section hero-lab" aria-labelledby="hero-title">
-    <SurfaceCard variant="mission">
-      <div class="hero-copy">
-        <p class="eyebrow">Dark Anime Lab foundation</p>
-        <h1 id="hero-title">PhysicsLab: физика без режима скуки</h1>
-        <p class="lead">
-          Astro foundation для будущего интерактивного учебника-тренажера:
-          темная лаборатория, формулы рядом с графиками, demo-задачи,
-          симуляции и спокойная подготовка к ЦЭ/ЦТ.
-        </p>
-        <div class="hero-actions">
-          <Button href="#chapter-demo">Посмотреть demo-главу</Button>
-          <Button href="#learning" variant="ghost">Как работает обучение</Button>
-        </div>
-        <div class="trust-row" aria-label="Prototype notes">
-          <Badge tone="accent">prototype/demo</Badge>
-          <Badge tone="info">authorReviewRequired</Badge>
-          <Badge>без реальных ассетов</Badge>
-        </div>
+    <div class="hero-copy">
+      <p class="eyebrow">Dark Anime Lab foundation</p>
+      <h1 id="hero-title">PhysicsLab: физика, которую можно потрогать</h1>
+      <p class="lead">
+        Будущий интерактивный учебник-тренажер для школьников Беларуси:
+        формула рядом с графиком, задача рядом с симуляцией, ЦЭ/ЦТ без паники.
+      </p>
+      <div class="hero-actions">
+        <Button href="#chapter-demo">Посмотреть demo-главу</Button>
+        <a class="hero-secondary-link" href="#learning">Как работает обучение</a>
       </div>
-    </SurfaceCard>
+      <div class="trust-row" aria-label="Prototype notes">
+        <Badge tone="accent">prototype/demo</Badge>
+        <Badge tone="info">authorReviewRequired</Badge>
+      </div>
+    </div>
 
     <SurfaceCard variant="lab">
       <aside class="lab-stage" aria-label="Interactive lab preview mockup">
@@ -118,41 +114,43 @@ const missionItems: MissionItem[] = [
 
   <section class="section" id="learning" aria-labelledby="learning-title">
     <SectionHeader
+      id="learning-title"
       eyebrow="Как работает обучение"
       title="Не лекция, а маршрут навыка"
       description="Каждая глава ведет ученика от смысла к действию: контракт, формула, график, ловушка, пример, симуляция, квиз и exam-check."
     />
-    <div class="learning-rail" aria-label="Learning flow">
-      <SurfaceCard>
+    <ol class="learning-rail" aria-label="Learning flow">
+      <li>
         <span class="rail-number">01</span>
         <h3>Contract</h3>
-        <p>Ученик заранее видит цель, prerequisites и формат проверки.</p>
-      </SurfaceCard>
-      <SurfaceCard>
+        <p>Цель, prerequisites и формат проверки видны заранее.</p>
+      </li>
+      <li>
         <span class="rail-number">02</span>
         <h3>Formula + graph</h3>
-        <p>Формула идет рядом с переменными, единицами и графиком.</p>
-      </SurfaceCard>
-      <SurfaceCard variant="danger">
+        <p>Формула, переменные, единицы и график находятся рядом.</p>
+      </li>
+      <li class="rail-danger">
         <span class="rail-number">03</span>
         <h3>Trap clinic</h3>
-        <p>Типичная ошибка объясняется до самостоятельной задачи.</p>
-      </SurfaceCard>
-      <SurfaceCard variant="lab">
+        <p>Типичная ошибка разбирается до самостоятельной задачи.</p>
+      </li>
+      <li class="rail-lab">
         <span class="rail-number">04</span>
         <h3>Lab action</h3>
-        <p>Предскажи, измени параметр, наблюдай и объясни.</p>
-      </SurfaceCard>
-      <SurfaceCard variant="mission">
+        <p>Предскажи, измени параметр, наблюдай, объясни.</p>
+      </li>
+      <li class="rail-mission">
         <span class="rail-number">05</span>
         <h3>Exam-check</h3>
         <p>ЦЭ/ЦТ-связь появляется спокойно, без рейтингов и штрафов.</p>
-      </SurfaceCard>
-    </div>
+      </li>
+    </ol>
   </section>
 
   <section class="section" id="modules" aria-labelledby="modules-title">
     <SectionHeader
+      id="modules-title"
       eyebrow="Модули"
       title="Карточки ведут к навыкам, а не к стенам текста"
       description="Этот слой остается prototype-only, но показывает будущий ритм module cards, progress и examWeight."
@@ -227,7 +225,7 @@ const missionItems: MissionItem[] = [
       </div>
     </SurfaceCard>
 
-    <div class="grid-two">
+    <div class="grid-two formula-bridge-grid">
       <FormulaCard
         title="FormulaCard"
         formula="x = x0 + vt"
@@ -273,7 +271,7 @@ const missionItems: MissionItem[] = [
       description="Перед переключением сценария ученик предсказывает, как изменится линия x(t). После наблюдения объясняет знак скорости и переносит вывод на demo-задачу."
     />
 
-    <div class="grid-two">
+    <div class="grid-two practice-exam-grid">
       <QuizCard
         title="QuizCard - prototype/demo"
         prompt="Если x(t) - горизонтальная линия, что это значит?"
@@ -284,13 +282,15 @@ const missionItems: MissionItem[] = [
         feedback="Feedback: горизонтальная линия имеет нулевой наклон, значит скорость равна нулю."
       />
 
-      <ExamBlock
-        title="Exam-check без паники"
-        description="Часть A: выбрать знак скорости по наклону. Часть B: найти координату по формуле и записать численный ответ в метрах."
-        formats={["A: выбор ответа", "B: численный ответ"]}
-        traps={["не спутать график с траекторией", "проверить единицы перед ответом"]}
-        missionItems={missionItems}
-      />
+      <div class="exam-anchor" id="exam-layer">
+        <ExamBlock
+          title="Exam-check без паники"
+          description="Часть A: выбрать знак скорости по наклону. Часть B: найти координату по формуле и записать численный ответ в метрах."
+          formats={["A: выбор ответа", "B: численный ответ"]}
+          traps={["не спутать график с траекторией", "проверить единицы перед ответом"]}
+          missionItems={missionItems}
+        />
+      </div>
     </div>
 
     <SurfaceCard variant="success">
@@ -308,23 +308,27 @@ const missionItems: MissionItem[] = [
 <style>
   .hero-lab {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(360px, 0.86fr);
-    gap: var(--pl-space-6);
+    grid-template-columns: minmax(0, 0.95fr) minmax(340px, 0.8fr);
+    gap: var(--pl-space-8);
     align-items: stretch;
-    min-height: calc(100vh - 70px);
-    padding-top: var(--pl-space-10);
+    min-height: min(760px, calc(100vh - 62px));
+    padding-top: clamp(var(--pl-space-8), 6vw, var(--pl-space-16));
   }
 
   .hero-copy {
     display: flex;
-    min-height: 100%;
     flex-direction: column;
     justify-content: center;
+    max-width: 760px;
+  }
+
+  .hero-copy h1 {
+    max-width: 720px;
   }
 
   .lead {
-    max-width: 760px;
-    font-size: clamp(1.08rem, 2vw, 1.24rem);
+    max-width: 680px;
+    font-size: clamp(1.08rem, 1.8vw, 1.2rem);
   }
 
   .hero-actions,
@@ -336,13 +340,27 @@ const missionItems: MissionItem[] = [
   }
 
   .trust-row {
-    margin-top: var(--pl-space-5);
+    margin-top: var(--pl-space-4);
+  }
+
+  .hero-secondary-link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    color: var(--pl-text-muted);
+    font-weight: 850;
+    text-decoration-color: rgba(191, 204, 218, 0.5);
+    text-underline-offset: 5px;
+  }
+
+  .hero-secondary-link:hover {
+    color: var(--pl-text);
   }
 
   .lab-stage {
     display: grid;
     gap: var(--pl-space-4);
-    min-height: 520px;
+    min-height: 480px;
   }
 
   .stage-head,
@@ -365,14 +383,14 @@ const missionItems: MissionItem[] = [
 
   .cockpit-grid {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(220px, 0.7fr);
+    grid-template-columns: minmax(0, 1fr) minmax(190px, 0.72fr);
     gap: var(--pl-space-4);
   }
 
   .mission-mini,
   .formula-mini {
     padding: var(--pl-space-4);
-    border: 1px solid var(--pl-border);
+    border: 1px solid var(--pl-border-soft);
     border-radius: var(--pl-radius);
     background: rgba(255, 255, 255, 0.035);
   }
@@ -399,7 +417,7 @@ const missionItems: MissionItem[] = [
 
   .formula-mini span {
     font-family: "Cascadia Mono", "JetBrains Mono", Consolas, monospace;
-    font-size: clamp(1.6rem, 4vw, 2.4rem);
+    font-size: clamp(1.45rem, 3.4vw, 2.1rem);
     color: var(--pl-text);
   }
 
@@ -412,7 +430,7 @@ const missionItems: MissionItem[] = [
     position: relative;
     min-height: 260px;
     overflow: hidden;
-    border: 1px solid var(--pl-border);
+    border: 1px solid rgba(88, 216, 255, 0.24);
     border-radius: var(--pl-radius);
     background:
       linear-gradient(rgba(88, 216, 255, 0.065) 1px, transparent 1px),
@@ -497,7 +515,7 @@ const missionItems: MissionItem[] = [
     flex: 1 1 120px;
     min-height: 42px;
     padding: 10px 12px;
-    border: 1px solid var(--pl-border);
+    border: 1px solid var(--pl-border-soft);
     border-radius: var(--pl-radius);
     color: var(--pl-text-muted);
     background: rgba(255, 255, 255, 0.04);
@@ -516,17 +534,58 @@ const missionItems: MissionItem[] = [
 
   .learning-rail {
     grid-template-columns: repeat(5, minmax(0, 1fr));
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .learning-rail li {
+    position: relative;
+    min-height: 100%;
+    padding: var(--pl-space-5);
+    border: 1px solid var(--pl-border-soft);
+    border-radius: var(--pl-radius);
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.032), transparent 60%),
+      var(--pl-surface-quiet);
+  }
+
+  .learning-rail li::after {
+    content: "";
+    position: absolute;
+    top: 38px;
+    right: calc(var(--pl-space-5) * -1);
+    width: var(--pl-space-5);
+    height: 1px;
+    background: var(--pl-border-soft);
+  }
+
+  .learning-rail li:last-child::after {
+    display: none;
+  }
+
+  .learning-rail .rail-danger {
+    border-color: rgba(255, 107, 107, 0.34);
+  }
+
+  .learning-rail .rail-lab {
+    border-color: rgba(88, 216, 255, 0.3);
+  }
+
+  .learning-rail .rail-mission {
+    border-color: rgba(255, 216, 77, 0.34);
   }
 
   .rail-number {
     display: inline-grid;
     place-items: center;
-    min-width: 42px;
-    min-height: 34px;
-    margin-bottom: var(--pl-space-4);
+    min-width: 36px;
+    min-height: 30px;
+    margin-bottom: var(--pl-space-3);
     border-radius: 999px;
     color: #12130d;
     background: var(--pl-accent);
+    font-size: 0.84rem;
     font-weight: 900;
   }
 
@@ -541,7 +600,7 @@ const missionItems: MissionItem[] = [
   }
 
   .progress-line {
-    height: 10px;
+    height: 8px;
     margin-top: var(--pl-space-5);
     overflow: hidden;
     border-radius: 999px;
@@ -557,21 +616,25 @@ const missionItems: MissionItem[] = [
 
   .chapter-demo {
     display: grid;
-    gap: var(--pl-space-5);
+    gap: var(--pl-space-6);
   }
 
   .chapter-header {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(320px, 0.85fr);
-    gap: var(--pl-space-5);
-    align-items: stretch;
+    grid-template-columns: minmax(0, 1fr) minmax(300px, 0.62fr);
+    gap: var(--pl-space-6);
+    align-items: center;
+  }
+
+  .chapter-header > div:first-child {
+    max-width: 780px;
   }
 
   .contract-grid div {
     display: grid;
     gap: var(--pl-space-2);
     padding: var(--pl-space-4);
-    border: 1px solid var(--pl-border);
+    border: 1px solid var(--pl-border-soft);
     border-radius: var(--pl-radius);
     background: rgba(255, 255, 255, 0.035);
   }
@@ -581,9 +644,22 @@ const missionItems: MissionItem[] = [
     line-height: 1.5;
   }
 
+  .formula-bridge-grid {
+    grid-template-columns: minmax(0, 1.05fr) minmax(320px, 0.9fr);
+    align-items: stretch;
+  }
+
+  .exam-anchor {
+    scroll-margin-top: 88px;
+  }
+
   @media (max-width: 1040px) {
     .learning-rail {
       grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .learning-rail li::after {
+      display: none;
     }
 
     .module-grid {
@@ -595,7 +671,8 @@ const missionItems: MissionItem[] = [
     .hero-lab,
     .cockpit-grid,
     .chapter-header,
-    .contract-grid {
+    .contract-grid,
+    .formula-bridge-grid {
       grid-template-columns: 1fr;
     }
   }
@@ -604,6 +681,16 @@ const missionItems: MissionItem[] = [
     .hero-lab {
       min-height: auto;
       padding-top: var(--pl-space-6);
+      gap: var(--pl-space-5);
+    }
+
+    .lab-stage {
+      min-height: 0;
+    }
+
+    .hero-graph,
+    .component-graph {
+      min-height: 220px;
     }
 
     .learning-rail {

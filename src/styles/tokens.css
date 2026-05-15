@@ -3,11 +3,14 @@
 
   --pl-bg: #080b10;
   --pl-bg-lab: #0d121b;
+  --pl-bg-deep: #06080d;
   --pl-surface: #141b26;
   --pl-surface-raised: #1b2431;
   --pl-surface-soft: #202a38;
+  --pl-surface-quiet: #101722;
   --pl-border: #324153;
   --pl-border-strong: #52677e;
+  --pl-border-soft: rgba(168, 190, 213, 0.18);
 
   --pl-text: #f4f7fb;
   --pl-text-muted: #bfccda;
@@ -29,8 +32,10 @@
 
   --pl-radius-sm: 6px;
   --pl-radius: 8px;
-  --pl-shadow: 0 22px 80px rgba(0, 0, 0, 0.32);
+  --pl-shadow: 0 18px 58px rgba(0, 0, 0, 0.28);
+  --pl-shadow-soft: 0 12px 34px rgba(0, 0, 0, 0.22);
   --pl-max-width: 1180px;
+  --pl-reading-width: 760px;
 
   --pl-space-1: 4px;
   --pl-space-2: 8px;
@@ -44,4 +49,3 @@
   --pl-space-16: 64px;
   --pl-space-20: 80px;
 }
-

@@ -65,16 +65,21 @@ const {
   .steps-grid {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: var(--pl-space-4);
+    gap: var(--pl-space-3);
   }
 
   .steps-grid div {
     display: grid;
     gap: var(--pl-space-2);
     padding: var(--pl-space-4);
-    border: 1px solid var(--pl-border);
+    border: 1px solid var(--pl-border-soft);
     border-radius: var(--pl-radius);
-    background: rgba(255, 255, 255, 0.035);
+    background: rgba(255, 255, 255, 0.032);
+  }
+
+  .steps-grid b {
+    color: var(--pl-text);
+    line-height: 1.35;
   }
 
   .steps-grid span {
@@ -108,4 +113,3 @@ const {
     }
   }
 </style>
-

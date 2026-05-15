@@ -20,16 +20,16 @@ const { role = "лаборант", speaker = "Mascot placeholder", tone = "lab" 
 <style>
   .character-bubble {
     display: grid;
-    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-columns: 76px minmax(0, 1fr);
     gap: var(--pl-space-4);
     align-items: center;
-    padding: var(--pl-space-5);
-    border: 1px solid rgba(181, 156, 255, 0.42);
+    padding: var(--pl-space-4);
+    border: 1px solid rgba(181, 156, 255, 0.36);
     border-radius: var(--pl-radius);
     background:
-      linear-gradient(135deg, rgba(181, 156, 255, 0.14), transparent 44%),
+      linear-gradient(135deg, rgba(181, 156, 255, 0.11), transparent 48%),
       var(--pl-surface);
-    box-shadow: var(--pl-shadow);
+    box-shadow: var(--pl-shadow-soft);
   }
 
   .character-bubble--warning {
@@ -42,10 +42,10 @@ const { role = "лаборант", speaker = "Mascot placeholder", tone = "lab" 
 
   .mascot {
     position: relative;
-    width: 92px;
-    height: 118px;
-    border: 1px solid rgba(181, 156, 255, 0.5);
-    border-radius: 46px 46px 18px 18px;
+    width: 70px;
+    height: 90px;
+    border: 1px solid rgba(181, 156, 255, 0.46);
+    border-radius: 35px 35px 16px 16px;
     background:
       linear-gradient(135deg, rgba(255, 216, 77, 0.35), transparent 46%),
       #263142;
@@ -58,19 +58,19 @@ const { role = "лаборант", speaker = "Mascot placeholder", tone = "lab" 
   }
 
   .mascot::before {
-    top: 18px;
-    left: 21px;
-    width: 48px;
-    height: 42px;
+    top: 14px;
+    left: 17px;
+    width: 36px;
+    height: 32px;
     border-radius: 50%;
     background: var(--pl-bg-lab);
   }
 
   .mascot::after {
-    right: 16px;
-    bottom: 20px;
-    left: 16px;
-    height: 28px;
+    right: 12px;
+    bottom: 16px;
+    left: 12px;
+    height: 22px;
     border: 2px solid var(--pl-accent);
     border-radius: 999px;
   }
@@ -78,7 +78,7 @@ const { role = "лаборант", speaker = "Mascot placeholder", tone = "lab" 
   .bubble-role {
     margin-bottom: var(--pl-space-2);
     color: var(--pl-violet);
-    font-size: 0.86rem;
+    font-size: 0.78rem;
     font-weight: 900;
     text-transform: uppercase;
   }
@@ -94,13 +94,27 @@ const { role = "лаборант", speaker = "Mascot placeholder", tone = "lab" 
 
   @media (max-width: 600px) {
     .character-bubble {
-      grid-template-columns: 1fr;
+      grid-template-columns: 58px minmax(0, 1fr);
+      gap: var(--pl-space-3);
     }
 
     .mascot {
-      width: 76px;
-      height: 96px;
+      width: 54px;
+      height: 72px;
+    }
+
+    .mascot::before {
+      top: 12px;
+      left: 13px;
+      width: 28px;
+      height: 24px;
+    }
+
+    .mascot::after {
+      right: 10px;
+      bottom: 12px;
+      left: 10px;
+      height: 18px;
     }
   }
 </style>
-

@@ -57,7 +57,7 @@ const {
 <style>
   .simulation-panel {
     display: grid;
-    grid-template-columns: minmax(0, 0.82fr) minmax(320px, 1fr);
+    grid-template-columns: minmax(0, 0.78fr) minmax(300px, 1fr);
     gap: var(--pl-space-5);
     align-items: stretch;
   }
@@ -89,9 +89,9 @@ const {
   .control-row button {
     display: inline-flex;
     align-items: center;
-    min-height: 36px;
-    padding: 7px 11px;
-    border: 1px solid var(--pl-border);
+    min-height: 40px;
+    padding: 8px 12px;
+    border: 1px solid var(--pl-border-soft);
     border-radius: 999px;
     color: var(--pl-text-muted);
     background: rgba(255, 255, 255, 0.04);
@@ -99,6 +99,7 @@ const {
   }
 
   .control-row button {
+    min-height: 44px;
     color: var(--pl-text);
   }
 
@@ -111,7 +112,7 @@ const {
   .sim-graph {
     position: relative;
     overflow: hidden;
-    border: 1px solid var(--pl-border);
+    border: 1px solid rgba(88, 216, 255, 0.24);
     border-radius: var(--pl-radius);
     background:
       linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
@@ -121,7 +122,7 @@ const {
   }
 
   .track {
-    min-height: 112px;
+    min-height: 104px;
   }
 
   .track-line {
@@ -229,5 +230,16 @@ const {
       grid-template-columns: 1fr;
     }
   }
-</style>
 
+  @media (max-width: 520px) {
+    .sim-flow,
+    .control-row {
+      display: grid;
+      grid-template-columns: 1fr;
+    }
+
+    .sim-graph {
+      min-height: 200px;
+    }
+  }
+</style>
