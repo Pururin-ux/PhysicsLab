@@ -1,7 +1,10 @@
 node_modules/
 dist/
 .astro/
+artifacts/screenshots/
+artifacts/playwright-results/
+playwright-report/
+test-results/
 .env
 .env.*
 !.env.example
-
