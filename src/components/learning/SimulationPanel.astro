@@ -15,7 +15,7 @@ const {
   description,
   steps = ["Предскажи", "Измени v", "Наблюдай x(t)", "Объясни"],
   controls = ["v > 0", "v = 0", "v < 0"],
-  reviewStatus = "authorReviewRequired"
+  reviewStatus = "требует проверки автора"
 } = Astro.props;
 ---
 
@@ -23,25 +23,25 @@ const {
   <div class="simulation-panel">
     <div class="sim-copy">
       <div class="card-head">
-        <p class="component-label">SimulationPanel</p>
+        <p class="component-label">Лаборатория</p>
         <Badge tone="info">{reviewStatus}</Badge>
       </div>
       <h3>{title}</h3>
       <p>{description}</p>
-      <div class="sim-flow" aria-label="Simulation learning flow">
+      <div class="sim-flow" aria-label="Учебный цикл симуляции">
         {steps.map((step, index) => <span>{index + 1}. {step}</span>)}
       </div>
-      <div class="control-row" aria-label="Prototype controls">
+      <div class="control-row" aria-label="Демо-контролы">
         {controls.map((control) => <button type="button">{control}</button>)}
       </div>
     </div>
-    <div class="sim-board" aria-label="Simulation mockup">
+    <div class="sim-board" aria-label="Демо-симуляция">
       <div class="track" aria-hidden="true">
         <span class="track-line"></span>
         <span class="cart"></span>
         <span class="ghost-cart"></span>
       </div>
-      <div class="sim-graph" aria-label="Mock graph x(t)">
+      <div class="sim-graph" aria-label="Демо-график x(t)">
         <span class="axis axis-y"></span>
         <span class="axis axis-x"></span>
         <span class="line-positive"></span>

@@ -40,7 +40,7 @@ const workedSteps = [
 const navItems = [
   { href: "#learning", label: "Как учим" },
   { href: "#modules", label: "Модули" },
-  { href: "#chapter-demo", label: "Demo-глава" },
+  { href: "#chapter-demo", label: "Демо-глава" },
   { href: "#exam-layer", label: "ЦЭ/ЦТ" }
 ];
 
@@ -53,40 +53,40 @@ const missionItems: MissionItem[] = [
 ---
 
 <BaseLayout
-  title="PhysicsLab 2.0 Lab Preview"
-  description="Astro foundation preview for PhysicsLab 2.0 Dark Anime Lab."
+  title="PhysicsLab 2.0 - лабораторное демо"
+  description="Демо новой Astro-основы для PhysicsLab 2.0 в направлении Dark Anime Lab."
   navItems={navItems}
 >
   <section class="section hero-lab" aria-labelledby="hero-title">
     <div class="hero-copy">
-      <p class="eyebrow">Dark Anime Lab foundation</p>
+      <p class="eyebrow">Фундамент темной аниме-лаборатории</p>
       <h1 id="hero-title">PhysicsLab: физика, которую можно потрогать</h1>
       <p class="lead">
         Будущий интерактивный учебник-тренажер для школьников Беларуси:
         формула рядом с графиком, задача рядом с симуляцией, ЦЭ/ЦТ без паники.
       </p>
       <div class="hero-actions">
-        <Button href="#chapter-demo">Посмотреть demo-главу</Button>
+        <Button href="#chapter-demo">Посмотреть демо-главу</Button>
         <a class="hero-secondary-link" href="#learning">Как работает обучение</a>
       </div>
-      <div class="trust-row" aria-label="Prototype notes">
-        <Badge tone="accent">prototype/demo</Badge>
-        <Badge tone="info">authorReviewRequired</Badge>
+      <div class="trust-row" aria-label="Статусы демо">
+        <Badge tone="accent">демо-режим</Badge>
+        <Badge tone="info">требует проверки автора</Badge>
       </div>
     </div>
 
     <SurfaceCard variant="lab">
-      <aside class="lab-stage" aria-label="Interactive lab preview mockup">
+      <aside class="lab-stage" aria-label="Демо интерактивной лаборатории">
         <div class="stage-head">
           <div>
-            <strong>Lab cockpit</strong>
+            <strong>Лаборатория</strong>
             <span>Глава: график x(t)</span>
           </div>
-          <Badge tone="accent">focus-ready</Badge>
+          <Badge tone="accent">режим фокуса</Badge>
         </div>
         <div class="cockpit-grid">
           <div class="mission-mini">
-            <p class="mini-label">Current skill</p>
+            <p class="mini-label">Сейчас тренируем</p>
             <h2>Читать наклон x(t)</h2>
             <p>Сначала оси, потом знак скорости.</p>
           </div>
@@ -95,7 +95,7 @@ const missionItems: MissionItem[] = [
             <small>только при постоянной скорости</small>
           </div>
         </div>
-        <div class="hero-graph" aria-label="Mock graph x(t)">
+        <div class="hero-graph" aria-label="Демо-график x(t)">
           <span class="axis axis-y"></span>
           <span class="axis axis-x"></span>
           <span class="graph-line"></span>
@@ -103,7 +103,7 @@ const missionItems: MissionItem[] = [
           <span class="axis-label label-y">x, м</span>
           <span class="axis-label label-x">t, с</span>
         </div>
-        <div class="live-values" aria-label="Mock live values">
+        <div class="live-values" aria-label="Демо-значения">
           <span><b>x</b> 17 м</span>
           <span><b>v</b> 3 м/с</span>
           <span><b>t</b> 5 с</span>
@@ -117,32 +117,32 @@ const missionItems: MissionItem[] = [
       id="learning-title"
       eyebrow="Как работает обучение"
       title="Не лекция, а маршрут навыка"
-      description="Каждая глава ведет ученика от смысла к действию: контракт, формула, график, ловушка, пример, симуляция, квиз и exam-check."
+      description="Каждая глава ведет ученика от смысла к действию: контракт, формула, график, ловушка, пример, симуляция, проверка и ЦЭ/ЦТ-блок."
     />
-    <ol class="learning-rail" aria-label="Learning flow">
+    <ol class="learning-rail" aria-label="Маршрут обучения">
       <li>
         <span class="rail-number">01</span>
-        <h3>Contract</h3>
-        <p>Цель, prerequisites и формат проверки видны заранее.</p>
+        <h3>Контракт</h3>
+        <p>Цель, знания перед стартом и формат проверки видны заранее.</p>
       </li>
       <li>
         <span class="rail-number">02</span>
-        <h3>Formula + graph</h3>
+        <h3>Формула + график</h3>
         <p>Формула, переменные, единицы и график находятся рядом.</p>
       </li>
       <li class="rail-danger">
         <span class="rail-number">03</span>
-        <h3>Trap clinic</h3>
+        <h3>Клиника ловушек</h3>
         <p>Типичная ошибка разбирается до самостоятельной задачи.</p>
       </li>
       <li class="rail-lab">
         <span class="rail-number">04</span>
-        <h3>Lab action</h3>
+        <h3>Действие в лаборатории</h3>
         <p>Предскажи, измени параметр, наблюдай, объясни.</p>
       </li>
       <li class="rail-mission">
         <span class="rail-number">05</span>
-        <h3>Exam-check</h3>
+        <h3>ЦЭ/ЦТ-блок</h3>
         <p>ЦЭ/ЦТ-связь появляется спокойно, без рейтингов и штрафов.</p>
       </li>
     </ol>
@@ -153,13 +153,13 @@ const missionItems: MissionItem[] = [
       id="modules-title"
       eyebrow="Модули"
       title="Карточки ведут к навыкам, а не к стенам текста"
-      description="Этот слой остается prototype-only, но показывает будущий ритм module cards, progress и examWeight."
+      description="Этот слой остается демо-режимом, но показывает будущий ритм карточек модулей, прогресса и экзаменационного веса."
     />
     <div class="module-grid">
       <SurfaceCard variant="mission">
         <div class="module-top">
           <span>Механика</span>
-          <Badge tone="accent">examWeight: high</Badge>
+          <Badge tone="accent">вес на ЦЭ/ЦТ: высокий</Badge>
         </div>
         <h3>Графики движения</h3>
         <p>Навык: отличать график зависимости от траектории и читать наклон.</p>
@@ -173,7 +173,7 @@ const missionItems: MissionItem[] = [
       <SurfaceCard>
         <div class="module-top">
           <span>Силы</span>
-          <Badge>planned</Badge>
+          <Badge>запланировано</Badge>
         </div>
         <h3>Законы Ньютона</h3>
         <p>Навык: выбрать ось, силы и знак ускорения без магии.</p>
@@ -187,7 +187,7 @@ const missionItems: MissionItem[] = [
       <SurfaceCard>
         <div class="module-top">
           <span>Электро</span>
-          <Badge>planned</Badge>
+          <Badge>запланировано</Badge>
         </div>
         <h3>Цепи</h3>
         <p>Навык: видеть, где ток один, а где напряжение делится.</p>
@@ -204,30 +204,30 @@ const missionItems: MissionItem[] = [
   <section class="section chapter-demo" id="chapter-demo" aria-labelledby="chapter-title">
     <div class="chapter-header">
       <div>
-        <p class="eyebrow">Demo-глава - prototype only</p>
+        <p class="eyebrow">Демо-глава - не готовый продукт</p>
         <h2 id="chapter-title">Равномерное движение: связь формулы и графика</h2>
         <p>
-          Это не новая production-глава, а Astro preview. Demo-физика простая,
-          оригинальная и помечена как authorReviewRequired.
+          Это не новая готовая глава, а демо новой технической основы.
+          Физика здесь простая, оригинальная и помечена как требующая проверки автора.
         </p>
       </div>
-      <CharacterBubble role="лаборант" speaker="Mascot placeholder">
+      <CharacterBubble role="лаборант" speaker="Персонаж-заглушка">
         Формула не кусается. Сначала смотрим, что означает каждый символ,
-        потом запускаем demo-лабораторию.
+        потом запускаем демо-лабораторию.
       </CharacterBubble>
     </div>
 
     <SurfaceCard>
       <div class="contract-grid">
-        <div><b>Prerequisite</b><span>координата, время, скорость, единицы СИ</span></div>
-        <div><b>Outcomes</b><span>читать x(t), находить v, проверять смысл ответа</span></div>
-        <div><b>Exam use</b><span>часть A: график, часть B: численный ответ</span></div>
+        <div><b>Перед началом</b><span>координата, время, скорость, единицы СИ</span></div>
+        <div><b>После блока ты сможешь</b><span>читать x(t), находить v, проверять смысл ответа</span></div>
+        <div><b>Где пригодится на ЦЭ/ЦТ</b><span>часть A: график, часть B: численный ответ</span></div>
       </div>
     </SurfaceCard>
 
     <div class="grid-two formula-bridge-grid">
       <FormulaCard
-        title="FormulaCard"
+        title="Главная формула"
         formula="x = x0 + vt"
         meaning="Координата через время t равна начальной координате плюс перемещение при постоянной скорости."
         variables={formulaVariables}
@@ -236,9 +236,9 @@ const missionItems: MissionItem[] = [
       />
 
       <SurfaceCard variant="lab">
-        <p class="eyebrow">Representation bridge</p>
+        <p class="eyebrow">Связь представлений</p>
         <h3>Формула и график рядом</h3>
-        <div class="component-graph" aria-label="Mock graph x(t)">
+        <div class="component-graph" aria-label="Демо-график x(t)">
           <span class="axis axis-y"></span>
           <span class="axis axis-x"></span>
           <span class="graph-line"></span>
@@ -255,36 +255,36 @@ const missionItems: MissionItem[] = [
       misconception="Линия на графике воспринимается как путь тела в пространстве."
       why="Она правда похожа на маршрут, особенно если линия идет вверх или вниз."
       correction="Это зависимость координаты от времени. Сначала читаем оси, затем делаем вывод о скорости."
-      checkPrompt="Mini-check: если линия x(t) идет вниз, что можно сказать о знаке скорости?"
+      checkPrompt="Мини-проверка: если линия x(t) идет вниз, что можно сказать о знаке скорости?"
       characterLine="Если оси x и t, это история координаты, а не рисунок маршрута."
     />
 
     <WorkedExample
-      title="WorkedExample - prototype/demo"
+      title="Разбор задачи - демо-режим"
       prompt="Тело стартует из точки 2 м и движется со скоростью 3 м/с. Где оно через 5 с?"
       steps={workedSteps}
-      answer="Ответ: 17 м. authorReviewRequired: true."
+      answer="Ответ: 17 м. Требует проверки автора."
     />
 
     <SimulationPanel
       title="Лаборатория наклона"
-      description="Перед переключением сценария ученик предсказывает, как изменится линия x(t). После наблюдения объясняет знак скорости и переносит вывод на demo-задачу."
+      description="Перед переключением сценария ученик предсказывает, как изменится линия x(t). После наблюдения объясняет знак скорости и переносит вывод на демо-задачу."
     />
 
     <div class="grid-two practice-exam-grid">
       <QuizCard
-        title="QuizCard - prototype/demo"
+        title="Проверка понимания - демо-режим"
         prompt="Если x(t) - горизонтальная линия, что это значит?"
         options={[
           { text: "Координата не меняется, значит v = 0", correct: true },
           { text: "Тело движется быстрее" }
         ]}
-        feedback="Feedback: горизонтальная линия имеет нулевой наклон, значит скорость равна нулю."
+        feedback="Обратная связь: горизонтальная линия имеет нулевой наклон, значит скорость равна нулю."
       />
 
       <div class="exam-anchor" id="exam-layer">
         <ExamBlock
-          title="Exam-check без паники"
+          title="ЦЭ/ЦТ-блок без паники"
           description="Часть A: выбрать знак скорости по наклону. Часть B: найти координату по формуле и записать численный ответ в метрах."
           formats={["A: выбор ответа", "B: численный ответ"]}
           traps={["не спутать график с траекторией", "проверить единицы перед ответом"]}
@@ -294,7 +294,7 @@ const missionItems: MissionItem[] = [
     </div>
 
     <SurfaceCard variant="success">
-      <p class="eyebrow">Summary + next step</p>
+      <p class="eyebrow">Итог и следующий шаг</p>
       <ul>
         <li>Формула x = x0 + vt работает при постоянной скорости.</li>
         <li>Наклон графика x(t) связан со скоростью.</li>

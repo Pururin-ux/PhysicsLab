@@ -17,10 +17,10 @@ interface Props {
 
 const {
   title,
-  eyebrow = "Demo-глава",
+  eyebrow = "Демо-глава",
   description = "",
-  status = "prototype/demo",
-  reviewStatus = "authorReviewRequired",
+  status = "демо-режим",
+  reviewStatus = "требует проверки автора",
   meta = [],
   characterRole = "лаборант",
   characterLine = "Сначала связываем формулу, единицы и график, потом трогаем симуляцию."
@@ -34,17 +34,16 @@ const {
         <p class="eyebrow">{eyebrow}</p>
         <h1>{title}</h1>
         {description && <p>{description}</p>}
-        <div class="chapter-meta" aria-label="Chapter metadata">
+        <div class="chapter-meta" aria-label="Метаданные главы">
           <Badge tone="accent">{status}</Badge>
           <Badge tone="info">{reviewStatus}</Badge>
           {meta.map((item) => <Badge tone="muted">{item}</Badge>)}
         </div>
       </SurfaceCard>
-      <CharacterBubble role={characterRole} speaker="Mascot placeholder">
+      <CharacterBubble role={characterRole} speaker="Персонаж-заглушка">
         {characterLine}
       </CharacterBubble>
     </div>
     <slot />
   </section>
 </BaseLayout>
-

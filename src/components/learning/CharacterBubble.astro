@@ -5,13 +5,13 @@ interface Props {
   tone?: "lab" | "mentor" | "warning" | "exam";
 }
 
-const { role = "лаборант", speaker = "Mascot placeholder", tone = "lab" } = Astro.props;
+const { role = "лаборант", speaker = "Персонаж-заглушка", tone = "lab" } = Astro.props;
 ---
 
 <aside class:list={["character-bubble", `character-bubble--${tone}`]} aria-label={`${speaker}: ${role}`}>
   <div class="mascot" aria-hidden="true"></div>
   <div>
-    <p class="bubble-role">CharacterBubble - {role}</p>
+    <p class="bubble-role">Реплика персонажа - {role}</p>
     <strong>{speaker}</strong>
     <p><slot /></p>
   </div>

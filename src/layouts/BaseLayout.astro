@@ -14,11 +14,11 @@ interface Props {
 
 const {
   title = "PhysicsLab 2.0",
-  description = "PhysicsLab 2.0 Dark Anime Lab foundation.",
+  description = "PhysicsLab 2.0: Astro-основа в направлении Dark Anime Lab.",
   navItems = [
     { href: "/lab-preview/#learning", label: "Как учим" },
     { href: "/lab-preview/#modules", label: "Модули" },
-    { href: "/lab-preview/#chapter-demo", label: "Demo-глава" },
+    { href: "/lab-preview/#chapter-demo", label: "Демо-глава" },
     { href: "/lab-preview/#exam-layer", label: "ЦЭ/ЦТ" }
   ]
 } = Astro.props;
@@ -33,12 +33,12 @@ const {
     <title>{title}</title>
   </head>
   <body>
-    <header class="topbar" aria-label="PhysicsLab navigation">
-      <a class="brand" href="/lab-preview/" aria-label="PhysicsLab 2.0 lab preview">
+    <header class="topbar" aria-label="Навигация PhysicsLab">
+      <a class="brand" href="/lab-preview/" aria-label="Демо PhysicsLab 2.0">
         <span class="brand-mark" aria-hidden="true">PL</span>
         <span>PhysicsLab 2.0</span>
       </a>
-      <nav aria-label="Page sections">
+      <nav aria-label="Разделы страницы">
         {navItems.map((item) => <a href={item.href}>{item.label}</a>)}
       </nav>
     </header>
@@ -47,4 +47,3 @@ const {
     </main>
   </body>
 </html>
-

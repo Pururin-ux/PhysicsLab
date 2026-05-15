@@ -21,13 +21,13 @@ const {
 
 <SurfaceCard variant="mission">
   <div class="card-head">
-    <p class="component-label">ExamBlock</p>
+    <p class="component-label">ЦЭ/ЦТ-блок</p>
     <Badge tone="accent">ЦЭ/ЦТ</Badge>
   </div>
   <h3>{title}</h3>
   <p>{description}</p>
   {formats.length > 0 && (
-    <div class="chip-row" aria-label="Exam formats">
+    <div class="chip-row" aria-label="Форматы ЦЭ/ЦТ">
       {formats.map((format) => <Badge tone="info">{format}</Badge>)}
     </div>
   )}
@@ -37,7 +37,7 @@ const {
     </ul>
   )}
   {missionItems.length > 0 && (
-    <div class="mission-map" aria-label="Progress mission map">
+    <div class="mission-map" aria-label="Карта прогресса">
       {
         missionItems.map((item) => (
           <span class:list={[item.state ? `mission-map__item--${item.state}` : ""]}>

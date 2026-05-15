@@ -21,8 +21,8 @@ const {
   prompt,
   steps,
   answer,
-  source = "prototype/demo original",
-  reviewStatus = "authorReviewRequired"
+  source = "демо-режим, оригинальный пример",
+  reviewStatus = "требует проверки автора"
 } = Astro.props;
 ---
 
@@ -43,7 +43,7 @@ const {
     }
   </div>
   <p class="answer-note">{answer}</p>
-  <p class="source-note">source: {source}</p>
+  <p class="source-note">источник: {source}</p>
 </SurfaceCard>
 
 <style>
