@@ -1,0 +1,944 @@
+---
+import Badge from "../ui/Badge.astro";
+import SurfaceCard from "../ui/SurfaceCard.astro";
+---
+
+<SurfaceCard variant="lab">
+  <section
+    class="uniform-lab"
+    data-uniform-motion-lab
+    aria-labelledby="uniform-lab-title"
+  >
+    <div class="lab-heading">
+      <div>
+        <p class="component-label">Интерактивная лаборатория</p>
+        <h3 id="uniform-lab-title">Лаборатория равномерного движения</h3>
+        <p class="lab-goal">Свяжи формулу, график и движение точки.</p>
+      </div>
+      <Badge tone="info">демо-режим · требует проверки автора</Badge>
+    </div>
+
+    <div class="cycle-grid" aria-label="Учебный цикл лаборатории">
+      <article class="cycle-card">
+        <span class="cycle-step">1</span>
+        <h4>Предскажи</h4>
+        <p>Что произойдёт с наклоном графика x(t), если увеличить скорость?</p>
+      </article>
+      <article class="cycle-card">
+        <span class="cycle-step">2</span>
+        <h4>Измени</h4>
+        <p>Поменяй x₀, v или t и смотри, как связаны число, формула и график.</p>
+      </article>
+      <article class="cycle-card">
+        <span class="cycle-step">3</span>
+        <h4>Наблюдай</h4>
+        <p>График x(t) меняет наклон, а v(t) остаётся горизонтальным.</p>
+      </article>
+      <article class="cycle-card">
+        <span class="cycle-step">4</span>
+        <h4>Объясни</h4>
+        <p>Сформулируй: что показывает наклон и почему график не траектория?</p>
+      </article>
+    </div>
+
+    <div class="lab-layout">
+      <div class="lab-control-column">
+        <div class="formula-panel" aria-label="Формула равномерного движения">
+          <p class="panel-label">Главная формула</p>
+          <div class="live-formula" aria-live="polite">
+            <span>x</span>
+            <span>=</span>
+            <span class="formula-token" data-formula-token="x0">x₀</span>
+            <span>+</span>
+            <span class="formula-term" data-formula-token="vt">
+              <span class="formula-token" data-formula-token="v">v</span><span class="formula-token" data-formula-token="t">t</span>
+            </span>
+          </div>
+          <p class="formula-note">
+            Координата равна старту плюс изменение координаты за время t.
+          </p>
+        </div>
+
+        <div class="scenario-row" aria-label="Сценарии движения">
+          <button type="button" data-scenario="forward" aria-pressed="true">вперёд</button>
+          <button type="button" data-scenario="still" aria-pressed="false">стоит</button>
+          <button type="button" data-scenario="backward" aria-pressed="false">назад</button>
+        </div>
+
+        <div class="sliders" aria-label="Параметры движения">
+          <label class="slider-field">
+            <span>
+              <b>x₀</b>
+              <span>начальная координата</span>
+            </span>
+            <output data-output="x0">0 м</output>
+            <input
+              type="range"
+              min="-6"
+              max="6"
+              step="0.5"
+              value="0"
+              data-input="x0"
+              aria-label="Начальная координата x ноль в метрах"
+            />
+          </label>
+
+          <label class="slider-field">
+            <span>
+              <b>v</b>
+              <span>скорость</span>
+            </span>
+            <output data-output="v">2 м/с</output>
+            <input
+              type="range"
+              min="-4"
+              max="4"
+              step="0.5"
+              value="2"
+              data-input="v"
+              aria-label="Скорость v в метрах в секунду"
+            />
+          </label>
+
+          <label class="slider-field">
+            <span>
+              <b>t</b>
+              <span>время наблюдения</span>
+            </span>
+            <output data-output="t">3 с</output>
+            <input
+              type="range"
+              min="0"
+              max="8"
+              step="0.5"
+              value="3"
+              data-input="t"
+              aria-label="Время t в секундах"
+            />
+          </label>
+        </div>
+
+        <div class="value-grid" aria-label="Текущие численные значения">
+          <div><span>x₀</span><b data-value="x0">0 м</b></div>
+          <div><span>v</span><b data-value="v">2 м/с</b></div>
+          <div><span>t</span><b data-value="t">3 с</b></div>
+          <div><span>x</span><b data-value="x">6 м</b></div>
+        </div>
+
+        <button type="button" class="reset-button" data-reset>
+          Сбросить
+        </button>
+      </div>
+
+      <div class="lab-observe-column">
+        <div class="motion-strip" aria-label="Движение точки по прямой">
+          <div class="strip-head">
+            <span>Движение точки</span>
+            <strong data-observation>v &gt; 0: координата растёт</strong>
+          </div>
+          <div class="track" aria-hidden="true">
+            <span class="track-axis"></span>
+            <span class="track-zero">0</span>
+            <span class="motion-point" data-motion-point></span>
+          </div>
+          <p>
+            Точка показывает положение x в выбранный момент времени. Это движение вдоль оси,
+            а не линия графика.
+          </p>
+        </div>
+
+        <div class="graphs-grid">
+          <figure class="graph-card">
+            <figcaption>График x(t)</figcaption>
+            <svg
+              viewBox="0 0 320 220"
+              role="img"
+              aria-label="График координаты от времени"
+              preserveAspectRatio="xMidYMid meet"
+            >
+              <g class="grid-lines" data-grid="x"></g>
+              <line class="axis-line" x1="42" y1="188" x2="302" y2="188"></line>
+              <line class="axis-line" x1="42" y1="18" x2="42" y2="188"></line>
+              <text class="axis-text" x="282" y="210">t, с</text>
+              <text class="axis-text" x="14" y="28">x, м</text>
+              <polyline class="graph-polyline graph-polyline--position" data-polyline="x"></polyline>
+              <circle class="graph-current" data-point="x" r="5"></circle>
+            </svg>
+            <p data-graph-note="x">Наклон показывает скорость.</p>
+          </figure>
+
+          <figure class="graph-card">
+            <figcaption>График v(t)</figcaption>
+            <svg
+              viewBox="0 0 320 220"
+              role="img"
+              aria-label="График скорости от времени"
+              preserveAspectRatio="xMidYMid meet"
+            >
+              <g class="grid-lines" data-grid="v"></g>
+              <line class="axis-line" x1="42" y1="188" x2="302" y2="188"></line>
+              <line class="axis-line" x1="42" y1="18" x2="42" y2="188"></line>
+              <text class="axis-text" x="282" y="210">t, с</text>
+              <text class="axis-text" x="14" y="28">v, м/с</text>
+              <polyline class="graph-polyline graph-polyline--velocity" data-polyline="v"></polyline>
+              <circle class="graph-current" data-point="v" r="5"></circle>
+            </svg>
+            <p data-graph-note="v">При равномерном движении скорость постоянна.</p>
+          </figure>
+        </div>
+      </div>
+    </div>
+
+    <div class="explain-card" aria-labelledby="uniform-check-title">
+      <div>
+        <p class="panel-label">Мини-проверка</p>
+        <h4 id="uniform-check-title">
+          Что произойдёт с наклоном графика x(t), если увеличить скорость?
+        </h4>
+      </div>
+      <div class="answer-row" role="group" aria-label="Варианты ответа">
+        <button type="button" data-answer="correct">Линия станет круче</button>
+        <button type="button" data-answer="flat">Линия станет горизонтальной</button>
+        <button type="button" data-answer="path">График станет траекторией тела</button>
+      </div>
+      <p class="feedback" data-feedback aria-live="polite">
+        Выбери вариант, а лаборатория даст мягкую обратную связь.
+      </p>
+    </div>
+  </section>
+</SurfaceCard>
+
+<script>
+  import {
+    clampNumber,
+    formatPhysicsNumber,
+    generateUniformMotionSeries,
+    generateUniformVelocitySeries,
+    uniformPosition
+  } from "../../lib/physics/kinematics";
+
+  type LabState = { x0: number; v: number; t: number };
+  type InputName = keyof LabState;
+  type Domain = { min: number; max: number };
+  type SvgPoint = { x: number; y: number };
+
+  const SVG_WIDTH = 320;
+  const SVG_HEIGHT = 220;
+  const PAD = { left: 42, right: 18, top: 18, bottom: 32 };
+  const T_MAX = 8;
+  const X_DOMAIN: Domain = { min: -24, max: 24 };
+  const V_DOMAIN: Domain = { min: -4.5, max: 4.5 };
+
+  const scenarios = {
+    forward: { x0: 0, v: 2, t: 3 },
+    still: { x0: 2, v: 0, t: 5 },
+    backward: { x0: 4, v: -2, t: 3 }
+  } satisfies Record<string, LabState>;
+
+  type ScenarioName = keyof typeof scenarios;
+
+  document.querySelectorAll("[data-uniform-motion-lab]").forEach((lab) => {
+    const inputs = {
+      x0: mustFind<HTMLInputElement>(lab, '[data-input="x0"]'),
+      v: mustFind<HTMLInputElement>(lab, '[data-input="v"]'),
+      t: mustFind<HTMLInputElement>(lab, '[data-input="t"]')
+    };
+
+    const outputs = {
+      x0: mustFind<HTMLOutputElement>(lab, '[data-output="x0"]'),
+      v: mustFind<HTMLOutputElement>(lab, '[data-output="v"]'),
+      t: mustFind<HTMLOutputElement>(lab, '[data-output="t"]')
+    };
+
+    const values = {
+      x0: mustFind<HTMLElement>(lab, '[data-value="x0"]'),
+      v: mustFind<HTMLElement>(lab, '[data-value="v"]'),
+      t: mustFind<HTMLElement>(lab, '[data-value="t"]'),
+      x: mustFind<HTMLElement>(lab, '[data-value="x"]')
+    };
+
+    const xLine = mustFind<SVGPolylineElement>(lab, '[data-polyline="x"]');
+    const vLine = mustFind<SVGPolylineElement>(lab, '[data-polyline="v"]');
+    const xPoint = mustFind<SVGCircleElement>(lab, '[data-point="x"]');
+    const vPoint = mustFind<SVGCircleElement>(lab, '[data-point="v"]');
+    const motionPoint = mustFind<HTMLElement>(lab, "[data-motion-point]");
+    const observation = mustFind<HTMLElement>(lab, "[data-observation]");
+    const xNote = mustFind<HTMLElement>(lab, '[data-graph-note="x"]');
+    const vNote = mustFind<HTMLElement>(lab, '[data-graph-note="v"]');
+    const resetButton = mustFind<HTMLButtonElement>(lab, "[data-reset]");
+    const scenarioButtons = lab.querySelectorAll<HTMLButtonElement>("[data-scenario]");
+    const answerButtons = lab.querySelectorAll<HTMLButtonElement>("[data-answer]");
+    const feedback = mustFind<HTMLElement>(lab, "[data-feedback]");
+
+    drawGrid(lab.querySelector<SVGGElement>('[data-grid="x"]'), X_DOMAIN.min, X_DOMAIN.max);
+    drawGrid(lab.querySelector<SVGGElement>('[data-grid="v"]'), V_DOMAIN.min, V_DOMAIN.max);
+
+    const readState = (): LabState => ({
+      x0: Number(inputs.x0.value),
+      v: Number(inputs.v.value),
+      t: Number(inputs.t.value)
+    });
+
+    const setState = (state: LabState, changed: InputName = "x0") => {
+      inputs.x0.value = String(state.x0);
+      inputs.v.value = String(state.v);
+      inputs.t.value = String(state.t);
+      updateLab(changed);
+    };
+
+    const setActiveScenario = (name: ScenarioName | "") => {
+      scenarioButtons.forEach((button) => {
+        const active = button.dataset.scenario === name;
+        button.setAttribute("aria-pressed", String(active));
+      });
+    };
+
+    const updateLab = (changed: InputName) => {
+      const state = readState();
+      const x = uniformPosition(state.x0, state.v, state.t);
+
+      outputs.x0.value = `${formatPhysicsNumber(state.x0)} м`;
+      outputs.v.value = `${formatPhysicsNumber(state.v)} м/с`;
+      outputs.t.value = `${formatPhysicsNumber(state.t)} с`;
+
+      values.x0.textContent = `${formatPhysicsNumber(state.x0)} м`;
+      values.v.textContent = `${formatPhysicsNumber(state.v)} м/с`;
+      values.t.textContent = `${formatPhysicsNumber(state.t)} с`;
+      values.x.textContent = `${formatPhysicsNumber(x)} м`;
+
+      const positionSeries = generateUniformMotionSeries({
+        x0: state.x0,
+        v: state.v,
+        tMax: T_MAX,
+        step: 0.25
+      });
+      const velocitySeries = generateUniformVelocitySeries({
+        x0: state.x0,
+        v: state.v,
+        tMax: T_MAX,
+        step: 0.25
+      });
+
+      xLine.setAttribute("points", toPolyline(positionSeries, (point) => point.x, X_DOMAIN));
+      vLine.setAttribute("points", toPolyline(velocitySeries, (point) => point.v, V_DOMAIN));
+
+      const currentX = mapPoint(state.t, x, X_DOMAIN);
+      const currentV = mapPoint(state.t, state.v, V_DOMAIN);
+      setSvgPoint(xPoint, currentX);
+      setSvgPoint(vPoint, currentV);
+
+      const pointPercent = clampNumber(((x - X_DOMAIN.min) / (X_DOMAIN.max - X_DOMAIN.min)) * 100, 3, 97);
+      motionPoint.style.setProperty("--point-left", `${pointPercent}%`);
+      motionPoint.dataset.direction = state.v > 0 ? "вперёд" : state.v < 0 ? "назад" : "стоит";
+
+      observation.textContent = getObservation(state.v);
+      xNote.textContent = getPositionNote(state.v);
+      vNote.textContent = state.v === 0
+        ? "Горизонтальная линия на нуле: скорость равна 0."
+        : "Горизонтальная линия: скорость постоянна во времени.";
+
+      highlightFormula(lab, changed);
+    };
+
+    (Object.entries(inputs) as Array<[InputName, HTMLInputElement]>).forEach(([name, input]) => {
+      input.addEventListener("input", () => {
+        setActiveScenario("");
+        updateLab(name);
+      });
+    });
+
+    scenarioButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        const scenario = button.dataset.scenario as ScenarioName | undefined;
+        if (!scenario || !(scenario in scenarios)) {
+          return;
+        }
+        setActiveScenario(scenario);
+        setState(scenarios[scenario], "v");
+      });
+    });
+
+    resetButton.addEventListener("click", () => {
+      setActiveScenario("forward");
+      setState(scenarios.forward, "x0");
+      answerButtons.forEach((button) => {
+        button.classList.remove("is-correct", "is-wrong");
+        button.removeAttribute("aria-pressed");
+      });
+      feedback.textContent = "Выбери вариант, а лаборатория даст мягкую обратную связь.";
+      feedback.dataset.state = "idle";
+    });
+
+    answerButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        const correct = button.dataset.answer === "correct";
+
+        answerButtons.forEach((item) => {
+          item.classList.remove("is-correct", "is-wrong");
+          item.setAttribute("aria-pressed", "false");
+        });
+
+        button.setAttribute("aria-pressed", "true");
+        button.classList.add(correct ? "is-correct" : "is-wrong");
+        feedback.dataset.state = correct ? "success" : "warning";
+        feedback.textContent = correct
+          ? "Верно. Чем больше скорость, тем больше наклон x(t): координата меняется быстрее."
+          : "Не совсем. Наклон графика x(t) показывает скорость. Если скорость больше, линия поднимается быстрее.";
+      });
+    });
+
+    updateLab("x0");
+  });
+
+  function toPolyline<TPoint extends { t: number }>(
+    series: TPoint[],
+    valueSelector: (point: TPoint) => number,
+    domain: Domain
+  ): string {
+    return series
+      .map((point) => {
+        const mapped = mapPoint(point.t, valueSelector(point), domain);
+        return `${formatPhysicsNumber(mapped.x, 1)},${formatPhysicsNumber(mapped.y, 1)}`;
+      })
+      .join(" ");
+  }
+
+  function mapPoint(t: number, value: number, domain: Domain): SvgPoint {
+    const x = PAD.left + (t / T_MAX) * (SVG_WIDTH - PAD.left - PAD.right);
+    const normalized = (value - domain.min) / (domain.max - domain.min);
+    const y = SVG_HEIGHT - PAD.bottom - normalized * (SVG_HEIGHT - PAD.top - PAD.bottom);
+    return { x, y: clampNumber(y, PAD.top, SVG_HEIGHT - PAD.bottom) };
+  }
+
+  function setSvgPoint(element: SVGCircleElement, point: SvgPoint): void {
+    element.setAttribute("cx", formatPhysicsNumber(point.x, 1));
+    element.setAttribute("cy", formatPhysicsNumber(point.y, 1));
+  }
+
+  function drawGrid(group: SVGGElement | null, min: number, max: number): void {
+    if (!group) return;
+
+    const lines = [];
+    for (let i = 0; i <= 4; i += 1) {
+      const x = PAD.left + (i / 4) * (SVG_WIDTH - PAD.left - PAD.right);
+      const y = PAD.top + (i / 4) * (SVG_HEIGHT - PAD.top - PAD.bottom);
+      lines.push(`<line class="grid-line" x1="${x}" y1="${PAD.top}" x2="${x}" y2="${SVG_HEIGHT - PAD.bottom}"></line>`);
+      lines.push(`<line class="grid-line" x1="${PAD.left}" y1="${y}" x2="${SVG_WIDTH - PAD.right}" y2="${y}"></line>`);
+    }
+    const zeroY = mapPoint(0, 0, { min, max }).y;
+    lines.push(`<line class="zero-line" x1="${PAD.left}" y1="${zeroY}" x2="${SVG_WIDTH - PAD.right}" y2="${zeroY}"></line>`);
+    group.innerHTML = lines.join("");
+  }
+
+  function highlightFormula(root: ParentNode, changed: InputName): void {
+    root.querySelectorAll<HTMLElement>("[data-formula-token]").forEach((token) => {
+      token.classList.remove("is-active");
+    });
+
+    const targets = changed === "x0"
+      ? ["x0"]
+      : changed === "v"
+        ? ["v", "vt"]
+        : ["t", "vt"];
+
+    targets.forEach((target) => {
+      root.querySelectorAll<HTMLElement>(`[data-formula-token="${target}"]`).forEach((token) => {
+        token.classList.add("is-active");
+      });
+    });
+  }
+
+  function getObservation(v: number): string {
+    if (v > 0) return "v > 0: координата растёт";
+    if (v < 0) return "v < 0: координата уменьшается";
+    return "v = 0: точка стоит на месте";
+  }
+
+  function getPositionNote(v: number): string {
+    if (v > 0) return "Линия идёт вверх: координата растёт со временем.";
+    if (v < 0) return "Линия идёт вниз: координата уменьшается со временем.";
+    return "Линия горизонтальна: координата не меняется.";
+  }
+
+  function mustFind<TElement extends Element>(
+    root: ParentNode,
+    selector: string
+  ): TElement {
+    const element = root.querySelector<TElement>(selector);
+    if (!element) {
+      throw new Error(`UniformMotionLab: missing required element ${selector}`);
+    }
+    return element;
+  }
+</script>
+
+<style>
+  .uniform-lab {
+    display: grid;
+    gap: var(--pl-space-5);
+  }
+
+  .lab-heading,
+  .strip-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--pl-space-4);
+  }
+
+  .component-label,
+  .panel-label {
+    margin: 0 0 var(--pl-space-2);
+    color: var(--pl-accent);
+    font-size: 0.78rem;
+    font-weight: 900;
+    text-transform: uppercase;
+  }
+
+  .lab-goal {
+    max-width: 620px;
+    margin-bottom: 0;
+  }
+
+  .cycle-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--pl-space-3);
+  }
+
+  .cycle-card {
+    min-width: 0;
+    padding: var(--pl-space-4);
+    border: 1px solid var(--pl-border-soft);
+    border-radius: var(--pl-radius);
+    background: rgba(255, 255, 255, 0.035);
+  }
+
+  .cycle-step {
+    display: inline-grid;
+    place-items: center;
+    min-width: 30px;
+    min-height: 30px;
+    margin-bottom: var(--pl-space-3);
+    border-radius: 999px;
+    color: #12130d;
+    background: var(--pl-accent);
+    font-weight: 900;
+  }
+
+  .cycle-card h4,
+  .explain-card h4 {
+    margin: 0 0 var(--pl-space-2);
+    color: var(--pl-text);
+    font-size: 1.02rem;
+  }
+
+  .cycle-card p,
+  .motion-strip p,
+  .graph-card p,
+  .formula-note,
+  .feedback {
+    margin-bottom: 0;
+    font-size: 0.95rem;
+    line-height: 1.55;
+  }
+
+  .lab-layout {
+    display: grid;
+    grid-template-columns: minmax(300px, 0.78fr) minmax(0, 1.2fr);
+    gap: var(--pl-space-5);
+    align-items: stretch;
+  }
+
+  .lab-control-column,
+  .lab-observe-column {
+    display: grid;
+    gap: var(--pl-space-4);
+    min-width: 0;
+  }
+
+  .formula-panel,
+  .motion-strip,
+  .graph-card,
+  .explain-card {
+    min-width: 0;
+    padding: var(--pl-space-4);
+    border: 1px solid var(--pl-border-soft);
+    border-radius: var(--pl-radius);
+    background: rgba(8, 12, 18, 0.58);
+  }
+
+  .live-formula {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.36em;
+    margin-bottom: var(--pl-space-3);
+    color: var(--pl-text);
+    font-family: "Cascadia Mono", "JetBrains Mono", Consolas, monospace;
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-weight: 900;
+    line-height: 1.08;
+  }
+
+  .formula-token,
+  .formula-term {
+    border-radius: var(--pl-radius-sm);
+    transition:
+      color 160ms ease,
+      background-color 160ms ease,
+      box-shadow 160ms ease;
+  }
+
+  .formula-token {
+    padding: 0 0.06em;
+  }
+
+  .formula-term {
+    padding: 0 0.1em;
+  }
+
+  .formula-token.is-active,
+  .formula-term.is-active {
+    color: #0b0d12;
+    background: var(--pl-accent);
+    box-shadow: 0 0 0 5px rgba(255, 216, 77, 0.12);
+  }
+
+  .scenario-row,
+  .answer-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--pl-space-2);
+  }
+
+  .scenario-row button,
+  .answer-row button,
+  .reset-button {
+    min-height: 44px;
+    border: 1px solid var(--pl-border-soft);
+    border-radius: var(--pl-radius);
+    color: var(--pl-text);
+    background: rgba(255, 255, 255, 0.04);
+    font-weight: 850;
+  }
+
+  .scenario-row button {
+    flex: 1 1 92px;
+    padding: 9px 12px;
+  }
+
+  .scenario-row button[aria-pressed="true"] {
+    border-color: rgba(255, 216, 77, 0.56);
+    color: var(--pl-accent);
+    background: rgba(255, 216, 77, 0.08);
+  }
+
+  .sliders {
+    display: grid;
+    gap: var(--pl-space-4);
+  }
+
+  .slider-field {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: var(--pl-space-3);
+    align-items: center;
+    min-width: 0;
+  }
+
+  .slider-field > span {
+    display: grid;
+    gap: var(--pl-space-1);
+    min-width: 0;
+  }
+
+  .slider-field b {
+    color: var(--pl-text);
+  }
+
+  .slider-field span span,
+  .slider-field output {
+    color: var(--pl-text-muted);
+    font-size: 0.94rem;
+  }
+
+  .slider-field output {
+    min-width: 72px;
+    text-align: right;
+  }
+
+  .slider-field input {
+    grid-column: 1 / -1;
+    width: 100%;
+    accent-color: var(--pl-accent);
+  }
+
+  .slider-field input:focus-visible {
+    outline: 3px solid var(--pl-accent);
+    outline-offset: 5px;
+  }
+
+  .value-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--pl-space-2);
+  }
+
+  .value-grid div {
+    min-width: 0;
+    padding: var(--pl-space-3);
+    border: 1px solid var(--pl-border-soft);
+    border-radius: var(--pl-radius);
+    background: rgba(255, 255, 255, 0.035);
+  }
+
+  .value-grid span {
+    display: block;
+    margin-bottom: var(--pl-space-1);
+    color: var(--pl-text-soft);
+    font-size: 0.86rem;
+  }
+
+  .value-grid b {
+    color: var(--pl-cyan);
+    font-size: 1.08rem;
+  }
+
+  .reset-button {
+    width: 100%;
+    padding: 10px 14px;
+  }
+
+  .reset-button:hover,
+  .answer-row button:hover,
+  .scenario-row button:hover {
+    border-color: var(--pl-border-strong);
+  }
+
+  .track {
+    position: relative;
+    min-height: 104px;
+    margin: var(--pl-space-3) 0;
+    overflow: hidden;
+    border: 1px solid rgba(88, 216, 255, 0.2);
+    border-radius: var(--pl-radius);
+    background:
+      linear-gradient(rgba(88, 216, 255, 0.055) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(88, 216, 255, 0.055) 1px, transparent 1px),
+      #0b1018;
+    background-size: 28px 28px;
+  }
+
+  .track-axis {
+    position: absolute;
+    right: var(--pl-space-4);
+    bottom: 34px;
+    left: var(--pl-space-4);
+    height: 3px;
+    background: rgba(244, 247, 251, 0.48);
+  }
+
+  .track-zero {
+    position: absolute;
+    bottom: 44px;
+    left: 50%;
+    color: var(--pl-text-soft);
+    font-size: 0.82rem;
+  }
+
+  .motion-point {
+    --point-left: 62.5%;
+    position: absolute;
+    bottom: 48px;
+    left: var(--point-left);
+    width: 24px;
+    height: 24px;
+    border: 3px solid #0b1018;
+    border-radius: 50%;
+    background: var(--pl-accent);
+    box-shadow: 0 0 0 8px rgba(255, 216, 77, 0.13);
+    transform: translateX(-50%);
+    transition: left 240ms ease;
+  }
+
+  .motion-point::after {
+    content: attr(data-direction);
+    position: absolute;
+    top: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    white-space: nowrap;
+    color: var(--pl-text-muted);
+    font-size: 0.8rem;
+    font-weight: 800;
+  }
+
+  .strip-head strong {
+    color: var(--pl-accent);
+    font-size: 0.94rem;
+    text-align: right;
+  }
+
+  .graphs-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--pl-space-4);
+  }
+
+  .graph-card {
+    margin: 0;
+  }
+
+  .graph-card figcaption {
+    margin-bottom: var(--pl-space-2);
+    color: var(--pl-text);
+    font-weight: 900;
+  }
+
+  .graph-card svg {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    min-height: 220px;
+    margin-bottom: var(--pl-space-2);
+    overflow: visible;
+  }
+
+  .grid-line {
+    stroke: rgba(168, 190, 213, 0.12);
+    stroke-width: 1;
+  }
+
+  .zero-line {
+    stroke: rgba(244, 247, 251, 0.24);
+    stroke-dasharray: 5 5;
+    stroke-width: 1.2;
+  }
+
+  .axis-line {
+    stroke: rgba(244, 247, 251, 0.62);
+    stroke-width: 1.5;
+  }
+
+  .axis-text {
+    fill: var(--pl-text-muted);
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .graph-polyline {
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 4;
+  }
+
+  .graph-polyline--position {
+    stroke: var(--pl-cyan);
+  }
+
+  .graph-polyline--velocity {
+    stroke: var(--pl-green);
+  }
+
+  .graph-current {
+    fill: var(--pl-accent);
+    stroke: #0b1018;
+    stroke-width: 3;
+  }
+
+  .explain-card {
+    display: grid;
+    gap: var(--pl-space-4);
+  }
+
+  .answer-row button {
+    flex: 1 1 210px;
+    padding: 10px 12px;
+    text-align: left;
+  }
+
+  .answer-row button.is-correct {
+    border-color: rgba(110, 231, 168, 0.72);
+    color: var(--pl-green);
+    background: rgba(110, 231, 168, 0.08);
+  }
+
+  .answer-row button.is-wrong {
+    border-color: rgba(255, 107, 107, 0.62);
+    color: var(--pl-red);
+    background: rgba(255, 107, 107, 0.08);
+  }
+
+  .feedback {
+    min-height: 1.6em;
+    padding: var(--pl-space-3);
+    border: 1px solid var(--pl-border-soft);
+    border-radius: var(--pl-radius);
+    background: rgba(255, 255, 255, 0.035);
+  }
+
+  .feedback[data-state="success"] {
+    border-color: rgba(110, 231, 168, 0.5);
+  }
+
+  .feedback[data-state="warning"] {
+    border-color: rgba(255, 107, 107, 0.45);
+  }
+
+  @media (max-width: 1040px) {
+    .cycle-grid,
+    .graphs-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .lab-layout {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .lab-heading,
+    .strip-head {
+      display: grid;
+    }
+
+    .cycle-grid,
+    .graphs-grid,
+    .value-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .live-formula {
+      font-size: clamp(1.75rem, 11vw, 2.35rem);
+    }
+
+    .scenario-row,
+    .answer-row {
+      display: grid;
+      grid-template-columns: 1fr;
+    }
+
+    .slider-field {
+      grid-template-columns: 1fr;
+      gap: var(--pl-space-2);
+    }
+
+    .slider-field output {
+      text-align: left;
+    }
+
+    .strip-head strong {
+      text-align: left;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .formula-token,
+    .formula-term,
+    .motion-point {
+      transition: none;
+    }
+  }
+</style>

@@ -3,6 +3,7 @@ dist/
 .astro/
 artifacts/screenshots/
 artifacts/playwright-results/
+artifacts/physics-tests/
 playwright-report/
 test-results/
 .env

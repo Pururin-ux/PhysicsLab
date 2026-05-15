@@ -8,6 +8,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "check": "astro check",
+    "test:physics": "node tests/physics/kinematics.test.mjs",
     "test:e2e": "playwright test",
     "screenshots": "playwright test tests/screenshots/lab-preview.spec.ts"
   },

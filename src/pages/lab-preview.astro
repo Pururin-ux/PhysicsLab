@@ -9,8 +9,8 @@ import ExamBlock from "../components/learning/ExamBlock.astro";
 import FormulaCard from "../components/learning/FormulaCard.astro";
 import MisconceptionCard from "../components/learning/MisconceptionCard.astro";
 import QuizCard from "../components/learning/QuizCard.astro";
-import SimulationPanel from "../components/learning/SimulationPanel.astro";
 import WorkedExample from "../components/learning/WorkedExample.astro";
+import UniformMotionLab from "../components/simulations/UniformMotionLab.astro";
 
 type FormulaVariable = {
   symbol: string;
@@ -266,10 +266,7 @@ const missionItems: MissionItem[] = [
       answer="Ответ: 17 м. Требует проверки автора."
     />
 
-    <SimulationPanel
-      title="Лаборатория наклона"
-      description="Перед переключением сценария ученик предсказывает, как изменится линия x(t). После наблюдения объясняет знак скорости и переносит вывод на демо-задачу."
-    />
+    <UniformMotionLab />
 
     <div class="grid-two practice-exam-grid">
       <QuizCard

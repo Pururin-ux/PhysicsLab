@@ -55,7 +55,45 @@ test.describe("lab-preview screenshots", () => {
           animations: "disabled"
         });
       }
+
+      const hasHorizontalScroll = await page.evaluate(
+        () => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1
+      );
+      expect(hasHorizontalScroll).toBe(false);
+
+      const speedSlider = page.locator('[data-input="v"]');
+      await expect(speedSlider).toBeVisible();
+      await speedSlider.evaluate((element) => {
+        const input = element as HTMLInputElement;
+        input.value = "4";
+        input.dispatchEvent(new Event("input", { bubbles: true }));
+      });
+
+      await expect(page.locator('[data-value="v"]')).toContainText("4 м/с");
+      await expect(page.locator('[data-value="x"]')).toContainText("12 м");
+      await expect(page.locator('[data-graph-note="x"]')).toContainText(
+        "Линия идёт вверх"
+      );
+      await expect(page.locator('[data-formula-token="v"]').first()).toHaveClass(
+        /is-active/
+      );
+
+      await page.getByRole("button", { name: "График станет траекторией тела" }).click();
+      await expect(page.locator("[data-feedback]")).toContainText("Не совсем");
+
+      await page.getByRole("button", { name: "Линия станет круче" }).click();
+      await expect(page.locator("[data-feedback]")).toContainText("Верно");
     });
   }
-});
 
+  test("lab-preview reduced motion keeps the lab meaningful", async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/lab-preview/", { waitUntil: "networkidle" });
+
+    await expect(page.locator("[data-uniform-motion-lab]")).toBeVisible();
+    await expect(page.locator('[data-polyline="x"]')).toHaveAttribute("points", /,/);
+    await expect(page.locator('[data-polyline="v"]')).toHaveAttribute("points", /,/);
+    await expect(page.locator("[data-motion-point]")).toBeVisible();
+  });
+});
