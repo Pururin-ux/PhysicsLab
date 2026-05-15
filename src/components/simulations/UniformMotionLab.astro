@@ -57,12 +57,55 @@ import SurfaceCard from "../ui/SurfaceCard.astro";
           <p class="formula-note">
             Координата равна старту плюс изменение координаты за время t.
           </p>
+          <div class="substitution-box" aria-live="polite">
+            <p class="substitution-title">Подстановка</p>
+            <p class="substitution-line">
+              x =
+              <span data-formula-highlight="x0" data-substitution="x0">0</span>
+              +
+              <span data-formula-highlight="vt">
+                <span data-formula-highlight="v" data-substitution="v">2</span>
+                ·
+                <span data-formula-highlight="t" data-substitution="t">0</span>
+              </span>
+              =
+              <strong data-substitution="x">0 м</strong>
+            </p>
+            <p class="substitution-delta">
+              Изменение координаты:
+              <b data-formula-highlight="vt" data-substitution="delta">0 м</b>
+            </p>
+          </div>
         </div>
 
         <div class="scenario-row" aria-label="Сценарии движения">
           <button type="button" data-scenario="forward" aria-pressed="true">вперёд</button>
           <button type="button" data-scenario="still" aria-pressed="false">стоит</button>
           <button type="button" data-scenario="backward" aria-pressed="false">назад</button>
+        </div>
+
+        <div class="time-panel" aria-label="Управление временем">
+          <div class="time-actions">
+            <button
+              type="button"
+              class="play-button"
+              data-play-toggle
+              aria-pressed="false"
+              aria-label="Запустить анимацию"
+            >
+              Запустить
+            </button>
+            <button type="button" class="reset-button" data-reset>
+              Сбросить
+            </button>
+          </div>
+          <p class="time-readout">
+            Текущее время:
+            <b data-time-readout>0 с</b>
+          </p>
+          <p class="motion-mode-note" data-motion-mode-note>
+            При запуске время идёт до 8 с и останавливается.
+          </p>
         </div>
 
         <div class="sliders" aria-label="Параметры движения">
@@ -103,31 +146,31 @@ import SurfaceCard from "../ui/SurfaceCard.astro";
           <label class="slider-field">
             <span>
               <b>t</b>
-              <span>время наблюдения</span>
+              <span>ручная перемотка времени</span>
             </span>
-            <output data-output="t">3 с</output>
+            <output data-output="t">0 с</output>
             <input
               type="range"
               min="0"
               max="8"
-              step="0.5"
-              value="3"
+              step="0.01"
+              value="0"
               data-input="t"
-              aria-label="Время t в секундах"
+              aria-label="Ручная перемотка времени t в секундах"
             />
           </label>
         </div>
 
-        <div class="value-grid" aria-label="Текущие численные значения">
-          <div><span>x₀</span><b data-value="x0">0 м</b></div>
-          <div><span>v</span><b data-value="v">2 м/с</b></div>
-          <div><span>t</span><b data-value="t">3 с</b></div>
-          <div><span>x</span><b data-value="x">6 м</b></div>
+        <div class="value-panel" aria-label="Текущие численные значения">
+          <p class="panel-label">Текущее значение</p>
+          <div class="value-grid">
+            <div><span>x₀</span><b data-value="x0">0 м</b></div>
+            <div><span>v</span><b data-value="v">2 м/с</b></div>
+            <div><span>t</span><b data-value="t">0 с</b></div>
+            <div><span>x</span><b data-value="x">0 м</b></div>
+            <div class="value-wide"><span>Изменение координаты vt</span><b data-value="delta">0 м</b></div>
+          </div>
         </div>
-
-        <button type="button" class="reset-button" data-reset>
-          Сбросить
-        </button>
       </div>
 
       <div class="lab-observe-column">
@@ -139,6 +182,7 @@ import SurfaceCard from "../ui/SurfaceCard.astro";
           <div class="track" aria-hidden="true">
             <span class="track-axis"></span>
             <span class="track-zero">0</span>
+            <span class="velocity-arrow" data-velocity-arrow></span>
             <span class="motion-point" data-motion-point></span>
           </div>
           <p>
@@ -161,10 +205,13 @@ import SurfaceCard from "../ui/SurfaceCard.astro";
               <line class="axis-line" x1="42" y1="18" x2="42" y2="188"></line>
               <text class="axis-text" x="282" y="210">t, с</text>
               <text class="axis-text" x="14" y="28">x, м</text>
-              <polyline class="graph-polyline graph-polyline--position" data-polyline="x"></polyline>
+              <polyline class="graph-polyline graph-polyline--base" data-polyline="x"></polyline>
+              <polyline class="graph-polyline graph-polyline--current" data-current-polyline="x"></polyline>
               <circle class="graph-current" data-point="x" r="5"></circle>
             </svg>
-            <p data-graph-note="x">Наклон показывает скорость.</p>
+            <p data-graph-note="x">
+              Текущая точка показывает координату в выбранный момент времени.
+            </p>
           </figure>
 
           <figure class="graph-card">
@@ -180,7 +227,8 @@ import SurfaceCard from "../ui/SurfaceCard.astro";
               <line class="axis-line" x1="42" y1="18" x2="42" y2="188"></line>
               <text class="axis-text" x="282" y="210">t, с</text>
               <text class="axis-text" x="14" y="28">v, м/с</text>
-              <polyline class="graph-polyline graph-polyline--velocity" data-polyline="v"></polyline>
+              <polyline class="graph-polyline graph-polyline--base" data-polyline="v"></polyline>
+              <polyline class="graph-polyline graph-polyline--current" data-current-polyline="v"></polyline>
               <circle class="graph-current" data-point="v" r="5"></circle>
             </svg>
             <p data-graph-note="v">При равномерном движении скорость постоянна.</p>
@@ -212,8 +260,12 @@ import SurfaceCard from "../ui/SurfaceCard.astro";
   import {
     clampNumber,
     formatPhysicsNumber,
+    generatePartialUniformMotionSeries,
+    generatePartialUniformVelocitySeries,
     generateUniformMotionSeries,
     generateUniformVelocitySeries,
+    getUniformMotionDirection,
+    normalizeUniformMotionTime,
     uniformPosition
   } from "../../lib/physics/kinematics";
 
@@ -228,16 +280,18 @@ import SurfaceCard from "../ui/SurfaceCard.astro";
   const T_MAX = 8;
   const X_DOMAIN: Domain = { min: -24, max: 24 };
   const V_DOMAIN: Domain = { min: -4.5, max: 4.5 };
+  const PLAYBACK_RATE = 1;
+  const REDUCED_MOTION_STEP = 0.5;
 
   const scenarios = {
-    forward: { x0: 0, v: 2, t: 3 },
-    still: { x0: 2, v: 0, t: 5 },
-    backward: { x0: 4, v: -2, t: 3 }
+    forward: { x0: 0, v: 2, t: 0 },
+    still: { x0: 2, v: 0, t: 0 },
+    backward: { x0: 4, v: -2, t: 0 }
   } satisfies Record<string, LabState>;
 
   type ScenarioName = keyof typeof scenarios;
 
-  document.querySelectorAll("[data-uniform-motion-lab]").forEach((lab) => {
+  document.querySelectorAll<HTMLElement>("[data-uniform-motion-lab]").forEach((lab) => {
     const inputs = {
       x0: mustFind<HTMLInputElement>(lab, '[data-input="x0"]'),
       v: mustFind<HTMLInputElement>(lab, '[data-input="v"]'),
@@ -254,35 +308,55 @@ import SurfaceCard from "../ui/SurfaceCard.astro";
       x0: mustFind<HTMLElement>(lab, '[data-value="x0"]'),
       v: mustFind<HTMLElement>(lab, '[data-value="v"]'),
       t: mustFind<HTMLElement>(lab, '[data-value="t"]'),
-      x: mustFind<HTMLElement>(lab, '[data-value="x"]')
+      x: mustFind<HTMLElement>(lab, '[data-value="x"]'),
+      delta: mustFind<HTMLElement>(lab, '[data-value="delta"]')
     };
 
-    const xLine = mustFind<SVGPolylineElement>(lab, '[data-polyline="x"]');
-    const vLine = mustFind<SVGPolylineElement>(lab, '[data-polyline="v"]');
+    const substitution = {
+      x0: mustFind<HTMLElement>(lab, '[data-substitution="x0"]'),
+      v: mustFind<HTMLElement>(lab, '[data-substitution="v"]'),
+      t: mustFind<HTMLElement>(lab, '[data-substitution="t"]'),
+      delta: mustFind<HTMLElement>(lab, '[data-substitution="delta"]'),
+      x: mustFind<HTMLElement>(lab, '[data-substitution="x"]')
+    };
+
+    const xBaseLine = mustFind<SVGPolylineElement>(lab, '[data-polyline="x"]');
+    const vBaseLine = mustFind<SVGPolylineElement>(lab, '[data-polyline="v"]');
+    const xCurrentLine = mustFind<SVGPolylineElement>(lab, '[data-current-polyline="x"]');
+    const vCurrentLine = mustFind<SVGPolylineElement>(lab, '[data-current-polyline="v"]');
     const xPoint = mustFind<SVGCircleElement>(lab, '[data-point="x"]');
     const vPoint = mustFind<SVGCircleElement>(lab, '[data-point="v"]');
     const motionPoint = mustFind<HTMLElement>(lab, "[data-motion-point]");
+    const velocityArrow = mustFind<HTMLElement>(lab, "[data-velocity-arrow]");
     const observation = mustFind<HTMLElement>(lab, "[data-observation]");
     const xNote = mustFind<HTMLElement>(lab, '[data-graph-note="x"]');
     const vNote = mustFind<HTMLElement>(lab, '[data-graph-note="v"]');
+    const playButton = mustFind<HTMLButtonElement>(lab, "[data-play-toggle]");
     const resetButton = mustFind<HTMLButtonElement>(lab, "[data-reset]");
+    const timeReadout = mustFind<HTMLElement>(lab, "[data-time-readout]");
+    const motionModeNote = mustFind<HTMLElement>(lab, "[data-motion-mode-note]");
     const scenarioButtons = lab.querySelectorAll<HTMLButtonElement>("[data-scenario]");
     const answerButtons = lab.querySelectorAll<HTMLButtonElement>("[data-answer]");
     const feedback = mustFind<HTMLElement>(lab, "[data-feedback]");
+    const reducedMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+    let state: LabState = { ...scenarios.forward };
+    let isPlaying = false;
+    let isReducedMotion = reducedMotionQuery.matches;
+    let animationFrameId: number | null = null;
+    let previousFrameTime: number | null = null;
 
     drawGrid(lab.querySelector<SVGGElement>('[data-grid="x"]'), X_DOMAIN.min, X_DOMAIN.max);
     drawGrid(lab.querySelector<SVGGElement>('[data-grid="v"]'), V_DOMAIN.min, V_DOMAIN.max);
 
-    const readState = (): LabState => ({
-      x0: Number(inputs.x0.value),
-      v: Number(inputs.v.value),
-      t: Number(inputs.t.value)
-    });
+    const syncInputs = () => {
+      inputs.x0.value = formatPhysicsNumber(state.x0);
+      inputs.v.value = formatPhysicsNumber(state.v);
+      inputs.t.value = formatPhysicsNumber(state.t, 2);
+    };
 
-    const setState = (state: LabState, changed: InputName = "x0") => {
-      inputs.x0.value = String(state.x0);
-      inputs.v.value = String(state.v);
-      inputs.t.value = String(state.t);
+    const setState = (nextState: LabState, changed: InputName = "x0") => {
+      state = normalizeState(nextState);
       updateLab(changed);
     };
 
@@ -293,18 +367,118 @@ import SurfaceCard from "../ui/SurfaceCard.astro";
       });
     };
 
-    const updateLab = (changed: InputName) => {
-      const state = readState();
+    const stopAnimation = () => {
+      if (animationFrameId !== null) {
+        window.cancelAnimationFrame(animationFrameId);
+        animationFrameId = null;
+      }
+
+      previousFrameTime = null;
+      isPlaying = false;
+      updatePlaybackControls();
+    };
+
+    const startAnimation = () => {
+      if (isReducedMotion) {
+        stepForward();
+        return;
+      }
+
+      if (state.t >= T_MAX) {
+        state = normalizeState({ ...state, t: 0 });
+      }
+
+      isPlaying = true;
+      previousFrameTime = null;
+      updateLab("t", { fromPlayback: true });
+      animationFrameId = window.requestAnimationFrame(tickAnimation);
+    };
+
+    const stepForward = () => {
+      stopAnimation();
+      const nextT = state.t >= T_MAX
+        ? 0
+        : normalizeUniformMotionTime(state.t + REDUCED_MOTION_STEP, T_MAX);
+      state = normalizeState({ ...state, t: nextT });
+      setActiveScenario("");
+      updateLab("t");
+    };
+
+    const tickAnimation = (timestamp: number) => {
+      if (!isPlaying) return;
+
+      if (previousFrameTime === null) {
+        previousFrameTime = timestamp;
+      }
+
+      const deltaSeconds = ((timestamp - previousFrameTime) / 1000) * PLAYBACK_RATE;
+      previousFrameTime = timestamp;
+      const nextT = normalizeUniformMotionTime(state.t + deltaSeconds, T_MAX);
+      state = normalizeState({ ...state, t: nextT });
+      updateLab("t", { fromPlayback: true });
+
+      if (nextT >= T_MAX) {
+        stopAnimation();
+        return;
+      }
+
+      animationFrameId = window.requestAnimationFrame(tickAnimation);
+    };
+
+    const updatePlaybackControls = () => {
+      lab.dataset.playing = String(isPlaying);
+      lab.dataset.animationState = isPlaying ? "running" : "paused";
+
+      if (isReducedMotion) {
+        playButton.textContent = "Шаг вперёд";
+        playButton.setAttribute("aria-label", "Шаг вперёд по времени");
+        playButton.setAttribute("aria-pressed", "false");
+        playButton.dataset.mode = "step";
+        motionModeNote.textContent = "Сниженное движение: кнопка делает шаг, ручная перемотка работает полностью.";
+        return;
+      }
+
+      playButton.textContent = isPlaying ? "Пауза" : "Запустить";
+      playButton.setAttribute(
+        "aria-label",
+        isPlaying ? "Пауза: остановить анимацию" : "Запустить анимацию"
+      );
+      playButton.setAttribute("aria-pressed", String(isPlaying));
+      playButton.dataset.mode = isPlaying ? "pause" : "play";
+      motionModeNote.textContent = isPlaying
+        ? "Время идёт до 8 с; точка, графики и формула обновляются вместе."
+        : state.t >= T_MAX
+          ? "Достигнут конец интервала. Кнопка запуска начнёт движение с 0 с."
+          : "При запуске время идёт до 8 с и останавливается.";
+    };
+
+    const updateLab = (changed: InputName, options: { fromPlayback?: boolean } = {}) => {
+      state = normalizeState(state);
+      syncInputs();
       const x = uniformPosition(state.x0, state.v, state.t);
+      const delta = state.v * state.t;
+      const direction = getUniformMotionDirection(state.v);
+
+      lab.dataset.currentTime = formatPhysicsNumber(state.t, 2);
+      lab.dataset.currentX = formatPhysicsNumber(x, 2);
+      lab.dataset.motionDirection = direction;
 
       outputs.x0.value = `${formatPhysicsNumber(state.x0)} м`;
       outputs.v.value = `${formatPhysicsNumber(state.v)} м/с`;
-      outputs.t.value = `${formatPhysicsNumber(state.t)} с`;
+      outputs.t.value = `${formatPhysicsNumber(state.t, 2)} с`;
 
       values.x0.textContent = `${formatPhysicsNumber(state.x0)} м`;
       values.v.textContent = `${formatPhysicsNumber(state.v)} м/с`;
-      values.t.textContent = `${formatPhysicsNumber(state.t)} с`;
+      values.t.textContent = `${formatPhysicsNumber(state.t, 2)} с`;
       values.x.textContent = `${formatPhysicsNumber(x)} м`;
+      values.delta.textContent = `${formatPhysicsNumber(delta)} м`;
+      timeReadout.textContent = `${formatPhysicsNumber(state.t, 2)} с`;
+
+      substitution.x0.textContent = formatPhysicsNumber(state.x0);
+      substitution.v.textContent = formatPhysicsNumber(state.v);
+      substitution.t.textContent = formatPhysicsNumber(state.t, 2);
+      substitution.delta.textContent = `${formatPhysicsNumber(delta)} м`;
+      substitution.x.textContent = `${formatPhysicsNumber(x)} м`;
 
       const positionSeries = generateUniformMotionSeries({
         x0: state.x0,
@@ -318,9 +492,27 @@ import SurfaceCard from "../ui/SurfaceCard.astro";
         tMax: T_MAX,
         step: 0.25
       });
+      const currentPositionSeries = generatePartialUniformMotionSeries({
+        x0: state.x0,
+        v: state.v,
+        t: state.t,
+        tMax: T_MAX,
+        step: 0.05
+      });
+      const currentVelocitySeries = generatePartialUniformVelocitySeries({
+        x0: state.x0,
+        v: state.v,
+        t: state.t,
+        tMax: T_MAX,
+        step: 0.05
+      });
 
-      xLine.setAttribute("points", toPolyline(positionSeries, (point) => point.x, X_DOMAIN));
-      vLine.setAttribute("points", toPolyline(velocitySeries, (point) => point.v, V_DOMAIN));
+      xBaseLine.setAttribute("points", toPolyline(positionSeries, (point) => point.x, X_DOMAIN));
+      vBaseLine.setAttribute("points", toPolyline(velocitySeries, (point) => point.v, V_DOMAIN));
+      xCurrentLine.setAttribute("points", toPolyline(currentPositionSeries, (point) => point.x, X_DOMAIN));
+      vCurrentLine.setAttribute("points", toPolyline(currentVelocitySeries, (point) => point.v, V_DOMAIN));
+      xCurrentLine.dataset.currentTime = formatPhysicsNumber(state.t, 2);
+      vCurrentLine.dataset.currentTime = formatPhysicsNumber(state.t, 2);
 
       const currentX = mapPoint(state.t, x, X_DOMAIN);
       const currentV = mapPoint(state.t, state.v, V_DOMAIN);
@@ -329,22 +521,45 @@ import SurfaceCard from "../ui/SurfaceCard.astro";
 
       const pointPercent = clampNumber(((x - X_DOMAIN.min) / (X_DOMAIN.max - X_DOMAIN.min)) * 100, 3, 97);
       motionPoint.style.setProperty("--point-left", `${pointPercent}%`);
-      motionPoint.dataset.direction = state.v > 0 ? "вперёд" : state.v < 0 ? "назад" : "стоит";
+      motionPoint.dataset.motionLabel = getMotionLabel(direction);
+      velocityArrow.style.setProperty("--point-left", `${pointPercent}%`);
+      velocityArrow.style.setProperty("--velocity-width", `${getVelocityArrowWidth(state.v)}px`);
+      velocityArrow.dataset.direction = direction;
 
-      observation.textContent = getObservation(state.v);
-      xNote.textContent = getPositionNote(state.v);
-      vNote.textContent = state.v === 0
-        ? "Горизонтальная линия на нуле: скорость равна 0."
-        : "Горизонтальная линия: скорость постоянна во времени.";
+      observation.textContent = getObservation(direction);
+      xNote.textContent = getPositionNote(direction);
+      vNote.textContent = getVelocityNote(direction);
 
-      highlightFormula(lab, changed);
+      highlightFormula(lab, changed, options.fromPlayback === true);
+      updatePlaybackControls();
     };
 
     (Object.entries(inputs) as Array<[InputName, HTMLInputElement]>).forEach(([name, input]) => {
       input.addEventListener("input", () => {
         setActiveScenario("");
+        if (name === "t") {
+          stopAnimation();
+        }
+
+        state = normalizeState({
+          ...state,
+          [name]: Number(input.value)
+        });
         updateLab(name);
       });
+    });
+
+    playButton.addEventListener("click", () => {
+      if (isReducedMotion) {
+        stepForward();
+        return;
+      }
+
+      if (isPlaying) {
+        stopAnimation();
+      } else {
+        startAnimation();
+      }
     });
 
     scenarioButtons.forEach((button) => {
@@ -353,12 +568,14 @@ import SurfaceCard from "../ui/SurfaceCard.astro";
         if (!scenario || !(scenario in scenarios)) {
           return;
         }
+        stopAnimation();
         setActiveScenario(scenario);
         setState(scenarios[scenario], "v");
       });
     });
 
     resetButton.addEventListener("click", () => {
+      stopAnimation();
       setActiveScenario("forward");
       setState(scenarios.forward, "x0");
       answerButtons.forEach((button) => {
@@ -368,6 +585,16 @@ import SurfaceCard from "../ui/SurfaceCard.astro";
       feedback.textContent = "Выбери вариант, а лаборатория даст мягкую обратную связь.";
       feedback.dataset.state = "idle";
     });
+
+    const handleReducedMotionChange = () => {
+      isReducedMotion = reducedMotionQuery.matches;
+      if (isReducedMotion) {
+        stopAnimation();
+      }
+      updatePlaybackControls();
+    };
+
+    reducedMotionQuery.addEventListener("change", handleReducedMotionChange);
 
     answerButtons.forEach((button) => {
       button.addEventListener("click", () => {
@@ -387,8 +614,16 @@ import SurfaceCard from "../ui/SurfaceCard.astro";
       });
     });
 
-    updateLab("x0");
+    setState(scenarios.forward, "x0");
   });
+
+  function normalizeState(state: LabState): LabState {
+    return {
+      x0: Number.isFinite(state.x0) ? state.x0 : 0,
+      v: Number.isFinite(state.v) ? state.v : 0,
+      t: normalizeUniformMotionTime(state.t, T_MAX)
+    };
+  }
 
   function toPolyline<TPoint extends { t: number }>(
     series: TPoint[],
@@ -430,34 +665,57 @@ import SurfaceCard from "../ui/SurfaceCard.astro";
     group.innerHTML = lines.join("");
   }
 
-  function highlightFormula(root: ParentNode, changed: InputName): void {
-    root.querySelectorAll<HTMLElement>("[data-formula-token]").forEach((token) => {
-      token.classList.remove("is-active");
-    });
-
+  function highlightFormula(root: ParentNode, changed: InputName, soft = false): void {
     const targets = changed === "x0"
       ? ["x0"]
       : changed === "v"
         ? ["v", "vt"]
         : ["t", "vt"];
+    const activeTargets = new Set(targets);
 
-    targets.forEach((target) => {
-      root.querySelectorAll<HTMLElement>(`[data-formula-token="${target}"]`).forEach((token) => {
-        token.classList.add("is-active");
-      });
+    root.querySelectorAll<HTMLElement>("[data-formula-token], [data-formula-highlight]").forEach((token) => {
+      const name = token.dataset.formulaToken ?? token.dataset.formulaHighlight ?? "";
+      const active = activeTargets.has(name);
+      token.classList.toggle("is-active", active);
+      token.classList.toggle("is-soft-active", active && soft);
     });
   }
 
-  function getObservation(v: number): string {
-    if (v > 0) return "v > 0: координата растёт";
-    if (v < 0) return "v < 0: координата уменьшается";
+  function getMotionLabel(direction: ReturnType<typeof getUniformMotionDirection>): string {
+    if (direction === "forward") return "вперёд";
+    if (direction === "backward") return "назад";
+    return "стоит";
+  }
+
+  function getObservation(direction: ReturnType<typeof getUniformMotionDirection>): string {
+    if (direction === "forward") return "v > 0: координата растёт";
+    if (direction === "backward") return "v < 0: координата уменьшается";
     return "v = 0: точка стоит на месте";
   }
 
-  function getPositionNote(v: number): string {
-    if (v > 0) return "Линия идёт вверх: координата растёт со временем.";
-    if (v < 0) return "Линия идёт вниз: координата уменьшается со временем.";
-    return "Линия горизонтальна: координата не меняется.";
+  function getPositionNote(direction: ReturnType<typeof getUniformMotionDirection>): string {
+    if (direction === "forward") {
+      return "Текущая точка показывает координату в выбранный момент времени; линия идёт вверх, потому что v > 0.";
+    }
+
+    if (direction === "backward") {
+      return "Текущая точка показывает координату в выбранный момент времени; линия идёт вниз, потому что v < 0.";
+    }
+
+    return "Текущая точка показывает координату в выбранный момент времени; линия горизонтальна, потому что v = 0.";
+  }
+
+  function getVelocityNote(direction: ReturnType<typeof getUniformMotionDirection>): string {
+    if (direction === "still") {
+      return "Текущая точка движется по времени на линии v = 0: скорость равна нулю.";
+    }
+
+    return "Текущая точка движется вправо по времени; горизонтальная линия показывает постоянную скорость.";
+  }
+
+  function getVelocityArrowWidth(v: number): number {
+    if (v === 0) return 0;
+    return clampNumber(24 + Math.abs(v) * 14, 0, 86);
   }
 
   function mustFind<TElement extends Element>(
@@ -582,7 +840,8 @@ import SurfaceCard from "../ui/SurfaceCard.astro";
   }
 
   .formula-token,
-  .formula-term {
+  .formula-term,
+  [data-formula-highlight] {
     border-radius: var(--pl-radius-sm);
     transition:
       color 160ms ease,
@@ -594,19 +853,73 @@ import SurfaceCard from "../ui/SurfaceCard.astro";
     padding: 0 0.06em;
   }
 
-  .formula-term {
+  .formula-term,
+  [data-formula-highlight] {
     padding: 0 0.1em;
   }
 
   .formula-token.is-active,
-  .formula-term.is-active {
+  .formula-term.is-active,
+  [data-formula-highlight].is-active {
     color: #0b0d12;
     background: var(--pl-accent);
     box-shadow: 0 0 0 5px rgba(255, 216, 77, 0.12);
   }
 
+  .formula-token.is-soft-active,
+  .formula-term.is-soft-active,
+  [data-formula-highlight].is-soft-active {
+    box-shadow: 0 0 0 5px rgba(255, 216, 77, 0.08);
+  }
+
+  .substitution-box {
+    display: grid;
+    gap: var(--pl-space-2);
+    margin-top: var(--pl-space-4);
+    padding: var(--pl-space-3);
+    border: 1px solid rgba(88, 216, 255, 0.18);
+    border-radius: var(--pl-radius);
+    background: rgba(88, 216, 255, 0.045);
+  }
+
+  .substitution-title,
+  .substitution-line,
+  .substitution-delta,
+  .time-readout,
+  .motion-mode-note {
+    margin: 0;
+  }
+
+  .substitution-title {
+    color: var(--pl-cyan);
+    font-size: 0.82rem;
+    font-weight: 900;
+    text-transform: uppercase;
+  }
+
+  .substitution-line {
+    color: var(--pl-text);
+    font-family: "Cascadia Mono", "JetBrains Mono", Consolas, monospace;
+    font-size: clamp(1.05rem, 2.6vw, 1.28rem);
+    font-weight: 850;
+    line-height: 1.55;
+  }
+
+  .substitution-delta,
+  .motion-mode-note {
+    color: var(--pl-text-muted);
+    font-size: 0.94rem;
+    line-height: 1.45;
+  }
+
+  .substitution-delta b,
+  .time-readout b {
+    color: var(--pl-cyan);
+  }
+
   .scenario-row,
-  .answer-row {
+  .answer-row,
+  .time-actions {
     display: flex;
     flex-wrap: wrap;
     gap: var(--pl-space-2);
@@ -614,6 +927,7 @@ import SurfaceCard from "../ui/SurfaceCard.astro";
 
   .scenario-row button,
   .answer-row button,
+  .play-button,
   .reset-button {
     min-height: 44px;
     border: 1px solid var(--pl-border-soft);
@@ -632,6 +946,38 @@ import SurfaceCard from "../ui/SurfaceCard.astro";
     border-color: rgba(255, 216, 77, 0.56);
     color: var(--pl-accent);
     background: rgba(255, 216, 77, 0.08);
+  }
+
+  .time-panel,
+  .value-panel {
+    display: grid;
+    gap: var(--pl-space-3);
+    min-width: 0;
+    padding: var(--pl-space-4);
+    border: 1px solid var(--pl-border-soft);
+    border-radius: var(--pl-radius);
+    background: rgba(255, 255, 255, 0.035);
+  }
+
+  .time-actions button {
+    flex: 1 1 130px;
+    padding: 10px 14px;
+  }
+
+  .play-button {
+    border-color: rgba(255, 216, 77, 0.56);
+    color: #111317;
+    background: var(--pl-accent);
+  }
+
+  .play-button[aria-pressed="true"] {
+    color: var(--pl-accent);
+    background: rgba(255, 216, 77, 0.08);
+  }
+
+  .time-readout {
+    color: var(--pl-text);
+    font-weight: 850;
   }
 
   .sliders {
@@ -705,12 +1051,17 @@ import SurfaceCard from "../ui/SurfaceCard.astro";
     font-size: 1.08rem;
   }
 
+  .value-wide {
+    grid-column: 1 / -1;
+  }
+
   .reset-button {
     width: 100%;
     padding: 10px 14px;
   }
 
   .reset-button:hover,
+  .play-button:hover,
   .answer-row button:hover,
   .scenario-row button:hover {
     border-color: var(--pl-border-strong);
@@ -762,8 +1113,12 @@ import SurfaceCard from "../ui/SurfaceCard.astro";
     transition: left 240ms ease;
   }
 
+  .uniform-lab[data-playing="true"] .motion-point {
+    transition: none;
+  }
+
   .motion-point::after {
-    content: attr(data-direction);
+    content: attr(data-motion-label);
     position: absolute;
     top: -30px;
     left: 50%;
@@ -772,6 +1127,57 @@ import SurfaceCard from "../ui/SurfaceCard.astro";
     color: var(--pl-text-muted);
     font-size: 0.8rem;
     font-weight: 800;
+  }
+
+  .velocity-arrow {
+    --point-left: 50%;
+    --velocity-width: 0px;
+    position: absolute;
+    bottom: 60px;
+    left: var(--point-left);
+    width: var(--velocity-width);
+    height: 4px;
+    border-radius: 999px;
+    background: var(--pl-cyan);
+    box-shadow: 0 0 16px rgba(88, 216, 255, 0.24);
+    opacity: 1;
+    transform: translateY(-50%);
+    transition:
+      left 240ms ease,
+      width 180ms ease,
+      opacity 160ms ease;
+  }
+
+  .uniform-lab[data-playing="true"] .velocity-arrow {
+    transition: none;
+  }
+
+  .velocity-arrow::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: -2px;
+    width: 0;
+    height: 0;
+    border-top: 7px solid transparent;
+    border-bottom: 7px solid transparent;
+    border-left: 9px solid var(--pl-cyan);
+    transform: translateY(-50%);
+  }
+
+  .velocity-arrow[data-direction="backward"] {
+    transform: translate(-100%, -50%);
+  }
+
+  .velocity-arrow[data-direction="backward"]::after {
+    right: auto;
+    left: -2px;
+    border-right: 9px solid var(--pl-cyan);
+    border-left: 0;
+  }
+
+  .velocity-arrow[data-direction="still"] {
+    opacity: 0;
   }
 
   .strip-head strong {
@@ -831,15 +1237,16 @@ import SurfaceCard from "../ui/SurfaceCard.astro";
     fill: none;
     stroke-linecap: round;
     stroke-linejoin: round;
-    stroke-width: 4;
   }
 
-  .graph-polyline--position {
+  .graph-polyline--base {
+    stroke: rgba(88, 216, 255, 0.28);
+    stroke-width: 2.2;
+  }
+
+  .graph-polyline--current {
     stroke: var(--pl-cyan);
-  }
-
-  .graph-polyline--velocity {
-    stroke: var(--pl-green);
+    stroke-width: 4;
   }
 
   .graph-current {
@@ -915,7 +1322,8 @@ import SurfaceCard from "../ui/SurfaceCard.astro";
     }
 
     .scenario-row,
-    .answer-row {
+    .answer-row,
+    .time-actions {
       display: grid;
       grid-template-columns: 1fr;
     }
@@ -937,7 +1345,9 @@ import SurfaceCard from "../ui/SurfaceCard.astro";
   @media (prefers-reduced-motion: reduce) {
     .formula-token,
     .formula-term,
-    .motion-point {
+    [data-formula-highlight],
+    .motion-point,
+    .velocity-arrow {
       transition: none;
     }
   }

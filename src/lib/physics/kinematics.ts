@@ -5,6 +5,10 @@ export type UniformMotionSeriesParams = {
   step?: number;
 };
 
+export type PartialUniformMotionSeriesParams = UniformMotionSeriesParams & {
+  t: number;
+};
+
 export type UniformPositionPoint = {
   t: number;
   x: number;
@@ -14,6 +18,8 @@ export type UniformVelocityPoint = {
   t: number;
   v: number;
 };
+
+export type UniformMotionDirection = "forward" | "backward" | "still";
 
 export function uniformPosition(x0: number, v: number, t: number): number {
   return x0 + v * t;
@@ -29,6 +35,17 @@ export function clampNumber(value: number, min: number, max: number): number {
   }
 
   return Math.min(Math.max(value, min), max);
+}
+
+export function normalizeUniformMotionTime(t: number, tMax: number): number {
+  const safeTMax = Number.isFinite(tMax) ? Math.max(0, tMax) : 0;
+  return clampNumber(t, 0, safeTMax);
+}
+
+export function getUniformMotionDirection(v: number): UniformMotionDirection {
+  if (v > 0) return "forward";
+  if (v < 0) return "backward";
+  return "still";
 }
 
 export function formatPhysicsNumber(value: number, digits = 2): string {
@@ -74,6 +91,28 @@ export function generateUniformVelocitySeries(
   return points;
 }
 
+export function generatePartialUniformMotionSeries(
+  params: PartialUniformMotionSeriesParams
+): UniformPositionPoint[] {
+  return generateUniformMotionSeries({
+    x0: params.x0,
+    v: params.v,
+    tMax: normalizeUniformMotionTime(params.t, params.tMax),
+    step: params.step
+  });
+}
+
+export function generatePartialUniformVelocitySeries(
+  params: PartialUniformMotionSeriesParams
+): UniformVelocityPoint[] {
+  return generateUniformVelocitySeries({
+    x0: params.x0,
+    v: params.v,
+    tMax: normalizeUniformMotionTime(params.t, params.tMax),
+    step: params.step
+  });
+}
+
 function normalizeStep(step = 0.5): number {
   if (!Number.isFinite(step) || step <= 0) {
     return 0.5;
@@ -85,4 +124,3 @@ function normalizeStep(step = 0.5): number {
 function formatSeriesNumber(value: number): number {
   return Number(value.toFixed(4));
 }
-
