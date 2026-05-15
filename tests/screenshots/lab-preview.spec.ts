@@ -65,8 +65,10 @@ test.describe("lab-preview screenshots", () => {
       const timeSlider = page.locator('[data-input="t"]');
       const lab = page.locator("[data-uniform-motion-lab]");
       const playButton = page.getByRole("button", { name: /Запустить/ });
+      const detailsButton = page.getByRole("button", { name: "Показать подробнее" });
 
       await expect(playButton).toBeVisible();
+      await expect(detailsButton).toBeVisible();
       await expect(page.locator('[data-current-polyline="x"]')).toHaveAttribute("points", /,/);
       await expect(page.locator('[data-current-polyline="v"]')).toHaveAttribute("points", /,/);
       await expect(page.locator('[data-point="x"]')).toHaveAttribute("cx", /\d/);
@@ -87,6 +89,11 @@ test.describe("lab-preview screenshots", () => {
       const afterPauseTime = Number(await lab.getAttribute("data-current-time"));
       expect(Math.abs(afterPauseTime - pausedTime)).toBeLessThan(0.05);
 
+      await detailsButton.click();
+      await expect(page.getByRole("button", { name: "Скрыть подробности" })).toBeVisible();
+      await expect(timeSlider).toBeVisible();
+      await expect(page.locator(".graph-card--detail")).toBeVisible();
+
       await timeSlider.evaluate((element) => {
         const input = element as HTMLInputElement;
         input.value = "3";
@@ -104,17 +111,24 @@ test.describe("lab-preview screenshots", () => {
       await expect(page.locator('[data-value="v"]')).toContainText("4 м/с");
       await expect(page.locator('[data-value="x"]')).toContainText("12 м");
       await expect(page.locator('[data-graph-note="x"]')).toContainText(
-        "линия идёт вверх"
+        "круче линия вверх"
       );
       await expect(page.locator('[data-formula-token="v"]').first()).toHaveClass(
         /is-active/
       );
 
-      await page.getByRole("button", { name: "График станет траекторией тела" }).click();
+      await page.getByRole("button", { name: "Превратится в путь по карте" }).click();
       await expect(page.locator("[data-feedback]")).toContainText("Не совсем");
 
-      await page.getByRole("button", { name: "Линия станет круче" }).click();
-      await expect(page.locator("[data-feedback]")).toContainText("Верно");
+      await page.getByRole("button", { name: "Станет круче" }).click();
+      await expect(page.locator("[data-feedback]")).toContainText("Да. Скорость");
+
+      await page.getByRole("button", { name: "Тело движется быстрее" }).click();
+      await expect(page.locator("[data-quiz-feedback]")).toContainText("Не совсем");
+      await page.getByRole("button", { name: "Координата не меняется, значит v = 0" }).click();
+      await expect(page.locator("[data-quiz-feedback]")).toContainText(
+        "горизонтальная линия"
+      );
     });
   }
 
@@ -130,6 +144,8 @@ test.describe("lab-preview screenshots", () => {
     await expect(page.locator('[data-current-polyline="x"]')).toHaveAttribute("points", /,/);
     await expect(page.locator('[data-current-polyline="v"]')).toHaveAttribute("points", /,/);
     await expect(page.locator("[data-motion-point]")).toBeVisible();
+    await page.getByRole("button", { name: "Показать подробнее" }).click();
+    await expect(page.locator('[data-input="t"]')).toBeVisible();
 
     const lab = page.locator("[data-uniform-motion-lab]");
     const initialTime = Number(await lab.getAttribute("data-current-time"));

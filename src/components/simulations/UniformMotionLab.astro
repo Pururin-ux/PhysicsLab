@@ -12,246 +12,237 @@ import SurfaceCard from "../ui/SurfaceCard.astro";
     <div class="lab-heading">
       <div>
         <p class="component-label">Интерактивная лаборатория</p>
-        <h3 id="uniform-lab-title">Лаборатория равномерного движения</h3>
-        <p class="lab-goal">Свяжи формулу, график и движение точки.</p>
+        <h3 id="uniform-lab-title">Посмотри, как скорость меняет график</h3>
+        <p class="lab-goal">
+          Двигай скорость или нажми запуск. Точка поедет, а график покажет,
+          как меняется координата.
+        </p>
       </div>
-      <Badge tone="info">демо-режим · требует проверки автора</Badge>
+      <Badge tone="info">демо · нужна проверка автора</Badge>
     </div>
 
-    <div class="cycle-grid" aria-label="Учебный цикл лаборатории">
-      <article class="cycle-card">
-        <span class="cycle-step">1</span>
-        <h4>Предскажи</h4>
-        <p>Что произойдёт с наклоном графика x(t), если увеличить скорость?</p>
-      </article>
-      <article class="cycle-card">
-        <span class="cycle-step">2</span>
-        <h4>Измени</h4>
-        <p>Поменяй x₀, v или t и смотри, как связаны число, формула и график.</p>
-      </article>
-      <article class="cycle-card">
-        <span class="cycle-step">3</span>
-        <h4>Наблюдай</h4>
-        <p>График x(t) меняет наклон, а v(t) остаётся горизонтальным.</p>
-      </article>
-      <article class="cycle-card">
-        <span class="cycle-step">4</span>
-        <h4>Объясни</h4>
-        <p>Сформулируй: что показывает наклон и почему график не траектория?</p>
-      </article>
+    <div class="start-strip" aria-live="polite">
+      <p data-guidance>Нажми «Запустить» и смотри на точку.</p>
+      <div class="time-actions">
+        <button
+          type="button"
+          class="play-button"
+          data-play-toggle
+          aria-pressed="false"
+          aria-label="Запустить анимацию"
+        >
+          Запустить
+        </button>
+        <button type="button" class="reset-button" data-reset>
+          Сбросить
+        </button>
+      </div>
     </div>
 
-    <div class="lab-layout">
-      <div class="lab-control-column">
-        <div class="formula-panel" aria-label="Формула равномерного движения">
-          <p class="panel-label">Главная формула</p>
-          <div class="live-formula" aria-live="polite">
-            <span>x</span>
-            <span>=</span>
-            <span class="formula-token" data-formula-token="x0">x₀</span>
-            <span>+</span>
-            <span class="formula-term" data-formula-token="vt">
-              <span class="formula-token" data-formula-token="v">v</span><span class="formula-token" data-formula-token="t">t</span>
-            </span>
-          </div>
-          <p class="formula-note">
-            Координата равна старту плюс изменение координаты за время t.
-          </p>
-          <div class="substitution-box" aria-live="polite">
-            <p class="substitution-title">Подстановка</p>
-            <p class="substitution-line">
-              x =
-              <span data-formula-highlight="x0" data-substitution="x0">0</span>
-              +
-              <span data-formula-highlight="vt">
-                <span data-formula-highlight="v" data-substitution="v">2</span>
-                ·
-                <span data-formula-highlight="t" data-substitution="t">0</span>
-              </span>
-              =
-              <strong data-substitution="x">0 м</strong>
-            </p>
-            <p class="substitution-delta">
-              Изменение координаты:
-              <b data-formula-highlight="vt" data-substitution="delta">0 м</b>
-            </p>
-          </div>
+    <div class="simple-lab-grid">
+      <div class="motion-card" aria-label="Точка на прямой">
+        <div class="simple-card-head">
+          <span>Вот точка</span>
+          <strong data-observation>Едет вправо</strong>
         </div>
-
-        <div class="scenario-row" aria-label="Сценарии движения">
-          <button type="button" data-scenario="forward" aria-pressed="true">вперёд</button>
-          <button type="button" data-scenario="still" aria-pressed="false">стоит</button>
-          <button type="button" data-scenario="backward" aria-pressed="false">назад</button>
+        <div class="track" aria-hidden="true">
+          <span class="track-axis"></span>
+          <span class="track-zero">0</span>
+          <span class="velocity-arrow" data-velocity-arrow></span>
+          <span class="motion-point" data-motion-point></span>
         </div>
-
-        <div class="time-panel" aria-label="Управление временем">
-          <div class="time-actions">
-            <button
-              type="button"
-              class="play-button"
-              data-play-toggle
-              aria-pressed="false"
-              aria-label="Запустить анимацию"
-            >
-              Запустить
-            </button>
-            <button type="button" class="reset-button" data-reset>
-              Сбросить
-            </button>
-          </div>
-          <p class="time-readout">
-            Текущее время:
-            <b data-time-readout>0 с</b>
-          </p>
-          <p class="motion-mode-note" data-motion-mode-note>
-            При запуске время идёт до 8 с и останавливается.
-          </p>
-        </div>
-
-        <div class="sliders" aria-label="Параметры движения">
-          <label class="slider-field">
-            <span>
-              <b>x₀</b>
-              <span>начальная координата</span>
-            </span>
-            <output data-output="x0">0 м</output>
-            <input
-              type="range"
-              min="-6"
-              max="6"
-              step="0.5"
-              value="0"
-              data-input="x0"
-              aria-label="Начальная координата x ноль в метрах"
-            />
-          </label>
-
-          <label class="slider-field">
-            <span>
-              <b>v</b>
-              <span>скорость</span>
-            </span>
-            <output data-output="v">2 м/с</output>
-            <input
-              type="range"
-              min="-4"
-              max="4"
-              step="0.5"
-              value="2"
-              data-input="v"
-              aria-label="Скорость v в метрах в секунду"
-            />
-          </label>
-
-          <label class="slider-field">
-            <span>
-              <b>t</b>
-              <span>ручная перемотка времени</span>
-            </span>
-            <output data-output="t">0 с</output>
-            <input
-              type="range"
-              min="0"
-              max="8"
-              step="0.01"
-              value="0"
-              data-input="t"
-              aria-label="Ручная перемотка времени t в секундах"
-            />
-          </label>
-        </div>
-
-        <div class="value-panel" aria-label="Текущие численные значения">
-          <p class="panel-label">Текущее значение</p>
-          <div class="value-grid">
-            <div><span>x₀</span><b data-value="x0">0 м</b></div>
-            <div><span>v</span><b data-value="v">2 м/с</b></div>
-            <div><span>t</span><b data-value="t">0 с</b></div>
-            <div><span>x</span><b data-value="x">0 м</b></div>
-            <div class="value-wide"><span>Изменение координаты vt</span><b data-value="delta">0 м</b></div>
-          </div>
-        </div>
+        <p>
+          Это не дорога на карте. Мы просто смотрим, где точка сейчас.
+        </p>
       </div>
 
-      <div class="lab-observe-column">
-        <div class="motion-strip" aria-label="Движение точки по прямой">
-          <div class="strip-head">
-            <span>Движение точки</span>
-            <strong data-observation>v &gt; 0: координата растёт</strong>
-          </div>
-          <div class="track" aria-hidden="true">
-            <span class="track-axis"></span>
-            <span class="track-zero">0</span>
-            <span class="velocity-arrow" data-velocity-arrow></span>
-            <span class="motion-point" data-motion-point></span>
-          </div>
-          <p>
-            Точка показывает положение x в выбранный момент времени. Это движение вдоль оси,
-            а не линия графика.
-          </p>
-        </div>
+      <figure class="graph-card graph-card--main">
+        <figcaption>График x(t)</figcaption>
+        <svg
+          viewBox="0 0 320 220"
+          role="img"
+          aria-label="График координаты от времени"
+          preserveAspectRatio="xMidYMid meet"
+        >
+          <g class="grid-lines" data-grid="x"></g>
+          <line class="axis-line" x1="42" y1="188" x2="302" y2="188"></line>
+          <line class="axis-line" x1="42" y1="18" x2="42" y2="188"></line>
+          <text class="axis-text" x="282" y="210">t, с</text>
+          <text class="axis-text" x="14" y="28">x, м</text>
+          <polyline class="graph-polyline graph-polyline--base" data-polyline="x"></polyline>
+          <polyline class="graph-polyline graph-polyline--current" data-current-polyline="x"></polyline>
+          <circle class="graph-current" data-point="x" r="5"></circle>
+        </svg>
+        <p data-graph-note="x">
+          Жёлтая точка на графике показывает, где тело сейчас.
+        </p>
+      </figure>
+    </div>
 
-        <div class="graphs-grid">
-          <figure class="graph-card">
-            <figcaption>График x(t)</figcaption>
-            <svg
-              viewBox="0 0 320 220"
-              role="img"
-              aria-label="График координаты от времени"
-              preserveAspectRatio="xMidYMid meet"
-            >
-              <g class="grid-lines" data-grid="x"></g>
-              <line class="axis-line" x1="42" y1="188" x2="302" y2="188"></line>
-              <line class="axis-line" x1="42" y1="18" x2="42" y2="188"></line>
-              <text class="axis-text" x="282" y="210">t, с</text>
-              <text class="axis-text" x="14" y="28">x, м</text>
-              <polyline class="graph-polyline graph-polyline--base" data-polyline="x"></polyline>
-              <polyline class="graph-polyline graph-polyline--current" data-current-polyline="x"></polyline>
-              <circle class="graph-current" data-point="x" r="5"></circle>
-            </svg>
-            <p data-graph-note="x">
-              Текущая точка показывает координату в выбранный момент времени.
-            </p>
-          </figure>
+    <div class="speed-panel" aria-label="Главное управление скоростью">
+      <label class="slider-field slider-field--hero">
+        <span>
+          <b>Скорость v</b>
+          <span>Чем больше скорость, тем круче линия.</span>
+        </span>
+        <output data-output="v">2 м/с</output>
+        <input
+          type="range"
+          min="-4"
+          max="4"
+          step="0.5"
+          value="2"
+          data-input="v"
+          aria-label="Скорость v в метрах в секунду"
+        />
+      </label>
 
-          <figure class="graph-card">
-            <figcaption>График v(t)</figcaption>
-            <svg
-              viewBox="0 0 320 220"
-              role="img"
-              aria-label="График скорости от времени"
-              preserveAspectRatio="xMidYMid meet"
-            >
-              <g class="grid-lines" data-grid="v"></g>
-              <line class="axis-line" x1="42" y1="188" x2="302" y2="188"></line>
-              <line class="axis-line" x1="42" y1="18" x2="42" y2="188"></line>
-              <text class="axis-text" x="282" y="210">t, с</text>
-              <text class="axis-text" x="14" y="28">v, м/с</text>
-              <polyline class="graph-polyline graph-polyline--base" data-polyline="v"></polyline>
-              <polyline class="graph-polyline graph-polyline--current" data-current-polyline="v"></polyline>
-              <circle class="graph-current" data-point="v" r="5"></circle>
-            </svg>
-            <p data-graph-note="v">При равномерном движении скорость постоянна.</p>
-          </figure>
-        </div>
+      <div class="quick-status" aria-label="Текущее состояние">
+        <span>t = <b data-value="t">0 с</b></span>
+        <span>x = <b data-value="x">0 м</b></span>
+      </div>
+
+      <div class="scenario-row" aria-label="Быстрые примеры движения">
+        <button type="button" data-scenario="forward" aria-pressed="true">вперёд</button>
+        <button type="button" data-scenario="still" aria-pressed="false">стоит</button>
+        <button type="button" data-scenario="backward" aria-pressed="false">назад</button>
       </div>
     </div>
 
     <div class="explain-card" aria-labelledby="uniform-check-title">
       <div>
-        <p class="panel-label">Мини-проверка</p>
+        <p class="panel-label">Проверь себя</p>
         <h4 id="uniform-check-title">
-          Что произойдёт с наклоном графика x(t), если увеличить скорость?
+          Если увеличить скорость, что станет с линией x(t)?
         </h4>
       </div>
       <div class="answer-row" role="group" aria-label="Варианты ответа">
-        <button type="button" data-answer="correct">Линия станет круче</button>
-        <button type="button" data-answer="flat">Линия станет горизонтальной</button>
-        <button type="button" data-answer="path">График станет траекторией тела</button>
+        <button type="button" data-answer="correct">Станет круче</button>
+        <button type="button" data-answer="flat">Станет плоской</button>
+        <button type="button" data-answer="path">Превратится в путь по карте</button>
       </div>
       <p class="feedback" data-feedback aria-live="polite">
-        Выбери вариант, а лаборатория даст мягкую обратную связь.
+        Выбери ответ. Если промахнёшься, ничего страшного: разберём по графику.
       </p>
+    </div>
+
+    <button
+      type="button"
+      class="details-toggle"
+      data-details-toggle
+      aria-expanded="false"
+      aria-controls="uniform-motion-details"
+    >
+      Показать подробнее
+    </button>
+
+    <div
+      id="uniform-motion-details"
+      class="details-panel"
+      data-details-panel
+      hidden
+    >
+      <div class="formula-panel" aria-label="Формула равномерного движения">
+        <p class="panel-label">Что происходит в формуле?</p>
+        <div class="live-formula" aria-live="polite">
+          <span>x</span>
+          <span>=</span>
+          <span class="formula-token" data-formula-token="x0">x₀</span>
+          <span>+</span>
+          <span class="formula-term" data-formula-token="vt">
+            <span class="formula-token" data-formula-token="v">v</span><span class="formula-token" data-formula-token="t">t</span>
+          </span>
+        </div>
+        <ul class="formula-meaning">
+          <li><b>x₀</b> — откуда стартуем.</li>
+          <li><b>vt</b> — насколько успели уехать.</li>
+          <li><b>x</b> — где оказались.</li>
+        </ul>
+        <div class="substitution-box" aria-live="polite">
+          <p class="substitution-title">Подстановка</p>
+          <p class="substitution-line">
+            x =
+            <span data-formula-highlight="x0" data-substitution="x0">0</span>
+            +
+            <span data-formula-highlight="vt">
+              <span data-formula-highlight="v" data-substitution="v">2</span>
+              ·
+              <span data-formula-highlight="t" data-substitution="t">0</span>
+            </span>
+            =
+            <strong data-substitution="x">0 м</strong>
+          </p>
+          <p class="substitution-delta">
+            Δx = vt:
+            <b data-formula-highlight="vt" data-substitution="delta">0 м</b>
+          </p>
+        </div>
+      </div>
+
+      <div class="exact-panel" aria-label="Точные ручки и значения">
+        <p class="panel-label">Точные ручки</p>
+        <label class="slider-field">
+          <span>
+            <b>x₀</b>
+            <span>откуда стартуем</span>
+          </span>
+          <output data-output="x0">0 м</output>
+          <input
+            type="range"
+            min="-6"
+            max="6"
+            step="0.5"
+            value="0"
+            data-input="x0"
+            aria-label="Начальная координата x ноль в метрах"
+          />
+        </label>
+
+        <label class="slider-field">
+          <span>
+            <b>t</b>
+            <span>ручная перемотка</span>
+          </span>
+          <output data-output="t">0 с</output>
+          <input
+            type="range"
+            min="0"
+            max="8"
+            step="0.01"
+            value="0"
+            data-input="t"
+            aria-label="Ручная перемотка времени t в секундах"
+          />
+        </label>
+
+        <div class="value-grid" aria-label="Точные численные значения">
+          <div><span>x₀</span><b data-value="x0">0 м</b></div>
+          <div><span>v</span><b data-value="v">2 м/с</b></div>
+          <div><span>Δx = vt</span><b data-value="delta">0 м</b></div>
+        </div>
+      </div>
+
+      <figure class="graph-card graph-card--detail">
+        <figcaption>График v(t)</figcaption>
+        <svg
+          viewBox="0 0 320 220"
+          role="img"
+          aria-label="График скорости от времени"
+          preserveAspectRatio="xMidYMid meet"
+        >
+          <g class="grid-lines" data-grid="v"></g>
+          <line class="axis-line" x1="42" y1="188" x2="302" y2="188"></line>
+          <line class="axis-line" x1="42" y1="18" x2="42" y2="188"></line>
+          <text class="axis-text" x="282" y="210">t, с</text>
+          <text class="axis-text" x="14" y="28">v, м/с</text>
+          <polyline class="graph-polyline graph-polyline--base" data-polyline="v"></polyline>
+          <polyline class="graph-polyline graph-polyline--current" data-current-polyline="v"></polyline>
+          <circle class="graph-current" data-point="v" r="5"></circle>
+        </svg>
+        <p data-graph-note="v">
+          При равномерном движении скорость не меняется.
+        </p>
+      </figure>
     </div>
   </section>
 </SurfaceCard>
@@ -290,6 +281,7 @@ import SurfaceCard from "../ui/SurfaceCard.astro";
   } satisfies Record<string, LabState>;
 
   type ScenarioName = keyof typeof scenarios;
+  type Direction = ReturnType<typeof getUniformMotionDirection>;
 
   document.querySelectorAll<HTMLElement>("[data-uniform-motion-lab]").forEach((lab) => {
     const inputs = {
@@ -329,12 +321,13 @@ import SurfaceCard from "../ui/SurfaceCard.astro";
     const motionPoint = mustFind<HTMLElement>(lab, "[data-motion-point]");
     const velocityArrow = mustFind<HTMLElement>(lab, "[data-velocity-arrow]");
     const observation = mustFind<HTMLElement>(lab, "[data-observation]");
+    const guidance = mustFind<HTMLElement>(lab, "[data-guidance]");
     const xNote = mustFind<HTMLElement>(lab, '[data-graph-note="x"]');
     const vNote = mustFind<HTMLElement>(lab, '[data-graph-note="v"]');
     const playButton = mustFind<HTMLButtonElement>(lab, "[data-play-toggle]");
     const resetButton = mustFind<HTMLButtonElement>(lab, "[data-reset]");
-    const timeReadout = mustFind<HTMLElement>(lab, "[data-time-readout]");
-    const motionModeNote = mustFind<HTMLElement>(lab, "[data-motion-mode-note]");
+    const detailsToggle = mustFind<HTMLButtonElement>(lab, "[data-details-toggle]");
+    const detailsPanel = mustFind<HTMLElement>(lab, "[data-details-panel]");
     const scenarioButtons = lab.querySelectorAll<HTMLButtonElement>("[data-scenario]");
     const answerButtons = lab.querySelectorAll<HTMLButtonElement>("[data-answer]");
     const feedback = mustFind<HTMLElement>(lab, "[data-feedback]");
@@ -343,6 +336,7 @@ import SurfaceCard from "../ui/SurfaceCard.astro";
     let state: LabState = { ...scenarios.forward };
     let isPlaying = false;
     let isReducedMotion = reducedMotionQuery.matches;
+    let hasStarted = false;
     let animationFrameId: number | null = null;
     let previousFrameTime: number | null = null;
 
@@ -379,6 +373,8 @@ import SurfaceCard from "../ui/SurfaceCard.astro";
     };
 
     const startAnimation = () => {
+      hasStarted = true;
+
       if (isReducedMotion) {
         stepForward();
         return;
@@ -396,6 +392,7 @@ import SurfaceCard from "../ui/SurfaceCard.astro";
 
     const stepForward = () => {
       stopAnimation();
+      hasStarted = true;
       const nextT = state.t >= T_MAX
         ? 0
         : normalizeUniformMotionTime(state.t + REDUCED_MOTION_STEP, T_MAX);
@@ -434,7 +431,6 @@ import SurfaceCard from "../ui/SurfaceCard.astro";
         playButton.setAttribute("aria-label", "Шаг вперёд по времени");
         playButton.setAttribute("aria-pressed", "false");
         playButton.dataset.mode = "step";
-        motionModeNote.textContent = "Сниженное движение: кнопка делает шаг, ручная перемотка работает полностью.";
         return;
       }
 
@@ -445,11 +441,6 @@ import SurfaceCard from "../ui/SurfaceCard.astro";
       );
       playButton.setAttribute("aria-pressed", String(isPlaying));
       playButton.dataset.mode = isPlaying ? "pause" : "play";
-      motionModeNote.textContent = isPlaying
-        ? "Время идёт до 8 с; точка, графики и формула обновляются вместе."
-        : state.t >= T_MAX
-          ? "Достигнут конец интервала. Кнопка запуска начнёт движение с 0 с."
-          : "При запуске время идёт до 8 с и останавливается.";
     };
 
     const updateLab = (changed: InputName, options: { fromPlayback?: boolean } = {}) => {
@@ -472,7 +463,6 @@ import SurfaceCard from "../ui/SurfaceCard.astro";
       values.t.textContent = `${formatPhysicsNumber(state.t, 2)} с`;
       values.x.textContent = `${formatPhysicsNumber(x)} м`;
       values.delta.textContent = `${formatPhysicsNumber(delta)} м`;
-      timeReadout.textContent = `${formatPhysicsNumber(state.t, 2)} с`;
 
       substitution.x0.textContent = formatPhysicsNumber(state.x0);
       substitution.v.textContent = formatPhysicsNumber(state.v);
@@ -527,6 +517,7 @@ import SurfaceCard from "../ui/SurfaceCard.astro";
       velocityArrow.dataset.direction = direction;
 
       observation.textContent = getObservation(direction);
+      guidance.textContent = getGuidance(direction, hasStarted);
       xNote.textContent = getPositionNote(direction);
       vNote.textContent = getVelocityNote(direction);
 
@@ -539,6 +530,9 @@ import SurfaceCard from "../ui/SurfaceCard.astro";
         setActiveScenario("");
         if (name === "t") {
           stopAnimation();
+        }
+        if (name === "v") {
+          hasStarted = true;
         }
 
         state = normalizeState({
@@ -569,6 +563,7 @@ import SurfaceCard from "../ui/SurfaceCard.astro";
           return;
         }
         stopAnimation();
+        hasStarted = true;
         setActiveScenario(scenario);
         setState(scenarios[scenario], "v");
       });
@@ -576,14 +571,22 @@ import SurfaceCard from "../ui/SurfaceCard.astro";
 
     resetButton.addEventListener("click", () => {
       stopAnimation();
+      hasStarted = false;
       setActiveScenario("forward");
       setState(scenarios.forward, "x0");
       answerButtons.forEach((button) => {
         button.classList.remove("is-correct", "is-wrong");
         button.removeAttribute("aria-pressed");
       });
-      feedback.textContent = "Выбери вариант, а лаборатория даст мягкую обратную связь.";
+      feedback.textContent = "Выбери ответ. Если промахнёшься, ничего страшного: разберём по графику.";
       feedback.dataset.state = "idle";
+    });
+
+    detailsToggle.addEventListener("click", () => {
+      const nextExpanded = detailsPanel.hidden;
+      detailsPanel.hidden = !nextExpanded;
+      detailsToggle.setAttribute("aria-expanded", String(nextExpanded));
+      detailsToggle.textContent = nextExpanded ? "Скрыть подробности" : "Показать подробнее";
     });
 
     const handleReducedMotionChange = () => {
@@ -609,8 +612,8 @@ import SurfaceCard from "../ui/SurfaceCard.astro";
         button.classList.add(correct ? "is-correct" : "is-wrong");
         feedback.dataset.state = correct ? "success" : "warning";
         feedback.textContent = correct
-          ? "Верно. Чем больше скорость, тем больше наклон x(t): координата меняется быстрее."
-          : "Не совсем. Наклон графика x(t) показывает скорость. Если скорость больше, линия поднимается быстрее.";
+          ? "Да. Скорость — это наклон графика x(t). Больше скорость → круче линия."
+          : "Не совсем. График x(t) не рисует дорогу. Он показывает, как координата меняется со временем.";
       });
     });
 
@@ -681,36 +684,52 @@ import SurfaceCard from "../ui/SurfaceCard.astro";
     });
   }
 
-  function getMotionLabel(direction: ReturnType<typeof getUniformMotionDirection>): string {
+  function getMotionLabel(direction: Direction): string {
     if (direction === "forward") return "вперёд";
     if (direction === "backward") return "назад";
     return "стоит";
   }
 
-  function getObservation(direction: ReturnType<typeof getUniformMotionDirection>): string {
-    if (direction === "forward") return "v > 0: координата растёт";
-    if (direction === "backward") return "v < 0: координата уменьшается";
-    return "v = 0: точка стоит на месте";
+  function getObservation(direction: Direction): string {
+    if (direction === "forward") return "Едет вправо";
+    if (direction === "backward") return "Едет назад";
+    return "Стоит";
   }
 
-  function getPositionNote(direction: ReturnType<typeof getUniformMotionDirection>): string {
+  function getGuidance(direction: Direction, hasStarted: boolean): string {
+    if (!hasStarted) {
+      return "Нажми «Запустить» и смотри на точку.";
+    }
+
     if (direction === "forward") {
-      return "Текущая точка показывает координату в выбранный момент времени; линия идёт вверх, потому что v > 0.";
+      return "Видишь? Точка едет вправо, поэтому линия x(t) идёт вверх.";
     }
 
     if (direction === "backward") {
-      return "Текущая точка показывает координату в выбранный момент времени; линия идёт вниз, потому что v < 0.";
+      return "Точка едет назад. Координата уменьшается, поэтому линия идёт вниз.";
     }
 
-    return "Текущая точка показывает координату в выбранный момент времени; линия горизонтальна, потому что v = 0.";
+    return "Точка стоит. Координата не меняется, поэтому график горизонтальный.";
   }
 
-  function getVelocityNote(direction: ReturnType<typeof getUniformMotionDirection>): string {
-    if (direction === "still") {
-      return "Текущая точка движется по времени на линии v = 0: скорость равна нулю.";
+  function getPositionNote(direction: Direction): string {
+    if (direction === "forward") {
+      return "Жёлтая точка показывает, где тело сейчас. Чем больше скорость, тем круче линия вверх.";
     }
 
-    return "Текущая точка движется вправо по времени; горизонтальная линия показывает постоянную скорость.";
+    if (direction === "backward") {
+      return "Жёлтая точка показывает, где тело сейчас. Скорость меньше нуля — линия идёт вниз.";
+    }
+
+    return "Жёлтая точка показывает, где тело сейчас. Скорость ноль — линия плоская.";
+  }
+
+  function getVelocityNote(direction: Direction): string {
+    if (direction === "still") {
+      return "Скорость равна нулю, поэтому линия v(t) лежит на нуле.";
+    }
+
+    return "Скорость постоянная, поэтому линия v(t) горизонтальная.";
   }
 
   function getVelocityArrowWidth(v: number): number {
@@ -733,11 +752,10 @@ import SurfaceCard from "../ui/SurfaceCard.astro";
 <style>
   .uniform-lab {
     display: grid;
-    gap: var(--pl-space-5);
+    gap: var(--pl-space-4);
   }
 
-  .lab-heading,
-  .strip-head {
+  .lab-heading {
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
@@ -748,77 +766,31 @@ import SurfaceCard from "../ui/SurfaceCard.astro";
   .panel-label {
     margin: 0 0 var(--pl-space-2);
     color: var(--pl-accent);
-    font-size: 0.78rem;
+    font-size: 0.76rem;
     font-weight: 900;
     text-transform: uppercase;
   }
 
+  .lab-heading h3 {
+    max-width: 760px;
+    margin-bottom: var(--pl-space-2);
+    font-size: clamp(1.55rem, 3.6vw, 2.4rem);
+  }
+
   .lab-goal {
-    max-width: 620px;
-    margin-bottom: 0;
-  }
-
-  .cycle-grid {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: var(--pl-space-3);
-  }
-
-  .cycle-card {
-    min-width: 0;
-    padding: var(--pl-space-4);
-    border: 1px solid var(--pl-border-soft);
-    border-radius: var(--pl-radius);
-    background: rgba(255, 255, 255, 0.035);
-  }
-
-  .cycle-step {
-    display: inline-grid;
-    place-items: center;
-    min-width: 30px;
-    min-height: 30px;
-    margin-bottom: var(--pl-space-3);
-    border-radius: 999px;
-    color: #12130d;
-    background: var(--pl-accent);
-    font-weight: 900;
-  }
-
-  .cycle-card h4,
-  .explain-card h4 {
-    margin: 0 0 var(--pl-space-2);
-    color: var(--pl-text);
-    font-size: 1.02rem;
-  }
-
-  .cycle-card p,
-  .motion-strip p,
-  .graph-card p,
-  .formula-note,
-  .feedback {
-    margin-bottom: 0;
-    font-size: 0.95rem;
+    max-width: 720px;
+    margin: 0;
+    font-size: clamp(1rem, 1.7vw, 1.08rem);
     line-height: 1.55;
   }
 
-  .lab-layout {
-    display: grid;
-    grid-template-columns: minmax(300px, 0.78fr) minmax(0, 1.2fr);
-    gap: var(--pl-space-5);
-    align-items: stretch;
-  }
-
-  .lab-control-column,
-  .lab-observe-column {
-    display: grid;
-    gap: var(--pl-space-4);
-    min-width: 0;
-  }
-
-  .formula-panel,
-  .motion-strip,
+  .start-strip,
+  .speed-panel,
+  .motion-card,
   .graph-card,
-  .explain-card {
+  .explain-card,
+  .formula-panel,
+  .exact-panel {
     min-width: 0;
     padding: var(--pl-space-4);
     border: 1px solid var(--pl-border-soft);
@@ -826,146 +798,50 @@ import SurfaceCard from "../ui/SurfaceCard.astro";
     background: rgba(8, 12, 18, 0.58);
   }
 
-  .live-formula {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.36em;
-    margin-bottom: var(--pl-space-3);
-    color: var(--pl-text);
-    font-family: "Cascadia Mono", "JetBrains Mono", Consolas, monospace;
-    font-size: clamp(2rem, 5vw, 3.2rem);
-    font-weight: 900;
-    line-height: 1.08;
-  }
-
-  .formula-token,
-  .formula-term,
-  [data-formula-highlight] {
-    border-radius: var(--pl-radius-sm);
-    transition:
-      color 160ms ease,
-      background-color 160ms ease,
-      box-shadow 160ms ease;
-  }
-
-  .formula-token {
-    padding: 0 0.06em;
-  }
-
-  .formula-term,
-  [data-formula-highlight] {
-    padding: 0 0.1em;
-  }
-
-  .formula-token.is-active,
-  .formula-term.is-active,
-  [data-formula-highlight].is-active {
-    color: #0b0d12;
-    background: var(--pl-accent);
-    box-shadow: 0 0 0 5px rgba(255, 216, 77, 0.12);
-  }
-
-  .formula-token.is-soft-active,
-  .formula-term.is-soft-active,
-  [data-formula-highlight].is-soft-active {
-    box-shadow: 0 0 0 5px rgba(255, 216, 77, 0.08);
-  }
-
-  .substitution-box {
+  .start-strip {
     display: grid;
-    gap: var(--pl-space-2);
-    margin-top: var(--pl-space-4);
-    padding: var(--pl-space-3);
-    border: 1px solid rgba(88, 216, 255, 0.18);
-    border-radius: var(--pl-radius);
-    background: rgba(88, 216, 255, 0.045);
+    grid-template-columns: minmax(0, 1fr) minmax(240px, 0.48fr);
+    gap: var(--pl-space-4);
+    align-items: center;
+    border-color: rgba(255, 216, 77, 0.3);
+    background:
+      linear-gradient(90deg, rgba(255, 216, 77, 0.07), transparent 58%),
+      rgba(8, 12, 18, 0.62);
   }
 
-  .substitution-title,
-  .substitution-line,
-  .substitution-delta,
-  .time-readout,
-  .motion-mode-note {
+  .start-strip p {
     margin: 0;
-  }
-
-  .substitution-title {
-    color: var(--pl-cyan);
-    font-size: 0.82rem;
-    font-weight: 900;
-    text-transform: uppercase;
-  }
-
-  .substitution-line {
     color: var(--pl-text);
-    font-family: "Cascadia Mono", "JetBrains Mono", Consolas, monospace;
-    font-size: clamp(1.05rem, 2.6vw, 1.28rem);
+    font-size: clamp(1.08rem, 2vw, 1.22rem);
     font-weight: 850;
-    line-height: 1.55;
-  }
-
-  .substitution-delta,
-  .motion-mode-note {
-    color: var(--pl-text-muted);
-    font-size: 0.94rem;
     line-height: 1.45;
   }
 
-  .substitution-delta b,
-  .time-readout b {
-    color: var(--pl-cyan);
-  }
-
+  .time-actions,
   .scenario-row,
-  .answer-row,
-  .time-actions {
+  .answer-row {
     display: flex;
     flex-wrap: wrap;
     gap: var(--pl-space-2);
   }
 
+  .play-button,
+  .reset-button,
   .scenario-row button,
   .answer-row button,
-  .play-button,
-  .reset-button {
+  .details-toggle {
     min-height: 44px;
     border: 1px solid var(--pl-border-soft);
     border-radius: var(--pl-radius);
     color: var(--pl-text);
     background: rgba(255, 255, 255, 0.04);
-    font-weight: 850;
-  }
-
-  .scenario-row button {
-    flex: 1 1 92px;
-    padding: 9px 12px;
-  }
-
-  .scenario-row button[aria-pressed="true"] {
-    border-color: rgba(255, 216, 77, 0.56);
-    color: var(--pl-accent);
-    background: rgba(255, 216, 77, 0.08);
-  }
-
-  .time-panel,
-  .value-panel {
-    display: grid;
-    gap: var(--pl-space-3);
-    min-width: 0;
-    padding: var(--pl-space-4);
-    border: 1px solid var(--pl-border-soft);
-    border-radius: var(--pl-radius);
-    background: rgba(255, 255, 255, 0.035);
-  }
-
-  .time-actions button {
-    flex: 1 1 130px;
-    padding: 10px 14px;
+    font-weight: 900;
   }
 
   .play-button {
-    border-color: rgba(255, 216, 77, 0.56);
+    flex: 1 1 140px;
+    min-height: 52px;
+    border-color: rgba(255, 216, 77, 0.7);
     color: #111317;
     background: var(--pl-accent);
   }
@@ -975,104 +851,47 @@ import SurfaceCard from "../ui/SurfaceCard.astro";
     background: rgba(255, 216, 77, 0.08);
   }
 
-  .time-readout {
-    color: var(--pl-text);
-    font-weight: 850;
-  }
-
-  .sliders {
-    display: grid;
-    gap: var(--pl-space-4);
-  }
-
-  .slider-field {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    gap: var(--pl-space-3);
-    align-items: center;
-    min-width: 0;
-  }
-
-  .slider-field > span {
-    display: grid;
-    gap: var(--pl-space-1);
-    min-width: 0;
-  }
-
-  .slider-field b {
-    color: var(--pl-text);
-  }
-
-  .slider-field span span,
-  .slider-field output {
-    color: var(--pl-text-muted);
-    font-size: 0.94rem;
-  }
-
-  .slider-field output {
-    min-width: 72px;
-    text-align: right;
-  }
-
-  .slider-field input {
-    grid-column: 1 / -1;
-    width: 100%;
-    accent-color: var(--pl-accent);
-  }
-
-  .slider-field input:focus-visible {
-    outline: 3px solid var(--pl-accent);
-    outline-offset: 5px;
-  }
-
-  .value-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: var(--pl-space-2);
-  }
-
-  .value-grid div {
-    min-width: 0;
-    padding: var(--pl-space-3);
-    border: 1px solid var(--pl-border-soft);
-    border-radius: var(--pl-radius);
-    background: rgba(255, 255, 255, 0.035);
-  }
-
-  .value-grid span {
-    display: block;
-    margin-bottom: var(--pl-space-1);
-    color: var(--pl-text-soft);
-    font-size: 0.86rem;
-  }
-
-  .value-grid b {
-    color: var(--pl-cyan);
-    font-size: 1.08rem;
-  }
-
-  .value-wide {
-    grid-column: 1 / -1;
-  }
-
   .reset-button {
-    width: 100%;
+    flex: 1 1 112px;
     padding: 10px 14px;
   }
 
-  .reset-button:hover,
-  .play-button:hover,
-  .answer-row button:hover,
-  .scenario-row button:hover {
-    border-color: var(--pl-border-strong);
+  .simple-lab-grid {
+    display: grid;
+    grid-template-columns: minmax(280px, 0.9fr) minmax(320px, 1.1fr);
+    gap: var(--pl-space-4);
+    align-items: stretch;
+  }
+
+  .simple-card-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--pl-space-3);
+    color: var(--pl-text);
+    font-weight: 900;
+  }
+
+  .simple-card-head strong {
+    color: var(--pl-accent);
+    text-align: right;
+  }
+
+  .motion-card p,
+  .graph-card p,
+  .feedback,
+  .substitution-delta {
+    margin: 0;
+    font-size: 0.96rem;
+    line-height: 1.55;
   }
 
   .track {
     position: relative;
-    min-height: 104px;
-    margin: var(--pl-space-3) 0;
+    min-height: 178px;
+    margin: var(--pl-space-4) 0;
     overflow: hidden;
-    border: 1px solid rgba(88, 216, 255, 0.2);
+    border: 1px solid rgba(88, 216, 255, 0.18);
     border-radius: var(--pl-radius);
     background:
       linear-gradient(rgba(88, 216, 255, 0.055) 1px, transparent 1px),
@@ -1083,16 +902,16 @@ import SurfaceCard from "../ui/SurfaceCard.astro";
 
   .track-axis {
     position: absolute;
-    right: var(--pl-space-4);
-    bottom: 34px;
-    left: var(--pl-space-4);
+    right: var(--pl-space-5);
+    bottom: 58px;
+    left: var(--pl-space-5);
     height: 3px;
-    background: rgba(244, 247, 251, 0.48);
+    background: rgba(244, 247, 251, 0.5);
   }
 
   .track-zero {
     position: absolute;
-    bottom: 44px;
+    bottom: 70px;
     left: 50%;
     color: var(--pl-text-soft);
     font-size: 0.82rem;
@@ -1101,55 +920,52 @@ import SurfaceCard from "../ui/SurfaceCard.astro";
   .motion-point {
     --point-left: 62.5%;
     position: absolute;
-    bottom: 48px;
+    bottom: 72px;
     left: var(--point-left);
-    width: 24px;
-    height: 24px;
-    border: 3px solid #0b1018;
+    width: 28px;
+    height: 28px;
+    border: 4px solid #0b1018;
     border-radius: 50%;
     background: var(--pl-accent);
-    box-shadow: 0 0 0 8px rgba(255, 216, 77, 0.13);
+    box-shadow: 0 0 0 9px rgba(255, 216, 77, 0.13);
     transform: translateX(-50%);
-    transition: left 240ms ease;
+    transition: left 220ms ease;
   }
 
-  .uniform-lab[data-playing="true"] .motion-point {
+  .uniform-lab[data-playing="true"] .motion-point,
+  .uniform-lab[data-playing="true"] .velocity-arrow {
     transition: none;
   }
 
   .motion-point::after {
     content: attr(data-motion-label);
     position: absolute;
-    top: -30px;
+    top: -34px;
     left: 50%;
     transform: translateX(-50%);
     white-space: nowrap;
-    color: var(--pl-text-muted);
-    font-size: 0.8rem;
-    font-weight: 800;
+    color: var(--pl-text);
+    font-size: 0.82rem;
+    font-weight: 900;
   }
 
   .velocity-arrow {
     --point-left: 50%;
     --velocity-width: 0px;
     position: absolute;
-    bottom: 60px;
+    bottom: 86px;
     left: var(--point-left);
     width: var(--velocity-width);
     height: 4px;
     border-radius: 999px;
     background: var(--pl-cyan);
-    box-shadow: 0 0 16px rgba(88, 216, 255, 0.24);
+    box-shadow: 0 0 16px rgba(88, 216, 255, 0.2);
     opacity: 1;
     transform: translateY(-50%);
     transition:
-      left 240ms ease,
-      width 180ms ease,
+      left 220ms ease,
+      width 160ms ease,
       opacity 160ms ease;
-  }
-
-  .uniform-lab[data-playing="true"] .velocity-arrow {
-    transition: none;
   }
 
   .velocity-arrow::after {
@@ -1180,18 +996,6 @@ import SurfaceCard from "../ui/SurfaceCard.astro";
     opacity: 0;
   }
 
-  .strip-head strong {
-    color: var(--pl-accent);
-    font-size: 0.94rem;
-    text-align: right;
-  }
-
-  .graphs-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: var(--pl-space-4);
-  }
-
   .graph-card {
     margin: 0;
   }
@@ -1199,6 +1003,7 @@ import SurfaceCard from "../ui/SurfaceCard.astro";
   .graph-card figcaption {
     margin-bottom: var(--pl-space-2);
     color: var(--pl-text);
+    font-size: 1.08rem;
     font-weight: 900;
   }
 
@@ -1206,8 +1011,8 @@ import SurfaceCard from "../ui/SurfaceCard.astro";
     display: block;
     width: 100%;
     max-width: 100%;
-    min-height: 220px;
-    margin-bottom: var(--pl-space-2);
+    min-height: 260px;
+    margin-bottom: var(--pl-space-3);
     overflow: visible;
   }
 
@@ -1217,7 +1022,7 @@ import SurfaceCard from "../ui/SurfaceCard.astro";
   }
 
   .zero-line {
-    stroke: rgba(244, 247, 251, 0.24);
+    stroke: rgba(244, 247, 251, 0.26);
     stroke-dasharray: 5 5;
     stroke-width: 1.2;
   }
@@ -1255,13 +1060,101 @@ import SurfaceCard from "../ui/SurfaceCard.astro";
     stroke-width: 3;
   }
 
+  .speed-panel {
+    display: grid;
+    gap: var(--pl-space-3);
+  }
+
+  .slider-field {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: var(--pl-space-3);
+    align-items: center;
+    min-width: 0;
+  }
+
+  .slider-field > span {
+    display: grid;
+    gap: var(--pl-space-1);
+    min-width: 0;
+  }
+
+  .slider-field b {
+    color: var(--pl-text);
+  }
+
+  .slider-field span span,
+  .slider-field output {
+    color: var(--pl-text-muted);
+    font-size: 0.94rem;
+  }
+
+  .slider-field output {
+    min-width: 74px;
+    color: var(--pl-text);
+    font-weight: 900;
+    text-align: right;
+  }
+
+  .slider-field input {
+    grid-column: 1 / -1;
+    width: 100%;
+    accent-color: var(--pl-accent);
+  }
+
+  .slider-field input:focus-visible,
+  .play-button:focus-visible,
+  .reset-button:focus-visible,
+  .scenario-row button:focus-visible,
+  .answer-row button:focus-visible,
+  .details-toggle:focus-visible {
+    outline: 3px solid var(--pl-accent);
+    outline-offset: 4px;
+  }
+
+  .quick-status {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--pl-space-2);
+  }
+
+  .quick-status span {
+    flex: 1 1 120px;
+    padding: 10px 12px;
+    border: 1px solid var(--pl-border-soft);
+    border-radius: var(--pl-radius);
+    color: var(--pl-text-muted);
+    background: rgba(255, 255, 255, 0.035);
+  }
+
+  .quick-status b {
+    color: var(--pl-accent);
+  }
+
+  .scenario-row button {
+    flex: 1 1 92px;
+    padding: 9px 12px;
+  }
+
+  .scenario-row button[aria-pressed="true"] {
+    border-color: rgba(255, 216, 77, 0.72);
+    color: #111317;
+    background: var(--pl-accent);
+  }
+
   .explain-card {
     display: grid;
-    gap: var(--pl-space-4);
+    gap: var(--pl-space-3);
+  }
+
+  .explain-card h4 {
+    margin: 0;
+    color: var(--pl-text);
+    font-size: 1.08rem;
   }
 
   .answer-row button {
-    flex: 1 1 210px;
+    flex: 1 1 180px;
     padding: 10px 12px;
     text-align: left;
   }
@@ -1294,41 +1187,188 @@ import SurfaceCard from "../ui/SurfaceCard.astro";
     border-color: rgba(255, 107, 107, 0.45);
   }
 
-  @media (max-width: 1040px) {
-    .cycle-grid,
-    .graphs-grid {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
+  .details-toggle {
+    justify-self: start;
+    padding: 10px 14px;
+    border-color: rgba(88, 216, 255, 0.36);
+    color: var(--pl-text);
+  }
 
-    .lab-layout {
+  .details-panel {
+    display: grid;
+    grid-template-columns: minmax(280px, 1fr) minmax(260px, 0.75fr);
+    gap: var(--pl-space-4);
+  }
+
+  .details-panel[hidden] {
+    display: none;
+  }
+
+  .graph-card--detail {
+    grid-column: 1 / -1;
+  }
+
+  .live-formula {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.36em;
+    margin-bottom: var(--pl-space-3);
+    color: var(--pl-text);
+    font-family: "Cascadia Mono", "JetBrains Mono", Consolas, monospace;
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 900;
+    line-height: 1.08;
+  }
+
+  .formula-token,
+  .formula-term,
+  [data-formula-highlight] {
+    border-radius: var(--pl-radius-sm);
+    transition:
+      color 160ms ease,
+      background-color 160ms ease,
+      box-shadow 160ms ease;
+  }
+
+  .formula-token {
+    padding: 0 0.06em;
+  }
+
+  .formula-term,
+  [data-formula-highlight] {
+    padding: 0 0.1em;
+  }
+
+  .formula-token.is-active,
+  .formula-term.is-active,
+  [data-formula-highlight].is-active {
+    color: #0b0d12;
+    background: var(--pl-accent);
+    box-shadow: 0 0 0 5px rgba(255, 216, 77, 0.12);
+  }
+
+  .formula-token.is-soft-active,
+  .formula-term.is-soft-active,
+  [data-formula-highlight].is-soft-active {
+    box-shadow: 0 0 0 5px rgba(255, 216, 77, 0.08);
+  }
+
+  .formula-meaning {
+    display: grid;
+    gap: var(--pl-space-2);
+    margin: 0 0 var(--pl-space-4);
+    padding-left: 1.2rem;
+    color: var(--pl-text-muted);
+    line-height: 1.5;
+  }
+
+  .formula-meaning b {
+    color: var(--pl-text);
+  }
+
+  .substitution-box {
+    display: grid;
+    gap: var(--pl-space-2);
+    padding: var(--pl-space-3);
+    border: 1px solid rgba(88, 216, 255, 0.18);
+    border-radius: var(--pl-radius);
+    background: rgba(88, 216, 255, 0.045);
+  }
+
+  .substitution-title,
+  .substitution-line {
+    margin: 0;
+  }
+
+  .substitution-title {
+    color: var(--pl-cyan);
+    font-size: 0.82rem;
+    font-weight: 900;
+    text-transform: uppercase;
+  }
+
+  .substitution-line {
+    color: var(--pl-text);
+    font-family: "Cascadia Mono", "JetBrains Mono", Consolas, monospace;
+    font-size: clamp(1.05rem, 2.6vw, 1.24rem);
+    font-weight: 850;
+    line-height: 1.55;
+  }
+
+  .substitution-delta b {
+    color: var(--pl-cyan);
+  }
+
+  .exact-panel {
+    display: grid;
+    gap: var(--pl-space-4);
+  }
+
+  .value-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--pl-space-2);
+  }
+
+  .value-grid div {
+    min-width: 0;
+    padding: var(--pl-space-3);
+    border: 1px solid var(--pl-border-soft);
+    border-radius: var(--pl-radius);
+    background: rgba(255, 255, 255, 0.035);
+  }
+
+  .value-grid span {
+    display: block;
+    margin-bottom: var(--pl-space-1);
+    color: var(--pl-text-soft);
+    font-size: 0.86rem;
+  }
+
+  .value-grid b {
+    color: var(--pl-cyan);
+    font-size: 1.04rem;
+  }
+
+  @media (max-width: 1040px) {
+    .simple-lab-grid,
+    .details-panel {
       grid-template-columns: 1fr;
     }
   }
 
   @media (max-width: 600px) {
+    .uniform-lab {
+      gap: var(--pl-space-3);
+    }
+
     .lab-heading,
-    .strip-head {
-      display: grid;
-    }
-
-    .cycle-grid,
-    .graphs-grid,
-    .value-grid {
+    .start-strip {
       grid-template-columns: 1fr;
     }
 
-    .live-formula {
-      font-size: clamp(1.75rem, 11vw, 2.35rem);
+    .lab-heading {
+      display: grid;
     }
 
+    .time-actions,
     .scenario-row,
-    .answer-row,
-    .time-actions {
+    .answer-row {
       display: grid;
       grid-template-columns: 1fr;
     }
 
-    .slider-field {
+    .track {
+      min-height: 142px;
+    }
+
+    .graph-card svg {
+      min-height: 230px;
+    }
+
+    .slider-field,
+    .value-grid {
       grid-template-columns: 1fr;
       gap: var(--pl-space-2);
     }
@@ -1337,8 +1377,12 @@ import SurfaceCard from "../ui/SurfaceCard.astro";
       text-align: left;
     }
 
-    .strip-head strong {
-      text-align: left;
+    .details-toggle {
+      width: 100%;
+    }
+
+    .live-formula {
+      font-size: clamp(1.75rem, 11vw, 2.35rem);
     }
   }
 

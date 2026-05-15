@@ -30,11 +30,58 @@ const {
     <Badge tone="info">{reviewStatus}</Badge>
   </div>
   <h3>{prompt}</h3>
-  <div class="option-list">
-    {options.map((option) => <button type="button">{option.text}</button>)}
+  <div class="option-list" data-quiz-options>
+    {
+      options.map((option) => (
+        <button
+          type="button"
+          data-quiz-option
+          data-correct={option.correct ? "true" : "false"}
+          aria-pressed="false"
+        >
+          {option.text}
+        </button>
+      ))
+    }
   </div>
-  <p class="feedback-note">{feedback}</p>
+  <p
+    class="feedback-note"
+    data-quiz-feedback
+    data-correct-feedback={feedback}
+    aria-live="polite"
+  >
+    Выбери вариант, и подсказка появится здесь.
+  </p>
 </SurfaceCard>
+
+<script>
+  document.querySelectorAll<HTMLElement>("[data-quiz-options]").forEach((group) => {
+    const buttons = group.querySelectorAll<HTMLButtonElement>("[data-quiz-option]");
+    const card = group.closest("article");
+    const feedbackNode = card?.querySelector<HTMLElement>("[data-quiz-feedback]");
+
+    buttons.forEach((button) => {
+      button.addEventListener("click", () => {
+        const isCorrect = button.dataset.correct === "true";
+
+        buttons.forEach((item) => {
+          item.classList.remove("is-correct", "is-wrong");
+          item.setAttribute("aria-pressed", "false");
+        });
+
+        button.setAttribute("aria-pressed", "true");
+        button.classList.add(isCorrect ? "is-correct" : "is-wrong");
+
+        if (feedbackNode) {
+          feedbackNode.dataset.state = isCorrect ? "success" : "warning";
+          feedbackNode.textContent = isCorrect
+            ? feedbackNode.dataset.correctFeedback ?? "Да, так и есть."
+            : "Не совсем. График x(t) показывает, как меняется координата со временем. Посмотри на наклон линии.";
+        }
+      });
+    });
+  });
+</script>
 
 <style>
   .card-head {
@@ -68,11 +115,36 @@ const {
     text-align: left;
   }
 
+  .option-list button[aria-pressed="true"].is-correct {
+    border-color: rgba(110, 231, 168, 0.72);
+    color: var(--pl-green);
+    background: rgba(110, 231, 168, 0.08);
+  }
+
+  .option-list button[aria-pressed="true"].is-wrong {
+    border-color: rgba(255, 107, 107, 0.62);
+    color: var(--pl-red);
+    background: rgba(255, 107, 107, 0.08);
+  }
+
   .feedback-note {
     margin: var(--pl-space-4) 0 0;
     padding: var(--pl-space-4);
+    border: 1px solid var(--pl-border-soft);
     border-radius: var(--pl-radius);
+    color: var(--pl-text-muted);
+    background: rgba(255, 255, 255, 0.035);
+  }
+
+  .feedback-note[data-state="success"] {
+    border-color: rgba(110, 231, 168, 0.5);
     color: var(--pl-green);
     background: rgba(110, 231, 168, 0.1);
+  }
+
+  .feedback-note[data-state="warning"] {
+    border-color: rgba(255, 107, 107, 0.45);
+    color: var(--pl-text);
+    background: rgba(255, 107, 107, 0.08);
   }
 </style>
