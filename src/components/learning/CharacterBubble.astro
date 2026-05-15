@@ -3,13 +3,23 @@ interface Props {
   role?: string;
   speaker?: string;
   tone?: "lab" | "mentor" | "warning" | "exam";
+  state?: "calm" | "encouraging" | "surprised" | "thinking" | "warning";
 }
 
-const { role = "лаборант", speaker = "Персонаж-заглушка", tone = "lab" } = Astro.props;
+const {
+  role = "лаборант",
+  speaker = "Персонаж-заглушка",
+  tone = "lab",
+  state = "calm"
+} = Astro.props;
 ---
 
-<aside class:list={["character-bubble", `character-bubble--${tone}`]} aria-label={`${speaker}: ${role}`}>
-  <div class="mascot" aria-hidden="true"></div>
+<aside
+  class:list={["character-bubble", `character-bubble--${tone}`, `character-bubble--state-${state}`]}
+  data-mascot-state={state}
+  aria-label={`${speaker}: ${role}`}
+>
+  <div class="mascot" aria-hidden="true" data-state={state}></div>
   <div>
     <p class="bubble-role">Реплика персонажа - {role}</p>
     <strong>{speaker}</strong>
