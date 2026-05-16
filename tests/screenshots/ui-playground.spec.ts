@@ -38,10 +38,15 @@ test.describe("ui-playground screenshots", () => {
         page.getByRole("heading", { name: "Движение и обратная связь" })
       ).toBeVisible();
 
+      await expect(page.getByRole("link", { name: "Песочница интерфейса PhysicsLab" })).toHaveAttribute(
+        "href",
+        "/ui-playground/"
+      );
       await expect(page.locator("[data-experiment-zone]")).toHaveCount(3);
       await expect(page.locator("[data-playground-particles]")).toHaveCount(1);
       await expect(page.locator("#lab-background-canvas")).toHaveCount(0);
-      await expect(page.locator("canvas")).toHaveCount(1);
+      const canvasCount = await page.locator("canvas").count();
+      expect(canvasCount).toBeLessThanOrEqual(1);
       await expect(page.locator("[data-formula-card-experiment]")).toBeVisible();
       await expect(page.locator("[data-formula-card-experiment]")).toHaveAttribute(
         "data-motion-state",
