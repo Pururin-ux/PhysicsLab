@@ -31,7 +31,7 @@ const PART_COPY: Record<FormulaPart, FormulaPartCopy> = {
     title: "v задаёт наклон графика: чем больше скорость, тем круче линия.",
     insight: "Подсвеченная линия показывает, что скорость отвечает за наклон x(t).",
     formula: ["v"],
-    graph: ["line", "slope-label"],
+    graph: ["line", "slope-family", "slope-label"],
     relatedTerm: true
   },
   t: {
