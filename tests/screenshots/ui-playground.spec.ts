@@ -47,15 +47,39 @@ test.describe("ui-playground screenshots", () => {
       await expect(page.locator("#lab-background-canvas")).toHaveCount(0);
       const canvasCount = await page.locator("canvas").count();
       expect(canvasCount).toBeLessThanOrEqual(1);
-      await expect(page.locator("[data-formula-card-experiment]")).toBeVisible();
-      await expect(page.locator("[data-formula-card-experiment]")).toHaveAttribute(
-        "data-motion-state",
-        /forward|still|backward/
-      );
-      await expect(page.locator("[data-fce-status-title]")).toBeVisible();
-      await expect(page.locator("[data-fce-v-token]")).toBeVisible();
-      await expect(page.locator("[data-fce-plot]")).toBeVisible();
-      await expect(page.locator("[data-fce-v-token]")).toBeVisible();
+      const formulaCard = page.locator("[data-formula-card-experiment]");
+      await expect(formulaCard).toBeVisible();
+      await expect(formulaCard).toHaveAttribute("data-active-part", "none");
+      expect(await formulaCard.getAttribute("data-motion-state")).toBeNull();
+      await expect(page.locator("[data-formula-part]")).toHaveCount(5);
+      await expect(page.locator("[data-variable-card]")).toHaveCount(4);
+      await expect(page.getByText("Наведи на часть формулы")).toBeVisible();
+
+      await page.waitForTimeout(700);
+      await expect(formulaCard).toHaveAttribute("data-active-part", "none");
+      await expect(page.getByText("Наведи на часть формулы")).toBeVisible();
+
+      await page.locator('[data-formula-part="v"]').hover();
+      await expect(formulaCard).toHaveAttribute("data-active-part", "v");
+      await expect(page.locator('[data-variable-card="v"]')).toHaveAttribute("data-active", "");
+      await expect(page.locator('[data-graph-element="line"]')).toHaveAttribute("data-active", "");
+      await expect(page.getByText("v задает наклон графика x(t)")).toBeVisible();
+
+      await page.locator('[data-formula-part="x0"]').focus();
+      await expect(formulaCard).toHaveAttribute("data-active-part", "x0");
+      await expect(page.locator('[data-variable-card="x0"]')).toHaveAttribute("data-active", "");
+      await expect(page.locator('[data-graph-element="start"]')).toHaveAttribute("data-active", "");
+
+      await page.locator('[data-formula-part="t"]').click();
+      await expect(formulaCard).toHaveAttribute("data-active-part", "t");
+      await expect(page.locator('[data-variable-card="t"]')).toHaveAttribute("data-active", "");
+      await expect(page.locator('[data-graph-element="time"]')).toHaveAttribute("data-active", "");
+      await expect(page.getByText("t показывает, сколько времени прошло")).toBeVisible();
+
+      await expect(page.getByText("x, м")).toBeVisible();
+      await expect(page.getByText("t, с")).toBeVisible();
+      await expect(page.locator("[data-slope-icon]")).toHaveCount(3);
+      await expect(page.locator(".formula-card-experiment__chip--positive")).toHaveCount(0);
       await expect(page.getByText("KaTeX-проверка")).toBeVisible();
       await expect(page.locator("[data-math-formula]")).toHaveCount(3);
       await expect(page.locator(".katex")).toHaveCount(3);
