@@ -32,7 +32,7 @@ test.describe("ui-playground screenshots", () => {
       await expect(
         page.getByRole("heading", { name: "Песочница интерфейса PhysicsLab" })
       ).toBeVisible();
-      await expect(page.getByRole("heading", { name: "Формулы" })).toBeVisible();
+      await expect(page.getByRole("heading", { name: "Формулы", exact: true })).toBeVisible();
       await expect(page.getByRole("heading", { name: "Маскот" })).toBeVisible();
       await expect(
         page.getByRole("heading", { name: "Движение и обратная связь" })
@@ -45,6 +45,9 @@ test.describe("ui-playground screenshots", () => {
       await expect(
         page.getByText("График показывает, как меняется координата", { exact: false })
       ).toBeVisible();
+      await expect(page.getByText("KaTeX-проверка")).toBeVisible();
+      await expect(page.locator("[data-math-formula]")).toHaveCount(3);
+      await expect(page.locator(".katex")).toHaveCount(3);
       await expect(page.locator("img")).toHaveCount(0);
 
       const hasHorizontalScroll = await page.evaluate(

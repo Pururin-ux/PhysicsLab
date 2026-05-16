@@ -1,0 +1,73 @@
+---
+import katex from "katex";
+import "katex/dist/katex.min.css";
+
+interface Props {
+  tex: string;
+  display?: boolean;
+}
+
+const { tex, display = false } = Astro.props;
+const renderedFormula = katex.renderToString(tex, {
+  displayMode: display,
+  throwOnError: false
+});
+---
+
+{
+  display ? (
+    <div
+      class="math-formula math-formula--display"
+      data-math-formula
+      data-display="true"
+      set:html={renderedFormula}
+    />
+  ) : (
+    <span class="math-formula" data-math-formula set:html={renderedFormula} />
+  )
+}
+
+<style>
+  .math-formula {
+    max-width: 100%;
+    min-width: 0;
+    color: var(--pl-text);
+  }
+
+  .math-formula--display {
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 2px 0;
+  }
+
+  .math-formula :global(.katex) {
+    color: var(--pl-text);
+    font-size: 1.08em;
+    line-height: 1.25;
+    white-space: normal;
+  }
+
+  .math-formula--display :global(.katex-display) {
+    max-width: 100%;
+    margin: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+
+  .math-formula--display :global(.katex) {
+    font-size: clamp(1.18rem, 2.4vw, 1.7rem);
+  }
+
+  .math-formula :global(.mord),
+  .math-formula :global(.mbin),
+  .math-formula :global(.mrel),
+  .math-formula :global(.mopen),
+  .math-formula :global(.mclose),
+  .math-formula :global(.mpunct) {
+    color: inherit;
+  }
+
+  .math-formula :global(.katex-html) {
+    color: inherit;
+  }
+</style>
