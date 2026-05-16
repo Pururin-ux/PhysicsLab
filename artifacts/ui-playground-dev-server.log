@@ -1,0 +1,10 @@
+
+> physicslab@0.1.0 dev
+> astro dev --host 127.0.0.1 --port 4321
+
+[vite] connected.
+[2m15:04:28[22m [34m[types][39m Generated [2m1ms[22m
+[42m[1m astro [22m[49m [32mv6.3.3[39m [2mready in[22m 1252 [2mms[22m
+[2m┃[22m Local    [36mhttp://127.0.0.1:4321/[39m
+[2m15:04:28[22m [32mwatching for file changes...[39m
+[2m15:05:39[22m [34m[200][39m /ui-playground/ [2m28ms[22m

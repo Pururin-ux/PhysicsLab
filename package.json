@@ -10,7 +10,7 @@
     "check": "astro check",
     "test:physics": "node tests/physics/kinematics.test.mjs",
     "test:e2e": "playwright test",
-    "screenshots": "playwright test tests/screenshots/lab-preview.spec.ts"
+    "screenshots": "playwright test tests/screenshots"
   },
   "devDependencies": {
     "@astrojs/check": "0.9.9",

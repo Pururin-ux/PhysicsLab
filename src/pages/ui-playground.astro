@@ -1,0 +1,331 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+type PlaygroundZone = {
+  id: string;
+  key: string;
+  title: string;
+  label: string;
+  description: string;
+  emptyText: string;
+  checks: string[];
+};
+
+const navItems = [
+  { href: "#formulas", label: "Формулы" },
+  { href: "#mascot", label: "Маскот" },
+  { href: "#motion-feedback", label: "Движение" }
+];
+
+const zones: PlaygroundZone[] = [
+  {
+    id: "formulas",
+    key: "FormulaCard experiments",
+    title: "Формулы",
+    label: "карточки формул",
+    description: "Здесь будут проверяться варианты карточек формул, подстановок и подсветки переменных.",
+    emptyText: "Пока пусто. Первый прототип попадет сюда только после отдельного анализа сэмпла.",
+    checks: ["русский текст", "mobile 360 px", "без лишних чисел"]
+  },
+  {
+    id: "mascot",
+    key: "MascotBubble experiments",
+    title: "Маскот",
+    label: "реплики и окна",
+    description: "Зона для будущих реплик и всплывающих окон без подключения реальных ассетов маскота.",
+    emptyText: "Пока здесь только безопасная заглушка. Реальные изображения не подключены.",
+    checks: ["не конкурирует с графиком", "короткая реплика", "без финальных ассетов"]
+  },
+  {
+    id: "motion-feedback",
+    key: "Motion/Feedback experiments",
+    title: "Движение и обратная связь",
+    label: "движение и обратная связь",
+    description: "Место для спокойных состояний обратной связи, раскрытий и проверки движения с уменьшенной анимацией.",
+    emptyText: "Пока пусто. Любая анимация сначала должна объяснять действие, а не украшать экран.",
+    checks: ["уменьшенная анимация", "нет мигания", "смысл рядом с действием"]
+  }
+];
+---
+
+<BaseLayout
+  title="PhysicsLab - песочница интерфейса"
+  description="Безопасная страница для экспериментов с интерфейсом PhysicsLab без изменения lab-preview."
+  navItems={navItems}
+>
+  <section class="section playground-hero" aria-labelledby="playground-title">
+    <div class="playground-hero__copy">
+      <p class="eyebrow">Безопасные UI-эксперименты</p>
+      <h1 id="playground-title">Песочница интерфейса PhysicsLab</h1>
+      <p class="playground-lead">
+        Здесь можно проверять будущие сгенерированные компоненты перед переносом в основной интерфейс.
+        Эта страница изолирована и не меняет демо-лабораторию.
+      </p>
+    </div>
+
+    <aside class="playground-note" aria-label="Правила песочницы">
+      <strong>Правило страницы</strong>
+      <p>
+        Сначала прототип и скриншоты, потом решение о переносе. Реальные ассеты маскота,
+        новые зависимости и изменения `/lab-preview/` сюда не входят.
+      </p>
+    </aside>
+  </section>
+
+  <section class="section playground-zones" aria-labelledby="zones-title">
+    <div class="zones-heading">
+      <p class="eyebrow">Пустые зоны</p>
+      <h2 id="zones-title">Три места для будущих прототипов</h2>
+      <p>
+        Сейчас здесь только каркас. Он нужен, чтобы сгенерированный интерфейс можно было тестировать
+        отдельно от учебной страницы и фиксировать скриншоты по размерам экрана.
+      </p>
+    </div>
+
+    <div class="zone-grid" aria-label="Зоны UI-песочницы">
+      {
+        zones.map((zone, index) => (
+          <article
+            id={zone.id}
+            class="experiment-zone"
+            data-experiment-zone={zone.key}
+            aria-labelledby={`${zone.id}-title`}
+          >
+            <div class="zone-kicker">
+              <span aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
+              <small>{zone.label}</small>
+            </div>
+            <h3 id={`${zone.id}-title`}>{zone.title}</h3>
+            <p>{zone.description}</p>
+
+            <div class="empty-slot" aria-label={`Пустая зона: ${zone.title}`}>
+              <span class="slot-mark" aria-hidden="true">+</span>
+              <strong>{zone.emptyText}</strong>
+            </div>
+
+            <ul class="check-list" aria-label={`Что проверять: ${zone.title}`}>
+              {zone.checks.map((check) => <li>{check}</li>)}
+            </ul>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .playground-hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(280px, 0.42fr);
+    gap: var(--pl-space-6);
+    align-items: end;
+    padding-top: clamp(var(--pl-space-8), 7vw, var(--pl-space-16));
+    padding-bottom: var(--pl-space-8);
+  }
+
+  .playground-hero__copy {
+    max-width: 820px;
+  }
+
+  .playground-lead {
+    max-width: 720px;
+    margin-bottom: 0;
+    font-size: clamp(1.05rem, 1.8vw, 1.18rem);
+  }
+
+  .playground-note {
+    min-width: 0;
+    padding: var(--pl-space-4);
+    border: 1px solid rgba(255, 216, 77, 0.26);
+    border-radius: var(--pl-radius);
+    background:
+      linear-gradient(135deg, rgba(255, 216, 77, 0.08), transparent 52%),
+      rgba(16, 23, 34, 0.78);
+  }
+
+  .playground-note strong {
+    display: block;
+    margin-bottom: var(--pl-space-2);
+    color: var(--pl-accent);
+  }
+
+  .playground-note p {
+    margin-bottom: 0;
+    font-size: 0.96rem;
+  }
+
+  .playground-zones {
+    padding-top: var(--pl-space-8);
+  }
+
+  .zones-heading {
+    max-width: 780px;
+    margin-bottom: var(--pl-space-6);
+  }
+
+  .zones-heading p:last-child {
+    margin-bottom: 0;
+  }
+
+  .zone-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--pl-space-5);
+  }
+
+  .experiment-zone {
+    display: grid;
+    gap: var(--pl-space-4);
+    min-width: 0;
+    padding: var(--pl-space-5);
+    border: 1px solid var(--pl-border-soft);
+    border-radius: var(--pl-radius);
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.035), transparent 64%),
+      var(--pl-surface-quiet);
+    box-shadow: var(--pl-shadow-soft);
+  }
+
+  .experiment-zone:nth-child(2) {
+    border-color: rgba(181, 156, 255, 0.28);
+  }
+
+  .experiment-zone:nth-child(3) {
+    border-color: rgba(88, 216, 255, 0.24);
+  }
+
+  .zone-kicker {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--pl-space-3);
+    min-width: 0;
+  }
+
+  .zone-kicker span {
+    display: inline-grid;
+    place-items: center;
+    width: 42px;
+    height: 34px;
+    border: 1px solid rgba(255, 216, 77, 0.62);
+    border-radius: var(--pl-radius-sm);
+    color: #111317;
+    background: var(--pl-accent);
+    font-size: 0.86rem;
+    font-weight: 950;
+  }
+
+  .zone-kicker small {
+    min-width: 0;
+    color: var(--pl-text-soft);
+    font-size: 0.78rem;
+    font-weight: 850;
+    text-align: right;
+    overflow-wrap: anywhere;
+  }
+
+  .experiment-zone h3 {
+    margin-bottom: 0;
+  }
+
+  .experiment-zone p {
+    margin-bottom: 0;
+  }
+
+  .empty-slot {
+    display: grid;
+    place-items: center;
+    gap: var(--pl-space-3);
+    min-height: 180px;
+    padding: var(--pl-space-4);
+    border: 1px dashed rgba(168, 190, 213, 0.34);
+    border-radius: var(--pl-radius);
+    color: var(--pl-text-muted);
+    background:
+      linear-gradient(rgba(88, 216, 255, 0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(88, 216, 255, 0.035) 1px, transparent 1px),
+      rgba(8, 12, 18, 0.48);
+    background-size: 28px 28px;
+    text-align: center;
+  }
+
+  .slot-mark {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border: 1px solid rgba(88, 216, 255, 0.4);
+    border-radius: 50%;
+    color: var(--pl-cyan);
+    font-size: 1.5rem;
+    font-weight: 900;
+    line-height: 1;
+  }
+
+  .empty-slot strong {
+    max-width: 28ch;
+    color: var(--pl-text);
+    font-size: 0.98rem;
+    line-height: 1.5;
+  }
+
+  .check-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--pl-space-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .check-list li {
+    min-width: 0;
+    padding: 7px 9px;
+    border: 1px solid var(--pl-border-soft);
+    border-radius: 999px;
+    color: var(--pl-text-muted);
+    background: rgba(255, 255, 255, 0.035);
+    font-size: 0.86rem;
+    line-height: 1.3;
+  }
+
+  @media (max-width: 980px) {
+    .playground-hero,
+    .zone-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .playground-note {
+      max-width: 720px;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .playground-hero {
+      gap: var(--pl-space-4);
+      padding-top: var(--pl-space-6);
+      padding-bottom: var(--pl-space-6);
+    }
+
+    .playground-zones {
+      padding-top: var(--pl-space-6);
+    }
+
+    .experiment-zone {
+      padding: var(--pl-space-4);
+    }
+
+    .zone-kicker {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+
+    .zone-kicker small {
+      text-align: left;
+    }
+
+    .empty-slot {
+      min-height: 150px;
+    }
+  }
+</style>
