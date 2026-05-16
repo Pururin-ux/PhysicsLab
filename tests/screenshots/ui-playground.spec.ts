@@ -154,10 +154,7 @@ test.describe("ui-playground screenshots", () => {
         "x",
         "188"
       );
-      await expect(page.locator('[data-formula-part="v"]')).toHaveCSS(
-        "border-color",
-        "rgba(0, 0, 0, 0)"
-      );
+      await expect(page.locator('[data-formula-part="v"]')).toHaveCSS("border-style", "none");
       await expect(page.locator('[data-formula-part="v"]')).toHaveCSS(
         "background-color",
         "rgba(0, 0, 0, 0)"

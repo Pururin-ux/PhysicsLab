@@ -502,24 +502,23 @@
 
   .formula-card-experiment__formula-part,
   .formula-card-experiment__term-info {
-    border: 1px solid transparent;
     color: inherit;
     background: transparent;
     font: inherit;
     line-height: inherit;
     text-shadow: inherit;
     cursor: pointer;
+    appearance: none;
     transition:
-      border-color 0.18s ease,
-      background 0.18s ease,
       color 0.18s ease,
       box-shadow 0.18s ease,
       transform 0.18s ease;
   }
 
   .formula-card-experiment__formula-part {
-    padding: 0 0.04em;
-    border-radius: var(--pl-radius-sm);
+    padding: 0;
+    border: 0;
+    border-radius: 0;
     color: #f5fbff;
     text-shadow:
       0 0 8px rgba(244, 247, 251, 0.22),
@@ -527,7 +526,15 @@
       0 0 30px rgba(88, 216, 255, 0.1);
   }
 
-  .formula-card-experiment__formula-part:focus-visible,
+  .formula-card-experiment__formula-part:focus-visible {
+    outline: none;
+    color: var(--pl-accent);
+    text-shadow:
+      0 0 10px rgba(255, 216, 77, 0.52),
+      0 0 22px rgba(255, 216, 77, 0.3),
+      0 0 38px rgba(255, 216, 77, 0.16);
+  }
+
   .formula-card-experiment__term-info:focus-visible {
     outline: 2px solid rgba(255, 216, 77, 0.55);
     outline-offset: 5px;
@@ -550,13 +557,9 @@
     display: inline-flex;
     align-items: baseline;
     gap: 0.01em;
-    padding: 0 0.12em 0.03em;
-    border: 1px solid transparent;
-    border-radius: var(--pl-radius-sm);
-    transition:
-      border-color 0.18s ease,
-      background 0.18s ease,
-      box-shadow 0.18s ease;
+    padding: 0 0.11em 0.03em;
+    border: 0;
+    transition: box-shadow 0.18s ease;
   }
 
   .formula-card-experiment__term::before {
@@ -593,13 +596,14 @@
 
   .formula-card-experiment__term-info {
     position: absolute;
-    right: 0.1em;
-    bottom: -1.45em;
+    top: -1.18em;
+    right: 0.04em;
     display: grid;
     place-items: center;
     width: 1.28em;
     height: 1.28em;
     padding: 0;
+    border: 1px solid rgba(88, 216, 255, 0.42);
     border-color: rgba(88, 216, 255, 0.42);
     border-radius: 50%;
     color: var(--pl-cyan);
@@ -618,7 +622,6 @@
   }
 
   .formula-card-experiment__formula-part[data-active] {
-    border-color: transparent;
     color: var(--pl-accent);
     background: transparent;
     box-shadow:
@@ -643,7 +646,6 @@
 
   .formula-card-experiment[data-active-part="vt"] .formula-card-experiment__formula-part[data-formula-part="v"],
   .formula-card-experiment[data-active-part="vt"] .formula-card-experiment__formula-part[data-formula-part="t"] {
-    border-color: transparent;
     color: inherit;
     background: transparent;
     box-shadow: none;
@@ -942,7 +944,7 @@
     }
 
     .formula-card-experiment__term-info {
-      bottom: -1.65em;
+      top: -1.45em;
       font-size: 0.22em;
     }
 
