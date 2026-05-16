@@ -159,6 +159,7 @@ test.describe("ui-playground screenshots", () => {
         "background-color",
         "rgba(0, 0, 0, 0)"
       );
+      await expect(page.locator('[data-formula-part="v"]')).toHaveCSS("box-shadow", "none");
       await expect(page.locator("[data-fce-term]")).toHaveCSS(
         "background-color",
         "rgba(0, 0, 0, 0)"

@@ -509,9 +509,9 @@
     text-shadow: inherit;
     cursor: pointer;
     appearance: none;
+    -webkit-tap-highlight-color: transparent;
     transition:
       color 0.18s ease,
-      box-shadow 0.18s ease,
       transform 0.18s ease;
   }
 
@@ -519,6 +519,8 @@
     padding: 0;
     border: 0;
     border-radius: 0;
+    background: transparent !important;
+    box-shadow: none !important;
     color: #f5fbff;
     text-shadow:
       0 0 8px rgba(244, 247, 251, 0.22),
@@ -533,6 +535,10 @@
       0 0 10px rgba(255, 216, 77, 0.52),
       0 0 22px rgba(255, 216, 77, 0.3),
       0 0 38px rgba(255, 216, 77, 0.16);
+  }
+
+  .formula-card-experiment__formula-part:focus {
+    outline: none;
   }
 
   .formula-card-experiment__term-info:focus-visible {
@@ -623,9 +629,6 @@
 
   .formula-card-experiment__formula-part[data-active] {
     color: var(--pl-accent);
-    background: transparent;
-    box-shadow:
-      0 0 16px rgba(255, 216, 77, 0.08);
     text-shadow:
       0 0 10px rgba(255, 216, 77, 0.52),
       0 0 22px rgba(255, 216, 77, 0.3),
