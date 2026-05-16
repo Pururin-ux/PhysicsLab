@@ -52,10 +52,14 @@ test.describe("ui-playground screenshots", () => {
       await expect(formulaCard).toHaveAttribute("data-active-part", "none");
       expect(await formulaCard.getAttribute("data-motion-state")).toBeNull();
       await expect(page.locator("[data-formula-part]")).toHaveCount(5);
+      await expect(page.locator(".formula-card-experiment__mini-caption")).toHaveCount(0);
       await expect(page.locator("[data-variable-card]")).toHaveCount(0);
       await expect(page.locator(".formula-card-experiment__variable")).toHaveCount(0);
       await expect(page.locator(".formula-card-experiment__chip")).toHaveCount(0);
       await expect(page.locator("[data-slope-icon]")).toHaveCount(0);
+      await expect(page.locator('[data-graph-element="projection"]')).toHaveCount(0);
+      await expect(page.locator('[data-graph-element="start-level"]')).toHaveCount(0);
+      await expect(page.locator('[data-graph-element="slope-arrow"]')).toHaveCount(0);
 
       await expect(
         page.getByText("Нажми на символ формулы — увидишь, за что он отвечает.")
@@ -66,9 +70,25 @@ test.describe("ui-playground screenshots", () => {
       await expect(page.getByText("x, м")).toBeVisible();
       await expect(page.getByText("t, с")).toBeVisible();
 
+      await page.locator('[data-formula-part="x"]').click();
+      await expect(formulaCard).toHaveAttribute("data-active-part", "x");
+      await expect(page.locator('[data-graph-element="current"]')).toHaveAttribute(
+        "data-active",
+        ""
+      );
+      await expect(page.locator('[data-graph-element="current-label"]')).toHaveAttribute(
+        "data-active",
+        ""
+      );
+      await expect(page.locator("[data-fce-insight-title]")).toHaveText(
+        "x — координата тела в выбранный момент времени."
+      );
+
       await page.locator('[data-formula-part="vt"]').click();
       await expect(formulaCard).toHaveAttribute("data-active-part", "vt");
-      await expect(page.locator("[data-fce-insight-title]")).toHaveText("vt — прибавка");
+      await expect(page.locator("[data-fce-insight-title]")).toHaveText(
+        "vt — изменение координаты"
+      );
       await expect(page.locator('[data-graph-element="delta"]')).toHaveAttribute(
         "data-active",
         ""
@@ -77,6 +97,8 @@ test.describe("ui-playground screenshots", () => {
         "data-active",
         ""
       );
+      await expect(page.getByText("Δx = vt")).toBeVisible();
+      await expect(page.getByText("vt — прибавка")).toHaveCount(0);
 
       await page.locator('[data-formula-part="x0"]').focus();
       await expect(formulaCard).toHaveAttribute("data-active-part", "x0");
@@ -84,12 +106,12 @@ test.describe("ui-playground screenshots", () => {
         "data-active",
         ""
       );
-      await expect(page.locator('[data-graph-element="start-level"]')).toHaveAttribute(
+      await expect(page.locator('[data-graph-element="start-label"]')).toHaveAttribute(
         "data-active",
         ""
       );
       await expect(
-        page.getByText("x₀ — откуда начали. Это координата в момент t = 0.")
+        page.getByText("x₀ — стартовая координата: откуда начали при t = 0.")
       ).toBeVisible();
 
       await page.locator('[data-formula-part="v"]').hover();
@@ -97,10 +119,15 @@ test.describe("ui-playground screenshots", () => {
       await page.locator('[data-formula-part="x0"]').blur();
       await page.locator('[data-formula-part="v"]').hover();
       await expect(formulaCard).toHaveAttribute("data-active-part", "v");
-      await expect(page.locator('[data-graph-element="slope-arrow"]')).toHaveAttribute(
+      await expect(page.locator('[data-graph-element="line"]')).toHaveAttribute(
         "data-active",
         ""
       );
+      await expect(page.locator('[data-graph-element="slope-label"]')).toHaveAttribute(
+        "data-active",
+        ""
+      );
+      await expect(page.getByText("наклон = v")).toBeVisible();
 
       await page.locator('[data-formula-part="t"]').click();
       await expect(formulaCard).toHaveAttribute("data-active-part", "t");
