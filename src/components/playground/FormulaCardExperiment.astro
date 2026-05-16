@@ -1,46 +1,3 @@
----
-type VariablePart = "x" | "x0" | "v" | "t";
-
-type Variable = {
-  part: VariablePart;
-  symbol: string;
-  label: string;
-  detail: string;
-  ariaLabel: string;
-};
-
-const variables: Variable[] = [
-  {
-    part: "x",
-    symbol: "x",
-    label: "где тело окажется",
-    detail: "координата сейчас",
-    ariaLabel: "Показать связь переменной x с формулой и текущей точкой графика"
-  },
-  {
-    part: "x0",
-    symbol: "x0",
-    label: "откуда начали",
-    detail: "стартовая координата",
-    ariaLabel: "Показать связь x ноль со стартовой точкой графика"
-  },
-  {
-    part: "v",
-    symbol: "v",
-    label: "скорость",
-    detail: "задает наклон",
-    ariaLabel: "Показать связь скорости v с членом vt и наклоном графика"
-  },
-  {
-    part: "t",
-    symbol: "t",
-    label: "время",
-    detail: "сколько прошло",
-    ariaLabel: "Показать связь времени t с маркером времени на графике"
-  }
-];
----
-
 <article
   class="formula-card-experiment"
   data-formula-card-experiment
@@ -60,211 +17,208 @@ const variables: Variable[] = [
         <h4 id="formula-card-experiment-title">Формула</h4>
       </div>
     </div>
-
-    <aside
-      class="formula-card-experiment__status"
-      aria-live="polite"
-      aria-atomic="true"
-      aria-label="Текущий учебный фокус"
-    >
-      <span class="formula-card-experiment__status-dot" aria-hidden="true"></span>
-      <div>
-        <strong data-fce-status-title>Наведи на часть формулы</strong>
-        <p data-fce-status-sub>Выбери символ в формуле или карточку переменной.</p>
-      </div>
-    </aside>
+    <p class="formula-card-experiment__help">Наведи на символ формулы</p>
   </header>
 
-  <section class="formula-card-experiment__screen" aria-label="Экран формулы">
-    <div class="formula-card-experiment__screen-grid" aria-hidden="true"></div>
-    <div class="formula-card-experiment__screen-corners" aria-hidden="true"></div>
-    <div
-      class="formula-card-experiment__formula"
-      aria-label="Формула: x равно x ноль плюс v умножить на t"
-    >
-      <button
-        class="formula-card-experiment__formula-part"
-        type="button"
-        data-formula-part="x"
-        aria-label="x - где тело окажется"
-        aria-pressed="false"
+  <section class="formula-card-experiment__scene" aria-label="Интерактивная сцена формулы и графика">
+    <div class="formula-card-experiment__formula-panel" aria-label="Формула равномерного движения">
+      <div class="formula-card-experiment__screen-grid" aria-hidden="true"></div>
+      <div class="formula-card-experiment__screen-corners" aria-hidden="true"></div>
+      <p class="formula-card-experiment__mini-caption">x = x₀ + vt</p>
+
+      <div
+        class="formula-card-experiment__formula"
+        aria-label="Формула: x равно x ноль плюс v умножить на t"
       >
-        x
-      </button>
-      <span aria-hidden="true">=</span>
-      <button
-        class="formula-card-experiment__formula-part"
-        type="button"
-        data-formula-part="x0"
-        aria-label="x ноль - откуда начали"
-        aria-pressed="false"
-      >
-        x<sub>0</sub>
-      </button>
-      <span aria-hidden="true">+</span>
-      <span class="formula-card-experiment__term" aria-label="член v t">
-        <button
-          class="formula-card-experiment__formula-part formula-card-experiment__active-token"
-          type="button"
-          data-formula-part="v"
-          aria-label="v - скорость"
-          aria-pressed="false"
-        >
-          v
-        </button>
         <button
           class="formula-card-experiment__formula-part"
           type="button"
-          data-formula-part="t"
-          aria-label="t - время"
+          data-formula-part="x"
+          aria-label="x — где тело окажется"
           aria-pressed="false"
         >
-          t
+          x
         </button>
-      </span>
-    </div>
-    <button
-      class="formula-card-experiment__term-control"
-      type="button"
-      data-formula-part="vt"
-      aria-label="vt - изменение координаты за время"
-      aria-pressed="false"
-    >
-      vt целиком
-    </button>
-  </section>
-
-  <p class="formula-card-experiment__explain">
-    Сначала берем старт, потом добавляем путь за время t.
-  </p>
-
-  <div class="formula-card-experiment__body">
-    <section class="formula-card-experiment__variables" aria-label="Переменные формулы">
-      {
-        variables.map((variable) => (
+        <span aria-hidden="true">=</span>
+        <button
+          class="formula-card-experiment__formula-part"
+          type="button"
+          data-formula-part="x0"
+          aria-label="x ноль — откуда начали"
+          aria-pressed="false"
+        >
+          x<sub>0</sub>
+        </button>
+        <span aria-hidden="true">+</span>
+        <span class="formula-card-experiment__term" data-fce-term>
           <button
-            class="formula-card-experiment__variable"
+            class="formula-card-experiment__formula-part"
             type="button"
-            data-variable-card={variable.part}
-            aria-label={variable.ariaLabel}
+            data-formula-part="v"
+            aria-label="v — скорость"
             aria-pressed="false"
           >
-            <span class="formula-card-experiment__module-light" aria-hidden="true"></span>
-            <b>{variable.part === "x0" ? <span>x<sub>0</sub></span> : variable.symbol}</b>
-            <strong>{variable.label}</strong>
-            <span>{variable.detail}</span>
+            v
           </button>
-        ))
-      }
-    </section>
+          <button
+            class="formula-card-experiment__formula-part"
+            type="button"
+            data-formula-part="t"
+            aria-label="t — время"
+            aria-pressed="false"
+          >
+            t
+          </button>
+          <button
+            class="formula-card-experiment__term-control"
+            type="button"
+            data-formula-part="vt"
+            aria-label="vt — прибавка координаты"
+            aria-pressed="false"
+          >
+            vt
+          </button>
+        </span>
+      </div>
 
-    <aside class="formula-card-experiment__insight" aria-label="Пояснение к графику">
-      <div class="formula-card-experiment__mini-graph">
-        <svg
-          viewBox="0 0 220 128"
-          class="formula-card-experiment__graph-svg"
-          role="img"
-          aria-label="Мини-график x от t со стартовой точкой, текущей точкой и маркером времени"
-          focusable="false"
+      <p class="formula-card-experiment__explain">
+        Сначала берём старт, потом добавляем путь за время t.
+      </p>
+    </div>
+
+    <div class="formula-card-experiment__graph-panel" aria-label="График координаты от времени">
+      <svg
+        class="formula-card-experiment__graph"
+        viewBox="0 0 520 330"
+        role="img"
+        aria-label="График x от t со стартовой точкой, текущей точкой и подсказками"
+        focusable="false"
+      >
+        <defs>
+          <marker
+            id="formula-card-arrow"
+            viewBox="0 0 10 10"
+            refX="8"
+            refY="5"
+            markerWidth="7"
+            markerHeight="7"
+            orient="auto-start-reverse"
+          >
+            <path d="M 0 0 L 10 5 L 0 10 z"></path>
+          </marker>
+        </defs>
+
+        <g class="formula-card-experiment__grid" aria-hidden="true">
+          <line x1="82" y1="52" x2="82" y2="258"></line>
+          <line x1="194" y1="52" x2="194" y2="258"></line>
+          <line x1="306" y1="52" x2="306" y2="258"></line>
+          <line x1="418" y1="52" x2="418" y2="258"></line>
+          <line x1="82" y1="219" x2="438" y2="219"></line>
+          <line x1="82" y1="174" x2="438" y2="174"></line>
+          <line x1="82" y1="129" x2="438" y2="129"></line>
+          <line x1="82" y1="84" x2="438" y2="84"></line>
+        </g>
+
+        <line class="formula-card-experiment__axis" x1="82" y1="258" x2="455" y2="258"></line>
+        <line class="formula-card-experiment__axis" x1="82" y1="258" x2="82" y2="36"></line>
+
+        <g class="formula-card-experiment__ticks" aria-hidden="true">
+          <line x1="82" y1="253" x2="82" y2="263"></line>
+          <line x1="194" y1="253" x2="194" y2="263"></line>
+          <line x1="306" y1="253" x2="306" y2="263"></line>
+          <line x1="77" y1="258" x2="87" y2="258"></line>
+          <line x1="77" y1="219" x2="87" y2="219"></line>
+          <line x1="77" y1="174" x2="87" y2="174"></line>
+          <line x1="77" y1="129" x2="87" y2="129"></line>
+        </g>
+
+        <g class="formula-card-experiment__tick-labels">
+          <text x="76" y="283">0</text>
+          <text x="188" y="283">1</text>
+          <text x="300" y="283">2</text>
+          <text x="49" y="263">0</text>
+          <text x="49" y="224">2</text>
+          <text x="49" y="179">4</text>
+          <text x="49" y="134">6</text>
+          <text class="formula-card-experiment__axis-label" x="92" y="28">x, м</text>
+          <text class="formula-card-experiment__axis-label" x="415" y="300">t, с</text>
+        </g>
+
+        <g data-graph-element="projection" class="formula-card-experiment__helper">
+          <line x1="306" y1="129" x2="306" y2="258"></line>
+          <line x1="82" y1="129" x2="306" y2="129"></line>
+        </g>
+
+        <line
+          class="formula-card-experiment__start-level"
+          data-graph-element="start-level"
+          x1="82"
+          y1="219"
+          x2="438"
+          y2="219"
+        ></line>
+
+        <g data-graph-element="time" class="formula-card-experiment__time-marker">
+          <line x1="306" y1="258" x2="306" y2="129"></line>
+          <text x="314" y="246">t</text>
+        </g>
+
+        <g data-graph-element="delta" class="formula-card-experiment__delta">
+          <path d="M 328 219 C 346 219 346 129 328 129"></path>
+          <line x1="320" y1="219" x2="338" y2="219"></line>
+          <line x1="320" y1="129" x2="338" y2="129"></line>
+        </g>
+        <text
+          class="formula-card-experiment__delta-label"
+          data-graph-element="delta-label"
+          x="352"
+          y="176"
         >
-          <line class="formula-card-experiment__axis" x1="28" y1="104" x2="204" y2="104"></line>
-          <line class="formula-card-experiment__axis" x1="28" y1="104" x2="28" y2="18"></line>
+          vt — прибавка
+        </text>
 
-          <g class="formula-card-experiment__ticks" aria-hidden="true">
-            <line x1="72" y1="101" x2="72" y2="107"></line>
-            <line x1="116" y1="101" x2="116" y2="107"></line>
-            <line x1="160" y1="101" x2="160" y2="107"></line>
-            <line x1="25" y1="80" x2="31" y2="80"></line>
-            <line x1="25" y1="56" x2="31" y2="56"></line>
-            <line x1="25" y1="32" x2="31" y2="32"></line>
-          </g>
+        <path
+          class="formula-card-experiment__slope-arrow"
+          data-graph-element="slope-arrow"
+          d="M 162 210 C 206 190 250 162 292 136"
+          marker-end="url(#formula-card-arrow)"
+        ></path>
 
-          <g class="formula-card-experiment__tick-labels">
-            <text x="24" y="116">0</text>
-            <text x="112" y="116">1</text>
-            <text x="156" y="116">2</text>
-            <text x="8" y="84">2</text>
-            <text x="8" y="60">4</text>
-            <text x="8" y="36">6</text>
-            <text class="formula-card-experiment__axis-label" x="34" y="16">x, м</text>
-            <text class="formula-card-experiment__axis-label" x="184" y="121">t, с</text>
-          </g>
+        <polyline
+          class="formula-card-experiment__plot"
+          data-graph-element="line"
+          points="82,219 306,129"
+        ></polyline>
+        <circle
+          class="formula-card-experiment__point formula-card-experiment__point--start"
+          data-graph-element="start"
+          r="6"
+          cx="82"
+          cy="219"
+        ></circle>
+        <circle
+          class="formula-card-experiment__point formula-card-experiment__point--current"
+          data-graph-element="current"
+          r="7"
+          cx="306"
+          cy="129"
+        ></circle>
+      </svg>
+    </div>
+  </section>
 
-          <line
-            class="formula-card-experiment__time-marker"
-            data-graph-element="time"
-            x1="184"
-            y1="104"
-            x2="184"
-            y2="36"
-          ></line>
-          <line
-            class="formula-card-experiment__delta-marker"
-            data-graph-element="delta"
-            x1="196"
-            y1="88"
-            x2="196"
-            y2="36"
-          ></line>
-          <polyline
-            class="formula-card-experiment__plot"
-            data-graph-element="line"
-            points="28,88 184,36"
-          ></polyline>
-          <circle
-            class="formula-card-experiment__plot-point formula-card-experiment__plot-point--start"
-            data-graph-element="start"
-            r="4"
-            cx="28"
-            cy="88"
-          ></circle>
-          <circle
-            class="formula-card-experiment__plot-point formula-card-experiment__plot-point--current"
-            data-graph-element="current"
-            r="4.5"
-            cx="184"
-            cy="36"
-          ></circle>
-        </svg>
-      </div>
-      <div>
-        <strong>График показывает, как меняется координата, а не дорогу по карте.</strong>
-        <p data-fce-insight>График показывает, как меняется координата x со временем t.</p>
-      </div>
-    </aside>
-  </div>
-
-  <div class="formula-card-experiment__hint" aria-label="Подсказка">
-    <span aria-hidden="true"></span>
-    <p data-fce-hint>Нажми на символ формулы - увидишь, за что он отвечает.</p>
-  </div>
-
-  <div class="formula-card-experiment__outcomes" aria-label="Выводы про знак скорости">
-    <p class="formula-card-experiment__chip">
-      <span class="formula-card-experiment__slope-icon" data-slope-icon aria-hidden="true">
-        <svg viewBox="0 0 28 18" focusable="false">
-          <line x1="3" y1="14" x2="25" y2="4"></line>
-        </svg>
-      </span>
-      v &gt; 0 → линия вверх
-    </p>
-    <p class="formula-card-experiment__chip">
-      <span class="formula-card-experiment__slope-icon" data-slope-icon aria-hidden="true">
-        <svg viewBox="0 0 28 18" focusable="false">
-          <line x1="3" y1="9" x2="25" y2="9"></line>
-        </svg>
-      </span>
-      v = 0 → линия ровная
-    </p>
-    <p class="formula-card-experiment__chip">
-      <span class="formula-card-experiment__slope-icon" data-slope-icon aria-hidden="true">
-        <svg viewBox="0 0 28 18" focusable="false">
-          <line x1="3" y1="4" x2="25" y2="14"></line>
-        </svg>
-      </span>
-      v &lt; 0 → линия вниз
-    </p>
-  </div>
+  <aside
+    class="formula-card-experiment__insight"
+    aria-live="polite"
+    aria-atomic="true"
+    aria-label="Контекстная подсказка"
+  >
+    <span class="formula-card-experiment__insight-line" aria-hidden="true"></span>
+    <div>
+      <strong data-fce-insight-title>Нажми на символ формулы — увидишь, за что он отвечает.</strong>
+      <p data-fce-insight>График показывает, как меняется координата, а не дорогу по карте.</p>
+    </div>
+  </aside>
 </article>
 
 <script>
@@ -284,11 +238,11 @@ const variables: Variable[] = [
   .formula-card-experiment {
     --card-bg: rgba(6, 12, 21, 0.96);
     --card-line: rgba(88, 216, 255, 0.3);
-    --card-yellow-line: rgba(255, 216, 77, 0.44);
+    --card-yellow-line: rgba(255, 216, 77, 0.42);
 
     position: relative;
     display: grid;
-    gap: clamp(var(--pl-space-2), 1.5vw, var(--pl-space-4));
+    gap: clamp(var(--pl-space-3), 1.7vw, var(--pl-space-5));
     min-width: 0;
     padding: clamp(var(--pl-space-4), 2.2vw, var(--pl-space-6));
     overflow: hidden;
@@ -327,8 +281,13 @@ const variables: Variable[] = [
     opacity: 0.65;
   }
 
-  .formula-card-experiment__field {
+  .formula-card-experiment__field,
+  .formula-card-experiment__aura {
     position: absolute;
+    pointer-events: none;
+  }
+
+  .formula-card-experiment__field {
     inset: 0;
     background:
       linear-gradient(rgba(88, 216, 255, 0.035) 1px, transparent 1px),
@@ -336,36 +295,30 @@ const variables: Variable[] = [
     background-size: 42px 42px;
     mask-image: radial-gradient(circle at center, black, transparent 76%);
     opacity: 0.82;
-    pointer-events: none;
   }
 
   .formula-card-experiment__aura {
-    position: absolute;
-    right: 8%;
+    right: 9%;
     bottom: 18%;
-    width: 36%;
-    height: 42%;
+    width: 30%;
+    height: 40%;
     border: 1px solid rgba(255, 216, 77, 0.13);
     border-radius: 50%;
     transform: rotate(-10deg);
-    pointer-events: none;
   }
 
   .formula-card-experiment__header,
-  .formula-card-experiment__screen,
-  .formula-card-experiment__explain,
-  .formula-card-experiment__body,
-  .formula-card-experiment__hint,
-  .formula-card-experiment__outcomes {
+  .formula-card-experiment__scene,
+  .formula-card-experiment__insight {
     position: relative;
     z-index: 2;
   }
 
   .formula-card-experiment__header {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(260px, 0.42fr);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     gap: var(--pl-space-4);
-    align-items: start;
   }
 
   .formula-card-experiment__title-lockup {
@@ -380,8 +333,8 @@ const variables: Variable[] = [
     display: grid;
     place-items: center;
     flex: 0 0 auto;
-    width: 48px;
-    height: 48px;
+    width: 46px;
+    height: 46px;
     border: 1px solid rgba(88, 216, 255, 0.38);
     border-radius: var(--pl-radius);
     background:
@@ -394,8 +347,8 @@ const variables: Variable[] = [
   .formula-card-experiment__mark span {
     content: "";
     position: absolute;
-    width: 38px;
-    height: 16px;
+    width: 36px;
+    height: 15px;
     border: 2px solid var(--pl-cyan);
     border-radius: 50%;
   }
@@ -413,8 +366,9 @@ const variables: Variable[] = [
     transform: rotate(90deg);
   }
 
-  .formula-card-experiment__label {
-    margin: 0 0 var(--pl-space-1);
+  .formula-card-experiment__label,
+  .formula-card-experiment__mini-caption {
+    margin: 0;
     color: var(--pl-accent);
     font-size: 0.72rem;
     font-weight: 900;
@@ -423,63 +377,38 @@ const variables: Variable[] = [
   }
 
   .formula-card-experiment h4 {
-    margin: 0;
+    margin: var(--pl-space-1) 0 0;
     color: var(--pl-text);
     font-size: clamp(1.35rem, 2.4vw, 1.9rem);
     line-height: 1.05;
   }
 
-  .formula-card-experiment__status {
-    display: grid;
-    grid-template-columns: auto minmax(0, 1fr);
-    gap: var(--pl-space-3);
-    align-items: center;
-    min-width: 0;
-    padding: var(--pl-space-2) var(--pl-space-3);
-    border: 1px solid var(--card-yellow-line);
-    border-radius: var(--pl-radius);
-    background:
-      linear-gradient(135deg, rgba(255, 216, 77, 0.11), transparent 58%),
-      rgba(14, 18, 24, 0.84);
-    box-shadow: inset 0 0 24px rgba(255, 216, 77, 0.045);
-  }
-
-  .formula-card-experiment__status-dot {
-    display: grid;
-    place-items: center;
-    width: 28px;
-    height: 28px;
-    border: 2px solid var(--pl-accent);
-    border-radius: 50%;
-  }
-
-  .formula-card-experiment__status-dot::before {
-    content: "";
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: var(--pl-accent);
-    box-shadow: 0 0 12px rgba(255, 216, 77, 0.3);
-  }
-
-  .formula-card-experiment__status strong {
-    display: block;
-    color: var(--pl-accent);
-    font-size: 0.94rem;
+  .formula-card-experiment__help {
+    margin: 0;
+    padding: 9px 12px;
+    border: 1px solid rgba(88, 216, 255, 0.22);
+    border-radius: 999px;
+    color: var(--pl-text);
+    background: rgba(8, 14, 24, 0.68);
+    font-size: 0.88rem;
+    font-weight: 750;
     line-height: 1.25;
   }
 
-  .formula-card-experiment__status p {
-    margin: var(--pl-space-1) 0 0;
-    color: var(--pl-text);
-    font-size: 0.88rem;
-    line-height: 1.4;
+  .formula-card-experiment__scene {
+    display: grid;
+    grid-template-columns: minmax(260px, 0.82fr) minmax(360px, 1fr);
+    gap: var(--pl-space-4);
+    align-items: stretch;
+    min-width: 0;
   }
 
-  .formula-card-experiment__screen {
+  .formula-card-experiment__formula-panel,
+  .formula-card-experiment__graph-panel {
+    position: relative;
     min-width: 0;
     overflow: hidden;
-    border: 1px solid rgba(88, 216, 255, 0.5);
+    border: 1px solid rgba(88, 216, 255, 0.32);
     border-radius: var(--pl-radius);
     background:
       linear-gradient(180deg, rgba(88, 216, 255, 0.07), rgba(88, 216, 255, 0.018)),
@@ -487,7 +416,15 @@ const variables: Variable[] = [
     box-shadow:
       inset 0 0 0 1px rgba(255, 255, 255, 0.04),
       inset 0 0 38px rgba(88, 216, 255, 0.08),
-      0 0 24px rgba(88, 216, 255, 0.08);
+      0 0 24px rgba(88, 216, 255, 0.07);
+  }
+
+  .formula-card-experiment__formula-panel {
+    display: grid;
+    align-content: center;
+    gap: var(--pl-space-4);
+    min-height: 330px;
+    padding: clamp(var(--pl-space-4), 2.2vw, var(--pl-space-6));
   }
 
   .formula-card-experiment__screen-grid {
@@ -497,7 +434,7 @@ const variables: Variable[] = [
       linear-gradient(rgba(88, 216, 255, 0.075) 1px, transparent 1px),
       linear-gradient(90deg, rgba(88, 216, 255, 0.075) 1px, transparent 1px);
     background-size: 38px 38px;
-    opacity: 0.78;
+    opacity: 0.76;
     pointer-events: none;
   }
 
@@ -525,18 +462,21 @@ const variables: Variable[] = [
     border-bottom: 2px solid;
   }
 
-  .formula-card-experiment__formula {
+  .formula-card-experiment__mini-caption,
+  .formula-card-experiment__formula,
+  .formula-card-experiment__explain {
     position: relative;
     z-index: 1;
+  }
+
+  .formula-card-experiment__formula {
     display: flex;
     align-items: baseline;
     justify-content: center;
-    gap: 0.25em;
-    margin: 0;
-    padding: clamp(var(--pl-space-6), 4.4vw, var(--pl-space-12)) var(--pl-space-4) var(--pl-space-4);
+    gap: 0.22em;
     color: var(--pl-text);
     font-family: Georgia, "Times New Roman", serif;
-    font-size: clamp(2.45rem, 7vw, 5.25rem);
+    font-size: clamp(2.55rem, 5.8vw, 4.95rem);
     font-style: italic;
     font-weight: 700;
     line-height: 1;
@@ -576,8 +516,7 @@ const variables: Variable[] = [
     outline-offset: 3px;
   }
 
-  .formula-card-experiment__formula sub,
-  .formula-card-experiment__variable b sub {
+  .formula-card-experiment__formula sub {
     font-size: 0.48em;
     line-height: 0;
     margin-left: 0.02em;
@@ -585,36 +524,40 @@ const variables: Variable[] = [
   }
 
   .formula-card-experiment__term {
+    position: relative;
     display: inline-flex;
     align-items: baseline;
-    gap: 0.02em;
-    padding: 0 0.08em 0.02em;
-    border: 1px solid rgba(255, 216, 77, 0.2);
+    gap: 0.01em;
+    padding: 0 0.12em 0.03em;
+    border: 1px solid transparent;
     border-radius: var(--pl-radius-sm);
-    background:
-      radial-gradient(circle at 36% 50%, rgba(255, 216, 77, 0.16), transparent 55%),
-      rgba(255, 216, 77, 0.035);
+    transition:
+      border-color 0.18s ease,
+      background 0.18s ease,
+      box-shadow 0.18s ease;
   }
 
-  .formula-card-experiment__active-token {
-    color: var(--pl-accent);
+  .formula-card-experiment__term[data-related],
+  .formula-card-experiment[data-active-part="vt"] .formula-card-experiment__term {
+    border-color: rgba(255, 216, 77, 0.24);
+    background: rgba(255, 216, 77, 0.045);
+    box-shadow: inset 0 0 18px rgba(255, 216, 77, 0.04);
   }
 
   .formula-card-experiment__term-control {
-    position: relative;
-    z-index: 2;
-    justify-self: center;
-    margin: 0 0 var(--pl-space-3);
-    padding: 6px 12px;
-    border-color: rgba(88, 216, 255, 0.26);
+    position: absolute;
+    right: 0.1em;
+    bottom: -1.45em;
+    padding: 0.14em 0.46em;
+    border-color: rgba(88, 216, 255, 0.22);
     border-radius: 999px;
     color: var(--pl-text-muted);
-    background: rgba(8, 14, 24, 0.72);
-    font-family: inherit;
-    font-size: 0.82rem;
+    background: rgba(8, 14, 24, 0.92);
+    font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+    font-size: 0.18em;
     font-style: normal;
-    font-weight: 850;
-    line-height: 1.2;
+    font-weight: 900;
+    line-height: 1.1;
     text-shadow: none;
   }
 
@@ -630,225 +573,138 @@ const variables: Variable[] = [
   }
 
   .formula-card-experiment__explain {
-    margin: 0;
-    padding: 0 var(--pl-space-2);
+    max-width: 34rem;
+    margin: 0 auto;
     color: var(--pl-text);
     font-size: clamp(0.98rem, 1.45vw, 1.08rem);
     font-weight: 750;
     line-height: 1.42;
+    text-align: center;
   }
 
-  .formula-card-experiment__body {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(280px, 0.42fr);
-    gap: var(--pl-space-4);
-    align-items: stretch;
-  }
-
-  .formula-card-experiment__variables {
-    position: relative;
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: var(--pl-space-3);
-  }
-
-  .formula-card-experiment__variable {
-    position: relative;
-    display: grid;
-    grid-template-rows: auto auto auto 1fr;
-    gap: var(--pl-space-2);
-    min-width: 0;
-    min-height: 128px;
+  .formula-card-experiment__graph-panel {
+    min-height: 330px;
     padding: var(--pl-space-3);
-    overflow: hidden;
-    border: 1px solid rgba(88, 216, 255, 0.28);
-    border-radius: var(--pl-radius);
-    color: inherit;
-    background:
-      linear-gradient(180deg, rgba(88, 216, 255, 0.06), transparent 64%),
-      rgba(10, 17, 28, 0.88);
-    box-shadow:
-      inset 0 0 0 1px rgba(255, 255, 255, 0.025),
-      inset 0 -18px 32px rgba(0, 0, 0, 0.12);
-    text-align: left;
-    cursor: pointer;
-    transition:
-      border-color 0.18s ease,
-      background 0.18s ease,
-      box-shadow 0.18s ease,
-      transform 0.18s ease;
   }
 
-  .formula-card-experiment__variable:focus-visible {
-    outline: 3px solid rgba(255, 216, 77, 0.55);
-    outline-offset: 3px;
-  }
-
-  .formula-card-experiment__variable::after {
-    content: "";
-    position: absolute;
-    right: var(--pl-space-3);
-    bottom: var(--pl-space-3);
-    left: var(--pl-space-3);
-    height: 2px;
-    border-radius: 999px;
-    background: linear-gradient(90deg, var(--pl-cyan), transparent);
-    opacity: 0.64;
-  }
-
-  .formula-card-experiment__module-light {
-    width: 9px;
-    height: 9px;
-    border-radius: 50%;
-    background: var(--pl-cyan);
-    box-shadow: 0 0 16px rgba(88, 216, 255, 0.3);
-  }
-
-  .formula-card-experiment__variable b {
-    color: var(--pl-cyan);
-    font-family: Georgia, "Times New Roman", serif;
-    font-size: clamp(2rem, 3.5vw, 2.9rem);
-    font-style: italic;
-    line-height: 0.9;
-    text-shadow: 0 0 18px rgba(88, 216, 255, 0.18);
-  }
-
-  .formula-card-experiment__variable b span {
-    color: inherit;
-    font: inherit;
-    line-height: inherit;
-  }
-
-  .formula-card-experiment__variable strong {
-    color: var(--pl-text);
-    font-size: 0.9rem;
-    line-height: 1.3;
-  }
-
-  .formula-card-experiment__variable span:not(.formula-card-experiment__module-light) {
-    color: var(--pl-text-muted);
-    font-size: 0.84rem;
-    line-height: 1.35;
-  }
-
-  .formula-card-experiment__variable[data-active] {
-    border-color: rgba(255, 216, 77, 0.78);
-    background:
-      radial-gradient(circle at 50% 0%, rgba(255, 216, 77, 0.2), transparent 48%),
-      linear-gradient(180deg, rgba(255, 216, 77, 0.1), rgba(255, 216, 77, 0.032)),
-      rgba(17, 19, 23, 0.9);
-    box-shadow:
-      inset 0 0 0 1px rgba(255, 255, 255, 0.035),
-      inset 0 0 26px rgba(255, 216, 77, 0.055),
-      0 0 18px rgba(255, 216, 77, 0.08);
-    transform: translateY(-1px);
-  }
-
-  .formula-card-experiment__variable[data-active]::after {
-    background: linear-gradient(90deg, var(--pl-accent), transparent);
-  }
-
-  .formula-card-experiment__variable[data-active] .formula-card-experiment__module-light {
-    background: var(--pl-accent);
-    box-shadow: 0 0 18px rgba(255, 216, 77, 0.42);
-  }
-
-  .formula-card-experiment__variable[data-active] b {
-    color: var(--pl-accent);
-    text-shadow: 0 0 20px rgba(255, 216, 77, 0.24);
-  }
-
-  .formula-card-experiment__insight {
-    display: grid;
-    gap: var(--pl-space-3);
-    align-content: start;
-    min-width: 0;
-    padding: var(--pl-space-3);
-    border: 1px solid rgba(88, 216, 255, 0.22);
-    border-radius: var(--pl-radius);
-    background:
-      linear-gradient(135deg, rgba(88, 216, 255, 0.08), transparent 62%),
-      rgba(10, 16, 26, 0.78);
-  }
-
-  .formula-card-experiment__mini-graph {
-    position: relative;
-    min-height: 148px;
-    overflow: hidden;
-    border: 1px solid rgba(88, 216, 255, 0.15);
-    border-radius: var(--pl-radius-sm);
-    background:
-      linear-gradient(rgba(88, 216, 255, 0.04) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(88, 216, 255, 0.04) 1px, transparent 1px);
-    background-size: 18px 18px;
-  }
-
-  .formula-card-experiment__graph-svg {
+  .formula-card-experiment__graph {
     display: block;
     width: 100%;
-    height: 148px;
+    height: 100%;
+    min-height: 306px;
+  }
+
+  .formula-card-experiment__grid line {
+    stroke: rgba(88, 216, 255, 0.085);
+    stroke-width: 1;
   }
 
   .formula-card-experiment__axis {
-    stroke: rgba(168, 190, 213, 0.42);
-    stroke-width: 1.2;
+    stroke: rgba(168, 190, 213, 0.48);
+    stroke-width: 1.5;
   }
 
   .formula-card-experiment__ticks line {
-    stroke: rgba(168, 190, 213, 0.3);
-    stroke-width: 1;
+    stroke: rgba(168, 190, 213, 0.34);
+    stroke-width: 1.2;
   }
 
   .formula-card-experiment__tick-labels text {
     fill: var(--pl-text-soft);
     font-family: Inter, ui-sans-serif, system-ui, sans-serif;
-    font-size: 9px;
+    font-size: 15px;
     font-weight: 750;
   }
 
   .formula-card-experiment__axis-label {
     fill: var(--pl-cyan);
-    font-size: 10px;
+    font-size: 16px;
   }
 
   .formula-card-experiment__plot {
     fill: none;
     stroke: var(--pl-cyan);
-    stroke-width: 3;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-    transition: stroke 0.18s ease, stroke-width 0.18s ease, filter 0.18s ease;
-  }
-
-  .formula-card-experiment__time-marker,
-  .formula-card-experiment__delta-marker {
-    opacity: 0.22;
-    transition: opacity 0.18s ease, stroke 0.18s ease;
-  }
-
-  .formula-card-experiment__time-marker {
-    stroke: var(--pl-accent);
-    stroke-dasharray: 4 4;
-    stroke-width: 1.8;
-  }
-
-  .formula-card-experiment__delta-marker {
-    stroke: var(--pl-accent);
     stroke-width: 5;
     stroke-linecap: round;
+    stroke-linejoin: round;
+    filter: drop-shadow(0 0 8px rgba(88, 216, 255, 0.18));
+    transition:
+      stroke 0.18s ease,
+      stroke-width 0.18s ease,
+      filter 0.18s ease;
   }
 
-  .formula-card-experiment__plot-point {
+  .formula-card-experiment__point {
     stroke: rgba(8, 14, 24, 0.92);
-    stroke-width: 2;
-    transition: fill 0.18s ease, r 0.18s ease, filter 0.18s ease;
+    stroke-width: 3;
+    transition:
+      fill 0.18s ease,
+      filter 0.18s ease,
+      transform 0.18s ease;
   }
 
-  .formula-card-experiment__plot-point--start {
+  .formula-card-experiment__point--start {
     fill: var(--pl-cyan);
   }
 
-  .formula-card-experiment__plot-point--current {
+  .formula-card-experiment__point--current {
+    fill: var(--pl-accent);
+  }
+
+  .formula-card-experiment__helper,
+  .formula-card-experiment__start-level,
+  .formula-card-experiment__time-marker,
+  .formula-card-experiment__delta,
+  .formula-card-experiment__delta-label,
+  .formula-card-experiment__slope-arrow {
+    opacity: 0;
+    transition: opacity 0.18s ease;
+  }
+
+  .formula-card-experiment__helper line {
+    stroke: rgba(255, 216, 77, 0.72);
+    stroke-width: 2;
+    stroke-dasharray: 7 7;
+  }
+
+  .formula-card-experiment__start-level {
+    stroke: rgba(255, 216, 77, 0.72);
+    stroke-width: 2.5;
+    stroke-dasharray: 8 8;
+  }
+
+  .formula-card-experiment__time-marker line {
+    stroke: var(--pl-accent);
+    stroke-width: 3;
+    stroke-dasharray: 7 7;
+  }
+
+  .formula-card-experiment__time-marker text,
+  .formula-card-experiment__delta-label {
+    fill: var(--pl-accent);
+    font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+    font-size: 16px;
+    font-weight: 900;
+  }
+
+  .formula-card-experiment__delta path,
+  .formula-card-experiment__delta line {
+    fill: none;
+    stroke: var(--pl-accent);
+    stroke-width: 3;
+    stroke-linecap: round;
+  }
+
+  .formula-card-experiment__slope-arrow {
+    fill: none;
+    stroke: var(--pl-accent);
+    stroke-width: 4;
+    stroke-linecap: round;
+    filter: drop-shadow(0 0 8px rgba(255, 216, 77, 0.24));
+  }
+
+  .formula-card-experiment__slope-arrow + path,
+  marker path {
     fill: var(--pl-accent);
   }
 
@@ -858,113 +714,67 @@ const variables: Variable[] = [
 
   .formula-card-experiment__plot[data-active] {
     stroke: var(--pl-accent);
-    stroke-width: 4;
-    filter: drop-shadow(0 0 7px rgba(255, 216, 77, 0.28));
+    stroke-width: 6;
+    filter: drop-shadow(0 0 10px rgba(255, 216, 77, 0.28));
   }
 
-  .formula-card-experiment__plot-point[data-active] {
+  .formula-card-experiment__point[data-active] {
     fill: var(--pl-accent);
-    r: 6;
-    filter: drop-shadow(0 0 7px rgba(255, 216, 77, 0.32));
+    filter: drop-shadow(0 0 9px rgba(255, 216, 77, 0.34));
+    transform: scale(1.15);
+    transform-box: fill-box;
+    transform-origin: center;
   }
 
-  .formula-card-experiment__insight strong {
-    display: block;
-    color: var(--pl-text);
-    font-size: 0.9rem;
-    line-height: 1.35;
-  }
-
-  .formula-card-experiment__insight p {
-    margin: var(--pl-space-2) 0 0;
-    color: var(--pl-text-muted);
-    font-size: 0.84rem;
-    line-height: 1.4;
-  }
-
-  .formula-card-experiment__hint {
+  .formula-card-experiment__insight {
     display: grid;
     grid-template-columns: auto minmax(0, 1fr);
     gap: var(--pl-space-3);
     align-items: center;
-    padding: var(--pl-space-2) var(--pl-space-3);
-    border: 1px solid rgba(88, 216, 255, 0.2);
+    min-width: 0;
+    padding: var(--pl-space-3) var(--pl-space-4);
+    border: 1px solid rgba(88, 216, 255, 0.22);
     border-radius: var(--pl-radius);
     background:
-      linear-gradient(90deg, rgba(88, 216, 255, 0.06), transparent 72%),
-      rgba(8, 14, 24, 0.72);
+      linear-gradient(90deg, rgba(88, 216, 255, 0.07), transparent 72%),
+      rgba(8, 14, 24, 0.76);
   }
 
-  .formula-card-experiment__hint > span {
-    display: block;
-    width: 24px;
+  .formula-card-experiment__insight-line {
+    width: 28px;
     height: 3px;
     border-radius: 999px;
     background: var(--pl-cyan);
     box-shadow: 0 0 12px rgba(88, 216, 255, 0.18);
   }
 
-  .formula-card-experiment__hint p,
-  .formula-card-experiment__chip {
-    margin: 0;
+  .formula-card-experiment__insight strong {
+    display: block;
     color: var(--pl-text);
-    font-size: 0.9rem;
+    font-size: clamp(0.96rem, 1.45vw, 1.08rem);
     line-height: 1.35;
   }
 
-  .formula-card-experiment__outcomes {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--pl-space-3);
-  }
-
-  .formula-card-experiment__chip {
-    display: inline-grid;
-    grid-template-columns: auto minmax(0, 1fr);
-    gap: var(--pl-space-3);
-    align-items: center;
-    min-width: min(100%, 230px);
-    padding: 10px 12px;
-    border: 1px solid rgba(88, 216, 255, 0.2);
-    border-radius: var(--pl-radius);
-    background: rgba(255, 255, 255, 0.035);
-    white-space: nowrap;
-  }
-
-  .formula-card-experiment__slope-icon {
-    display: grid;
-    place-items: center;
-    width: 28px;
-    height: 18px;
-  }
-
-  .formula-card-experiment__slope-icon svg {
-    width: 28px;
-    height: 18px;
-  }
-
-  .formula-card-experiment__slope-icon line {
-    stroke: var(--pl-cyan);
-    stroke-width: 3;
-    stroke-linecap: round;
-  }
-
-  .formula-card-experiment__chip:first-child .formula-card-experiment__slope-icon line {
-    stroke: var(--pl-accent);
-  }
-
-  .formula-card-experiment__chip:last-child .formula-card-experiment__slope-icon line {
-    stroke: #ff8a5b;
+  .formula-card-experiment__insight p {
+    margin: var(--pl-space-1) 0 0;
+    color: var(--pl-text-muted);
+    font-size: 0.9rem;
+    line-height: 1.42;
   }
 
   @media (max-width: 980px) {
-    .formula-card-experiment__header,
-    .formula-card-experiment__body {
+    .formula-card-experiment__header {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+
+    .formula-card-experiment__scene {
       grid-template-columns: 1fr;
     }
 
-    .formula-card-experiment__variables {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+    .formula-card-experiment__formula-panel,
+    .formula-card-experiment__graph-panel {
+      min-height: 280px;
     }
   }
 
@@ -978,8 +788,8 @@ const variables: Variable[] = [
     }
 
     .formula-card-experiment__mark {
-      width: 46px;
-      height: 46px;
+      width: 44px;
+      height: 44px;
     }
 
     .formula-card-experiment__mark::before,
@@ -990,32 +800,42 @@ const variables: Variable[] = [
       border-width: 1.5px;
     }
 
-    .formula-card-experiment__status {
-      grid-template-columns: 1fr;
+    .formula-card-experiment__help {
+      width: 100%;
+      border-radius: var(--pl-radius-sm);
     }
 
-    .formula-card-experiment__status-dot {
-      width: 26px;
-      height: 26px;
+    .formula-card-experiment__formula-panel {
+      gap: var(--pl-space-3);
+      min-height: 250px;
+      padding: var(--pl-space-4);
     }
 
     .formula-card-experiment__formula {
-      padding: var(--pl-space-6) var(--pl-space-3) var(--pl-space-3);
-      font-size: clamp(2.05rem, 10vw, 2.82rem);
-      gap: 0.15em;
+      font-size: clamp(2rem, 10vw, 2.72rem);
+      gap: 0.13em;
     }
 
-    .formula-card-experiment__variables {
+    .formula-card-experiment__term-control {
+      bottom: -1.65em;
+      font-size: 0.22em;
+    }
+
+    .formula-card-experiment__graph-panel {
+      min-height: 260px;
+      padding: var(--pl-space-2);
+    }
+
+    .formula-card-experiment__graph {
+      min-height: 252px;
+    }
+
+    .formula-card-experiment__tick-labels text {
+      font-size: 16px;
+    }
+
+    .formula-card-experiment__insight {
       grid-template-columns: 1fr;
-    }
-
-    .formula-card-experiment__variable {
-      min-height: 112px;
-    }
-
-    .formula-card-experiment__chip {
-      width: 100%;
-      white-space: normal;
     }
   }
 

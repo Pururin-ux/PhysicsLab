@@ -1,186 +1,156 @@
-export type FormulaPart = "none" | "x" | "x0" | "v" | "t" | "vt";
+type FormulaPart = "none" | "x" | "x0" | "v" | "t" | "vt";
 
-type PartCopy = {
+type FormulaPartCopy = {
   title: string;
-  sub: string;
-  hint: string;
   insight: string;
-  cards: string[];
+  formula: FormulaPart[];
   graph: string[];
-  formula: string[];
+  relatedTerm?: boolean;
 };
 
-const DEFAULT_PART: FormulaPart = "none";
-
-const PART_COPY: Record<FormulaPart, PartCopy> = {
+const PART_COPY: Record<FormulaPart, FormulaPartCopy> = {
   none: {
-    title: "Наведи на часть формулы",
-    sub: "Выбери символ в формуле или карточку переменной.",
-    hint: "Нажми на символ формулы - увидишь, за что он отвечает.",
-    insight: "График показывает, как меняется координата x со временем t.",
-    cards: [],
-    graph: [],
-    formula: []
+    title: "Нажми на символ формулы — увидишь, за что он отвечает.",
+    insight: "График показывает, как меняется координата, а не дорогу по карте.",
+    formula: [],
+    graph: []
   },
   x: {
-    title: "x - где тело окажется",
-    sub: "Это координата в выбранный момент времени.",
-    hint: "x получается из старта x0 и добавки vt.",
-    insight: "Желтая точка на графике показывает текущее значение x.",
-    cards: ["x"],
-    graph: ["current"],
-    formula: ["x"]
+    title: "x — где тело окажется через время t.",
+    insight: "Жёлтая точка показывает текущую координату на графике x(t).",
+    formula: ["x"],
+    graph: ["current", "projection"]
   },
   x0: {
-    title: "x0 - откуда начали",
-    sub: "Стартовая координата сдвигает всю линию вверх или вниз.",
-    hint: "Если изменить x0, график x(t) поднимется или опустится целиком.",
-    insight: "Стартовая точка показывает координату в момент t = 0.",
-    cards: ["x0"],
-    graph: ["start"],
-    formula: ["x0"]
+    title: "x₀ — откуда начали. Это координата в момент t = 0.",
+    insight: "Стартовая точка задаёт уровень, от которого начинается вся линия.",
+    formula: ["x0"],
+    graph: ["start", "start-level"]
   },
   v: {
-    title: "v задает наклон графика x(t)",
-    sub: "Больше скорость - круче линия. Минусовая скорость ведет линию вниз.",
-    hint: "Наведи на v: она входит в vt и отвечает за наклон.",
-    insight: "Скорость v - это наклон линии координаты от времени.",
-    cards: ["v"],
-    graph: ["line"],
-    formula: ["v", "vt"]
+    title: "v задаёт наклон графика. Чем больше скорость, тем круче линия.",
+    insight: "Меняем v — меняется член vt и наклон линии x(t).",
+    formula: ["v"],
+    graph: ["line", "slope-arrow"],
+    relatedTerm: true
   },
   t: {
-    title: "t показывает, сколько времени прошло",
-    sub: "Чем больше времени, тем дальше вправо точка на графике.",
-    hint: "Маркер времени показывает выбранный момент на оси t.",
-    insight: "Вертикальная линия помогает увидеть координату в выбранный момент.",
-    cards: ["t"],
-    graph: ["time", "current"],
-    formula: ["t", "vt"]
+    title: "t показывает, сколько времени прошло. Чем больше t, тем правее точка.",
+    insight: "Маркер времени показывает выбранный момент на оси t.",
+    formula: ["t"],
+    graph: ["time"],
+    relatedTerm: true
   },
   vt: {
-    title: "vt - сколько координаты добавилось",
-    sub: "Это изменение координаты за время t при скорости v.",
-    hint: "vt связывает скорость и время: так появляется прирост координаты.",
-    insight: "Подсвеченный участок показывает добавку к координате после старта.",
-    cards: ["v", "t"],
-    graph: ["delta", "line", "current"],
-    formula: ["v", "t", "vt"]
+    title: "vt — прибавка",
+    insight: "vt — сколько координаты добавилось за время t.",
+    formula: ["vt"],
+    graph: ["delta", "delta-label"]
   }
 };
 
-const getPartFromElement = (element: HTMLElement): FormulaPart => {
-  const part = element.dataset.formulaPart ?? element.dataset.variableCard;
-  return isFormulaPart(part) ? part : DEFAULT_PART;
-};
+const toPart = (value: string | null): FormulaPart =>
+  value === "x" || value === "x0" || value === "v" || value === "t" || value === "vt"
+    ? value
+    : "none";
 
-const isFormulaPart = (value: string | undefined): value is FormulaPart =>
-  value === "x" ||
-  value === "x0" ||
-  value === "v" ||
-  value === "t" ||
-  value === "vt" ||
-  value === "none";
+export const initFormulaCardExperiment = (root: HTMLElement) => {
+  if (root.dataset.fceReady === "true") {
+    return;
+  }
 
-export function initFormulaCardExperiment(root: HTMLElement | null): void {
-  if (!root || root.dataset.fceReady === "true") return;
   root.dataset.fceReady = "true";
 
-  const statusTitle = root.querySelector<HTMLElement>("[data-fce-status-title]");
-  const statusSub = root.querySelector<HTMLElement>("[data-fce-status-sub]");
-  const hint = root.querySelector<HTMLElement>("[data-fce-hint]");
-  const insight = root.querySelector<HTMLElement>("[data-fce-insight]");
-  const formulaParts = Array.from(root.querySelectorAll<HTMLElement>("[data-formula-part]"));
-  const variableCards = Array.from(root.querySelectorAll<HTMLElement>("[data-variable-card]"));
-  const graphElements = Array.from(root.querySelectorAll<HTMLElement | SVGElement>("[data-graph-element]"));
+  const formulaParts = Array.from(
+    root.querySelectorAll<HTMLElement>("[data-formula-part]")
+  );
+  const graphElements = Array.from(
+    root.querySelectorAll<HTMLElement | SVGElement>("[data-graph-element]")
+  );
+  const titleNode = root.querySelector<HTMLElement>("[data-fce-insight-title]");
+  const insightNode = root.querySelector<HTMLElement>("[data-fce-insight]");
+  const termNode = root.querySelector<HTMLElement>("[data-fce-term]");
 
-  let selectedPart: FormulaPart = DEFAULT_PART;
-  let hoverPart: FormulaPart = DEFAULT_PART;
-  let focusPart: FormulaPart = DEFAULT_PART;
+  let selectedPart: FormulaPart = "none";
+  let hoverPart: FormulaPart = "none";
+  let focusPart: FormulaPart = "none";
 
-  const activatePart = (part: FormulaPart) => {
-    const copy = PART_COPY[part];
-    root.dataset.activePart = part;
+  const getActivePart = (): FormulaPart => {
+    if (focusPart !== "none") {
+      return focusPart;
+    }
 
-    if (statusTitle) statusTitle.textContent = copy.title;
-    if (statusSub) statusSub.textContent = copy.sub;
-    if (hint) hint.textContent = copy.hint;
-    if (insight) insight.textContent = copy.insight;
+    if (hoverPart !== "none") {
+      return hoverPart;
+    }
 
-    formulaParts.forEach((item) => {
-      const isActive = copy.formula.includes(item.dataset.formulaPart ?? "");
-      item.toggleAttribute("data-active", isActive);
-      item.setAttribute("aria-pressed", String(isActive));
-    });
+    return selectedPart;
+  };
 
-    variableCards.forEach((card) => {
-      const isActive = copy.cards.includes(card.dataset.variableCard ?? "");
-      card.toggleAttribute("data-active", isActive);
-      card.setAttribute("aria-pressed", String(isActive));
+  const render = () => {
+    const activePart = getActivePart();
+    const copy = PART_COPY[activePart];
+
+    root.dataset.activePart = activePart;
+
+    if (titleNode) {
+      titleNode.textContent = copy.title;
+    }
+
+    if (insightNode) {
+      insightNode.textContent = copy.insight;
+    }
+
+    formulaParts.forEach((element) => {
+      const part = toPart(element.dataset.formulaPart ?? null);
+      const isActive = copy.formula.includes(part);
+      element.toggleAttribute("data-active", isActive);
+      element.setAttribute("aria-pressed", String(isActive || selectedPart === part));
     });
 
     graphElements.forEach((element) => {
-      const isActive = copy.graph.includes(element.getAttribute("data-graph-element") ?? "");
-      element.toggleAttribute("data-active", isActive);
+      const graphKey = element.getAttribute("data-graph-element") ?? "";
+      element.toggleAttribute("data-active", copy.graph.includes(graphKey));
     });
+
+    termNode?.toggleAttribute("data-related", Boolean(copy.relatedTerm));
   };
 
-  const syncPart = () => {
-    if (focusPart !== DEFAULT_PART) {
-      activatePart(focusPart);
-      return;
+  const activateFromElement = (element: HTMLElement, mode: "hover" | "focus" | "select") => {
+    const part = toPart(element.dataset.formulaPart ?? null);
+
+    if (mode === "hover") {
+      hoverPart = part;
+    } else if (mode === "focus") {
+      focusPart = part;
+    } else {
+      selectedPart = selectedPart === part ? "none" : part;
     }
 
-    if (hoverPart !== DEFAULT_PART) {
-      activatePart(hoverPart);
-      return;
-    }
-
-    activatePart(selectedPart);
+    render();
   };
 
-  const previewPart = (part: FormulaPart) => {
-    hoverPart = part;
-    syncPart();
-  };
-
-  const clearPreviewPart = (part: FormulaPart) => {
-    if (hoverPart === part) hoverPart = DEFAULT_PART;
-    syncPart();
-  };
-
-  const focusFormulaPart = (part: FormulaPart) => {
-    focusPart = part;
-    syncPart();
-  };
-
-  const clearFocusPart = (part: FormulaPart) => {
-    if (focusPart === part) focusPart = DEFAULT_PART;
-    syncPart();
-  };
-
-  const selectPart = (part: FormulaPart) => {
-    selectedPart = part;
-    syncPart();
-  };
-
-  [...formulaParts, ...variableCards].forEach((control) => {
-    const part = getPartFromElement(control);
-    control.addEventListener("pointerenter", () => previewPart(part));
-    control.addEventListener("pointerleave", () => clearPreviewPart(part));
-    control.addEventListener("focus", () => focusFormulaPart(part));
-    control.addEventListener("blur", () => clearFocusPart(part));
-    control.addEventListener("click", () => selectPart(part));
+  formulaParts.forEach((element) => {
+    element.addEventListener("pointerenter", () => activateFromElement(element, "hover"));
+    element.addEventListener("pointerleave", () => {
+      hoverPart = "none";
+      render();
+    });
+    element.addEventListener("focus", () => activateFromElement(element, "focus"));
+    element.addEventListener("blur", () => {
+      focusPart = "none";
+      render();
+    });
+    element.addEventListener("click", () => activateFromElement(element, "select"));
+    element.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        selectedPart = "none";
+        hoverPart = "none";
+        focusPart = "none";
+        render();
+      }
+    });
   });
 
-  root.addEventListener("keydown", (event) => {
-    if (event.key === "Escape") {
-      selectedPart = DEFAULT_PART;
-      hoverPart = DEFAULT_PART;
-      focusPart = DEFAULT_PART;
-      syncPart();
-    }
-  });
-
-  syncPart();
-}
+  render();
+};
