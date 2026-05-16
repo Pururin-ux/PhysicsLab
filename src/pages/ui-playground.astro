@@ -55,14 +55,21 @@ const zones: PlaygroundZone[] = [
   description="Безопасная страница для экспериментов с интерфейсом PhysicsLab без изменения lab-preview."
   navItems={navItems}
 >
+  <canvas class="playground-particles" data-playground-particles aria-hidden="true"></canvas>
+
   <section class="section playground-hero" aria-labelledby="playground-title">
     <div class="playground-hero__copy">
-      <p class="eyebrow">Безопасные UI-эксперименты</p>
       <h1 id="playground-title">Песочница интерфейса PhysicsLab</h1>
       <p class="playground-lead">
         Здесь можно проверять будущие сгенерированные компоненты перед переносом в основной интерфейс.
         Эта страница изолирована и не меняет демо-лабораторию.
       </p>
+
+      <nav class="quick-links" aria-label="Быстрые ссылки песочницы">
+        <a href="#formulas">Формулы</a>
+        <a href="#mascot">Маскот</a>
+        <a href="#motion-feedback">Движение</a>
+      </nav>
     </div>
 
     <aside class="playground-note" aria-label="Правила песочницы">
@@ -76,7 +83,6 @@ const zones: PlaygroundZone[] = [
 
   <section class="section playground-zones" aria-labelledby="zones-title">
     <div class="zones-heading">
-      <p class="eyebrow">Пустые зоны</p>
       <h2 id="zones-title">Три места для будущих прототипов</h2>
       <p>
         Сейчас здесь только каркас. Он нужен, чтобы сгенерированный интерфейс можно было тестировать
@@ -153,28 +159,78 @@ const zones: PlaygroundZone[] = [
 </BaseLayout>
 
 <style>
+  .playground-particles {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    opacity: 0.38;
+  }
+
+  .playground-hero,
+  .playground-zones {
+    position: relative;
+    z-index: 1;
+  }
+
   .playground-hero {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(280px, 0.42fr);
-    gap: var(--pl-space-6);
-    align-items: end;
-    padding-top: clamp(var(--pl-space-8), 7vw, var(--pl-space-16));
-    padding-bottom: var(--pl-space-8);
+    grid-template-columns: minmax(0, 0.9fr) minmax(240px, 0.34fr);
+    gap: var(--pl-space-4);
+    align-items: start;
+    padding-top: var(--pl-space-5);
+    padding-bottom: var(--pl-space-3);
   }
 
   .playground-hero__copy {
     max-width: 820px;
   }
 
+  .playground-hero h1 {
+    max-width: 620px;
+    margin-bottom: var(--pl-space-2);
+    font-size: clamp(1.9rem, 3.8vw, 3.35rem);
+  }
+
   .playground-lead {
-    max-width: 720px;
+    max-width: 600px;
     margin-bottom: 0;
-    font-size: clamp(1.05rem, 1.8vw, 1.18rem);
+    font-size: clamp(0.96rem, 1.2vw, 1.04rem);
+    line-height: 1.48;
+  }
+
+  .quick-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--pl-space-2);
+    margin-top: var(--pl-space-3);
+  }
+
+  .quick-links a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 34px;
+    padding: 7px 11px;
+    border: 1px solid rgba(88, 216, 255, 0.22);
+    border-radius: 999px;
+    color: var(--pl-text);
+    background: rgba(8, 14, 24, 0.66);
+    font-size: 0.9rem;
+    font-weight: 800;
+    line-height: 1.2;
+    text-decoration: none;
+  }
+
+  .quick-links a:hover {
+    border-color: rgba(255, 216, 77, 0.45);
+    color: var(--pl-accent);
   }
 
   .playground-note {
     min-width: 0;
-    padding: var(--pl-space-4);
+    padding: var(--pl-space-3);
     border: 1px solid rgba(255, 216, 77, 0.26);
     border-radius: var(--pl-radius);
     background:
@@ -190,20 +246,32 @@ const zones: PlaygroundZone[] = [
 
   .playground-note p {
     margin-bottom: 0;
-    font-size: 0.96rem;
+    font-size: 0.9rem;
+    line-height: 1.45;
   }
 
   .playground-zones {
-    padding-top: var(--pl-space-8);
+    padding-top: 0;
   }
 
   .zones-heading {
-    max-width: 780px;
-    margin-bottom: var(--pl-space-6);
+    display: grid;
+    grid-template-columns: minmax(260px, 0.4fr) minmax(0, 0.6fr);
+    gap: var(--pl-space-3);
+    align-items: end;
+    max-width: 980px;
+    margin-bottom: var(--pl-space-2);
+  }
+
+  .zones-heading h2 {
+    margin-bottom: 0;
+    font-size: clamp(1.35rem, 2.3vw, 2.05rem);
   }
 
   .zones-heading p:last-child {
     margin-bottom: 0;
+    font-size: 0.9rem;
+    line-height: 1.42;
   }
 
   .zone-grid {
@@ -227,10 +295,26 @@ const zones: PlaygroundZone[] = [
 
   .experiment-zone--prototype {
     grid-column: 1 / -1;
+    gap: var(--pl-space-2);
     padding: 0;
     border: 0;
     background: transparent;
     box-shadow: none;
+  }
+
+  .experiment-zone--prototype .zone-kicker {
+    display: none;
+  }
+
+  .experiment-zone--prototype h3 {
+    margin-bottom: 0;
+    font-size: clamp(1.08rem, 1.6vw, 1.28rem);
+  }
+
+  .experiment-zone--prototype > p {
+    max-width: 780px;
+    font-size: 0.9rem;
+    line-height: 1.42;
   }
 
   .experiment-zone:nth-child(2) {
@@ -413,6 +497,7 @@ const zones: PlaygroundZone[] = [
 
   @media (max-width: 980px) {
     .playground-hero,
+    .zones-heading,
     .zone-grid,
     .katex-check {
       grid-template-columns: 1fr;
@@ -425,13 +510,28 @@ const zones: PlaygroundZone[] = [
 
   @media (max-width: 600px) {
     .playground-hero {
-      gap: var(--pl-space-4);
-      padding-top: var(--pl-space-6);
-      padding-bottom: var(--pl-space-6);
+      gap: var(--pl-space-3);
+      padding-top: var(--pl-space-3);
+      padding-bottom: var(--pl-space-3);
+    }
+
+    .playground-hero h1 {
+      font-size: clamp(1.75rem, 8.8vw, 2.35rem);
+    }
+
+    .quick-links a {
+      min-height: 32px;
+      padding: 6px 10px;
+      font-size: 0.84rem;
+    }
+
+    .playground-note,
+    .zones-heading {
+      display: none;
     }
 
     .playground-zones {
-      padding-top: var(--pl-space-6);
+      padding-top: 0;
     }
 
     .experiment-zone {
@@ -455,4 +555,110 @@ const zones: PlaygroundZone[] = [
       grid-template-columns: 1fr;
     }
   }
+
+  @media (prefers-reduced-motion: reduce) {
+    .playground-particles {
+      opacity: 0.18;
+    }
+  }
 </style>
+
+<script>
+  const particleCanvas = document.querySelector<HTMLCanvasElement>("[data-playground-particles]");
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  if (particleCanvas) {
+    const context = particleCanvas.getContext("2d");
+
+    type Particle = {
+      x: number;
+      y: number;
+      vx: number;
+      vy: number;
+      radius: number;
+      opacity: number;
+      accent: boolean;
+    };
+
+    let width = 0;
+    let height = 0;
+    let particles: Particle[] = [];
+    let animationFrame = 0;
+
+    const resizeCanvas = () => {
+      const scale = Math.min(window.devicePixelRatio || 1, 2);
+      width = window.innerWidth;
+      height = window.innerHeight;
+      particleCanvas.width = Math.floor(width * scale);
+      particleCanvas.height = Math.floor(height * scale);
+      particleCanvas.style.width = `${width}px`;
+      particleCanvas.style.height = `${height}px`;
+      context?.setTransform(scale, 0, 0, scale, 0, 0);
+
+      const count = Math.max(26, Math.min(58, Math.round((width * height) / 26000)));
+      particles = Array.from({ length: count }, (_, index) => ({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        vx: (Math.random() - 0.5) * 0.18,
+        vy: (Math.random() - 0.5) * 0.18,
+        radius: Math.random() * 1.15 + 0.45,
+        opacity: Math.random() * 0.28 + 0.14,
+        accent: index < 5
+      }));
+    };
+
+    const drawParticles = () => {
+      if (!context) return;
+
+      context.clearRect(0, 0, width, height);
+
+      particles.forEach((particle, index) => {
+        if (!reducedMotion) {
+          particle.x += particle.vx;
+          particle.y += particle.vy;
+
+          if (particle.x < -8) particle.x = width + 8;
+          if (particle.x > width + 8) particle.x = -8;
+          if (particle.y < -8) particle.y = height + 8;
+          if (particle.y > height + 8) particle.y = -8;
+        }
+
+        context.beginPath();
+        context.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2);
+        context.fillStyle = particle.accent
+          ? `rgba(255, 216, 77, ${particle.opacity})`
+          : `rgba(88, 216, 255, ${particle.opacity})`;
+        context.fill();
+
+        for (let nextIndex = index + 1; nextIndex < particles.length; nextIndex += 1) {
+          const next = particles[nextIndex];
+          const dx = particle.x - next.x;
+          const dy = particle.y - next.y;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+
+          if (distance < 118) {
+            context.beginPath();
+            context.moveTo(particle.x, particle.y);
+            context.lineTo(next.x, next.y);
+            context.strokeStyle = `rgba(88, 216, 255, ${(1 - distance / 118) * 0.075})`;
+            context.lineWidth = 0.6;
+            context.stroke();
+          }
+        }
+      });
+
+      if (!reducedMotion) {
+        animationFrame = window.requestAnimationFrame(drawParticles);
+      }
+    };
+
+    resizeCanvas();
+    drawParticles();
+
+    window.addEventListener("resize", () => {
+      window.cancelAnimationFrame(animationFrame);
+      resizeCanvas();
+      drawParticles();
+    });
+  }
+</script>

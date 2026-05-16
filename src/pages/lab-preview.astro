@@ -306,10 +306,11 @@ const missionItems: MissionItem[] = [
   .hero-lab {
     display: grid;
     grid-template-columns: minmax(0, 0.95fr) minmax(340px, 0.8fr);
-    gap: var(--pl-space-8);
+    gap: clamp(var(--pl-space-5), 4vw, var(--pl-space-8));
     align-items: stretch;
-    min-height: min(760px, calc(100vh - 62px));
-    padding-top: clamp(var(--pl-space-8), 6vw, var(--pl-space-16));
+    min-height: min(620px, calc(100vh - 62px));
+    padding-top: clamp(var(--pl-space-6), 4vw, var(--pl-space-10));
+    padding-bottom: clamp(var(--pl-space-8), 5vw, var(--pl-space-12));
   }
 
   .hero-copy {
@@ -321,6 +322,7 @@ const missionItems: MissionItem[] = [
 
   .hero-copy h1 {
     max-width: 720px;
+    font-size: clamp(2.25rem, 4.7vw, 4.35rem);
   }
 
   .lead {
@@ -357,7 +359,7 @@ const missionItems: MissionItem[] = [
   .lab-stage {
     display: grid;
     gap: var(--pl-space-4);
-    min-height: 480px;
+    min-height: 410px;
   }
 
   .stage-head,
@@ -425,7 +427,7 @@ const missionItems: MissionItem[] = [
   .hero-graph,
   .component-graph {
     position: relative;
-    min-height: 260px;
+    min-height: 230px;
     overflow: hidden;
     border: 1px solid rgba(88, 216, 255, 0.24);
     border-radius: var(--pl-radius);
@@ -677,7 +679,8 @@ const missionItems: MissionItem[] = [
   @media (max-width: 600px) {
     .hero-lab {
       min-height: auto;
-      padding-top: var(--pl-space-6);
+      padding-top: var(--pl-space-5);
+      padding-bottom: var(--pl-space-8);
       gap: var(--pl-space-5);
     }
 

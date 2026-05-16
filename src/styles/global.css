@@ -26,6 +26,22 @@ body {
   background-size: auto, auto, 44px 44px, 44px 44px, auto;
 }
 
+#lab-background-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  opacity: 0.34;
+}
+
+.topbar,
+main {
+  position: relative;
+  z-index: 1;
+}
+
 a,
 button {
   color: inherit;
@@ -260,5 +276,9 @@ ol {
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
+  }
+
+  #lab-background-canvas {
+    opacity: 0.18;
   }
 }

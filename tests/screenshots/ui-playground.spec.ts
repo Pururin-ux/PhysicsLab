@@ -39,6 +39,7 @@ test.describe("ui-playground screenshots", () => {
       ).toBeVisible();
 
       await expect(page.locator("[data-experiment-zone]")).toHaveCount(3);
+      await expect(page.locator("[data-playground-particles]")).toHaveCount(1);
       await expect(page.locator("[data-formula-card-experiment]")).toBeVisible();
       await expect(page.getByText("Сейчас меняем скорость v")).toBeVisible();
       await expect(page.getByText("Больше v → линия круче")).toBeVisible();

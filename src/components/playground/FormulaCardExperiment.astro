@@ -134,9 +134,9 @@ const variables: Variable[] = [
 
     position: relative;
     display: grid;
-    gap: clamp(var(--pl-space-3), 2vw, var(--pl-space-5));
+    gap: clamp(var(--pl-space-2), 1.5vw, var(--pl-space-4));
     min-width: 0;
-    padding: clamp(var(--pl-space-4), 3.1vw, var(--pl-space-8));
+    padding: clamp(var(--pl-space-4), 2.2vw, var(--pl-space-6));
     overflow: hidden;
     border: 1px solid var(--card-line);
     border-radius: var(--pl-radius);
@@ -226,8 +226,8 @@ const variables: Variable[] = [
     display: grid;
     place-items: center;
     flex: 0 0 auto;
-    width: 54px;
-    height: 54px;
+    width: 48px;
+    height: 48px;
     border: 1px solid rgba(88, 216, 255, 0.38);
     border-radius: var(--pl-radius);
     background:
@@ -262,7 +262,7 @@ const variables: Variable[] = [
   .formula-card-experiment__label {
     margin: 0 0 var(--pl-space-1);
     color: var(--pl-accent);
-    font-size: 0.76rem;
+    font-size: 0.72rem;
     font-weight: 900;
     letter-spacing: 0;
     text-transform: uppercase;
@@ -271,7 +271,7 @@ const variables: Variable[] = [
   .formula-card-experiment h4 {
     margin: 0;
     color: var(--pl-text);
-    font-size: clamp(1.55rem, 3vw, 2.35rem);
+    font-size: clamp(1.35rem, 2.4vw, 1.9rem);
     line-height: 1.05;
   }
 
@@ -281,7 +281,7 @@ const variables: Variable[] = [
     gap: var(--pl-space-3);
     align-items: center;
     min-width: 0;
-    padding: var(--pl-space-3);
+    padding: var(--pl-space-2) var(--pl-space-3);
     border: 1px solid var(--card-yellow-line);
     border-radius: var(--pl-radius);
     background:
@@ -293,8 +293,8 @@ const variables: Variable[] = [
   .formula-card-experiment__status-dot {
     display: grid;
     place-items: center;
-    width: 32px;
-    height: 32px;
+    width: 28px;
+    height: 28px;
     border: 2px solid var(--pl-accent);
     border-radius: 50%;
   }
@@ -311,14 +311,14 @@ const variables: Variable[] = [
   .formula-card-experiment__status strong {
     display: block;
     color: var(--pl-accent);
-    font-size: 1rem;
+    font-size: 0.94rem;
     line-height: 1.25;
   }
 
   .formula-card-experiment__status p {
     margin: var(--pl-space-1) 0 0;
     color: var(--pl-text);
-    font-size: 0.94rem;
+    font-size: 0.88rem;
     line-height: 1.4;
   }
 
@@ -379,10 +379,10 @@ const variables: Variable[] = [
     justify-content: center;
     gap: 0.25em;
     margin: 0;
-    padding: clamp(var(--pl-space-8), 7vw, var(--pl-space-16)) var(--pl-space-4);
+    padding: clamp(var(--pl-space-6), 4.6vw, var(--pl-space-12)) var(--pl-space-4);
     color: var(--pl-text);
     font-family: Georgia, "Times New Roman", serif;
-    font-size: clamp(2.7rem, 8.4vw, 6.35rem);
+    font-size: clamp(2.45rem, 7vw, 5.25rem);
     font-style: italic;
     font-weight: 700;
     line-height: 1;
@@ -426,9 +426,9 @@ const variables: Variable[] = [
     margin: 0;
     padding: 0 var(--pl-space-2);
     color: var(--pl-text);
-    font-size: clamp(1.05rem, 1.8vw, 1.22rem);
+    font-size: clamp(0.98rem, 1.45vw, 1.08rem);
     font-weight: 750;
-    line-height: 1.55;
+    line-height: 1.42;
   }
 
   .formula-card-experiment__body {
@@ -451,8 +451,8 @@ const variables: Variable[] = [
     grid-template-rows: auto auto auto 1fr;
     gap: var(--pl-space-2);
     min-width: 0;
-    min-height: 156px;
-    padding: var(--pl-space-4);
+    min-height: 128px;
+    padding: var(--pl-space-3);
     overflow: hidden;
     border: 1px solid rgba(88, 216, 255, 0.28);
     border-radius: var(--pl-radius);
@@ -467,9 +467,9 @@ const variables: Variable[] = [
   .formula-card-experiment__variable::after {
     content: "";
     position: absolute;
-    right: var(--pl-space-4);
-    bottom: var(--pl-space-4);
-    left: var(--pl-space-4);
+    right: var(--pl-space-3);
+    bottom: var(--pl-space-3);
+    left: var(--pl-space-3);
     height: 2px;
     border-radius: 999px;
     background: linear-gradient(90deg, var(--pl-cyan), transparent);
@@ -487,7 +487,7 @@ const variables: Variable[] = [
   .formula-card-experiment__variable b {
     color: var(--pl-cyan);
     font-family: Georgia, "Times New Roman", serif;
-    font-size: clamp(2.3rem, 4.5vw, 3.55rem);
+    font-size: clamp(2rem, 3.5vw, 2.9rem);
     font-style: italic;
     line-height: 0.9;
     text-shadow: 0 0 18px rgba(88, 216, 255, 0.18);
@@ -501,20 +501,20 @@ const variables: Variable[] = [
 
   .formula-card-experiment__variable strong {
     color: var(--pl-text);
-    font-size: 0.98rem;
+    font-size: 0.9rem;
     line-height: 1.3;
   }
 
   .formula-card-experiment__variable span:not(.formula-card-experiment__module-light) {
     color: var(--pl-text-muted);
-    font-size: 0.9rem;
-    line-height: 1.45;
+    font-size: 0.84rem;
+    line-height: 1.35;
   }
 
   .formula-card-experiment__variable em {
     align-self: end;
     color: var(--pl-accent);
-    font-size: 0.8rem;
+    font-size: 0.76rem;
     font-style: normal;
     font-weight: 900;
     line-height: 1.25;
@@ -551,7 +551,7 @@ const variables: Variable[] = [
     gap: var(--pl-space-3);
     align-content: start;
     min-width: 0;
-    padding: var(--pl-space-4);
+    padding: var(--pl-space-3);
     border: 1px solid rgba(88, 216, 255, 0.22);
     border-radius: var(--pl-radius);
     background:
@@ -561,7 +561,7 @@ const variables: Variable[] = [
 
   .formula-card-experiment__mini-graph {
     position: relative;
-    min-height: 68px;
+    min-height: 54px;
     border: 1px solid rgba(88, 216, 255, 0.15);
     border-radius: var(--pl-radius-sm);
     background:
@@ -573,7 +573,7 @@ const variables: Variable[] = [
   .formula-card-experiment__mini-graph span {
     position: absolute;
     right: 16px;
-    bottom: 22px;
+    bottom: 18px;
     left: 16px;
     height: 3px;
     border-radius: 999px;
@@ -585,7 +585,7 @@ const variables: Variable[] = [
   .formula-card-experiment__mini-graph i {
     position: absolute;
     right: 38px;
-    bottom: 38px;
+    bottom: 30px;
     width: 10px;
     height: 10px;
     border-radius: 50%;
@@ -596,15 +596,15 @@ const variables: Variable[] = [
   .formula-card-experiment__insight strong {
     display: block;
     color: var(--pl-text);
-    font-size: 0.98rem;
-    line-height: 1.45;
+    font-size: 0.9rem;
+    line-height: 1.35;
   }
 
   .formula-card-experiment__insight p {
     margin: var(--pl-space-2) 0 0;
     color: var(--pl-text-muted);
-    font-size: 0.9rem;
-    line-height: 1.5;
+    font-size: 0.84rem;
+    line-height: 1.4;
   }
 
   .formula-card-experiment__connector {
@@ -635,7 +635,7 @@ const variables: Variable[] = [
     grid-template-columns: auto minmax(0, 1fr);
     gap: var(--pl-space-3);
     align-items: center;
-    padding: var(--pl-space-3) var(--pl-space-4);
+    padding: var(--pl-space-2) var(--pl-space-3);
     border: 1px solid rgba(88, 216, 255, 0.2);
     border-radius: var(--pl-radius);
     background:
@@ -657,8 +657,8 @@ const variables: Variable[] = [
   .formula-card-experiment__chip {
     margin: 0;
     color: var(--pl-text);
-    font-size: 0.98rem;
-    line-height: 1.45;
+    font-size: 0.9rem;
+    line-height: 1.35;
   }
 
   .formula-card-experiment__outcomes {
@@ -673,7 +673,7 @@ const variables: Variable[] = [
     gap: var(--pl-space-3);
     align-items: center;
     min-width: min(100%, 260px);
-    padding: 12px 14px;
+    padding: 10px 12px;
     border: 1px solid rgba(88, 216, 255, 0.2);
     border-radius: var(--pl-radius);
     background: rgba(255, 255, 255, 0.035);
@@ -754,8 +754,8 @@ const variables: Variable[] = [
     }
 
     .formula-card-experiment__formula {
-      padding: var(--pl-space-8) var(--pl-space-3);
-      font-size: clamp(2.25rem, 11.5vw, 3.25rem);
+      padding: var(--pl-space-6) var(--pl-space-3);
+      font-size: clamp(2.1rem, 10.5vw, 3rem);
       gap: 0.18em;
     }
 
@@ -764,7 +764,7 @@ const variables: Variable[] = [
     }
 
     .formula-card-experiment__variable {
-      min-height: 132px;
+      min-height: 112px;
     }
 
     .formula-card-experiment__chip {
