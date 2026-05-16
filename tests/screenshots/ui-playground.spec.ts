@@ -39,6 +39,8 @@ test.describe("ui-playground screenshots", () => {
       ).toBeVisible();
 
       await expect(page.locator("[data-experiment-zone]")).toHaveCount(3);
+      await expect(page.locator("[data-formula-card-experiment]")).toBeVisible();
+      await expect(page.getByText("Сейчас главное: скорость v")).toBeVisible();
       await expect(page.locator("img")).toHaveCount(0);
 
       const hasHorizontalScroll = await page.evaluate(

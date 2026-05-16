@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import FormulaCardExperiment from "../components/playground/FormulaCardExperiment.astro";
 
 type PlaygroundZone = {
   id: string;
@@ -87,7 +88,10 @@ const zones: PlaygroundZone[] = [
         zones.map((zone, index) => (
           <article
             id={zone.id}
-            class="experiment-zone"
+            class:list={[
+              "experiment-zone",
+              zone.id === "formulas" ? "experiment-zone--prototype" : ""
+            ]}
             data-experiment-zone={zone.key}
             aria-labelledby={`${zone.id}-title`}
           >
@@ -98,10 +102,16 @@ const zones: PlaygroundZone[] = [
             <h3 id={`${zone.id}-title`}>{zone.title}</h3>
             <p>{zone.description}</p>
 
-            <div class="empty-slot" aria-label={`Пустая зона: ${zone.title}`}>
-              <span class="slot-mark" aria-hidden="true">+</span>
-              <strong>{zone.emptyText}</strong>
-            </div>
+            {
+              zone.id === "formulas" ? (
+                <FormulaCardExperiment />
+              ) : (
+                <div class="empty-slot" aria-label={`Пустая зона: ${zone.title}`}>
+                  <span class="slot-mark" aria-hidden="true">+</span>
+                  <strong>{zone.emptyText}</strong>
+                </div>
+              )
+            }
 
             <ul class="check-list" aria-label={`Что проверять: ${zone.title}`}>
               {zone.checks.map((check) => <li>{check}</li>)}
@@ -184,6 +194,14 @@ const zones: PlaygroundZone[] = [
       linear-gradient(180deg, rgba(255, 255, 255, 0.035), transparent 64%),
       var(--pl-surface-quiet);
     box-shadow: var(--pl-shadow-soft);
+  }
+
+  .experiment-zone--prototype {
+    grid-column: 1 / -1;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
   }
 
   .experiment-zone:nth-child(2) {
