@@ -70,10 +70,13 @@ export const initFormulaCardExperiment = (root: HTMLElement) => {
   const titleNode = root.querySelector<HTMLElement>("[data-fce-insight-title]");
   const insightNode = root.querySelector<HTMLElement>("[data-fce-insight]");
   const termNode = root.querySelector<HTMLElement>("[data-fce-term]");
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 
   let selectedPart: FormulaPart = "none";
   let hoverPart: FormulaPart = "none";
   let focusPart: FormulaPart = "none";
+  let hasRendered = false;
+  let insightTimer: number | undefined;
 
   const getActivePart = (): FormulaPart => {
     if (focusPart !== "none") {
@@ -87,19 +90,46 @@ export const initFormulaCardExperiment = (root: HTMLElement) => {
     return selectedPart;
   };
 
+  const setInsightText = (copy: FormulaPartCopy) => {
+    if (!titleNode && !insightNode) {
+      return;
+    }
+
+    const updateText = () => {
+      if (titleNode) {
+        titleNode.textContent = copy.title;
+      }
+
+      if (insightNode) {
+        insightNode.textContent = copy.insight;
+      }
+    };
+
+    if (insightTimer) {
+      window.clearTimeout(insightTimer);
+      insightTimer = undefined;
+    }
+
+    if (reduceMotion.matches || !hasRendered) {
+      updateText();
+      root.dataset.insightPhase = "in";
+      return;
+    }
+
+    root.dataset.insightPhase = "out";
+    insightTimer = window.setTimeout(() => {
+      updateText();
+      root.dataset.insightPhase = "in";
+      insightTimer = undefined;
+    }, 90);
+  };
+
   const render = () => {
     const activePart = getActivePart();
     const copy = PART_COPY[activePart];
 
     root.dataset.activePart = activePart;
-
-    if (titleNode) {
-      titleNode.textContent = copy.title;
-    }
-
-    if (insightNode) {
-      insightNode.textContent = copy.insight;
-    }
+    setInsightText(copy);
 
     formulaParts.forEach((element) => {
       const part = toPart(element.dataset.formulaPart ?? null);
@@ -114,6 +144,7 @@ export const initFormulaCardExperiment = (root: HTMLElement) => {
     });
 
     termNode?.toggleAttribute("data-related", Boolean(copy.relatedTerm));
+    hasRendered = true;
   };
 
   const activateFromElement = (element: HTMLElement, mode: "hover" | "focus" | "select") => {

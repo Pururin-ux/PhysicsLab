@@ -57,10 +57,16 @@ test.describe("ui-playground screenshots", () => {
       await expect(page.locator(".formula-card-experiment__variable")).toHaveCount(0);
       await expect(page.locator(".formula-card-experiment__chip")).toHaveCount(0);
       await expect(page.locator("[data-slope-icon]")).toHaveCount(0);
+      await expect(page.locator(".formula-card-experiment__term-control")).toHaveCount(0);
+      await expect(page.locator(".formula-card-experiment__term-info")).toHaveCount(1);
       await expect(page.locator('[data-graph-element="projection"]')).toHaveCount(0);
       await expect(page.locator('[data-graph-element="start-level"]')).toHaveCount(0);
       await expect(page.locator('[data-graph-element="slope-arrow"]')).toHaveCount(0);
       await expect(page.locator(".formula-card-experiment__point-halo")).toHaveCount(2);
+      await expect(page.locator(".formula-card-experiment__insight")).toHaveCSS(
+        "min-height",
+        "88px"
+      );
 
       await expect(
         page.getByText("Нажми на символ формулы — увидишь, за что он отвечает.")
@@ -91,6 +97,10 @@ test.describe("ui-playground screenshots", () => {
 
       await page.locator('[data-formula-part="vt"]').click();
       await expect(formulaCard).toHaveAttribute("data-active-part", "vt");
+      await expect(page.locator(".formula-card-experiment__term-info")).toHaveAttribute(
+        "data-active",
+        ""
+      );
       await expect(page.locator("[data-fce-insight-title]")).toHaveText(
         "vt — изменение координаты"
       );
@@ -142,19 +152,28 @@ test.describe("ui-playground screenshots", () => {
       );
       await expect(page.locator('[data-graph-element="slope-label"]')).toHaveAttribute(
         "x",
-        "326"
+        "188"
       );
       await expect(page.locator('[data-formula-part="v"]')).toHaveCSS(
         "border-color",
+        "rgba(0, 0, 0, 0)"
+      );
+      await expect(page.locator('[data-formula-part="v"]')).toHaveCSS(
+        "background-color",
+        "rgba(0, 0, 0, 0)"
+      );
+      await expect(page.locator("[data-fce-term]")).toHaveCSS(
+        "background-color",
         "rgba(0, 0, 0, 0)"
       );
       await expect(page.locator('[data-graph-element="current"]')).toHaveCSS(
         "transform",
         "none"
       );
-      await expect(page.getByText("наклон = v")).toBeVisible();
-      await expect(page.getByText("v меньше")).toBeVisible();
-      await expect(page.getByText("v больше")).toBeVisible();
+      await expect(page.getByText("Чем больше v, тем круче линия x(t)")).toBeVisible();
+      await expect(page.getByText("наклон = v")).toHaveCount(0);
+      await expect(page.getByText("v меньше")).toHaveCount(0);
+      await expect(page.getByText("v больше")).toHaveCount(0);
 
       await page.locator('[data-formula-part="t"]').click();
       await expect(formulaCard).toHaveAttribute("data-active-part", "t");
