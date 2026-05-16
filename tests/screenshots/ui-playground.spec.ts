@@ -80,6 +80,10 @@ test.describe("ui-playground screenshots", () => {
         "data-active",
         ""
       );
+      await expect(page.locator('[data-graph-element="current-label"]')).toHaveAttribute(
+        "y",
+        "110"
+      );
       await expect(page.locator("[data-fce-insight-title]")).toHaveText(
         "x — координата тела в выбранный момент времени."
       );
@@ -109,6 +113,10 @@ test.describe("ui-playground screenshots", () => {
       await expect(page.locator('[data-graph-element="start-label"]')).toHaveAttribute(
         "data-active",
         ""
+      );
+      await expect(page.locator('[data-graph-element="start-label"]')).toHaveAttribute(
+        "y",
+        "244"
       );
       await expect(
         page.getByText("x₀ — стартовая координата: откуда начали при t = 0.")

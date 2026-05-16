@@ -172,8 +172,8 @@
         <text
           class="formula-card-experiment__point-label"
           data-graph-element="start-label"
-          x="95"
-          y="211"
+          x="98"
+          y="244"
         >
           x₀
         </text>
@@ -188,7 +188,7 @@
           class="formula-card-experiment__point-label"
           data-graph-element="current-label"
           x="318"
-          y="121"
+          y="110"
         >
           x
         </text>
@@ -687,6 +687,10 @@
   .formula-card-experiment__point-label {
     fill: var(--pl-text);
     font-size: 17px;
+    paint-order: stroke;
+    stroke: rgba(7, 16, 27, 0.95);
+    stroke-linejoin: round;
+    stroke-width: 5px;
   }
 
   .formula-card-experiment__slope-label {
