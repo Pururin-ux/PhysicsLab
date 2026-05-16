@@ -54,9 +54,18 @@ const zones: PlaygroundZone[] = [
   title="PhysicsLab - песочница интерфейса"
   description="Безопасная страница для экспериментов с интерфейсом PhysicsLab без изменения lab-preview."
   navItems={navItems}
+  showBackground={false}
+  brandHref="/ui-playground/"
+  brandLabel="Песочница интерфейса PhysicsLab"
 >
-  <canvas class="playground-particles" data-playground-particles aria-hidden="true"></canvas>
+  <div class="playground-page" data-playground-shell>
+    <canvas
+      class="playground-atoms-bg"
+      data-playground-particles
+      aria-hidden="true"
+    ></canvas>
 
+    <div class="playground-content">
   <section class="section playground-hero" aria-labelledby="playground-title">
     <div class="playground-hero__copy">
       <h1 id="playground-title">Песочница интерфейса PhysicsLab</h1>
@@ -156,21 +165,28 @@ const zones: PlaygroundZone[] = [
       }
     </div>
   </section>
+    </div>
+  </div>
 </BaseLayout>
 
 <style>
-  .playground-particles {
-    position: fixed;
-    inset: 0;
+  .playground-page {
+    position: relative;
+    width: 100%;
+  }
+
+  .playground-atoms-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
     z-index: 0;
     width: 100%;
     height: 100%;
     pointer-events: none;
-    opacity: 0.38;
+    opacity: 0.42;
   }
 
-  .playground-hero,
-  .playground-zones {
+  .playground-content {
     position: relative;
     z-index: 1;
   }
@@ -557,108 +573,17 @@ const zones: PlaygroundZone[] = [
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .playground-particles {
-      opacity: 0.18;
+    .playground-atoms-bg {
+      opacity: 0.2;
     }
   }
 </style>
 
 <script>
-  const particleCanvas = document.querySelector<HTMLCanvasElement>("[data-playground-particles]");
-  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  import { initPlaygroundAtomsBackground } from "../scripts/playground-atoms-background";
 
-  if (particleCanvas) {
-    const context = particleCanvas.getContext("2d");
-
-    type Particle = {
-      x: number;
-      y: number;
-      vx: number;
-      vy: number;
-      radius: number;
-      opacity: number;
-      accent: boolean;
-    };
-
-    let width = 0;
-    let height = 0;
-    let particles: Particle[] = [];
-    let animationFrame = 0;
-
-    const resizeCanvas = () => {
-      const scale = Math.min(window.devicePixelRatio || 1, 2);
-      width = window.innerWidth;
-      height = window.innerHeight;
-      particleCanvas.width = Math.floor(width * scale);
-      particleCanvas.height = Math.floor(height * scale);
-      particleCanvas.style.width = `${width}px`;
-      particleCanvas.style.height = `${height}px`;
-      context?.setTransform(scale, 0, 0, scale, 0, 0);
-
-      const count = Math.max(26, Math.min(58, Math.round((width * height) / 26000)));
-      particles = Array.from({ length: count }, (_, index) => ({
-        x: Math.random() * width,
-        y: Math.random() * height,
-        vx: (Math.random() - 0.5) * 0.18,
-        vy: (Math.random() - 0.5) * 0.18,
-        radius: Math.random() * 1.15 + 0.45,
-        opacity: Math.random() * 0.28 + 0.14,
-        accent: index < 5
-      }));
-    };
-
-    const drawParticles = () => {
-      if (!context) return;
-
-      context.clearRect(0, 0, width, height);
-
-      particles.forEach((particle, index) => {
-        if (!reducedMotion) {
-          particle.x += particle.vx;
-          particle.y += particle.vy;
-
-          if (particle.x < -8) particle.x = width + 8;
-          if (particle.x > width + 8) particle.x = -8;
-          if (particle.y < -8) particle.y = height + 8;
-          if (particle.y > height + 8) particle.y = -8;
-        }
-
-        context.beginPath();
-        context.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2);
-        context.fillStyle = particle.accent
-          ? `rgba(255, 216, 77, ${particle.opacity})`
-          : `rgba(88, 216, 255, ${particle.opacity})`;
-        context.fill();
-
-        for (let nextIndex = index + 1; nextIndex < particles.length; nextIndex += 1) {
-          const next = particles[nextIndex];
-          const dx = particle.x - next.x;
-          const dy = particle.y - next.y;
-          const distance = Math.sqrt(dx * dx + dy * dy);
-
-          if (distance < 118) {
-            context.beginPath();
-            context.moveTo(particle.x, particle.y);
-            context.lineTo(next.x, next.y);
-            context.strokeStyle = `rgba(88, 216, 255, ${(1 - distance / 118) * 0.075})`;
-            context.lineWidth = 0.6;
-            context.stroke();
-          }
-        }
-      });
-
-      if (!reducedMotion) {
-        animationFrame = window.requestAnimationFrame(drawParticles);
-      }
-    };
-
-    resizeCanvas();
-    drawParticles();
-
-    window.addEventListener("resize", () => {
-      window.cancelAnimationFrame(animationFrame);
-      resizeCanvas();
-      drawParticles();
-    });
-  }
+  initPlaygroundAtomsBackground(
+    document.querySelector<HTMLCanvasElement>("[data-playground-particles]")
+  );
 </script>
+

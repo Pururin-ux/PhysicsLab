@@ -10,11 +10,17 @@ interface Props {
   title?: string;
   description?: string;
   navItems?: NavItem[];
+  showBackground?: boolean;
+  brandHref?: string;
+  brandLabel?: string;
 }
 
 const {
   title = "PhysicsLab 2.0",
   description = "PhysicsLab 2.0: Astro-основа в направлении Dark Anime Lab.",
+  showBackground = true,
+  brandHref = "/lab-preview/",
+  brandLabel = "Демо PhysicsLab 2.0",
   navItems = [
     { href: "/lab-preview/#learning", label: "Как учим" },
     { href: "/lab-preview/#modules", label: "Модули" },
@@ -33,9 +39,9 @@ const {
     <title>{title}</title>
   </head>
   <body>
-    <canvas id="lab-background-canvas" aria-hidden="true"></canvas>
+    {showBackground && <canvas id="lab-background-canvas" aria-hidden="true"></canvas>}
     <header class="topbar" aria-label="Навигация PhysicsLab">
-      <a class="brand" href="/lab-preview/" aria-label="Демо PhysicsLab 2.0">
+      <a class="brand" href={brandHref} aria-label={brandLabel}>
         <span class="brand-mark" aria-hidden="true">PL</span>
         <span>PhysicsLab 2.0</span>
       </a>
@@ -46,6 +52,7 @@ const {
     <main>
       <slot />
     </main>
+    {showBackground && (
     <script>
       type BackgroundParticle = {
         x: number;
@@ -161,5 +168,6 @@ const {
         });
       }
     </script>
+    )}
   </body>
 </html>

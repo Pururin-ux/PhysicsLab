@@ -40,12 +40,17 @@ test.describe("ui-playground screenshots", () => {
 
       await expect(page.locator("[data-experiment-zone]")).toHaveCount(3);
       await expect(page.locator("[data-playground-particles]")).toHaveCount(1);
+      await expect(page.locator("#lab-background-canvas")).toHaveCount(0);
+      await expect(page.locator("canvas")).toHaveCount(1);
       await expect(page.locator("[data-formula-card-experiment]")).toBeVisible();
-      await expect(page.getByText("Сейчас меняем скорость v")).toBeVisible();
-      await expect(page.getByText("Больше v → линия круче")).toBeVisible();
-      await expect(
-        page.getByText("График показывает, как меняется координата", { exact: false })
-      ).toBeVisible();
+      await expect(page.locator("[data-formula-card-experiment]")).toHaveAttribute(
+        "data-motion-state",
+        /forward|still|backward/
+      );
+      await expect(page.locator("[data-fce-status-title]")).toBeVisible();
+      await expect(page.locator("[data-fce-v-token]")).toBeVisible();
+      await expect(page.locator("[data-fce-plot]")).toBeVisible();
+      await expect(page.locator("[data-fce-v-token]")).toBeVisible();
       await expect(page.getByText("KaTeX-проверка")).toBeVisible();
       await expect(page.locator("[data-math-formula]")).toHaveCount(3);
       await expect(page.locator(".katex")).toHaveCount(3);
