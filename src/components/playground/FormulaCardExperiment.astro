@@ -8,7 +8,7 @@ type Variable = {
 
 const variables: Variable[] = [
   { symbol: "x", label: "где тело сейчас", detail: "координата" },
-  { symbol: "x₀", label: "старт", detail: "откуда начали" },
+  { symbol: "x0", label: "старт", detail: "откуда начали" },
   { symbol: "v", label: "скорость", detail: "как быстро движется", active: true },
   { symbol: "t", label: "время", detail: "сколько прошло" }
 ];
@@ -51,7 +51,7 @@ const variables: Variable[] = [
     >
       <span>x</span>
       <span>=</span>
-      <span>x₀</span>
+      <span>x<sub>0</sub></span>
       <span>+</span>
       <span class="formula-card-experiment__term" aria-label="v умножить на t">
         <span class="formula-card-experiment__active-token">v</span><span>t</span>
@@ -75,7 +75,7 @@ const variables: Variable[] = [
             aria-current={variable.active ? "true" : undefined}
           >
             <span class="formula-card-experiment__module-light" aria-hidden="true"></span>
-            <b>{variable.symbol}</b>
+            <b>{variable.symbol === "x0" ? <span>x<sub>0</sub></span> : variable.symbol}</b>
             <strong>{variable.label}</strong>
             <span>{variable.detail}</span>
             {variable.active && <em>активная переменная</em>}
@@ -392,6 +392,14 @@ const variables: Variable[] = [
       0 0 24px rgba(88, 216, 255, 0.16);
   }
 
+  .formula-card-experiment__formula sub,
+  .formula-card-experiment__variable b sub {
+    font-size: 0.48em;
+    line-height: 0;
+    margin-left: 0.02em;
+    vertical-align: -0.24em;
+  }
+
   .formula-card-experiment__term {
     display: inline-flex;
     align-items: baseline;
@@ -483,6 +491,12 @@ const variables: Variable[] = [
     font-style: italic;
     line-height: 0.9;
     text-shadow: 0 0 18px rgba(88, 216, 255, 0.18);
+  }
+
+  .formula-card-experiment__variable b span {
+    color: inherit;
+    font: inherit;
+    line-height: inherit;
   }
 
   .formula-card-experiment__variable strong {
