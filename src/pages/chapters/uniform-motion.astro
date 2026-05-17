@@ -6,8 +6,8 @@ import Badge from "../../components/ui/Badge.astro";
 import SurfaceCard from "../../components/ui/SurfaceCard.astro";
 
 const navItems = [
-  { href: "#formula", label: "Формула" },
   { href: "#lab", label: "Лаборатория" },
+  { href: "#formula", label: "Формула" },
   { href: "#check", label: "Проверка" }
 ];
 ---
@@ -38,26 +38,27 @@ const navItems = [
       </aside>
     </section>
 
-    <section id="formula" class="section chapter-section" aria-labelledby="formula-title">
-      <div class="chapter-section__head">
-        <p class="eyebrow">Сначала формула</p>
-        <h2 id="formula-title">Посмотри, что значит x = x₀ + vt</h2>
-        <p>
-          Не нужно запоминать всё сразу. Выбери символ и смотри, что меняется на графике.
-        </p>
-      </div>
-      <FormulaScene />
-    </section>
-
     <section id="lab" class="section chapter-section" aria-labelledby="lab-title">
       <div class="chapter-section__head">
-        <p class="eyebrow">Потом движение</p>
+        <p class="eyebrow">Сначала действие</p>
         <h2 id="lab-title">Запусти точку и меняй скорость</h2>
         <p>
-          Лаборатория пока demo: физика рабочая, но текст и методика требуют финальной проверки автора.
+          Сначала просто нажми «Запустить». Потом подвигай скорость v и смотри на наклон линии.
         </p>
       </div>
       <UniformMotionLab visualTarget />
+    </section>
+
+    <section id="formula" class="section chapter-section" aria-labelledby="formula-title">
+      <div class="chapter-section__head">
+        <p class="eyebrow">Потом формула</p>
+        <h2 id="formula-title">Разберём, что записывает x = x₀ + vt</h2>
+        <p>
+          В лаборатории точка ехала. Формула записывает это коротко: старт x₀ плюс то,
+          что изменилось за время t.
+        </p>
+      </div>
+      <FormulaScene />
     </section>
 
     <section class="section chapter-two-column" aria-labelledby="mistake-title">
@@ -89,15 +90,15 @@ const navItems = [
         <div class="chapter-check" data-chapter-check>
           <div>
             <p class="eyebrow">Мини-проверка</p>
-            <h2 id="check-title">Если скорость стала больше, что будет с графиком x(t)?</h2>
+            <h2 id="check-title">Почему график x(t) — это не дорога по карте?</h2>
           </div>
           <div class="chapter-answer-row" role="group" aria-label="Варианты ответа">
-            <button type="button" data-check-answer="correct">Линия станет круче</button>
-            <button type="button" data-check-answer="flat">Линия станет ровной</button>
-            <button type="button" data-check-answer="map">График превратится в карту пути</button>
+            <button type="button" data-check-answer="correct">Он показывает, как меняется координата</button>
+            <button type="button" data-check-answer="flat">Он показывает форму дороги</button>
+            <button type="button" data-check-answer="map">Он рисует путь тела сверху</button>
           </div>
           <p class="chapter-feedback" data-check-feedback aria-live="polite">
-            Выбери ответ. Если ошибёшься, это нормально: сверимся с графиком.
+            Выбери ответ. Если ошибёшься, это нормально: сверимся с идеей графика.
           </p>
         </div>
       </SurfaceCard>
@@ -123,8 +124,8 @@ const navItems = [
         if (feedback) {
           feedback.dataset.state = isCorrect ? "success" : "warning";
           feedback.textContent = isCorrect
-            ? "Да. Скорость задаёт наклон: больше скорость — круче линия x(t)."
-            : "Не совсем. График x(t) не рисует дорогу, он показывает изменение координаты.";
+            ? "Да. График x(t) показывает, как число x меняется со временем."
+            : "Не совсем. Это не карта дороги: линия показывает изменение координаты во времени.";
         }
       });
     });

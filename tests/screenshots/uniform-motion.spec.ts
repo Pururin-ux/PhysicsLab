@@ -64,11 +64,11 @@ test.describe("uniform-motion chapter screenshots", () => {
         "data-active",
         ""
       );
-      await expect(page.getByText("vt — изменение координаты.")).toBeVisible();
+      await expect(page.getByText("vt — сколько метров точка успела проехать.")).toBeVisible();
 
-      await page.getByRole("button", { name: "Линия станет круче" }).click();
+      await page.getByRole("button", { name: "Он показывает, как меняется координата" }).click();
       await expect(page.locator("[data-check-feedback]")).toContainText(
-        "Скорость задаёт наклон"
+        "число x меняется со временем"
       );
 
       const hasHorizontalScroll = await page.evaluate(

@@ -6,9 +6,9 @@
 >
   <div class="formula-scene__copy">
     <p class="formula-scene__label">Формула движения</p>
-    <h3 id="formula-scene-title">Координата меняется со временем</h3>
+    <h3 id="formula-scene-title">Формула записывает то, что ты увидел</h3>
     <p>
-      Нажми на символ в формуле. График покажет, что именно он меняет.
+      В лаборатории точка ехала. Здесь видно: старт x₀ плюс то, что точка успела проехать.
     </p>
   </div>
 
@@ -32,7 +32,7 @@
         type="button"
         class="formula-scene__delta-button"
         data-scene-part="vt"
-        aria-label="vt — изменение координаты"
+        aria-label="vt — сколько метров точка успела проехать"
       >
         Δx = vt
       </button>
@@ -111,8 +111,8 @@
   <aside class="formula-scene__insight pl-quiz-console" aria-live="polite" aria-atomic="true">
     <span aria-hidden="true"></span>
     <div>
-      <strong data-scene-insight-title>Нажми на символ формулы.</strong>
-      <p data-scene-insight>График показывает, как меняется координата, а не дорогу по карте.</p>
+      <strong data-scene-insight-title>Нажми на v, t или x₀.</strong>
+      <p data-scene-insight>Формула коротко записывает движение: откуда стартуем и сколько успели проехать.</p>
     </div>
   </aside>
 </section>
@@ -130,8 +130,8 @@
 
   const COPY: Record<ScenePart, SceneCopy> = {
     none: {
-      title: "Нажми на символ формулы.",
-      text: "График показывает, как меняется координата, а не дорогу по карте.",
+      title: "Нажми на v, t или x₀.",
+      text: "Формула коротко записывает движение: откуда стартуем и сколько успели проехать.",
       formula: [],
       graph: []
     },
@@ -162,8 +162,8 @@
       relatedTerm: true
     },
     vt: {
-      title: "vt — изменение координаты.",
-      text: "Здесь vt читаем как Δx: насколько изменилась координата за время t.",
+      title: "vt — сколько метров точка успела проехать.",
+      text: "Здесь vt читаем как Δx: насколько координата изменилась за время t.",
       formula: ["vt"],
       graph: ["delta"]
     }
