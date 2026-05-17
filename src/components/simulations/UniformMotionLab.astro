@@ -1,12 +1,19 @@
 ---
 import Badge from "../ui/Badge.astro";
 import SurfaceCard from "../ui/SurfaceCard.astro";
+
+interface Props {
+  visualTarget?: boolean;
+}
+
+const { visualTarget = false } = Astro.props;
 ---
 
 <SurfaceCard variant="lab">
   <section
     class="uniform-lab pl-lab-glass-panel pl-neon-border"
     data-uniform-motion-lab
+    data-visual-target={visualTarget ? "v1" : undefined}
     aria-labelledby="uniform-lab-title"
   >
     <div class="lab-heading">
@@ -23,6 +30,8 @@ import SurfaceCard from "../ui/SurfaceCard.astro";
 
     <div class="start-strip" aria-live="polite">
       <p data-guidance>Нажми «Запустить» и смотри на точку.</p>
+      {
+        !visualTarget && (
       <div class="time-actions">
         <button
           type="button"
@@ -37,6 +46,8 @@ import SurfaceCard from "../ui/SurfaceCard.astro";
           Сбросить
         </button>
       </div>
+        )
+      }
     </div>
 
     <div class="simple-lab-grid">
@@ -98,6 +109,25 @@ import SurfaceCard from "../ui/SurfaceCard.astro";
     </div>
 
     <div class="speed-panel pl-control-dock" aria-label="Главное управление скоростью">
+      {
+        visualTarget && (
+      <div class="time-actions time-actions--dock">
+        <button
+          type="button"
+          class="play-button pl-lab-button pl-lab-button--primary"
+          data-play-toggle
+          aria-pressed="false"
+          aria-label="Запустить анимацию"
+        >
+          Запустить
+        </button>
+        <button type="button" class="reset-button pl-lab-button" data-reset>
+          Сбросить
+        </button>
+      </div>
+        )
+      }
+
       <label class="slider-field slider-field--hero">
         <span>
           <b>Скорость v</b>
@@ -1614,6 +1644,351 @@ import SurfaceCard from "../ui/SurfaceCard.astro";
 
     .live-formula {
       font-size: clamp(1.75rem, 11vw, 2.35rem);
+    }
+  }
+
+  .uniform-lab[data-visual-target="v1"] {
+    gap: clamp(var(--pl-space-4), 2vw, var(--pl-space-6));
+    padding: clamp(var(--pl-space-4), 2.4vw, var(--pl-space-7));
+    border-color: rgba(88, 216, 255, 0.2);
+    border-radius: 28px;
+    background:
+      radial-gradient(ellipse at 50% -16%, rgba(38, 209, 255, 0.12), transparent 38rem),
+      radial-gradient(ellipse at 78% 20%, rgba(255, 216, 77, 0.08), transparent 30rem),
+      linear-gradient(rgba(88, 216, 255, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(88, 216, 255, 0.026) 1px, transparent 1px),
+      rgba(4, 12, 24, 0.88);
+    background-size:
+      auto,
+      auto,
+      34px 34px,
+      34px 34px,
+      auto;
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 255, 255, 0.035),
+      inset 0 0 58px rgba(88, 216, 255, 0.06),
+      0 0 0 1px rgba(88, 216, 255, 0.1),
+      0 28px 90px rgba(0, 0, 0, 0.38);
+  }
+
+  .uniform-lab[data-visual-target="v1"] .lab-heading {
+    padding: 0 clamp(0px, 0.7vw, var(--pl-space-2));
+  }
+
+  .uniform-lab[data-visual-target="v1"] .lab-heading h3 {
+    max-width: 680px;
+    text-shadow:
+      0 0 18px rgba(88, 216, 255, 0.16),
+      0 0 44px rgba(88, 216, 255, 0.08);
+  }
+
+  .uniform-lab[data-visual-target="v1"] .start-strip,
+  .uniform-lab[data-visual-target="v1"] .explain-card,
+  .uniform-lab[data-visual-target="v1"] .details-panel,
+  .uniform-lab[data-visual-target="v1"] .formula-panel,
+  .uniform-lab[data-visual-target="v1"] .exact-panel {
+    border-color: rgba(126, 179, 218, 0.12);
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.012)),
+      rgba(7, 15, 28, 0.58);
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 255, 255, 0.026),
+      inset 0 0 26px rgba(88, 216, 255, 0.018),
+      0 16px 42px rgba(0, 0, 0, 0.18);
+  }
+
+  .uniform-lab[data-visual-target="v1"] .start-strip {
+    grid-template-columns: 1fr;
+    padding-block: var(--pl-space-3);
+  }
+
+  .uniform-lab[data-visual-target="v1"] .start-strip p {
+    color: var(--pl-text);
+    font-size: clamp(1rem, 1.55vw, 1.14rem);
+    font-weight: 720;
+  }
+
+  .uniform-lab[data-visual-target="v1"] .simple-lab-grid {
+    grid-template-columns: minmax(320px, 0.96fr) minmax(380px, 1.18fr);
+    gap: clamp(var(--pl-space-4), 1.9vw, var(--pl-space-5));
+  }
+
+  .uniform-lab[data-visual-target="v1"] .motion-card,
+  .uniform-lab[data-visual-target="v1"] .graph-card--main {
+    border-color: rgba(88, 216, 255, 0.2);
+    border-radius: 20px;
+    background:
+      radial-gradient(ellipse at 48% 8%, rgba(88, 216, 255, 0.13), transparent 24rem),
+      linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.012)),
+      rgba(4, 13, 26, 0.76);
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 255, 255, 0.03),
+      inset 0 0 34px rgba(88, 216, 255, 0.04),
+      0 20px 60px rgba(0, 0, 0, 0.26);
+  }
+
+  .uniform-lab[data-visual-target="v1"] .motion-card p,
+  .uniform-lab[data-visual-target="v1"] .graph-card p,
+  .uniform-lab[data-visual-target="v1"] .feedback,
+  .uniform-lab[data-visual-target="v1"] .substitution-delta {
+    color: rgba(214, 226, 240, 0.82);
+    font-weight: 520;
+  }
+
+  .uniform-lab[data-visual-target="v1"] .track {
+    min-height: clamp(212px, 24vw, 276px);
+    border-color: rgba(88, 216, 255, 0.15);
+    border-radius: 18px;
+    background:
+      radial-gradient(ellipse at 48% 52%, rgba(88, 216, 255, 0.12), transparent 18rem),
+      linear-gradient(rgba(88, 216, 255, 0.07) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(88, 216, 255, 0.055) 1px, transparent 1px),
+      rgba(4, 11, 22, 0.88);
+    background-size:
+      auto,
+      30px 30px,
+      30px 30px,
+      auto;
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 255, 255, 0.024),
+      inset 0 0 38px rgba(88, 216, 255, 0.045);
+  }
+
+  .uniform-lab[data-visual-target="v1"] .track::before {
+    right: var(--pl-space-4);
+    bottom: 88px;
+    left: var(--pl-space-4);
+    height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(88, 216, 255, 0.7), rgba(244, 247, 251, 0.7), rgba(88, 216, 255, 0.7), transparent);
+    filter: drop-shadow(0 0 8px rgba(88, 216, 255, 0.18));
+  }
+
+  .uniform-lab[data-visual-target="v1"] .track-axis {
+    right: var(--pl-space-4);
+    bottom: 88px;
+    left: var(--pl-space-4);
+    height: 3px;
+    background: rgba(220, 240, 255, 0.68);
+    filter: drop-shadow(0 0 8px rgba(88, 216, 255, 0.22));
+  }
+
+  .uniform-lab[data-visual-target="v1"] .track-tick {
+    bottom: 78px;
+    width: 2px;
+    height: 26px;
+    background: rgba(220, 240, 255, 0.52);
+  }
+
+  .uniform-lab[data-visual-target="v1"] .track-tick i {
+    top: 32px;
+    color: rgba(217, 231, 244, 0.78);
+    font-size: 0.82rem;
+  }
+
+  .uniform-lab[data-visual-target="v1"] .motion-point {
+    bottom: 103px;
+    width: 32px;
+    height: 32px;
+    border-width: 5px;
+    filter: drop-shadow(0 0 12px rgba(255, 216, 77, 0.42));
+    box-shadow: 0 0 0 10px rgba(255, 216, 77, 0.11);
+  }
+
+  .uniform-lab[data-visual-target="v1"] .motion-x-label {
+    bottom: 164px;
+    padding: 6px 10px;
+    border-color: rgba(255, 216, 77, 0.32);
+    background: rgba(5, 12, 23, 0.84);
+    font-size: 0.84rem;
+    filter: drop-shadow(0 0 10px rgba(255, 216, 77, 0.18));
+  }
+
+  .uniform-lab[data-visual-target="v1"] .velocity-arrow {
+    bottom: 119px;
+    height: 3px;
+    background: rgba(88, 216, 255, 0.95);
+    filter: drop-shadow(0 0 7px rgba(88, 216, 255, 0.4));
+    box-shadow: none;
+  }
+
+  .uniform-lab[data-visual-target="v1"] .graph-card--main svg {
+    min-height: clamp(310px, 32vw, 410px);
+  }
+
+  .uniform-lab[data-visual-target="v1"] .axis-line {
+    stroke: rgba(222, 241, 255, 0.66);
+    stroke-width: 1.7;
+  }
+
+  .uniform-lab[data-visual-target="v1"] .grid-line {
+    stroke: rgba(88, 216, 255, 0.1);
+  }
+
+  .uniform-lab[data-visual-target="v1"] .graph-polyline--base {
+    stroke: rgba(88, 216, 255, 0.22);
+    stroke-width: 2;
+  }
+
+  .uniform-lab[data-visual-target="v1"] .graph-polyline--current {
+    stroke: rgba(88, 216, 255, 0.96);
+    stroke-width: 4.6;
+    filter: drop-shadow(0 0 8px rgba(88, 216, 255, 0.32));
+  }
+
+  .uniform-lab[data-visual-target="v1"] .graph-current {
+    r: 7.8px;
+    filter:
+      drop-shadow(0 0 8px rgba(255, 216, 77, 0.48))
+      drop-shadow(0 0 18px rgba(255, 216, 77, 0.18));
+  }
+
+  .uniform-lab[data-visual-target="v1"] .speed-panel {
+    grid-template-columns: minmax(168px, 0.34fr) minmax(280px, 0.82fr) minmax(180px, 0.46fr);
+    align-items: center;
+    gap: var(--pl-space-3);
+    padding: var(--pl-space-3);
+    border-color: rgba(88, 216, 255, 0.14);
+    border-radius: 22px;
+    background:
+      linear-gradient(180deg, rgba(88, 216, 255, 0.055), rgba(255, 255, 255, 0.012)),
+      rgba(5, 14, 27, 0.76);
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 255, 255, 0.035),
+      inset 0 0 34px rgba(88, 216, 255, 0.04),
+      0 18px 52px rgba(0, 0, 0, 0.2);
+  }
+
+  .uniform-lab[data-visual-target="v1"] .time-actions--dock {
+    display: grid;
+    grid-template-columns: minmax(120px, 1fr) minmax(96px, 0.74fr);
+    gap: var(--pl-space-2);
+  }
+
+  .uniform-lab[data-visual-target="v1"] .time-actions--dock .play-button,
+  .uniform-lab[data-visual-target="v1"] .time-actions--dock .reset-button,
+  .uniform-lab[data-visual-target="v1"] .scenario-row button {
+    border-color: rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.07),
+      inset 0 -10px 20px rgba(0, 0, 0, 0.18);
+  }
+
+  .uniform-lab[data-visual-target="v1"] .time-actions--dock .play-button {
+    border-color: rgba(255, 216, 77, 0.64);
+    filter: drop-shadow(0 0 10px rgba(255, 216, 77, 0.14));
+  }
+
+  .uniform-lab[data-visual-target="v1"] .slider-field--hero {
+    min-width: 0;
+    padding: var(--pl-space-2) var(--pl-space-3);
+    border: 1px solid rgba(88, 216, 255, 0.09);
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.026);
+  }
+
+  .uniform-lab[data-visual-target="v1"] .quick-status {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .uniform-lab[data-visual-target="v1"] .quick-status span {
+    border-color: rgba(88, 216, 255, 0.1);
+    background: rgba(255, 255, 255, 0.026);
+  }
+
+  .uniform-lab[data-visual-target="v1"] .scenario-row {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .uniform-lab[data-visual-target="v1"] .explain-card,
+  .uniform-lab[data-visual-target="v1"] .details-panel {
+    color: rgba(214, 226, 240, 0.86);
+  }
+
+  @media (max-width: 1040px) {
+    .uniform-lab[data-visual-target="v1"] .simple-lab-grid,
+    .uniform-lab[data-visual-target="v1"] .details-panel {
+      grid-template-columns: 1fr;
+    }
+
+    .uniform-lab[data-visual-target="v1"] .speed-panel {
+      grid-template-columns: 1fr 1.35fr;
+    }
+
+    .uniform-lab[data-visual-target="v1"] .quick-status {
+      grid-column: 1 / -1;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 600px) {
+    .uniform-lab[data-visual-target="v1"] {
+      padding: var(--pl-space-3);
+      border-radius: 22px;
+      gap: var(--pl-space-4);
+      background-size:
+        auto,
+        auto,
+        28px 28px,
+        28px 28px,
+        auto;
+    }
+
+    .uniform-lab[data-visual-target="v1"] .lab-heading h3 {
+      font-size: clamp(1.55rem, 7vw, 2rem);
+    }
+
+    .uniform-lab[data-visual-target="v1"] .lab-goal {
+      font-size: 1rem;
+    }
+
+    .uniform-lab[data-visual-target="v1"] .start-strip,
+    .uniform-lab[data-visual-target="v1"] .motion-card,
+    .uniform-lab[data-visual-target="v1"] .graph-card,
+    .uniform-lab[data-visual-target="v1"] .speed-panel,
+    .uniform-lab[data-visual-target="v1"] .explain-card,
+    .uniform-lab[data-visual-target="v1"] .details-panel,
+    .uniform-lab[data-visual-target="v1"] .formula-panel,
+    .uniform-lab[data-visual-target="v1"] .exact-panel {
+      padding: var(--pl-space-3);
+      border-radius: 18px;
+    }
+
+    .uniform-lab[data-visual-target="v1"] .simple-lab-grid {
+      gap: var(--pl-space-4);
+    }
+
+    .uniform-lab[data-visual-target="v1"] .track {
+      min-height: 230px;
+      margin-block: var(--pl-space-3);
+    }
+
+    .uniform-lab[data-visual-target="v1"] .graph-card--main svg {
+      min-height: 330px;
+    }
+
+    .uniform-lab[data-visual-target="v1"] .speed-panel {
+      grid-template-columns: 1fr;
+      gap: var(--pl-space-2);
+    }
+
+    .uniform-lab[data-visual-target="v1"] .time-actions--dock {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .uniform-lab[data-visual-target="v1"] .quick-status {
+      grid-template-columns: 1fr;
+    }
+
+    .uniform-lab[data-visual-target="v1"] .scenario-row {
+      grid-template-columns: 1fr;
+    }
+
+    .uniform-lab[data-visual-target="v1"] .slider-field input[type="range"] {
+      height: 32px;
     }
   }
 

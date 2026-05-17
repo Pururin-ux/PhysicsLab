@@ -57,7 +57,7 @@ const navItems = [
           Лаборатория пока demo: физика рабочая, но текст и методика требуют финальной проверки автора.
         </p>
       </div>
-      <UniformMotionLab />
+      <UniformMotionLab visualTarget />
     </section>
 
     <section class="section chapter-two-column" aria-labelledby="mistake-title">
@@ -134,6 +134,7 @@ const navItems = [
 <style>
   .chapter-page {
     min-width: 0;
+    position: relative;
   }
 
   :global(.topbar) {
@@ -175,11 +176,14 @@ const navItems = [
 
   .chapter-note {
     padding: var(--pl-space-4);
-    border: 1px solid rgba(255, 216, 77, 0.26);
-    border-radius: var(--pl-radius);
+    border: 1px solid rgba(255, 216, 77, 0.18);
+    border-radius: 20px;
     background:
       linear-gradient(135deg, rgba(255, 216, 77, 0.08), transparent 58%),
       rgba(16, 23, 34, 0.78);
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 255, 255, 0.025),
+      inset 0 0 26px rgba(255, 216, 77, 0.025);
   }
 
   .chapter-note strong {
@@ -212,6 +216,18 @@ const navItems = [
     gap: var(--pl-space-5);
   }
 
+  .chapter-page :global(.surface-card:not(.surface-card--lab)) {
+    border-color: rgba(126, 179, 218, 0.12);
+    border-radius: 22px;
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.032), rgba(255, 255, 255, 0.01)),
+      rgba(7, 15, 28, 0.58);
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 255, 255, 0.022),
+      inset 0 0 24px rgba(88, 216, 255, 0.016),
+      0 16px 42px rgba(0, 0, 0, 0.16);
+  }
+
   .chapter-list {
     display: grid;
     gap: var(--pl-space-2);
@@ -238,10 +254,12 @@ const navItems = [
     flex: 1 1 190px;
     min-height: 46px;
     padding: 10px 12px;
-    border: 1px solid var(--pl-border-soft);
-    border-radius: var(--pl-radius);
+    border: 1px solid rgba(88, 216, 255, 0.12);
+    border-radius: 14px;
     color: var(--pl-text);
-    background: rgba(255, 255, 255, 0.04);
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.012)),
+      rgba(5, 14, 27, 0.66);
     font-weight: 900;
     text-align: left;
   }
@@ -267,9 +285,9 @@ const navItems = [
     min-height: 1.6em;
     margin: 0;
     padding: var(--pl-space-3);
-    border: 1px solid var(--pl-border-soft);
-    border-radius: var(--pl-radius);
-    background: rgba(255, 255, 255, 0.035);
+    border: 1px solid rgba(88, 216, 255, 0.12);
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.026);
   }
 
   .chapter-feedback[data-state="success"] {
