@@ -47,7 +47,10 @@ import SurfaceCard from "../ui/SurfaceCard.astro";
         </div>
         <div class="track" aria-hidden="true">
           <span class="track-axis"></span>
-          <span class="track-zero">0</span>
+          <span class="track-tick track-tick--left"><i>-24 м</i></span>
+          <span class="track-tick track-tick--center"><i>0</i></span>
+          <span class="track-tick track-tick--right"><i>24 м</i></span>
+          <span class="motion-x-label" data-motion-x-label>x = 0 м</span>
           <span class="velocity-arrow" data-velocity-arrow></span>
           <span class="motion-point" data-motion-point></span>
         </div>
@@ -67,8 +70,23 @@ import SurfaceCard from "../ui/SurfaceCard.astro";
           <g class="grid-lines" data-grid="x"></g>
           <line class="axis-line" x1="42" y1="188" x2="302" y2="188"></line>
           <line class="axis-line" x1="42" y1="18" x2="42" y2="188"></line>
+          <g class="graph-tick-labels" aria-hidden="true">
+            <text x="38" y="205">0</text>
+            <text x="102" y="205">2</text>
+            <text x="167" y="205">4</text>
+            <text x="232" y="205">6</text>
+            <text x="294" y="205">8</text>
+            <text x="16" y="191">-24</text>
+            <text x="24" y="108">0</text>
+            <text x="18" y="42">24</text>
+          </g>
           <text class="axis-text" x="282" y="210">t, с</text>
           <text class="axis-text" x="14" y="28">x, м</text>
+          <g class="graph-projection" data-projection="x" aria-hidden="true">
+            <line data-projection-line="time" x1="42" y1="188" x2="42" y2="188"></line>
+            <line data-projection-line="position" x1="42" y1="188" x2="42" y2="188"></line>
+            <text data-projection-label="x" x="50" y="178">x</text>
+          </g>
           <polyline class="graph-polyline graph-polyline--base" data-polyline="x"></polyline>
           <polyline class="graph-polyline graph-polyline--current" data-current-polyline="x"></polyline>
           <circle class="graph-current" data-point="x" r="5"></circle>
@@ -155,7 +173,7 @@ import SurfaceCard from "../ui/SurfaceCard.astro";
         </div>
         <ul class="formula-meaning">
           <li><b>x₀</b> — откуда стартуем.</li>
-          <li><b>vt</b> — насколько успели уехать.</li>
+          <li><b>vt</b> — изменение координаты за время t.</li>
           <li><b>x</b> — где оказались.</li>
         </ul>
         <div class="substitution-box" aria-live="polite">
@@ -320,6 +338,12 @@ import SurfaceCard from "../ui/SurfaceCard.astro";
     const vPoint = mustFind<SVGCircleElement>(lab, '[data-point="v"]');
     const motionPoint = mustFind<HTMLElement>(lab, "[data-motion-point]");
     const velocityArrow = mustFind<HTMLElement>(lab, "[data-velocity-arrow]");
+    const motionXLabel = mustFind<HTMLElement>(lab, "[data-motion-x-label]");
+    const xProjection = {
+      time: mustFind<SVGLineElement>(lab, '[data-projection-line="time"]'),
+      position: mustFind<SVGLineElement>(lab, '[data-projection-line="position"]'),
+      label: mustFind<SVGTextElement>(lab, '[data-projection-label="x"]')
+    };
     const observation = mustFind<HTMLElement>(lab, "[data-observation]");
     const guidance = mustFind<HTMLElement>(lab, "[data-guidance]");
     const xNote = mustFind<HTMLElement>(lab, '[data-graph-note="x"]');
@@ -508,9 +532,12 @@ import SurfaceCard from "../ui/SurfaceCard.astro";
       const currentV = mapPoint(state.t, state.v, V_DOMAIN);
       setSvgPoint(xPoint, currentX);
       setSvgPoint(vPoint, currentV);
+      setProjectionLines(xProjection, currentX);
 
       const pointPercent = clampNumber(((x - X_DOMAIN.min) / (X_DOMAIN.max - X_DOMAIN.min)) * 100, 3, 97);
       motionPoint.style.setProperty("--point-left", `${pointPercent}%`);
+      motionXLabel.style.setProperty("--point-left", `${pointPercent}%`);
+      motionXLabel.textContent = `x = ${formatPhysicsNumber(x)} м`;
       motionPoint.dataset.motionLabel = getMotionLabel(direction);
       velocityArrow.style.setProperty("--point-left", `${pointPercent}%`);
       velocityArrow.style.setProperty("--velocity-width", `${getVelocityArrowWidth(state.v)}px`);
@@ -653,6 +680,24 @@ import SurfaceCard from "../ui/SurfaceCard.astro";
     element.setAttribute("cy", formatPhysicsNumber(point.y, 1));
   }
 
+  function setProjectionLines(
+    projection: { time: SVGLineElement; position: SVGLineElement; label: SVGTextElement },
+    point: SvgPoint
+  ): void {
+    const x = formatPhysicsNumber(point.x, 1);
+    const y = formatPhysicsNumber(point.y, 1);
+    projection.time.setAttribute("x1", x);
+    projection.time.setAttribute("x2", x);
+    projection.time.setAttribute("y1", y);
+    projection.time.setAttribute("y2", String(SVG_HEIGHT - PAD.bottom));
+    projection.position.setAttribute("x1", String(PAD.left));
+    projection.position.setAttribute("x2", x);
+    projection.position.setAttribute("y1", y);
+    projection.position.setAttribute("y2", y);
+    projection.label.setAttribute("x", formatPhysicsNumber(point.x + 8, 1));
+    projection.label.setAttribute("y", formatPhysicsNumber(point.y - 8, 1));
+  }
+
   function drawGrid(group: SVGGElement | null, min: number, max: number): void {
     if (!group) return;
 
@@ -793,9 +838,14 @@ import SurfaceCard from "../ui/SurfaceCard.astro";
   .exact-panel {
     min-width: 0;
     padding: var(--pl-space-4);
-    border: 1px solid var(--pl-border-soft);
+    border: 1px solid rgba(88, 216, 255, 0.2);
     border-radius: var(--pl-radius);
-    background: rgba(8, 12, 18, 0.58);
+    background:
+      linear-gradient(180deg, rgba(88, 216, 255, 0.045), transparent 62%),
+      rgba(7, 13, 22, 0.76);
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 255, 255, 0.025),
+      0 16px 42px rgba(0, 0, 0, 0.2);
   }
 
   .start-strip {
@@ -831,11 +881,31 @@ import SurfaceCard from "../ui/SurfaceCard.astro";
   .answer-row button,
   .details-toggle {
     min-height: 44px;
-    border: 1px solid var(--pl-border-soft);
+    border: 1px solid rgba(88, 216, 255, 0.2);
     border-radius: var(--pl-radius);
     color: var(--pl-text);
-    background: rgba(255, 255, 255, 0.04);
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.018)),
+      rgba(8, 14, 24, 0.82);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.05),
+      0 8px 22px rgba(0, 0, 0, 0.18);
     font-weight: 900;
+    transition:
+      border-color 160ms ease,
+      color 160ms ease,
+      background 160ms ease,
+      transform 160ms ease,
+      box-shadow 160ms ease;
+  }
+
+  .play-button:hover,
+  .reset-button:hover,
+  .scenario-row button:hover,
+  .answer-row button:hover,
+  .details-toggle:hover {
+    border-color: rgba(255, 216, 77, 0.42);
+    transform: translateY(-1px);
   }
 
   .play-button {
@@ -843,7 +913,11 @@ import SurfaceCard from "../ui/SurfaceCard.astro";
     min-height: 52px;
     border-color: rgba(255, 216, 77, 0.7);
     color: #111317;
-    background: var(--pl-accent);
+    background:
+      linear-gradient(180deg, #ffe980, var(--pl-accent));
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.35),
+      0 10px 28px rgba(255, 216, 77, 0.12);
   }
 
   .play-button[aria-pressed="true"] {
@@ -900,6 +974,16 @@ import SurfaceCard from "../ui/SurfaceCard.astro";
     background-size: 28px 28px;
   }
 
+  .track::before {
+    content: "";
+    position: absolute;
+    right: var(--pl-space-5);
+    bottom: 58px;
+    left: var(--pl-space-5);
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(88, 216, 255, 0.5), transparent);
+  }
+
   .track-axis {
     position: absolute;
     right: var(--pl-space-5);
@@ -909,12 +993,56 @@ import SurfaceCard from "../ui/SurfaceCard.astro";
     background: rgba(244, 247, 251, 0.5);
   }
 
-  .track-zero {
+  .track-tick {
     position: absolute;
-    bottom: 70px;
+    bottom: 49px;
+    width: 1px;
+    height: 22px;
+    background: rgba(244, 247, 251, 0.42);
+  }
+
+  .track-tick i {
+    position: absolute;
+    top: 27px;
     left: 50%;
     color: var(--pl-text-soft);
-    font-size: 0.82rem;
+    font-size: 0.76rem;
+    font-style: normal;
+    font-weight: 800;
+    white-space: nowrap;
+    transform: translateX(-50%);
+  }
+
+  .track-tick--left {
+    left: var(--pl-space-5);
+  }
+
+  .track-tick--center {
+    left: 50%;
+  }
+
+  .track-tick--right {
+    right: var(--pl-space-5);
+  }
+
+  .motion-x-label {
+    --point-left: 62.5%;
+    position: absolute;
+    bottom: 136px;
+    left: var(--point-left);
+    max-width: 120px;
+    padding: 4px 7px;
+    border: 1px solid rgba(255, 216, 77, 0.28);
+    border-radius: 999px;
+    color: var(--pl-accent);
+    background: rgba(8, 14, 24, 0.78);
+    font-size: 0.78rem;
+    font-weight: 900;
+    line-height: 1.2;
+    text-align: center;
+    white-space: nowrap;
+    transform: translateX(-50%);
+    transition: left 220ms ease;
   }
 
   .motion-point {
@@ -932,10 +1060,11 @@ import SurfaceCard from "../ui/SurfaceCard.astro";
     transition: left 220ms ease;
   }
 
-  .uniform-lab[data-playing="true"] .motion-point,
-  .uniform-lab[data-playing="true"] .velocity-arrow {
-    transition: none;
-  }
+    .uniform-lab[data-playing="true"] .motion-point,
+    .uniform-lab[data-playing="true"] .motion-x-label,
+    .uniform-lab[data-playing="true"] .velocity-arrow {
+      transition: none;
+    }
 
   .motion-point::after {
     content: attr(data-motion-label);
@@ -1038,6 +1167,27 @@ import SurfaceCard from "../ui/SurfaceCard.astro";
     font-weight: 700;
   }
 
+  .graph-tick-labels text {
+    fill: rgba(191, 204, 218, 0.72);
+    font-size: 10px;
+    font-weight: 800;
+  }
+
+  .graph-projection line {
+    stroke: rgba(255, 216, 77, 0.42);
+    stroke-dasharray: 5 6;
+    stroke-width: 1.4;
+  }
+
+  .graph-projection text {
+    fill: var(--pl-accent);
+    font-size: 11px;
+    font-weight: 900;
+    paint-order: stroke;
+    stroke: rgba(7, 14, 24, 0.94);
+    stroke-width: 3px;
+  }
+
   .graph-polyline {
     fill: none;
     stroke-linecap: round;
@@ -1056,8 +1206,11 @@ import SurfaceCard from "../ui/SurfaceCard.astro";
 
   .graph-current {
     fill: var(--pl-accent);
-    stroke: #0b1018;
-    stroke-width: 3;
+    stroke: rgba(255, 249, 214, 0.92);
+    stroke-width: 3.4;
+    filter:
+      drop-shadow(0 0 6px rgba(255, 216, 77, 0.38))
+      drop-shadow(0 0 14px rgba(255, 216, 77, 0.16));
   }
 
   .speed-panel {
@@ -1102,6 +1255,53 @@ import SurfaceCard from "../ui/SurfaceCard.astro";
     accent-color: var(--pl-accent);
   }
 
+  .slider-field input[type="range"] {
+    height: 24px;
+    background: transparent;
+  }
+
+  .slider-field input[type="range"]::-webkit-slider-runnable-track {
+    height: 7px;
+    border: 1px solid rgba(88, 216, 255, 0.18);
+    border-radius: 999px;
+    background:
+      linear-gradient(90deg, rgba(255, 216, 77, 0.95), rgba(255, 216, 77, 0.56)),
+      rgba(255, 255, 255, 0.08);
+  }
+
+  .slider-field input[type="range"]::-webkit-slider-thumb {
+    width: 20px;
+    height: 20px;
+    margin-top: -7px;
+    border: 3px solid rgba(8, 14, 24, 0.96);
+    border-radius: 50%;
+    background: var(--pl-accent);
+    box-shadow: 0 0 0 5px rgba(255, 216, 77, 0.12);
+    appearance: none;
+  }
+
+  .slider-field input[type="range"]::-moz-range-track {
+    height: 7px;
+    border: 1px solid rgba(88, 216, 255, 0.18);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  .slider-field input[type="range"]::-moz-range-progress {
+    height: 7px;
+    border-radius: 999px;
+    background: rgba(255, 216, 77, 0.9);
+  }
+
+  .slider-field input[type="range"]::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border: 3px solid rgba(8, 14, 24, 0.96);
+    border-radius: 50%;
+    background: var(--pl-accent);
+    box-shadow: 0 0 0 5px rgba(255, 216, 77, 0.12);
+  }
+
   .slider-field input:focus-visible,
   .play-button:focus-visible,
   .reset-button:focus-visible,
@@ -1121,7 +1321,7 @@ import SurfaceCard from "../ui/SurfaceCard.astro";
   .quick-status span {
     flex: 1 1 120px;
     padding: 10px 12px;
-    border: 1px solid var(--pl-border-soft);
+    border: 1px solid rgba(88, 216, 255, 0.18);
     border-radius: var(--pl-radius);
     color: var(--pl-text-muted);
     background: rgba(255, 255, 255, 0.035);
@@ -1196,8 +1396,14 @@ import SurfaceCard from "../ui/SurfaceCard.astro";
 
   .details-panel {
     display: grid;
-    grid-template-columns: minmax(280px, 1fr) minmax(260px, 0.75fr);
+    grid-template-columns: minmax(260px, 0.95fr) minmax(240px, 0.75fr);
     gap: var(--pl-space-4);
+    padding: var(--pl-space-4);
+    border: 1px solid rgba(88, 216, 255, 0.18);
+    border-radius: var(--pl-radius);
+    background:
+      linear-gradient(135deg, rgba(88, 216, 255, 0.055), transparent 52%),
+      rgba(7, 13, 22, 0.54);
   }
 
   .details-panel[hidden] {
@@ -1206,6 +1412,11 @@ import SurfaceCard from "../ui/SurfaceCard.astro";
 
   .graph-card--detail {
     grid-column: 1 / -1;
+  }
+
+  .graph-card--detail svg {
+    height: clamp(220px, 28vw, 320px);
+    min-height: 220px;
   }
 
   .live-formula {
@@ -1391,6 +1602,7 @@ import SurfaceCard from "../ui/SurfaceCard.astro";
     .formula-term,
     [data-formula-highlight],
     .motion-point,
+    .motion-x-label,
     .velocity-arrow {
       transition: none;
     }

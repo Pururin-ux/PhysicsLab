@@ -34,6 +34,10 @@ test.describe("uniform-motion chapter screenshots", () => {
       ).toBeVisible();
       await expect(page.locator("[data-formula-scene]")).toBeVisible();
       await expect(page.locator("[data-uniform-motion-lab]")).toBeVisible();
+      await expect(page.locator("[data-motion-x-label]")).toBeVisible();
+      await expect(page.locator(".track-tick")).toHaveCount(3);
+      await expect(page.locator('[data-projection="x"]')).toBeVisible();
+      await expect(page.locator(".graph-tick-labels").first()).toBeVisible();
       await expect(page.getByText("prototype/demo")).toBeVisible();
       await expect(page.getByText("authorReviewRequired")).toBeVisible();
 
