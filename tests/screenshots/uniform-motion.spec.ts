@@ -64,7 +64,7 @@ test.describe("uniform-motion chapter screenshots", () => {
         "data-active",
         ""
       );
-      await expect(page.getByText("vt — сколько метров точка успела проехать.")).toBeVisible();
+      await expect(formulaScene.getByText("vt — изменение координаты за время t.")).toBeVisible();
 
       await page.getByRole("button", { name: "Он показывает, как меняется координата" }).click();
       await expect(page.locator("[data-check-feedback]")).toContainText(
