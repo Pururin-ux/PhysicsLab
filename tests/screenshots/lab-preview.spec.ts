@@ -67,6 +67,9 @@ test.describe("lab-preview screenshots", () => {
       const playButton = page.getByRole("button", { name: /Запустить/ });
       const detailsButton = page.getByRole("button", { name: "Показать подробнее" });
 
+      await expect(
+        page.locator('[data-uniform-motion-lab][data-visual-target="v1"]')
+      ).toHaveCount(0);
       await expect(playButton).toBeVisible();
       await expect(detailsButton).toBeVisible();
       await expect(page.locator('[data-current-polyline="x"]')).toHaveAttribute("points", /,/);
