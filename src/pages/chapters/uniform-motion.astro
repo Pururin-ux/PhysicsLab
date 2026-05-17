@@ -1,0 +1,285 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import FormulaScene from "../../components/learning/FormulaScene.astro";
+import UniformMotionLab from "../../components/simulations/UniformMotionLab.astro";
+import Badge from "../../components/ui/Badge.astro";
+import SurfaceCard from "../../components/ui/SurfaceCard.astro";
+
+const navItems = [
+  { href: "#formula", label: "Формула" },
+  { href: "#lab", label: "Лаборатория" },
+  { href: "#check", label: "Проверка" }
+];
+---
+
+<BaseLayout
+  title="Равномерное движение — PhysicsLab"
+  description="Черновик главы PhysicsLab про равномерное движение: формула, график, лаборатория и проверка понимания."
+  navItems={navItems}
+  brandHref="/chapters/uniform-motion/"
+  brandLabel="Глава: Равномерное движение"
+>
+  <article class="chapter-page" data-uniform-motion-chapter>
+    <section class="section chapter-intro" aria-labelledby="chapter-title">
+      <div>
+        <div class="chapter-meta" aria-label="Статус главы">
+          <Badge tone="info">prototype/demo</Badge>
+          <Badge tone="accent">authorReviewRequired</Badge>
+        </div>
+        <h1 id="chapter-title">Равномерное движение</h1>
+        <p class="chapter-lead">
+          Здесь скорость не меняется. Поэтому можно смотреть на одну простую вещь:
+          чем больше скорость, тем круче линия на графике координаты.
+        </p>
+      </div>
+      <aside class="chapter-note">
+        <strong>Главная мысль</strong>
+        <p>График x(t) показывает не дорогу, а как координата меняется со временем.</p>
+      </aside>
+    </section>
+
+    <section id="formula" class="section chapter-section" aria-labelledby="formula-title">
+      <div class="chapter-section__head">
+        <p class="eyebrow">Сначала формула</p>
+        <h2 id="formula-title">Посмотри, что значит x = x₀ + vt</h2>
+        <p>
+          Не нужно запоминать всё сразу. Выбери символ и смотри, что меняется на графике.
+        </p>
+      </div>
+      <FormulaScene />
+    </section>
+
+    <section id="lab" class="section chapter-section" aria-labelledby="lab-title">
+      <div class="chapter-section__head">
+        <p class="eyebrow">Потом движение</p>
+        <h2 id="lab-title">Запусти точку и меняй скорость</h2>
+        <p>
+          Лаборатория пока demo: физика рабочая, но текст и методика требуют финальной проверки автора.
+        </p>
+      </div>
+      <UniformMotionLab />
+    </section>
+
+    <section class="section chapter-two-column" aria-labelledby="mistake-title">
+      <SurfaceCard>
+        <p class="eyebrow">Частая ошибка</p>
+        <h2 id="mistake-title">График x(t) — это не карта пути</h2>
+        <p>
+          Если линия идёт вверх, это не значит, что тело едет “в гору”.
+          Это значит, что координата становится больше.
+        </p>
+        <p>
+          Если линия идёт вниз, тело не падает вниз на рисунке. Просто координата уменьшается.
+        </p>
+      </SurfaceCard>
+
+      <SurfaceCard>
+        <p class="eyebrow">Коротко</p>
+        <h2>Скорость — это наклон</h2>
+        <ul class="chapter-list">
+          <li>v &gt; 0: линия x(t) идёт вверх.</li>
+          <li>v = 0: линия ровная.</li>
+          <li>v &lt; 0: линия идёт вниз.</li>
+        </ul>
+      </SurfaceCard>
+    </section>
+
+    <section id="check" class="section chapter-section" aria-labelledby="check-title">
+      <SurfaceCard>
+        <div class="chapter-check" data-chapter-check>
+          <div>
+            <p class="eyebrow">Мини-проверка</p>
+            <h2 id="check-title">Если скорость стала больше, что будет с графиком x(t)?</h2>
+          </div>
+          <div class="chapter-answer-row" role="group" aria-label="Варианты ответа">
+            <button type="button" data-check-answer="correct">Линия станет круче</button>
+            <button type="button" data-check-answer="flat">Линия станет ровной</button>
+            <button type="button" data-check-answer="map">График превратится в карту пути</button>
+          </div>
+          <p class="chapter-feedback" data-check-feedback aria-live="polite">
+            Выбери ответ. Если ошибёшься, это нормально: сверимся с графиком.
+          </p>
+        </div>
+      </SurfaceCard>
+    </section>
+  </article>
+</BaseLayout>
+
+<script>
+  document.querySelectorAll<HTMLElement>("[data-chapter-check]").forEach((check) => {
+    const buttons = check.querySelectorAll<HTMLButtonElement>("[data-check-answer]");
+    const feedback = check.querySelector<HTMLElement>("[data-check-feedback]");
+
+    buttons.forEach((button) => {
+      button.addEventListener("click", () => {
+        const isCorrect = button.dataset.checkAnswer === "correct";
+        buttons.forEach((item) => {
+          item.classList.remove("is-correct", "is-wrong");
+          item.setAttribute("aria-pressed", "false");
+        });
+        button.classList.add(isCorrect ? "is-correct" : "is-wrong");
+        button.setAttribute("aria-pressed", "true");
+
+        if (feedback) {
+          feedback.dataset.state = isCorrect ? "success" : "warning";
+          feedback.textContent = isCorrect
+            ? "Да. Скорость задаёт наклон: больше скорость — круче линия x(t)."
+            : "Не совсем. График x(t) не рисует дорогу, он показывает изменение координаты.";
+        }
+      });
+    });
+  });
+</script>
+
+<style>
+  .chapter-page {
+    min-width: 0;
+  }
+
+  .chapter-intro {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(250px, 0.38fr);
+    gap: var(--pl-space-5);
+    align-items: end;
+    padding-bottom: var(--pl-space-10);
+  }
+
+  .chapter-intro h1 {
+    margin-top: var(--pl-space-4);
+    margin-bottom: var(--pl-space-4);
+  }
+
+  .chapter-lead {
+    max-width: 760px;
+    margin-bottom: 0;
+    color: var(--pl-text);
+    font-size: clamp(1.08rem, 1.9vw, 1.28rem);
+    line-height: 1.55;
+  }
+
+  .chapter-note {
+    padding: var(--pl-space-4);
+    border: 1px solid rgba(255, 216, 77, 0.26);
+    border-radius: var(--pl-radius);
+    background:
+      linear-gradient(135deg, rgba(255, 216, 77, 0.08), transparent 58%),
+      rgba(16, 23, 34, 0.78);
+  }
+
+  .chapter-note strong {
+    display: block;
+    margin-bottom: var(--pl-space-2);
+    color: var(--pl-accent);
+  }
+
+  .chapter-note p {
+    margin: 0;
+    font-size: 0.98rem;
+  }
+
+  .chapter-section {
+    display: grid;
+    gap: var(--pl-space-5);
+  }
+
+  .chapter-section__head {
+    max-width: 800px;
+  }
+
+  .chapter-section__head p:last-child {
+    margin-bottom: 0;
+  }
+
+  .chapter-two-column {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--pl-space-5);
+  }
+
+  .chapter-list {
+    display: grid;
+    gap: var(--pl-space-2);
+    margin-bottom: 0;
+    padding-left: 1.2rem;
+  }
+
+  .chapter-check {
+    display: grid;
+    gap: var(--pl-space-4);
+  }
+
+  .chapter-check h2 {
+    max-width: 760px;
+  }
+
+  .chapter-answer-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--pl-space-3);
+  }
+
+  .chapter-answer-row button {
+    flex: 1 1 190px;
+    min-height: 46px;
+    padding: 10px 12px;
+    border: 1px solid var(--pl-border-soft);
+    border-radius: var(--pl-radius);
+    color: var(--pl-text);
+    background: rgba(255, 255, 255, 0.04);
+    font-weight: 900;
+    text-align: left;
+  }
+
+  .chapter-answer-row button:focus-visible {
+    outline: 3px solid var(--pl-accent);
+    outline-offset: 4px;
+  }
+
+  .chapter-answer-row button.is-correct {
+    border-color: rgba(110, 231, 168, 0.72);
+    color: var(--pl-green);
+    background: rgba(110, 231, 168, 0.08);
+  }
+
+  .chapter-answer-row button.is-wrong {
+    border-color: rgba(255, 107, 107, 0.62);
+    color: var(--pl-red);
+    background: rgba(255, 107, 107, 0.08);
+  }
+
+  .chapter-feedback {
+    min-height: 1.6em;
+    margin: 0;
+    padding: var(--pl-space-3);
+    border: 1px solid var(--pl-border-soft);
+    border-radius: var(--pl-radius);
+    background: rgba(255, 255, 255, 0.035);
+  }
+
+  .chapter-feedback[data-state="success"] {
+    border-color: rgba(110, 231, 168, 0.5);
+  }
+
+  .chapter-feedback[data-state="warning"] {
+    border-color: rgba(255, 107, 107, 0.45);
+  }
+
+  @media (max-width: 900px) {
+    .chapter-intro,
+    .chapter-two-column {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .chapter-intro {
+      padding-top: var(--pl-space-10);
+      padding-bottom: var(--pl-space-6);
+    }
+
+    .chapter-answer-row {
+      display: grid;
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

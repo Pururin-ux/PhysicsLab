@@ -1,0 +1,654 @@
+<section
+  class="formula-scene"
+  data-formula-scene
+  data-active-part="none"
+  aria-labelledby="formula-scene-title"
+>
+  <div class="formula-scene__copy">
+    <p class="formula-scene__label">Формула движения</p>
+    <h3 id="formula-scene-title">Координата меняется со временем</h3>
+    <p>
+      Нажми на символ в формуле. График покажет, что именно он меняет.
+    </p>
+  </div>
+
+  <div class="formula-scene__board">
+    <div class="formula-scene__formula-panel" aria-label="Формула равномерного движения">
+      <div class="formula-scene__formula" aria-label="x равно x ноль плюс v умножить на t">
+        <button type="button" data-scene-part="x" aria-label="x — координата в выбранный момент">
+          x
+        </button>
+        <span aria-hidden="true">=</span>
+        <button type="button" data-scene-part="x0" aria-label="x ноль — стартовая координата">
+          x<sub>0</sub>
+        </button>
+        <span aria-hidden="true">+</span>
+        <span class="formula-scene__term" data-scene-term>
+          <button type="button" data-scene-part="v" aria-label="v — скорость">v</button>
+          <button type="button" data-scene-part="t" aria-label="t — время">t</button>
+        </span>
+      </div>
+      <button
+        type="button"
+        class="formula-scene__delta-button"
+        data-scene-part="vt"
+        aria-label="vt — изменение координаты"
+      >
+        Δx = vt
+      </button>
+    </div>
+
+    <figure class="formula-scene__graph-panel">
+      <figcaption>График x(t)</figcaption>
+      <svg
+        class="formula-scene__graph"
+        viewBox="0 0 420 260"
+        role="img"
+        aria-label="График x от t со стартовой точкой, текущей точкой и подсказками"
+        focusable="false"
+      >
+        <g class="formula-scene__grid" aria-hidden="true">
+          <line x1="64" y1="206" x2="362" y2="206"></line>
+          <line x1="64" y1="158" x2="362" y2="158"></line>
+          <line x1="64" y1="110" x2="362" y2="110"></line>
+          <line x1="64" y1="62" x2="362" y2="62"></line>
+          <line x1="64" y1="38" x2="64" y2="206"></line>
+          <line x1="163" y1="38" x2="163" y2="206"></line>
+          <line x1="262" y1="38" x2="262" y2="206"></line>
+          <line x1="361" y1="38" x2="361" y2="206"></line>
+        </g>
+
+        <line class="formula-scene__axis" x1="64" y1="206" x2="378" y2="206"></line>
+        <line class="formula-scene__axis" x1="64" y1="206" x2="64" y2="28"></line>
+
+        <g class="formula-scene__ticks" aria-hidden="true">
+          <text x="58" y="229">0</text>
+          <text x="157" y="229">1</text>
+          <text x="256" y="229">2</text>
+          <text x="43" y="211">0</text>
+          <text x="43" y="163">2</text>
+          <text x="43" y="115">4</text>
+          <text x="43" y="67">6</text>
+          <text class="formula-scene__axis-label" x="72" y="24">x, м</text>
+          <text class="formula-scene__axis-label" x="334" y="244">t, с</text>
+        </g>
+
+        <g class="formula-scene__slope-family" data-scene-graph="slope-family">
+          <polyline points="64,158 262,122"></polyline>
+          <polyline points="64,158 262,66"></polyline>
+          <text x="168" y="46">больше v — круче линия</text>
+        </g>
+
+        <g class="formula-scene__time-marker" data-scene-graph="time">
+          <line x1="262" y1="206" x2="262" y2="62"></line>
+          <text x="270" y="195">t</text>
+        </g>
+
+        <g class="formula-scene__delta" data-scene-graph="delta">
+          <path d="M 282 158 C 300 158 300 62 282 62"></path>
+          <line x1="274" y1="158" x2="292" y2="158"></line>
+          <line x1="274" y1="62" x2="292" y2="62"></line>
+          <text x="306" y="112">Δx = vt</text>
+        </g>
+
+        <polyline
+          class="formula-scene__plot"
+          data-scene-graph="line"
+          points="64,158 262,62"
+        ></polyline>
+
+        <circle class="formula-scene__point-halo formula-scene__point-halo--start" cx="64" cy="158" r="11"></circle>
+        <circle class="formula-scene__point formula-scene__point--start" data-scene-graph="start" cx="64" cy="158" r="6"></circle>
+        <text class="formula-scene__point-label" data-scene-graph="start-label" x="78" y="177">x₀</text>
+
+        <circle class="formula-scene__point-halo formula-scene__point-halo--current" cx="262" cy="62" r="12"></circle>
+        <circle class="formula-scene__point formula-scene__point--current" data-scene-graph="current" cx="262" cy="62" r="7"></circle>
+        <text class="formula-scene__point-label" data-scene-graph="current-label" x="276" y="52">x</text>
+      </svg>
+    </figure>
+  </div>
+
+  <aside class="formula-scene__insight" aria-live="polite" aria-atomic="true">
+    <span aria-hidden="true"></span>
+    <div>
+      <strong data-scene-insight-title>Нажми на символ формулы.</strong>
+      <p data-scene-insight>График показывает, как меняется координата, а не дорогу по карте.</p>
+    </div>
+  </aside>
+</section>
+
+<script>
+  type ScenePart = "none" | "x" | "x0" | "v" | "t" | "vt";
+
+  type SceneCopy = {
+    title: string;
+    text: string;
+    formula: ScenePart[];
+    graph: string[];
+    relatedTerm?: boolean;
+  };
+
+  const COPY: Record<ScenePart, SceneCopy> = {
+    none: {
+      title: "Нажми на символ формулы.",
+      text: "График показывает, как меняется координата, а не дорогу по карте.",
+      formula: [],
+      graph: []
+    },
+    x: {
+      title: "x — координата тела в выбранный момент.",
+      text: "Жёлтая точка на графике показывает это значение.",
+      formula: ["x"],
+      graph: ["current", "current-label"]
+    },
+    x0: {
+      title: "x₀ — стартовая координата.",
+      text: "Это место, откуда начали при t = 0.",
+      formula: ["x0"],
+      graph: ["start", "start-label"]
+    },
+    v: {
+      title: "v задаёт наклон графика.",
+      text: "Чем больше скорость, тем круче линия x(t).",
+      formula: ["v"],
+      graph: ["line", "slope-family"],
+      relatedTerm: true
+    },
+    t: {
+      title: "t — сколько времени прошло.",
+      text: "На графике время движет текущую точку вправо.",
+      formula: ["t"],
+      graph: ["time"],
+      relatedTerm: true
+    },
+    vt: {
+      title: "vt — изменение координаты.",
+      text: "Здесь vt читаем как Δx: насколько изменилась координата за время t.",
+      formula: ["vt"],
+      graph: ["delta"]
+    }
+  };
+
+  const toPart = (value: string | undefined): ScenePart =>
+    value === "x" || value === "x0" || value === "v" || value === "t" || value === "vt"
+      ? value
+      : "none";
+
+  document.querySelectorAll<HTMLElement>("[data-formula-scene]").forEach((scene) => {
+    if (scene.dataset.ready === "true") return;
+    scene.dataset.ready = "true";
+
+    const parts = Array.from(scene.querySelectorAll<HTMLElement>("[data-scene-part]"));
+    const graphItems = Array.from(scene.querySelectorAll<SVGElement>("[data-scene-graph]"));
+    const term = scene.querySelector<HTMLElement>("[data-scene-term]");
+    const title = scene.querySelector<HTMLElement>("[data-scene-insight-title]");
+    const text = scene.querySelector<HTMLElement>("[data-scene-insight]");
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+    let selected: ScenePart = "none";
+    let hovered: ScenePart = "none";
+    let focused: ScenePart = "none";
+    let hasRendered = false;
+    let timer: number | undefined;
+
+    const activePart = () => focused !== "none" ? focused : hovered !== "none" ? hovered : selected;
+
+    const setCopy = (copy: SceneCopy) => {
+      const update = () => {
+        if (title) title.textContent = copy.title;
+        if (text) text.textContent = copy.text;
+      };
+
+      if (timer) window.clearTimeout(timer);
+
+      if (reducedMotion.matches || !hasRendered) {
+        update();
+        scene.dataset.insightPhase = "in";
+        return;
+      }
+
+      scene.dataset.insightPhase = "out";
+      timer = window.setTimeout(() => {
+        update();
+        scene.dataset.insightPhase = "in";
+      }, 90);
+    };
+
+    const render = () => {
+      const part = activePart();
+      const copy = COPY[part];
+      scene.dataset.activePart = part;
+      setCopy(copy);
+
+      parts.forEach((item) => {
+        const itemPart = toPart(item.dataset.scenePart);
+        const active = copy.formula.includes(itemPart);
+        item.toggleAttribute("data-active", active);
+        item.setAttribute("aria-pressed", String(active || selected === itemPart));
+      });
+
+      graphItems.forEach((item) => {
+        item.toggleAttribute(
+          "data-active",
+          copy.graph.includes(item.getAttribute("data-scene-graph") ?? "")
+        );
+      });
+
+      term?.toggleAttribute("data-related", Boolean(copy.relatedTerm));
+      hasRendered = true;
+    };
+
+    const setPart = (element: HTMLElement, mode: "hover" | "focus" | "select") => {
+      const part = toPart(element.dataset.scenePart);
+      if (mode === "hover") hovered = part;
+      if (mode === "focus") focused = part;
+      if (mode === "select") selected = selected === part ? "none" : part;
+      render();
+    };
+
+    parts.forEach((item) => {
+      item.addEventListener("pointerenter", () => setPart(item, "hover"));
+      item.addEventListener("pointerleave", () => {
+        hovered = "none";
+        render();
+      });
+      item.addEventListener("focus", () => setPart(item, "focus"));
+      item.addEventListener("blur", () => {
+        focused = "none";
+        render();
+      });
+      item.addEventListener("click", () => setPart(item, "select"));
+      item.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") {
+          selected = "none";
+          hovered = "none";
+          focused = "none";
+          render();
+        }
+      });
+    });
+
+    render();
+  });
+</script>
+
+<style>
+  .formula-scene {
+    display: grid;
+    gap: var(--pl-space-4);
+    min-width: 0;
+    padding: clamp(var(--pl-space-4), 2.4vw, var(--pl-space-6));
+    border: 1px solid rgba(88, 216, 255, 0.24);
+    border-radius: var(--pl-radius);
+    background:
+      linear-gradient(135deg, rgba(88, 216, 255, 0.07), transparent 46%),
+      rgba(8, 13, 22, 0.84);
+  }
+
+  .formula-scene__copy {
+    max-width: 760px;
+  }
+
+  .formula-scene__label {
+    margin: 0 0 var(--pl-space-2);
+    color: var(--pl-accent);
+    font-size: 0.76rem;
+    font-weight: 900;
+    text-transform: uppercase;
+  }
+
+  .formula-scene__copy h3 {
+    margin-bottom: var(--pl-space-2);
+  }
+
+  .formula-scene__copy p:last-child {
+    margin-bottom: 0;
+    font-size: 1rem;
+    line-height: 1.55;
+  }
+
+  .formula-scene__board {
+    display: grid;
+    grid-template-columns: minmax(240px, 0.82fr) minmax(320px, 1fr);
+    gap: var(--pl-space-4);
+    min-width: 0;
+  }
+
+  .formula-scene__formula-panel,
+  .formula-scene__graph-panel,
+  .formula-scene__insight {
+    min-width: 0;
+    border: 1px solid rgba(88, 216, 255, 0.22);
+    border-radius: var(--pl-radius);
+    background:
+      radial-gradient(circle at 1px 1px, rgba(88, 216, 255, 0.24) 0 1px, transparent 1.7px),
+      rgba(7, 14, 24, 0.74);
+    background-size: 32px 32px;
+  }
+
+  .formula-scene__formula-panel {
+    display: grid;
+    place-items: center;
+    gap: var(--pl-space-4);
+    min-height: 260px;
+    padding: var(--pl-space-4);
+  }
+
+  .formula-scene__formula {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 0.24em;
+    font-family: "Cambria Math", "STIX Two Math", "Latin Modern Math", Georgia, "Times New Roman", serif;
+    font-size: clamp(2.4rem, 5.4vw, 4.2rem);
+    font-style: italic;
+    font-weight: 700;
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  .formula-scene__formula button,
+  .formula-scene__delta-button {
+    border: 0;
+    color: var(--pl-text);
+    background: transparent;
+    font: inherit;
+    cursor: pointer;
+  }
+
+  .formula-scene__formula button {
+    padding: 0;
+    text-shadow:
+      0 0 10px rgba(244, 247, 251, 0.18),
+      0 0 22px rgba(88, 216, 255, 0.14);
+    transition:
+      color 180ms ease,
+      text-shadow 180ms ease,
+      transform 180ms ease;
+  }
+
+  .formula-scene__formula button[data-active] {
+    color: var(--pl-accent);
+    text-shadow:
+      0 0 10px rgba(255, 216, 77, 0.48),
+      0 0 24px rgba(255, 216, 77, 0.24);
+    transform: translateY(-1px);
+  }
+
+  .formula-scene__formula button:focus-visible,
+  .formula-scene__delta-button:focus-visible {
+    outline: 2px solid rgba(255, 216, 77, 0.72);
+    outline-offset: 5px;
+  }
+
+  .formula-scene__formula sub {
+    font-size: 0.48em;
+    vertical-align: -0.24em;
+  }
+
+  .formula-scene__term {
+    position: relative;
+    display: inline-flex;
+    gap: 0.01em;
+  }
+
+  .formula-scene__term::before {
+    content: "";
+    position: absolute;
+    inset: -0.15em -0.2em;
+    border-radius: 50%;
+    background: radial-gradient(ellipse, rgba(255, 216, 77, 0.16), transparent 64%);
+    filter: blur(10px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 180ms ease;
+  }
+
+  .formula-scene__term[data-related]::before,
+  .formula-scene[data-active-part="vt"] .formula-scene__term::before {
+    opacity: 1;
+  }
+
+  .formula-scene[data-active-part="vt"] .formula-scene__formula button[data-scene-part="v"],
+  .formula-scene[data-active-part="vt"] .formula-scene__formula button[data-scene-part="t"] {
+    color: var(--pl-text);
+    text-shadow:
+      0 0 10px rgba(244, 247, 251, 0.18),
+      0 0 22px rgba(88, 216, 255, 0.14);
+    transform: none;
+  }
+
+  .formula-scene__delta-button {
+    min-height: 36px;
+    padding: 7px 11px;
+    border: 1px solid rgba(88, 216, 255, 0.24);
+    border-radius: 999px;
+    color: var(--pl-cyan);
+    background: rgba(8, 14, 24, 0.68);
+    font-size: 0.92rem;
+    font-weight: 900;
+  }
+
+  .formula-scene__delta-button[data-active] {
+    border-color: rgba(255, 216, 77, 0.5);
+    color: var(--pl-accent);
+  }
+
+  .formula-scene__graph-panel {
+    margin: 0;
+    padding: var(--pl-space-3);
+  }
+
+  .formula-scene__graph-panel figcaption {
+    margin-bottom: var(--pl-space-2);
+    color: var(--pl-text);
+    font-weight: 900;
+  }
+
+  .formula-scene__graph {
+    display: block;
+    width: 100%;
+    min-height: 258px;
+  }
+
+  .formula-scene__grid line {
+    stroke: rgba(88, 216, 255, 0.1);
+  }
+
+  .formula-scene__axis {
+    stroke: rgba(244, 247, 251, 0.54);
+    stroke-width: 1.4;
+  }
+
+  .formula-scene__ticks text {
+    fill: var(--pl-text-muted);
+    font-size: 14px;
+    font-weight: 800;
+  }
+
+  .formula-scene__axis-label {
+    fill: var(--pl-cyan);
+  }
+
+  .formula-scene__plot {
+    fill: none;
+    stroke: var(--pl-cyan);
+    stroke-width: 4.5;
+    stroke-linecap: round;
+    filter: drop-shadow(0 0 8px rgba(88, 216, 255, 0.24));
+    transition:
+      stroke 180ms ease,
+      stroke-width 180ms ease,
+      filter 180ms ease;
+  }
+
+  .formula-scene__plot[data-active] {
+    stroke: var(--pl-accent);
+    stroke-width: 5.4;
+    filter: drop-shadow(0 0 10px rgba(255, 216, 77, 0.22));
+  }
+
+  .formula-scene__point-halo {
+    fill: rgba(88, 216, 255, 0.12);
+    stroke: rgba(88, 216, 255, 0.26);
+    pointer-events: none;
+  }
+
+  .formula-scene__point-halo--current {
+    fill: rgba(255, 216, 77, 0.14);
+    stroke: rgba(255, 216, 77, 0.36);
+  }
+
+  .formula-scene__point {
+    fill: var(--pl-cyan);
+    stroke: rgba(8, 13, 22, 0.94);
+    stroke-width: 3;
+  }
+
+  .formula-scene__point--current {
+    fill: var(--pl-accent);
+  }
+
+  .formula-scene__point[data-active] {
+    stroke: rgba(255, 249, 214, 0.88);
+    stroke-width: 4;
+  }
+
+  .formula-scene__point-label,
+  .formula-scene__time-marker,
+  .formula-scene__delta,
+  .formula-scene__slope-family {
+    opacity: 0;
+    transition: opacity 180ms ease;
+  }
+
+  [data-scene-graph][data-active] {
+    opacity: 1;
+  }
+
+  .formula-scene__point-label {
+    fill: var(--pl-text);
+    font-size: 15px;
+    font-weight: 900;
+    paint-order: stroke;
+    stroke: rgba(7, 14, 24, 0.94);
+    stroke-width: 5px;
+  }
+
+  .formula-scene__time-marker line,
+  .formula-scene__delta path,
+  .formula-scene__delta line {
+    fill: none;
+    stroke: var(--pl-accent);
+    stroke-linecap: round;
+    stroke-width: 2.6;
+  }
+
+  .formula-scene__time-marker line {
+    stroke-dasharray: 6 7;
+  }
+
+  .formula-scene__time-marker text,
+  .formula-scene__delta text,
+  .formula-scene__slope-family text {
+    fill: var(--pl-accent);
+    font-size: 13px;
+    font-weight: 900;
+    paint-order: stroke;
+    stroke: rgba(7, 14, 24, 0.94);
+    stroke-width: 4px;
+  }
+
+  .formula-scene__slope-family polyline {
+    fill: none;
+    stroke-linecap: round;
+    stroke-width: 2.2;
+    stroke-dasharray: 6 7;
+  }
+
+  .formula-scene__slope-family polyline:first-child {
+    stroke: rgba(88, 216, 255, 0.48);
+  }
+
+  .formula-scene__slope-family polyline:nth-child(2) {
+    stroke: rgba(255, 216, 77, 0.48);
+  }
+
+  .formula-scene__insight {
+    display: grid;
+    grid-template-columns: 28px minmax(0, 1fr);
+    gap: var(--pl-space-3);
+    align-items: center;
+    min-height: 82px;
+    padding: var(--pl-space-3) var(--pl-space-4);
+  }
+
+  .formula-scene__insight span {
+    height: 3px;
+    border-radius: 999px;
+    background: var(--pl-cyan);
+  }
+
+  .formula-scene__insight > div {
+    transition:
+      opacity 200ms ease,
+      transform 200ms ease;
+  }
+
+  .formula-scene[data-insight-phase="out"] .formula-scene__insight > div {
+    opacity: 0.72;
+    transform: translateY(2px);
+  }
+
+  .formula-scene__insight strong {
+    display: block;
+    color: var(--pl-text);
+    font-size: 1rem;
+    line-height: 1.35;
+  }
+
+  .formula-scene__insight p {
+    margin: var(--pl-space-1) 0 0;
+    font-size: 0.94rem;
+    line-height: 1.45;
+  }
+
+  @media (max-width: 880px) {
+    .formula-scene__board {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .formula-scene {
+      padding: var(--pl-space-4);
+    }
+
+    .formula-scene__formula-panel {
+      min-height: 210px;
+    }
+
+    .formula-scene__formula {
+      font-size: clamp(2.1rem, 11vw, 2.85rem);
+      gap: 0.16em;
+    }
+
+    .formula-scene__graph {
+      min-height: 232px;
+    }
+
+    .formula-scene__insight {
+      grid-template-columns: 1fr;
+      min-height: 104px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .formula-scene *,
+    .formula-scene *::before,
+    .formula-scene *::after {
+      transition-duration: 0.01ms !important;
+      animation: none !important;
+    }
+  }
+</style>
