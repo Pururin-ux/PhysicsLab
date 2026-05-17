@@ -5,7 +5,7 @@ import SurfaceCard from "../ui/SurfaceCard.astro";
 
 <SurfaceCard variant="lab">
   <section
-    class="uniform-lab"
+    class="uniform-lab pl-lab-glass-panel pl-neon-border"
     data-uniform-motion-lab
     aria-labelledby="uniform-lab-title"
   >
@@ -26,21 +26,21 @@ import SurfaceCard from "../ui/SurfaceCard.astro";
       <div class="time-actions">
         <button
           type="button"
-          class="play-button"
+          class="play-button pl-lab-button pl-lab-button--primary"
           data-play-toggle
           aria-pressed="false"
           aria-label="Запустить анимацию"
         >
           Запустить
         </button>
-        <button type="button" class="reset-button" data-reset>
+        <button type="button" class="reset-button pl-lab-button" data-reset>
           Сбросить
         </button>
       </div>
     </div>
 
     <div class="simple-lab-grid">
-      <div class="motion-card" aria-label="Точка на прямой">
+      <div class="motion-card pl-motion-track" aria-label="Точка на прямой">
         <div class="simple-card-head">
           <span>Вот точка</span>
           <strong data-observation>Едет вправо</strong>
@@ -59,7 +59,7 @@ import SurfaceCard from "../ui/SurfaceCard.astro";
         </p>
       </div>
 
-      <figure class="graph-card graph-card--main">
+      <figure class="graph-card graph-card--main pl-instrument-graph">
         <figcaption>График x(t)</figcaption>
         <svg
           viewBox="0 0 320 220"
@@ -97,7 +97,7 @@ import SurfaceCard from "../ui/SurfaceCard.astro";
       </figure>
     </div>
 
-    <div class="speed-panel" aria-label="Главное управление скоростью">
+    <div class="speed-panel pl-control-dock" aria-label="Главное управление скоростью">
       <label class="slider-field slider-field--hero">
         <span>
           <b>Скорость v</b>
@@ -121,13 +121,13 @@ import SurfaceCard from "../ui/SurfaceCard.astro";
       </div>
 
       <div class="scenario-row" aria-label="Быстрые примеры движения">
-        <button type="button" data-scenario="forward" aria-pressed="true">вперёд</button>
-        <button type="button" data-scenario="still" aria-pressed="false">стоит</button>
-        <button type="button" data-scenario="backward" aria-pressed="false">назад</button>
+        <button type="button" class="pl-lab-button" data-scenario="forward" aria-pressed="true">вперёд</button>
+        <button type="button" class="pl-lab-button" data-scenario="still" aria-pressed="false">стоит</button>
+        <button type="button" class="pl-lab-button" data-scenario="backward" aria-pressed="false">назад</button>
       </div>
     </div>
 
-    <div class="explain-card" aria-labelledby="uniform-check-title">
+    <div class="explain-card pl-quiz-console" aria-labelledby="uniform-check-title">
       <div>
         <p class="panel-label">Проверь себя</p>
         <h4 id="uniform-check-title">
@@ -135,9 +135,9 @@ import SurfaceCard from "../ui/SurfaceCard.astro";
         </h4>
       </div>
       <div class="answer-row" role="group" aria-label="Варианты ответа">
-        <button type="button" data-answer="correct">Станет круче</button>
-        <button type="button" data-answer="flat">Станет плоской</button>
-        <button type="button" data-answer="path">Превратится в путь по карте</button>
+        <button type="button" class="pl-lab-button" data-answer="correct">Станет круче</button>
+        <button type="button" class="pl-lab-button" data-answer="flat">Станет плоской</button>
+        <button type="button" class="pl-lab-button" data-answer="path">Превратится в путь по карте</button>
       </div>
       <p class="feedback" data-feedback aria-live="polite">
         Выбери ответ. Если промахнёшься, ничего страшного: разберём по графику.
@@ -146,7 +146,7 @@ import SurfaceCard from "../ui/SurfaceCard.astro";
 
     <button
       type="button"
-      class="details-toggle"
+      class="details-toggle pl-lab-button"
       data-details-toggle
       aria-expanded="false"
       aria-controls="uniform-motion-details"
@@ -156,11 +156,11 @@ import SurfaceCard from "../ui/SurfaceCard.astro";
 
     <div
       id="uniform-motion-details"
-      class="details-panel"
+      class="details-panel pl-lab-glass-panel"
       data-details-panel
       hidden
     >
-      <div class="formula-panel" aria-label="Формула равномерного движения">
+      <div class="formula-panel pl-instrument-panel" aria-label="Формула равномерного движения">
         <p class="panel-label">Что происходит в формуле?</p>
         <div class="live-formula" aria-live="polite">
           <span>x</span>
@@ -197,7 +197,7 @@ import SurfaceCard from "../ui/SurfaceCard.astro";
         </div>
       </div>
 
-      <div class="exact-panel" aria-label="Точные ручки и значения">
+      <div class="exact-panel pl-instrument-panel" aria-label="Точные ручки и значения">
         <p class="panel-label">Точные ручки</p>
         <label class="slider-field">
           <span>
@@ -240,7 +240,7 @@ import SurfaceCard from "../ui/SurfaceCard.astro";
         </div>
       </div>
 
-      <figure class="graph-card graph-card--detail">
+      <figure class="graph-card graph-card--detail pl-instrument-graph">
         <figcaption>График v(t)</figcaption>
         <svg
           viewBox="0 0 320 220"
@@ -795,9 +795,18 @@ import SurfaceCard from "../ui/SurfaceCard.astro";
 </script>
 
 <style>
+  :global(.surface-card--lab) {
+    padding: 0;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
   .uniform-lab {
     display: grid;
-    gap: var(--pl-space-4);
+    gap: clamp(var(--pl-space-3), 1.8vw, var(--pl-space-5));
+    padding: clamp(var(--pl-space-4), 2.1vw, var(--pl-space-6));
+    isolation: isolate;
   }
 
   .lab-heading {
@@ -809,9 +818,16 @@ import SurfaceCard from "../ui/SurfaceCard.astro";
 
   .component-label,
   .panel-label {
+    display: inline-flex;
+    align-items: center;
+    min-height: 26px;
     margin: 0 0 var(--pl-space-2);
+    padding: 4px 10px;
+    border: 1px solid rgba(255, 216, 77, 0.26);
+    border-radius: 999px;
     color: var(--pl-accent);
-    font-size: 0.76rem;
+    background: rgba(255, 216, 77, 0.055);
+    font-size: 0.72rem;
     font-weight: 900;
     text-transform: uppercase;
   }
@@ -838,14 +854,16 @@ import SurfaceCard from "../ui/SurfaceCard.astro";
   .exact-panel {
     min-width: 0;
     padding: var(--pl-space-4);
-    border: 1px solid rgba(88, 216, 255, 0.2);
-    border-radius: var(--pl-radius);
+    border: 1px solid rgba(88, 216, 255, 0.24);
+    border-radius: 12px;
     background:
-      linear-gradient(180deg, rgba(88, 216, 255, 0.045), transparent 62%),
-      rgba(7, 13, 22, 0.76);
+      linear-gradient(180deg, rgba(88, 216, 255, 0.055), transparent 54%),
+      radial-gradient(circle at 50% 18%, rgba(88, 216, 255, 0.06), transparent 24rem),
+      rgba(3, 13, 27, 0.78);
     box-shadow:
-      inset 0 0 0 1px rgba(255, 255, 255, 0.025),
-      0 16px 42px rgba(0, 0, 0, 0.2);
+      inset 0 0 0 1px rgba(255, 255, 255, 0.03),
+      inset 0 0 30px rgba(88, 216, 255, 0.025),
+      0 16px 42px rgba(0, 0, 0, 0.22);
   }
 
   .start-strip {
@@ -853,10 +871,10 @@ import SurfaceCard from "../ui/SurfaceCard.astro";
     grid-template-columns: minmax(0, 1fr) minmax(240px, 0.48fr);
     gap: var(--pl-space-4);
     align-items: center;
-    border-color: rgba(255, 216, 77, 0.3);
+    border-color: rgba(255, 216, 77, 0.24);
     background:
-      linear-gradient(90deg, rgba(255, 216, 77, 0.07), transparent 58%),
-      rgba(8, 12, 18, 0.62);
+      linear-gradient(90deg, rgba(255, 216, 77, 0.075), transparent 58%),
+      rgba(3, 13, 27, 0.58);
   }
 
   .start-strip p {
@@ -881,15 +899,16 @@ import SurfaceCard from "../ui/SurfaceCard.astro";
   .answer-row button,
   .details-toggle {
     min-height: 44px;
-    border: 1px solid rgba(88, 216, 255, 0.2);
-    border-radius: var(--pl-radius);
+    border: 1px solid rgba(88, 216, 255, 0.3);
+    border-radius: 10px;
     color: var(--pl-text);
     background:
-      linear-gradient(180deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.018)),
-      rgba(8, 14, 24, 0.82);
+      linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.018)),
+      rgba(5, 18, 34, 0.86);
     box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.05),
-      0 8px 22px rgba(0, 0, 0, 0.18);
+      inset 0 1px 0 rgba(255, 255, 255, 0.06),
+      inset 0 -10px 20px rgba(0, 0, 0, 0.12),
+      0 8px 22px rgba(0, 0, 0, 0.2);
     font-weight: 900;
     transition:
       border-color 160ms ease,
@@ -914,10 +933,11 @@ import SurfaceCard from "../ui/SurfaceCard.astro";
     border-color: rgba(255, 216, 77, 0.7);
     color: #111317;
     background:
-      linear-gradient(180deg, #ffe980, var(--pl-accent));
+      linear-gradient(180deg, #ffe990, var(--pl-accent) 58%, var(--pl-accent-strong));
     box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.35),
-      0 10px 28px rgba(255, 216, 77, 0.12);
+      inset 0 1px 0 rgba(255, 255, 255, 0.38),
+      0 0 0 1px rgba(255, 216, 77, 0.14),
+      0 12px 30px rgba(255, 216, 77, 0.16);
   }
 
   .play-button[aria-pressed="true"] {

@@ -1,0 +1,1738 @@
+---
+import "../../styles/lab-visuals.css";
+
+const navItems = ["Главная", "Лаборатория", "Теория", "Задачи", "Достижения"];
+---
+
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Статичный дизайн-борд PhysicsLab для главы Равномерное движение."
+    />
+    <title>PhysicsLab — Равномерное движение / design board</title>
+  </head>
+  <body>
+    <canvas
+      class="reference-starfield-canvas pl-reference-starfield-canvas"
+      data-reference-starfield
+      aria-hidden="true"
+    ></canvas>
+    <main class="final-reference-page" data-uniform-motion-final>
+      <header class="reference-header pl-lab-glass-panel" aria-label="Навигация PhysicsLab">
+        <a class="brand" href="/design-board/uniform-motion-final/" aria-label="PhysicsLab">
+          <svg viewBox="0 0 72 72" aria-hidden="true">
+            <ellipse cx="36" cy="36" rx="30" ry="10" />
+            <ellipse cx="36" cy="36" rx="30" ry="10" transform="rotate(60 36 36)" />
+            <ellipse cx="36" cy="36" rx="30" ry="10" transform="rotate(-60 36 36)" />
+            <circle cx="36" cy="36" r="8" />
+            <circle cx="61" cy="31" r="4" />
+          </svg>
+          <span>Physics<b>Lab</b></span>
+        </a>
+
+        <nav aria-label="Разделы">
+          {
+            navItems.map((item) => (
+              <a class:list={[item === "Лаборатория" && "is-active"]} href="#">
+                {item}
+              </a>
+            ))
+          }
+        </nav>
+
+        <div class="header-actions" aria-hidden="true">
+          <span class="score">
+            <svg viewBox="0 0 24 24">
+              <path d="m12 3 2.7 5.47 6.03.88-4.36 4.25 1.03 6-5.4-2.84-5.4 2.84 1.03-6-4.36-4.25 6.03-.88L12 3Z" />
+            </svg>
+            1250
+          </span>
+          <span class="profile">
+            <svg viewBox="0 0 24 24">
+              <circle cx="12" cy="8" r="3.2" />
+              <path d="M5.5 20a6.5 6.5 0 0 1 13 0" />
+            </svg>
+          </span>
+        </div>
+      </header>
+
+      <section class="hero" aria-labelledby="page-title">
+        <div>
+          <p class="hero-tag">КИНЕМАТИКА</p>
+          <h1 id="page-title">Равномерное движение</h1>
+          <p>Тело движется прямолинейно и с постоянной скоростью.</p>
+          <p>Его положение в любой момент времени описывается формулой:</p>
+        </div>
+        <div class="comet" aria-hidden="true"></div>
+      </section>
+
+      <section
+        class="lab-console pl-lab-glass-panel pl-neon-border"
+        aria-label="Лабораторная консоль равномерного движения"
+      >
+        <div class="formula-band" aria-label="Формула x = x0 + vt">
+          <div class="formula-badge">
+            <svg viewBox="0 0 40 40" aria-hidden="true">
+              <ellipse cx="20" cy="20" rx="17" ry="6" />
+              <ellipse cx="20" cy="20" rx="17" ry="6" transform="rotate(60 20 20)" />
+              <ellipse cx="20" cy="20" rx="17" ry="6" transform="rotate(-60 20 20)" />
+              <circle cx="20" cy="20" r="4" />
+            </svg>
+            <span>ФОРМУЛА</span>
+          </div>
+          <div class="formula-screen pl-formula-glow">
+            <span class="formula-part">x</span>
+            <span class="formula-equals">=</span>
+            <span class="formula-part">x₀</span>
+            <span class="formula-plus">+</span>
+            <span class="formula-part formula-v" data-active-variable>v</span><span class="formula-part">t</span>
+            <span class="formula-help formula-help--x">?</span>
+            <span class="formula-help formula-help--x0">?</span>
+            <span class="formula-help formula-help--vt">?</span>
+          </div>
+        </div>
+
+        <div class="console-grid">
+          <article class="panel motion-panel pl-motion-track" aria-labelledby="motion-title">
+            <h2 id="motion-title">Движение тела <span aria-hidden="true">ⓘ</span></h2>
+            <svg viewBox="0 0 560 286" role="img" aria-label="Движение тела по оси x">
+              <defs>
+                <filter id="motionGlow" x="-80%" y="-80%" width="260%" height="260%">
+                  <feGaussianBlur stdDeviation="7" result="blur" />
+                  <feMerge>
+                    <feMergeNode in="blur" />
+                    <feMergeNode in="SourceGraphic" />
+                  </feMerge>
+                </filter>
+                <linearGradient id="axisGradient" x1="0" x2="1" y1="0" y2="0">
+                  <stop offset="0" stop-color="#d9f7ff" stop-opacity=".72" />
+                  <stop offset=".42" stop-color="#26d1ff" />
+                  <stop offset="1" stop-color="#7be8ff" />
+                </linearGradient>
+              </defs>
+              <text x="292" y="58" class="direction">вперёд</text>
+              <text x="280" y="83" class="velocity">v = 2 м/с</text>
+              <line x1="44" y1="156" x2="520" y2="156" class="axis-glow" />
+              <line x1="44" y1="156" x2="520" y2="156" class="axis" />
+              <path d="M520 156 506 148M520 156 506 164" class="axis-head" />
+              <g class="ticks">
+                <line x1="68" y1="146" x2="68" y2="169" />
+                <line x1="158" y1="146" x2="158" y2="169" />
+                <line x1="248" y1="146" x2="248" y2="169" />
+                <line x1="338" y1="146" x2="338" y2="169" />
+                <line x1="428" y1="146" x2="428" y2="169" />
+                <line x1="476" y1="146" x2="476" y2="169" />
+              </g>
+              <g class="tick-labels">
+                <text x="55" y="191">-20</text>
+                <text x="145" y="191">-10</text>
+                <text x="242" y="191">0</text>
+                <text x="332" y="191">10</text>
+                <text x="422" y="191">20</text>
+                <text x="468" y="191">30</text>
+              </g>
+              <line x1="304" y1="130" x2="304" y2="228" class="projection" />
+              <path d="M168 226 C198 240 270 238 304 226 C338 238 410 240 442 226" class="brace" />
+              <text x="264" y="264" class="readout-cyan">x = 10 м</text>
+              <circle cx="304" cy="128" r="24" class="point-halo" />
+              <circle cx="304" cy="128" r="15" class="point" />
+              <line x1="322" y1="128" x2="407" y2="128" class="velocity-arrow" />
+              <path d="M407 128 391 118M407 128 391 138" class="velocity-arrow" />
+              <text x="508" y="215" class="axis-label">x, м</text>
+            </svg>
+          </article>
+
+          <article class="panel graph-panel pl-instrument-graph" aria-labelledby="graph-title">
+            <h2 id="graph-title">График <span>x(t)</span> <span aria-hidden="true">ⓘ</span></h2>
+            <svg viewBox="0 0 560 286" role="img" aria-label="График координаты от времени">
+              <defs>
+                <linearGradient id="graphLine" x1="0" x2="1" y1="0" y2="0">
+                  <stop offset="0" stop-color="#26d1ff" />
+                  <stop offset="1" stop-color="#40cfff" />
+                </linearGradient>
+              </defs>
+              <g class="graph-grid">
+                <path d="M84 44v194M140 44v194M196 44v194M252 44v194M308 44v194M364 44v194M420 44v194M476 44v194" />
+                <path d="M84 66h410M84 96h410M84 126h410M84 156h410M84 186h410M84 216h410" />
+              </g>
+              <line x1="84" y1="238" x2="510" y2="238" class="graph-axis" />
+              <line x1="84" y1="238" x2="84" y2="36" class="graph-axis" />
+              <path d="M510 238 496 230M510 238 496 246" class="graph-axis" />
+              <path d="M84 36 76 51M84 36 92 51" class="graph-axis" />
+              <g class="graph-ticks">
+                <text x="40" y="52">x, м</text>
+                <text x="512" y="267">t, с</text>
+                <text x="50" y="224">-20</text>
+                <text x="63" y="194">0</text>
+                <text x="55" y="164">10</text>
+                <text x="55" y="134">20</text>
+                <text x="55" y="104">30</text>
+                <text x="114" y="260">-5</text>
+                <text x="198" y="260">0</text>
+                <text x="250" y="260">5</text>
+                <text x="304" y="260">10</text>
+                <text x="358" y="260">15</text>
+                <text x="414" y="260">20</text>
+              </g>
+              <line x1="84" y1="186" x2="250" y2="154" class="graph-segment" />
+              <line x1="250" y1="154" x2="452" y2="74" class="graph-line" />
+              <line x1="84" y1="154" x2="250" y2="154" class="projection" />
+              <line x1="250" y1="154" x2="250" y2="238" class="projection" />
+              <circle cx="250" cy="154" r="16" class="graph-point-halo" />
+              <circle cx="250" cy="154" r="8" class="graph-point" />
+              <g class="graph-readouts">
+                <rect x="146" y="254" width="360" height="32" rx="10" />
+                <text x="207" y="277" class="time">t = 5 с</text>
+                <text x="370" y="277" class="position">x = 10 м</text>
+              </g>
+            </svg>
+          </article>
+
+          <aside class="panel explanation-panel pl-instrument-panel" aria-labelledby="explain-title">
+            <div class="explain-heading">
+              <h2 id="explain-title">Как это работает?</h2>
+              <span aria-hidden="true">ⓘ</span>
+            </div>
+            <dl>
+              <div>
+                <dt>x₀</dt>
+                <dd>— начальное положение, где тело стартовало.</dd>
+              </div>
+              <div>
+                <dt>v</dt>
+                <dd>— скорость показывает, как быстро тело движется.</dd>
+              </div>
+              <div>
+                <dt>t</dt>
+                <dd>— время, сколько времени прошло с начала движения.</dd>
+              </div>
+            </dl>
+            <div class="insight">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="m12 3 2.7 5.47 6.03.88-4.36 4.25 1.03 6-5.4-2.84-5.4 2.84 1.03-6-4.36-4.25 6.03-.88L12 3Z" />
+              </svg>
+              <p>
+                На графике <b>x(t)</b> скорость равна наклону прямой.
+                Чем больше <b>v</b>, тем круче линия.
+              </p>
+            </div>
+          </aside>
+        </div>
+
+        <div class="controls-bar pl-control-dock" aria-label="Управление лабораторией">
+          <button class="primary-control pl-lab-button pl-lab-button--primary" type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M8 5v14l11-7L8 5Z" />
+            </svg>
+            Запустить
+          </button>
+          <button class="secondary-control pl-lab-button" type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M20 12a8 8 0 0 1-13.4 5.9M4 12A8 8 0 0 1 17.4 6.1M7 18H4v3M17 6h3V3" />
+            </svg>
+            Сбросить
+          </button>
+
+          <div class="speed-control" aria-label="Скорость v">
+            <div class="speed-label">
+              <span>Скорость <b>v</b> <i aria-hidden="true">?</i></span>
+              <strong>2 м/с</strong>
+            </div>
+            <div class="speed-scale" aria-hidden="true">
+              <span>-4</span>
+              <span>-2</span>
+              <span>0</span>
+              <span>2</span>
+              <span>4</span>
+            </div>
+            <div class="slider-visual" aria-hidden="true">
+              <span></span>
+            </div>
+          </div>
+
+          <button class="nav-control pl-lab-button" type="button">Назад</button>
+          <button class="stop-control pl-lab-button" type="button">Стоп</button>
+          <button class="nav-control pl-lab-button" type="button">Вперёд</button>
+        </div>
+      </section>
+
+      <section class="bottom-panels" aria-label="Проверка и подробности">
+        <article class="bottom-panel quiz-panel pl-quiz-console">
+          <p class="panel-kicker">ПРОВЕРЬ СЕБЯ</p>
+          <h2>Если увеличить скорость, что станет с линией <span>x(t)</span>?</h2>
+          <div class="answers" aria-label="Варианты ответа">
+            <button class="answer is-correct pl-lab-button" type="button">Станет круче</button>
+            <button class="answer pl-lab-button" type="button">Станет плоской</button>
+            <button class="answer pl-lab-button" type="button">Превратится в путь по карте</button>
+          </div>
+          <p class="feedback">Верно! Скорость — это наклон графика <b>x(t)</b>. Больше скорость → круче линия.</p>
+        </article>
+
+        <article class="bottom-panel details-panel pl-quiz-console">
+          <p class="panel-kicker panel-kicker--cyan">ПОДРОБНЕЕ</p>
+          <a href="#">
+            <span class="detail-icon" aria-hidden="true">▤</span>
+            <span>
+              <b>Вывод формулы x = x₀ + vt</b>
+              <small>Пошаговое объяснение и пример вывода.</small>
+            </span>
+            <i aria-hidden="true">›</i>
+          </a>
+          <a href="#">
+            <span class="detail-icon" aria-hidden="true">⌕</span>
+            <span>
+              <b>Что такое наклон графика?</b>
+              <small>Поймём, почему скорость — это наклон.</small>
+            </span>
+            <i aria-hidden="true">›</i>
+          </a>
+        </article>
+      </section>
+    </main>
+
+    <script>
+      type ReferenceStar = {
+        x: number;
+        y: number;
+        r: number;
+        alpha: number;
+        drift: number;
+        warm: boolean;
+      };
+
+      const starfield = document.querySelector<HTMLCanvasElement>("[data-reference-starfield]");
+      const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+      if (starfield) {
+        const context = starfield.getContext("2d");
+
+        if (!context) {
+          throw new Error("Reference starfield canvas is unavailable.");
+        }
+
+        let width = 0;
+        let height = 0;
+        let stars: ReferenceStar[] = [];
+        let frame = 0;
+
+        const resize = () => {
+          const scale = Math.min(window.devicePixelRatio || 1, 1.5);
+          width = window.innerWidth;
+          height = window.innerHeight;
+          starfield.width = Math.floor(width * scale);
+          starfield.height = Math.floor(height * scale);
+          starfield.style.width = `${width}px`;
+          starfield.style.height = `${height}px`;
+          context.setTransform(scale, 0, 0, scale, 0, 0);
+        };
+
+        const createStars = () => {
+          const count = Math.min(96, Math.max(42, Math.floor(width / 17)));
+          stars = Array.from({ length: count }, (_, index) => ({
+            x: Math.random() * width,
+            y: Math.random() * height,
+            r: Math.random() * 1.45 + 0.35,
+            alpha: Math.random() * 0.38 + 0.18,
+            drift: (Math.random() - 0.5) * 0.05,
+            warm: index % 13 === 0
+          }));
+        };
+
+        const drawCometTrail = () => {
+          const startX = width * 0.72;
+          const startY = Math.max(92, height * 0.13);
+          const endX = Math.min(width - 54, width * 0.94);
+          const endY = startY + 62;
+          const gradient = context.createLinearGradient(startX, startY, endX, endY);
+          gradient.addColorStop(0, "rgba(34, 201, 255, 0)");
+          gradient.addColorStop(0.48, "rgba(34, 201, 255, 0.16)");
+          gradient.addColorStop(0.78, "rgba(255, 212, 77, 0.45)");
+          gradient.addColorStop(1, "rgba(255, 244, 190, 0.9)");
+
+          context.save();
+          context.lineWidth = 2;
+          context.strokeStyle = gradient;
+          context.shadowColor = "rgba(255, 212, 77, 0.42)";
+          context.shadowBlur = 18;
+          context.beginPath();
+          context.moveTo(startX, startY);
+          context.bezierCurveTo(width * 0.84, startY - 34, width * 0.99, startY - 8, endX, endY);
+          context.stroke();
+          context.beginPath();
+          context.arc(endX, endY, 5.2, 0, Math.PI * 2);
+          context.fillStyle = "rgba(255, 244, 190, 0.96)";
+          context.fill();
+          context.restore();
+        };
+
+        const draw = () => {
+          context.clearRect(0, 0, width, height);
+
+          for (const star of stars) {
+            if (!reducedMotion.matches) {
+              star.x += star.drift;
+              if (star.x < 0) star.x = width;
+              if (star.x > width) star.x = 0;
+            }
+
+            context.beginPath();
+            context.arc(star.x, star.y, star.r, 0, Math.PI * 2);
+            context.fillStyle = star.warm
+              ? `rgba(255, 212, 77, ${star.alpha})`
+              : `rgba(34, 201, 255, ${star.alpha})`;
+            context.fill();
+          }
+
+          drawCometTrail();
+
+          if (!reducedMotion.matches) {
+            frame = window.requestAnimationFrame(draw);
+          }
+        };
+
+        const restart = () => {
+          window.cancelAnimationFrame(frame);
+          resize();
+          createStars();
+          draw();
+        };
+
+        restart();
+        window.addEventListener("resize", restart, { passive: true });
+        reducedMotion.addEventListener("change", restart);
+        document.addEventListener("visibilitychange", () => {
+          if (document.hidden) {
+            window.cancelAnimationFrame(frame);
+          } else {
+            restart();
+          }
+        });
+      }
+    </script>
+  </body>
+</html>
+
+<style>
+  :root {
+    color-scheme: dark;
+    --bg: #030914;
+    --bg-2: #061325;
+    --panel: rgba(6, 20, 36, 0.78);
+    --panel-strong: rgba(7, 24, 42, 0.9);
+    --line: rgba(38, 209, 255, 0.78);
+    --line-soft: rgba(83, 210, 255, 0.18);
+    --cyan: #26d1ff;
+    --cyan-2: #7fe8ff;
+    --yellow: #ffd44d;
+    --yellow-2: #f5b719;
+    --green: #31d07c;
+    --text: #f4f7fb;
+    --muted: #bfccda;
+    --soft: #8397ae;
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  html,
+  body {
+    width: 100%;
+    max-width: 100%;
+    min-width: 320px;
+    margin: 0;
+    overflow-x: hidden;
+    background: var(--bg);
+  }
+
+  button,
+  a {
+    color: inherit;
+    font: inherit;
+  }
+
+  button {
+    cursor: pointer;
+  }
+
+  .final-reference-page {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 100vw;
+    min-height: 100vh;
+    padding: 0 42px 22px;
+    overflow-x: clip;
+    color: var(--text);
+    background:
+      radial-gradient(circle at 84% 18%, rgba(22, 94, 151, 0.24), transparent 26rem),
+      radial-gradient(circle at 10% 88%, rgba(12, 94, 148, 0.16), transparent 28rem),
+      radial-gradient(circle at 50% 40%, rgba(18, 83, 137, 0.12), transparent 48rem),
+      linear-gradient(180deg, rgba(6, 19, 39, 0.86) 0%, rgba(3, 16, 30, 0.9) 48%, rgba(2, 9, 20, 0.94) 100%);
+    isolation: isolate;
+  }
+
+  .reference-starfield-canvas {
+    z-index: 0;
+    opacity: 0.9;
+    mix-blend-mode: screen;
+  }
+
+  .final-reference-page::before,
+  .final-reference-page::after {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    content: "";
+    pointer-events: none;
+  }
+
+  .final-reference-page::before {
+    background:
+      radial-gradient(circle at 8% 22%, rgba(38, 209, 255, 0.7) 0 1px, transparent 2px),
+      radial-gradient(circle at 18% 31%, rgba(121, 226, 255, 0.5) 0 1px, transparent 2px),
+      radial-gradient(circle at 28% 19%, rgba(38, 209, 255, 0.7) 0 1px, transparent 2px),
+      radial-gradient(circle at 44% 15%, rgba(255, 212, 77, 0.46) 0 1px, transparent 2px),
+      radial-gradient(circle at 58% 8%, rgba(38, 209, 255, 0.6) 0 1.5px, transparent 2.5px),
+      radial-gradient(circle at 73% 34%, rgba(38, 209, 255, 0.72) 0 1px, transparent 2px),
+      radial-gradient(circle at 4% 70%, rgba(38, 209, 255, 0.8) 0 1px, transparent 2px),
+      radial-gradient(circle at 14% 12%, rgba(38, 209, 255, 0.8) 0 1px, transparent 2px),
+      radial-gradient(circle at 37% 9%, rgba(38, 209, 255, 0.7) 0 1px, transparent 2px),
+      radial-gradient(circle at 82% 10%, rgba(38, 209, 255, 0.76) 0 2px, transparent 3px),
+      radial-gradient(circle at 92% 70%, rgba(38, 209, 255, 0.7) 0 1px, transparent 2px),
+      radial-gradient(circle at 11% 95%, rgba(38, 209, 255, 0.65) 0 1px, transparent 2px),
+      radial-gradient(circle at 86% 50%, rgba(255, 212, 77, 0.65) 0 1px, transparent 2px);
+    opacity: 0.95;
+  }
+
+  .final-reference-page::after {
+    background:
+      linear-gradient(rgba(38, 209, 255, 0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(38, 209, 255, 0.025) 1px, transparent 1px);
+    background-size: 32px 32px;
+    opacity: 0.42;
+  }
+
+  .final-reference-page > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  .reference-header {
+    position: relative;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    min-height: 78px;
+    margin: 0 -42px;
+    padding: 0 47px;
+    border-bottom: 1px solid rgba(132, 174, 220, 0.12);
+    border-radius: 0 0 16px 16px;
+    background: rgba(4, 13, 27, 0.42);
+    box-shadow: 0 12px 38px rgba(0, 0, 0, 0.14);
+    backdrop-filter: blur(18px);
+  }
+
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 16px;
+    color: var(--text);
+    font-size: 1.8rem;
+    font-weight: 800;
+    text-decoration: none;
+  }
+
+  .brand svg {
+    width: 54px;
+    height: 54px;
+    fill: none;
+    stroke: var(--cyan);
+    stroke-width: 2.2;
+    filter: drop-shadow(0 0 9px rgba(38, 209, 255, 0.44));
+  }
+
+  .brand circle:first-of-type {
+    fill: var(--yellow);
+    stroke: var(--yellow);
+  }
+
+  .brand circle:last-of-type {
+    fill: var(--cyan);
+  }
+
+  .brand b {
+    color: var(--yellow);
+  }
+
+  .reference-header nav {
+    display: flex;
+    justify-content: center;
+    gap: clamp(28px, 4vw, 58px);
+  }
+
+  .reference-header nav a {
+    position: relative;
+    padding: 28px 0 25px;
+    color: rgba(244, 247, 251, 0.78);
+    font-size: 1.03rem;
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .reference-header nav a.is-active {
+    color: #fff;
+  }
+
+  .reference-header nav a.is-active::after {
+    position: absolute;
+    right: -18px;
+    bottom: 0;
+    left: -18px;
+    height: 3px;
+    border-radius: 999px 999px 0 0;
+    background: linear-gradient(90deg, transparent, #91e7ff, transparent);
+    box-shadow: 0 0 18px rgba(38, 209, 255, 0.7);
+    content: "";
+  }
+
+  .header-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 32px;
+  }
+
+  .score,
+  .profile {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 43px;
+    border: 1px solid rgba(160, 190, 230, 0.18);
+    border-radius: 999px;
+    color: var(--text);
+    background: rgba(3, 12, 24, 0.38);
+  }
+
+  .score {
+    gap: 10px;
+    min-width: 112px;
+    padding: 0 18px;
+    font-weight: 700;
+  }
+
+  .score svg,
+  .profile svg {
+    width: 22px;
+    height: 22px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+  }
+
+  .score svg {
+    color: var(--yellow);
+  }
+
+  .profile {
+    width: 46px;
+  }
+
+  .hero {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    min-height: 188px;
+    padding: 24px 6px 14px;
+  }
+
+  .hero-tag {
+    display: inline-flex;
+    margin: 0 0 9px;
+    padding: 5px 14px 6px;
+    border: 1px solid rgba(255, 212, 77, 0.78);
+    border-radius: 999px;
+    color: var(--yellow);
+    background: rgba(255, 212, 77, 0.07);
+    font-size: 0.9rem;
+    font-weight: 900;
+    letter-spacing: 0.02em;
+  }
+
+  .hero h1 {
+    margin: 0 0 9px;
+    font-size: clamp(2.55rem, 4.4vw, 3.55rem);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+  }
+
+  .hero p:not(.hero-tag) {
+    max-width: 760px;
+    margin: 0 0 6px;
+    color: rgba(229, 237, 248, 0.78);
+    font-size: 1.18rem;
+    line-height: 1.36;
+  }
+
+  .comet {
+    position: absolute;
+    top: 35px;
+    right: 10px;
+    width: 380px;
+    height: 116px;
+    border-radius: 50%;
+    background:
+      radial-gradient(circle at 73% 68%, rgba(255, 244, 188, 0.92) 0 4px, rgba(255, 212, 77, 0.36) 5px 12px, transparent 13px),
+      radial-gradient(ellipse at 66% 62%, rgba(38, 209, 255, 0.16), transparent 22%),
+      conic-gradient(from 61deg at 73% 68%, rgba(255, 212, 77, 0.5), transparent 12%, transparent 77%, rgba(38, 209, 255, 0.22));
+    opacity: 0.72;
+    filter:
+      drop-shadow(0 0 16px rgba(255, 212, 77, 0.2))
+      drop-shadow(0 0 28px rgba(38, 209, 255, 0.08));
+    mask-image: radial-gradient(ellipse at center, #000 0 31%, transparent 70%);
+  }
+
+  .comet::before {
+    position: absolute;
+    inset: 26px 12px 18px 34px;
+    border-top: 1px solid rgba(255, 212, 77, 0.38);
+    border-right: 1px solid rgba(255, 212, 77, 0.22);
+    border-radius: 50%;
+    content: "";
+    transform: rotate(-10deg);
+  }
+
+  .comet::after {
+    position: absolute;
+    top: 70px;
+    right: 52px;
+    width: 250px;
+    height: 2px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, transparent, rgba(38, 209, 255, 0.18), rgba(255, 212, 77, 0.72));
+    content: "";
+    filter: blur(0.2px) drop-shadow(0 0 10px rgba(255, 212, 77, 0.24));
+    transform: rotate(-21deg);
+    transform-origin: right center;
+  }
+
+  .lab-console {
+    position: relative;
+    display: grid;
+    gap: 24px;
+    padding: 16px 26px 22px;
+    border: 1px solid rgba(38, 209, 255, 0.82);
+    border-radius: 28px;
+    background:
+      radial-gradient(circle at 36% 19%, rgba(38, 209, 255, 0.14), transparent 24rem),
+      linear-gradient(180deg, rgba(6, 25, 45, 0.7), rgba(3, 15, 29, 0.84));
+    box-shadow:
+      0 0 0 1px rgba(130, 232, 255, 0.1) inset,
+      0 0 28px rgba(38, 209, 255, 0.18),
+      0 26px 80px rgba(0, 0, 0, 0.28);
+    overflow: hidden;
+  }
+
+  .lab-console::before {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 6% 20%, rgba(38, 209, 255, 0.58) 0 1px, transparent 2px),
+      radial-gradient(circle at 28% 8%, rgba(38, 209, 255, 0.44) 0 1px, transparent 2px),
+      radial-gradient(circle at 57% 18%, rgba(38, 209, 255, 0.4) 0 1px, transparent 2px),
+      radial-gradient(circle at 74% 78%, rgba(255, 212, 77, 0.38) 0 1px, transparent 2px),
+      linear-gradient(rgba(38, 209, 255, 0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(38, 209, 255, 0.035) 1px, transparent 1px);
+    background-size: auto, auto, auto, auto, 28px 28px, 28px 28px;
+    content: "";
+    pointer-events: none;
+  }
+
+  .formula-band,
+  .console-grid,
+  .controls-bar {
+    position: relative;
+    z-index: 1;
+  }
+
+  .formula-band {
+    display: grid;
+    grid-template-columns: 174px minmax(0, 1fr) 284px;
+    align-items: center;
+    gap: 20px;
+    min-height: 112px;
+  }
+
+  .formula-badge {
+    display: inline-grid;
+    grid-template-columns: 64px auto;
+    align-items: center;
+    gap: 12px;
+    align-self: center;
+    min-height: 70px;
+  }
+
+  .formula-badge svg {
+    width: 58px;
+    height: 58px;
+    padding: 9px;
+    border: 1px solid rgba(38, 209, 255, 0.22);
+    border-radius: 10px;
+    fill: none;
+    stroke: var(--cyan);
+    stroke-width: 1.7;
+    background: rgba(8, 22, 38, 0.7);
+  }
+
+  .formula-badge circle:first-of-type {
+    fill: var(--yellow);
+    stroke: var(--yellow);
+  }
+
+  .formula-badge span {
+    padding: 8px 14px;
+    border: 1px solid rgba(255, 212, 77, 0.25);
+    border-radius: 10px;
+    color: var(--yellow);
+    background: rgba(255, 212, 77, 0.06);
+    font-size: 0.9rem;
+    font-weight: 900;
+    letter-spacing: 0.04em;
+  }
+
+  .formula-screen {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 86px;
+    border-radius: 12px;
+    background:
+      linear-gradient(rgba(38, 209, 255, 0.16) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(38, 209, 255, 0.16) 1px, transparent 1px),
+      rgba(3, 15, 29, 0.3);
+    background-size: 28px 28px;
+  }
+
+  .formula-screen::before,
+  .formula-screen::after {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    content: "";
+    pointer-events: none;
+  }
+
+  .formula-screen::before {
+    box-shadow:
+      inset 0 0 42px rgba(38, 209, 255, 0.08),
+      0 0 34px rgba(38, 209, 255, 0.06);
+  }
+
+  .formula-screen::after {
+    background:
+      radial-gradient(circle at 32% 64%, rgba(38, 209, 255, 0.82) 0 1.5px, transparent 2px),
+      radial-gradient(circle at 58% 64%, rgba(38, 209, 255, 0.64) 0 1.5px, transparent 2px),
+      radial-gradient(circle at 79% 64%, rgba(38, 209, 255, 0.58) 0 1.5px, transparent 2px);
+  }
+
+  .formula-part,
+  .formula-equals,
+  .formula-plus {
+    color: rgba(248, 252, 255, 0.98);
+    font-family: "Cambria Math", Georgia, "Times New Roman", serif;
+    font-size: clamp(3.7rem, 6vw, 5rem);
+    font-style: italic;
+    line-height: 1;
+    text-shadow:
+      0 0 12px rgba(228, 246, 255, 0.5),
+      0 0 28px rgba(38, 209, 255, 0.18);
+  }
+
+  .formula-equals,
+  .formula-plus {
+    margin: 0 0.35em;
+    font-family: Inter, sans-serif;
+    font-style: normal;
+    font-weight: 700;
+  }
+
+  .formula-v {
+    color: var(--yellow);
+    text-shadow:
+      0 0 16px rgba(255, 212, 77, 0.68),
+      0 0 34px rgba(255, 212, 77, 0.26);
+  }
+
+  .formula-part sub {
+    font-size: 0.44em;
+    line-height: 0;
+  }
+
+  .formula-help {
+    position: absolute;
+    bottom: -12px;
+    display: grid;
+    place-items: center;
+    width: 20px;
+    height: 20px;
+    border: 1px solid rgba(163, 193, 232, 0.34);
+    border-radius: 50%;
+    color: rgba(184, 203, 225, 0.74);
+    background: rgba(3, 12, 24, 0.86);
+    font-size: 0.76rem;
+    font-weight: 800;
+  }
+
+  .formula-help--x {
+    left: 32%;
+  }
+
+  .formula-help--x0 {
+    left: 51%;
+  }
+
+  .formula-help--vt {
+    left: 70%;
+  }
+
+  .console-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 0.96fr) minmax(260px, 0.56fr);
+    align-items: start;
+    gap: 14px;
+  }
+
+  .panel {
+    min-width: 0;
+    border: 1px solid rgba(160, 190, 230, 0.12);
+    border-radius: 12px;
+    background:
+      linear-gradient(180deg, rgba(14, 47, 78, 0.22), transparent 42%),
+      rgba(2, 14, 28, 0.46);
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 255, 255, 0.018),
+      0 0 20px rgba(38, 209, 255, 0.025);
+  }
+
+  .panel h2 {
+    margin: 0;
+    color: rgba(237, 245, 255, 0.9);
+    font-size: 1.15rem;
+    line-height: 1.2;
+  }
+
+  .panel h2 span {
+    color: var(--cyan);
+    font-style: italic;
+  }
+
+  .motion-panel,
+  .graph-panel {
+    min-height: 340px;
+    padding: 17px 18px 8px;
+  }
+
+  .explanation-panel {
+    min-height: 330px;
+    height: 330px;
+    overflow: hidden;
+  }
+
+  .motion-panel svg,
+  .graph-panel svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    margin-top: 4px;
+    overflow: visible;
+  }
+
+  svg text {
+    font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  }
+
+  .direction,
+  .velocity {
+    fill: var(--yellow);
+    font-size: 16px;
+    font-weight: 900;
+  }
+
+  .velocity {
+    font-style: italic;
+  }
+
+  .axis-glow {
+    stroke: rgba(38, 209, 255, 0.4);
+    stroke-width: 9;
+    stroke-linecap: round;
+    filter: blur(3px) drop-shadow(0 0 18px rgba(38, 209, 255, 0.72));
+  }
+
+  .axis {
+    stroke: url(#axisGradient);
+    stroke-width: 3.8;
+    stroke-linecap: round;
+    filter:
+      drop-shadow(0 0 8px rgba(38, 209, 255, 0.78))
+      drop-shadow(0 0 18px rgba(38, 209, 255, 0.24));
+  }
+
+  .axis-head,
+  .graph-axis {
+    fill: none;
+    stroke: rgba(219, 241, 255, 0.82);
+    stroke-width: 2.4;
+    stroke-linecap: round;
+  }
+
+  .ticks line {
+    stroke: rgba(219, 241, 255, 0.72);
+    stroke-width: 1.4;
+  }
+
+  .tick-labels text,
+  .graph-ticks text {
+    fill: rgba(220, 232, 247, 0.82);
+    font-size: 16px;
+  }
+
+  .projection {
+    stroke: rgba(229, 234, 247, 0.68);
+    stroke-dasharray: 7 7;
+    stroke-width: 1.5;
+  }
+
+  .brace {
+    fill: none;
+    stroke: rgba(38, 209, 255, 0.55);
+    stroke-width: 1.2;
+  }
+
+  .readout-cyan {
+    fill: var(--cyan);
+    font-size: 19px;
+    font-weight: 900;
+  }
+
+  .point-halo,
+  .graph-point-halo {
+    fill: rgba(255, 212, 77, 0.18);
+    filter: drop-shadow(0 0 16px rgba(255, 212, 77, 0.48));
+  }
+
+  .point,
+  .graph-point {
+    fill: var(--yellow);
+    stroke: rgba(255, 244, 198, 0.95);
+    stroke-width: 3;
+  }
+
+  .velocity-arrow {
+    fill: none;
+    stroke: var(--yellow);
+    stroke-width: 4;
+    stroke-linecap: round;
+    filter: drop-shadow(0 0 8px rgba(255, 212, 77, 0.58));
+  }
+
+  .axis-label {
+    fill: rgba(220, 232, 247, 0.8);
+    font-size: 16px;
+    font-style: italic;
+  }
+
+  .graph-grid path {
+    fill: none;
+    stroke: rgba(38, 209, 255, 0.095);
+    stroke-width: 1;
+  }
+
+  .graph-segment,
+  .graph-line {
+    fill: none;
+    stroke: url(#graphLine);
+    stroke-width: 4;
+    stroke-linecap: round;
+    filter:
+      drop-shadow(0 0 7px rgba(38, 209, 255, 0.64))
+      drop-shadow(0 0 16px rgba(38, 209, 255, 0.18));
+  }
+
+  .graph-segment {
+    stroke: #26d1ff;
+  }
+
+  .graph-readouts rect {
+    fill: rgba(4, 18, 34, 0.68);
+    stroke: rgba(150, 190, 232, 0.18);
+  }
+
+  .graph-readouts text {
+    font-size: 22px;
+    font-weight: 900;
+    font-style: italic;
+  }
+
+  .graph-readouts .time {
+    fill: var(--cyan);
+  }
+
+  .graph-readouts .position {
+    fill: var(--yellow);
+  }
+
+  .explanation-panel {
+    padding: 20px 22px 12px;
+  }
+
+  .explain-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .explain-heading span {
+    color: rgba(202, 220, 244, 0.7);
+    font-size: 1.12rem;
+  }
+
+  .explanation-panel dl {
+    display: grid;
+    gap: 10px;
+    margin: 0;
+  }
+
+  .explanation-panel dl div {
+    display: grid;
+    grid-template-columns: 42px 1fr;
+    gap: 10px;
+  }
+
+  .explanation-panel dt {
+    color: var(--cyan);
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 1.34rem;
+    font-style: italic;
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  .explanation-panel dl div:nth-child(2) dt {
+    color: var(--yellow);
+  }
+
+  .explanation-panel dd {
+    margin: 0;
+    color: rgba(219, 229, 242, 0.78);
+    font-size: 0.88rem;
+    line-height: 1.42;
+  }
+
+  .insight {
+    display: grid;
+    grid-template-columns: 24px 1fr;
+    gap: 12px;
+    margin-top: 12px;
+    padding: 10px 10px 9px;
+    border: 1px solid rgba(255, 212, 77, 0.35);
+    border-radius: 10px;
+    background: rgba(255, 212, 77, 0.06);
+  }
+
+  .insight svg {
+    width: 22px;
+    height: 22px;
+    fill: none;
+    stroke: var(--yellow);
+    stroke-width: 1.8;
+  }
+
+  .insight p {
+    margin: 0;
+    color: rgba(229, 237, 248, 0.8);
+    font-size: 0.86rem;
+    line-height: 1.45;
+  }
+
+  .insight b {
+    color: var(--cyan);
+    font-style: italic;
+  }
+
+  .insight b:last-of-type {
+    color: var(--yellow);
+  }
+
+  .controls-bar {
+    display: grid;
+    grid-template-columns: 172px 166px minmax(280px, 1fr) 122px 122px 138px;
+    align-items: center;
+    gap: 12px;
+    padding: 10px;
+    border: 1px solid rgba(38, 209, 255, 0.16);
+    border-radius: 16px;
+    background:
+      linear-gradient(90deg, rgba(255, 212, 77, 0.045), transparent 36%, rgba(38, 209, 255, 0.055)),
+      rgba(3, 14, 28, 0.58);
+  }
+
+  .controls-bar button {
+    min-height: 54px;
+    border: 1px solid rgba(137, 178, 222, 0.22);
+    border-radius: 9px;
+    color: rgba(229, 237, 248, 0.9);
+    background:
+      linear-gradient(180deg, rgba(14, 38, 63, 0.92), rgba(7, 20, 36, 0.94));
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.04),
+      0 10px 22px rgba(0, 0, 0, 0.18);
+    font-weight: 800;
+  }
+
+  .primary-control {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    border-color: rgba(255, 240, 168, 0.55) !important;
+    color: #111317 !important;
+    background: linear-gradient(180deg, #ffe783, var(--yellow)) !important;
+    box-shadow:
+      0 0 20px rgba(255, 212, 77, 0.28),
+      inset 0 1px 0 rgba(255, 255, 255, 0.38) !important;
+    font-size: 1rem;
+  }
+
+  .primary-control svg,
+  .secondary-control svg {
+    width: 21px;
+    height: 21px;
+    fill: currentColor;
+    stroke: currentColor;
+    stroke-width: 1.7;
+  }
+
+  .secondary-control {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  .secondary-control svg {
+    fill: none;
+    color: rgba(191, 204, 224, 0.88);
+  }
+
+  .speed-control {
+    position: relative;
+    display: grid;
+    gap: 6px;
+    align-self: stretch;
+    min-height: 64px;
+    padding: 9px 20px 8px;
+    border: 1px solid rgba(137, 178, 222, 0.1);
+    border-radius: 12px;
+    background: rgba(5, 18, 32, 0.42);
+  }
+
+  .speed-label,
+  .speed-scale {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: rgba(216, 229, 244, 0.72);
+    font-size: 0.85rem;
+  }
+
+  .speed-label b,
+  .speed-label i,
+  .speed-label strong {
+    color: var(--yellow);
+    font-style: normal;
+  }
+
+  .speed-label strong {
+    font-size: 0.9rem;
+  }
+
+  .speed-scale {
+    padding: 0 4px;
+    font-size: 0.78rem;
+  }
+
+  .slider-visual {
+    position: absolute;
+    right: 62px;
+    bottom: 29px;
+    left: 188px;
+    height: 5px;
+    border-radius: 999px;
+    background:
+      linear-gradient(90deg, var(--cyan), rgba(38, 209, 255, 0.8) 50%, var(--yellow) 72%, rgba(255, 212, 77, 0.2) 73%),
+      rgba(255, 255, 255, 0.08);
+    box-shadow: 0 0 12px rgba(38, 209, 255, 0.18);
+  }
+
+  .slider-visual span {
+    position: absolute;
+    top: 50%;
+    left: 72%;
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255, 244, 198, 0.8);
+    border-radius: 50%;
+    background: var(--yellow);
+    box-shadow: 0 0 16px rgba(255, 212, 77, 0.5);
+    transform: translate(-50%, -50%);
+  }
+
+  .nav-control {
+    border-color: rgba(38, 209, 255, 0.32) !important;
+    color: var(--cyan) !important;
+    background:
+      linear-gradient(180deg, rgba(8, 48, 82, 0.82), rgba(5, 26, 48, 0.9)) !important;
+    box-shadow: 0 0 15px rgba(38, 209, 255, 0.13) !important;
+  }
+
+  .stop-control {
+    color: rgba(218, 228, 241, 0.84) !important;
+  }
+
+  .bottom-panels {
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.78fr);
+    gap: 14px;
+    padding: 16px 0 0;
+  }
+
+  .bottom-panel {
+    min-height: 160px;
+    padding: 18px 24px 20px;
+    border: 1px solid rgba(38, 209, 255, 0.25);
+    border-radius: 18px;
+    background:
+      linear-gradient(180deg, rgba(10, 38, 65, 0.34), rgba(3, 16, 31, 0.66));
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.025);
+  }
+
+  .panel-kicker {
+    margin: 0 0 12px;
+    color: var(--yellow);
+    font-size: 0.92rem;
+    font-weight: 900;
+    letter-spacing: 0.04em;
+  }
+
+  .panel-kicker--cyan {
+    color: rgba(190, 210, 232, 0.72);
+  }
+
+  .quiz-panel h2 {
+    margin: 0 0 14px;
+    color: rgba(237, 245, 255, 0.92);
+    font-size: 1.05rem;
+    font-weight: 600;
+  }
+
+  .quiz-panel h2 span,
+  .feedback b,
+  .details-panel b {
+    color: var(--cyan);
+    font-style: italic;
+  }
+
+  .answers {
+    display: grid;
+    grid-template-columns: 0.8fr 0.9fr 1.25fr;
+    gap: 12px;
+  }
+
+  .answer {
+    min-height: 52px;
+    border: 1px solid rgba(137, 178, 222, 0.22);
+    border-radius: 8px;
+    color: rgba(218, 228, 241, 0.78);
+    background: rgba(8, 22, 39, 0.78);
+    text-align: left;
+    padding: 0 18px;
+  }
+
+  .answer::before {
+    display: inline-grid;
+    place-items: center;
+    width: 18px;
+    height: 18px;
+    margin-right: 10px;
+    border: 1px solid rgba(137, 178, 222, 0.32);
+    border-radius: 50%;
+    color: transparent;
+    content: "✓";
+  }
+
+  .answer.is-correct {
+    border-color: rgba(49, 208, 124, 0.82);
+    color: rgba(109, 245, 174, 0.94);
+    background: rgba(18, 81, 50, 0.36);
+    box-shadow:
+      inset 0 0 0 1px rgba(49, 208, 124, 0.14),
+      0 0 20px rgba(49, 208, 124, 0.14);
+  }
+
+  .answer.is-correct::before {
+    border-color: var(--green);
+    color: var(--green);
+  }
+
+  .feedback {
+    margin: 14px 0 0;
+    padding: 12px 16px;
+    border: 1px solid rgba(49, 208, 124, 0.56);
+    border-radius: 8px;
+    color: rgba(199, 232, 216, 0.88);
+    background: rgba(4, 49, 42, 0.44);
+    font-size: 0.95rem;
+  }
+
+  .details-panel {
+    display: grid;
+    gap: 12px;
+  }
+
+  .details-panel a {
+    display: grid;
+    grid-template-columns: 48px 1fr auto;
+    align-items: center;
+    gap: 14px;
+    min-height: 58px;
+    padding: 11px 14px;
+    border: 1px solid rgba(137, 178, 222, 0.16);
+    border-radius: 10px;
+    color: var(--text);
+    background: rgba(8, 22, 39, 0.62);
+    text-decoration: none;
+  }
+
+  .details-panel small {
+    display: block;
+    margin-top: 3px;
+    color: rgba(191, 204, 218, 0.78);
+  }
+
+  .detail-icon {
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    color: rgba(180, 218, 255, 0.9);
+    background: rgba(38, 209, 255, 0.08);
+  }
+
+  .details-panel i {
+    color: rgba(218, 230, 246, 0.78);
+    font-size: 2rem;
+    font-style: normal;
+  }
+
+  @media (max-width: 1100px) {
+    .final-reference-page {
+      padding: 0 22px 24px;
+    }
+
+    .reference-header {
+      margin: 0 -22px;
+      padding: 0 22px;
+    }
+
+    .header-actions {
+      display: none;
+    }
+
+    .reference-header nav {
+      justify-content: flex-end;
+      gap: 22px;
+    }
+
+    .formula-band {
+      grid-template-columns: 1fr;
+    }
+
+    .console-grid,
+    .bottom-panels {
+      grid-template-columns: 1fr;
+    }
+
+    .controls-bar {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .speed-control {
+      grid-column: 1 / -1;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .final-reference-page {
+      width: 100%;
+      padding: 0 8px 22px;
+      background:
+        radial-gradient(circle at 84% 14%, rgba(22, 94, 151, 0.24), transparent 16rem),
+        radial-gradient(circle at 14% 74%, rgba(12, 94, 148, 0.16), transparent 18rem),
+        linear-gradient(180deg, rgba(6, 19, 39, 0.86) 0%, rgba(3, 16, 30, 0.9) 48%, rgba(2, 9, 20, 0.96) 100%);
+    }
+
+    .reference-header {
+      grid-template-columns: 1fr auto;
+      min-height: 64px;
+      margin: 0 -8px;
+      padding: 0 14px;
+    }
+
+    .brand {
+      gap: 10px;
+      font-size: 1.15rem;
+    }
+
+    .brand svg {
+      width: 38px;
+      height: 38px;
+    }
+
+    .reference-header nav {
+      grid-column: 1 / -1;
+      justify-content: flex-start;
+      gap: 20px;
+      overflow: hidden;
+      max-width: 100%;
+    }
+
+    .reference-header nav a {
+      padding: 7px 0 13px;
+      font-size: 0.82rem;
+    }
+
+    .reference-header nav a:nth-child(n + 4) {
+      display: none;
+    }
+
+    .hero {
+      min-height: 170px;
+      padding: 28px 6px 14px;
+    }
+
+    .hero-tag {
+      font-size: 0.72rem;
+    }
+
+    .hero h1 {
+      font-size: clamp(2.35rem, 12vw, 3.1rem);
+    }
+
+    .hero p:not(.hero-tag) {
+      font-size: 1rem;
+    }
+
+    .comet {
+      top: 52px;
+      right: -96px;
+      width: 252px;
+      height: 96px;
+      opacity: 0.44;
+    }
+
+    .lab-console {
+      gap: 14px;
+      padding: 10px;
+      border-radius: 20px;
+    }
+
+    .formula-band {
+      gap: 12px;
+      min-height: auto;
+    }
+
+    .formula-badge {
+      grid-template-columns: 46px auto;
+      min-height: 46px;
+    }
+
+    .formula-badge svg {
+      width: 42px;
+      height: 42px;
+      padding: 7px;
+    }
+
+    .formula-badge span {
+      padding: 7px 12px;
+      font-size: 0.78rem;
+    }
+
+    .formula-screen {
+      min-height: 106px;
+      margin-inline: -2px;
+      background-size: 25px 25px;
+    }
+
+    .formula-part,
+    .formula-equals,
+    .formula-plus {
+      font-size: clamp(3.1rem, 16vw, 4rem);
+    }
+
+    .formula-help {
+      display: none;
+    }
+
+    .console-grid {
+      gap: 14px;
+    }
+
+    .panel h2 {
+      font-size: 1.08rem;
+    }
+
+    .motion-panel,
+    .graph-panel,
+    .explanation-panel {
+      min-height: 0;
+      height: auto;
+      overflow: hidden;
+      padding: 16px 9px 10px;
+      border-color: rgba(160, 190, 230, 0.1);
+      border-radius: 14px;
+    }
+
+    .motion-panel svg,
+    .graph-panel svg {
+      width: 112%;
+      max-width: none;
+      margin: 8px -6% 0;
+    }
+
+    .direction,
+    .velocity {
+      font-size: 19px;
+    }
+
+    .tick-labels text,
+    .graph-ticks text {
+      font-size: 19px;
+    }
+
+    .axis-label {
+      font-size: 18px;
+    }
+
+    .readout-cyan {
+      font-size: 23px;
+    }
+
+    .graph-readouts text {
+      font-size: 26px;
+    }
+
+    .graph-segment,
+    .graph-line {
+      stroke-width: 4.7;
+    }
+
+    .point-halo {
+      r: 28px;
+    }
+
+    .graph-point-halo {
+      r: 19px;
+    }
+
+    .graph-point {
+      r: 9.5px;
+    }
+
+    .explanation-panel dl {
+      gap: 14px;
+    }
+
+    .explanation-panel dl div {
+      grid-template-columns: 34px 1fr;
+    }
+
+    .explanation-panel dt {
+      font-size: 1.35rem;
+    }
+
+    .explanation-panel dd,
+    .insight p {
+      font-size: 0.9rem;
+      line-height: 1.48;
+    }
+
+    .controls-bar {
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      padding: 10px;
+      border-radius: 16px;
+    }
+
+    .controls-bar button {
+      min-height: 52px;
+      font-size: 0.92rem;
+    }
+
+    .speed-control {
+      grid-column: 1 / -1;
+      min-height: 80px;
+      padding: 12px 14px 16px;
+    }
+
+    .slider-visual {
+      right: 18px;
+      bottom: 25px;
+      left: 18px;
+      height: 7px;
+    }
+
+    .slider-visual span {
+      width: 20px;
+      height: 20px;
+    }
+
+    .speed-scale {
+      margin-bottom: 16px;
+    }
+
+    .controls-bar .nav-control:last-child {
+      grid-column: 1 / -1;
+    }
+
+    .answers {
+      grid-template-columns: 1fr;
+    }
+
+    .bottom-panel {
+      min-height: 0;
+      padding: 16px;
+      border-radius: 16px;
+      border-color: rgba(38, 209, 255, 0.23);
+    }
+
+    .details-panel a {
+      grid-template-columns: 40px 1fr auto;
+      gap: 10px;
+      line-height: 1.35;
+    }
+
+    .details-panel small {
+      line-height: 1.42;
+    }
+  }
+</style>
