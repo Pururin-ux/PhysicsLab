@@ -1,0 +1,287 @@
+---
+interface Props {
+  leftLabel?: string;
+  centerLabel?: string;
+  rightLabel?: string;
+  initialCoordinateLabel?: string;
+}
+
+const {
+  leftLabel = "-24 м",
+  centerLabel = "0",
+  rightLabel = "24 м",
+  initialCoordinateLabel = "x = 0 м"
+} = Astro.props;
+---
+
+<div class="track" aria-hidden="true">
+  <span class="track-axis"></span>
+  <span class="track-tick track-tick--left"><i>{leftLabel}</i></span>
+  <span class="track-tick track-tick--center"><i>{centerLabel}</i></span>
+  <span class="track-tick track-tick--right"><i>{rightLabel}</i></span>
+  <span class="motion-x-label" data-motion-x-label>{initialCoordinateLabel}</span>
+  <span class="velocity-arrow" data-velocity-arrow></span>
+  <span class="motion-point" data-motion-point></span>
+</div>
+
+<style>
+  .track {
+    position: relative;
+    min-height: 178px;
+    margin: var(--pl-space-4) 0;
+    overflow: hidden;
+    border: 1px solid rgba(88, 216, 255, 0.18);
+    border-radius: var(--pl-radius);
+    background:
+      linear-gradient(rgba(88, 216, 255, 0.055) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(88, 216, 255, 0.055) 1px, transparent 1px),
+      #0b1018;
+    background-size: 28px 28px;
+  }
+
+  .track::before {
+    content: "";
+    position: absolute;
+    right: var(--pl-space-5);
+    bottom: 58px;
+    left: var(--pl-space-5);
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(88, 216, 255, 0.5), transparent);
+  }
+
+  .track-axis {
+    position: absolute;
+    right: var(--pl-space-5);
+    bottom: 58px;
+    left: var(--pl-space-5);
+    height: 3px;
+    background: rgba(244, 247, 251, 0.5);
+  }
+
+  .track-tick {
+    position: absolute;
+    bottom: 49px;
+    width: 1px;
+    height: 22px;
+    background: rgba(244, 247, 251, 0.42);
+  }
+
+  .track-tick i {
+    position: absolute;
+    top: 27px;
+    left: 50%;
+    color: var(--pl-text-soft);
+    font-size: 0.76rem;
+    font-style: normal;
+    font-weight: 800;
+    white-space: nowrap;
+    transform: translateX(-50%);
+  }
+
+  .track-tick--left {
+    left: var(--pl-space-5);
+  }
+
+  .track-tick--center {
+    left: 50%;
+  }
+
+  .track-tick--right {
+    right: var(--pl-space-5);
+  }
+
+  .motion-x-label {
+    --point-left: 62.5%;
+    position: absolute;
+    bottom: 136px;
+    left: var(--point-left);
+    max-width: 120px;
+    padding: 4px 7px;
+    border: 1px solid rgba(255, 216, 77, 0.28);
+    border-radius: 999px;
+    color: var(--pl-accent);
+    background: rgba(8, 14, 24, 0.78);
+    font-size: 0.78rem;
+    font-weight: 900;
+    line-height: 1.2;
+    text-align: center;
+    white-space: nowrap;
+    transform: translateX(-50%);
+    transition: left 220ms ease;
+  }
+
+  .motion-point {
+    --point-left: 62.5%;
+    position: absolute;
+    bottom: 72px;
+    left: var(--point-left);
+    width: 28px;
+    height: 28px;
+    border: 4px solid #0b1018;
+    border-radius: 50%;
+    background: var(--pl-accent);
+    box-shadow: 0 0 0 9px rgba(255, 216, 77, 0.13);
+    transform: translateX(-50%);
+    transition: left 220ms ease;
+  }
+
+  :global(.uniform-lab[data-playing="true"]) .motion-point,
+  :global(.uniform-lab[data-playing="true"]) .motion-x-label,
+  :global(.uniform-lab[data-playing="true"]) .velocity-arrow {
+    transition: none;
+  }
+
+  .motion-point::after {
+    content: attr(data-motion-label);
+    position: absolute;
+    top: -34px;
+    left: 50%;
+    transform: translateX(-50%);
+    white-space: nowrap;
+    color: var(--pl-text);
+    font-size: 0.82rem;
+    font-weight: 900;
+  }
+
+  .velocity-arrow {
+    --point-left: 50%;
+    --velocity-width: 0px;
+    position: absolute;
+    bottom: 86px;
+    left: var(--point-left);
+    width: var(--velocity-width);
+    height: 4px;
+    border-radius: 999px;
+    background: var(--pl-cyan);
+    box-shadow: 0 0 16px rgba(88, 216, 255, 0.2);
+    opacity: 1;
+    transform: translateY(-50%);
+    transition:
+      left 220ms ease,
+      width 160ms ease,
+      opacity 160ms ease;
+  }
+
+  .velocity-arrow::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: -2px;
+    width: 0;
+    height: 0;
+    border-top: 7px solid transparent;
+    border-bottom: 7px solid transparent;
+    border-left: 9px solid var(--pl-cyan);
+    transform: translateY(-50%);
+  }
+
+  .velocity-arrow[data-direction="backward"] {
+    transform: translate(-100%, -50%);
+  }
+
+  .velocity-arrow[data-direction="backward"]::after {
+    right: auto;
+    left: -2px;
+    border-right: 9px solid var(--pl-cyan);
+    border-left: 0;
+  }
+
+  .velocity-arrow[data-direction="still"] {
+    opacity: 0;
+  }
+
+  :global(.uniform-lab[data-visual-target="v1"]) .track {
+    min-height: clamp(212px, 24vw, 276px);
+    border-color: rgba(88, 216, 255, 0.15);
+    border-radius: 18px;
+    background:
+      radial-gradient(ellipse at 48% 52%, rgba(88, 216, 255, 0.12), transparent 18rem),
+      linear-gradient(rgba(88, 216, 255, 0.07) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(88, 216, 255, 0.055) 1px, transparent 1px),
+      rgba(4, 11, 22, 0.88);
+    background-size:
+      auto,
+      30px 30px,
+      30px 30px,
+      auto;
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 255, 255, 0.024),
+      inset 0 0 38px rgba(88, 216, 255, 0.045);
+  }
+
+  :global(.uniform-lab[data-visual-target="v1"]) .track::before {
+    right: var(--pl-space-4);
+    bottom: 88px;
+    left: var(--pl-space-4);
+    height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(88, 216, 255, 0.7), rgba(244, 247, 251, 0.7), rgba(88, 216, 255, 0.7), transparent);
+    filter: drop-shadow(0 0 8px rgba(88, 216, 255, 0.18));
+  }
+
+  :global(.uniform-lab[data-visual-target="v1"]) .track-axis {
+    right: var(--pl-space-4);
+    bottom: 88px;
+    left: var(--pl-space-4);
+    height: 3px;
+    background: rgba(220, 240, 255, 0.68);
+    filter: drop-shadow(0 0 8px rgba(88, 216, 255, 0.22));
+  }
+
+  :global(.uniform-lab[data-visual-target="v1"]) .track-tick {
+    bottom: 78px;
+    width: 2px;
+    height: 26px;
+    background: rgba(220, 240, 255, 0.52);
+  }
+
+  :global(.uniform-lab[data-visual-target="v1"]) .track-tick i {
+    top: 32px;
+    color: rgba(217, 231, 244, 0.78);
+    font-size: 0.82rem;
+  }
+
+  :global(.uniform-lab[data-visual-target="v1"]) .motion-point {
+    bottom: 103px;
+    width: 32px;
+    height: 32px;
+    border-width: 5px;
+    filter: drop-shadow(0 0 12px rgba(255, 216, 77, 0.42));
+    box-shadow: 0 0 0 10px rgba(255, 216, 77, 0.11);
+  }
+
+  :global(.uniform-lab[data-visual-target="v1"]) .motion-x-label {
+    bottom: 164px;
+    padding: 6px 10px;
+    border-color: rgba(255, 216, 77, 0.32);
+    background: rgba(5, 12, 23, 0.84);
+    font-size: 0.84rem;
+    filter: drop-shadow(0 0 10px rgba(255, 216, 77, 0.18));
+  }
+
+  :global(.uniform-lab[data-visual-target="v1"]) .velocity-arrow {
+    bottom: 119px;
+    height: 3px;
+    background: rgba(88, 216, 255, 0.95);
+    filter: drop-shadow(0 0 7px rgba(88, 216, 255, 0.4));
+    box-shadow: none;
+  }
+
+  @media (max-width: 600px) {
+    .track {
+      min-height: 142px;
+    }
+
+    :global(.uniform-lab[data-visual-target="v1"]) .track {
+      min-height: 230px;
+      margin-block: var(--pl-space-3);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .motion-point,
+    .motion-x-label,
+    .velocity-arrow {
+      transition: none;
+    }
+  }
+</style>
