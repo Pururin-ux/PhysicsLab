@@ -1,6 +1,7 @@
 ---
 import Badge from "../ui/Badge.astro";
 import SurfaceCard from "../ui/SurfaceCard.astro";
+import ControlDock from "./ControlDock.astro";
 
 interface Props {
   visualTarget?: boolean;
@@ -32,20 +33,7 @@ const { visualTarget = false } = Astro.props;
       <p data-guidance>Нажми «Запустить» и смотри на точку.</p>
       {
         !visualTarget && (
-      <div class="time-actions">
-        <button
-          type="button"
-          class="play-button pl-lab-button pl-lab-button--primary"
-          data-play-toggle
-          aria-pressed="false"
-          aria-label="Запустить анимацию"
-        >
-          Запустить
-        </button>
-        <button type="button" class="reset-button pl-lab-button" data-reset>
-          Сбросить
-        </button>
-      </div>
+          <ControlDock variant="time-actions" />
         )
       }
     </div>
@@ -108,54 +96,7 @@ const { visualTarget = false } = Astro.props;
       </figure>
     </div>
 
-    <div class="speed-panel pl-control-dock" aria-label="Главное управление скоростью">
-      {
-        visualTarget && (
-      <div class="time-actions time-actions--dock">
-        <button
-          type="button"
-          class="play-button pl-lab-button pl-lab-button--primary"
-          data-play-toggle
-          aria-pressed="false"
-          aria-label="Запустить анимацию"
-        >
-          Запустить
-        </button>
-        <button type="button" class="reset-button pl-lab-button" data-reset>
-          Сбросить
-        </button>
-      </div>
-        )
-      }
-
-      <label class="slider-field slider-field--hero">
-        <span>
-          <b>Скорость v</b>
-          <span>Чем больше скорость, тем круче линия.</span>
-        </span>
-        <output data-output="v">2 м/с</output>
-        <input
-          type="range"
-          min="-4"
-          max="4"
-          step="0.5"
-          value="2"
-          data-input="v"
-          aria-label="Скорость v в метрах в секунду"
-        />
-      </label>
-
-      <div class="quick-status" aria-label="Текущее состояние">
-        <span>t = <b data-value="t">0 с</b></span>
-        <span>x = <b data-value="x">0 м</b></span>
-      </div>
-
-      <div class="scenario-row" aria-label="Быстрые примеры движения">
-        <button type="button" class="pl-lab-button" data-scenario="forward" aria-pressed="true">вперёд</button>
-        <button type="button" class="pl-lab-button" data-scenario="still" aria-pressed="false">стоит</button>
-        <button type="button" class="pl-lab-button" data-scenario="backward" aria-pressed="false">назад</button>
-      </div>
-    </div>
+    <ControlDock showTimeActions={visualTarget} />
 
     <div class="explain-card pl-quiz-console" aria-labelledby="uniform-check-title">
       <div>
@@ -876,7 +817,6 @@ const { visualTarget = false } = Astro.props;
   }
 
   .start-strip,
-  .speed-panel,
   .motion-card,
   .graph-card,
   .explain-card,
@@ -915,17 +855,12 @@ const { visualTarget = false } = Astro.props;
     line-height: 1.45;
   }
 
-  .time-actions,
-  .scenario-row,
   .answer-row {
     display: flex;
     flex-wrap: wrap;
     gap: var(--pl-space-2);
   }
 
-  .play-button,
-  .reset-button,
-  .scenario-row button,
   .answer-row button,
   .details-toggle {
     min-height: 44px;
@@ -948,36 +883,10 @@ const { visualTarget = false } = Astro.props;
       box-shadow 160ms ease;
   }
 
-  .play-button:hover,
-  .reset-button:hover,
-  .scenario-row button:hover,
   .answer-row button:hover,
   .details-toggle:hover {
     border-color: rgba(255, 216, 77, 0.42);
     transform: translateY(-1px);
-  }
-
-  .play-button {
-    flex: 1 1 140px;
-    min-height: 52px;
-    border-color: rgba(255, 216, 77, 0.7);
-    color: #111317;
-    background:
-      linear-gradient(180deg, #ffe990, var(--pl-accent) 58%, var(--pl-accent-strong));
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.38),
-      0 0 0 1px rgba(255, 216, 77, 0.14),
-      0 12px 30px rgba(255, 216, 77, 0.16);
-  }
-
-  .play-button[aria-pressed="true"] {
-    color: var(--pl-accent);
-    background: rgba(255, 216, 77, 0.08);
-  }
-
-  .reset-button {
-    flex: 1 1 112px;
-    padding: 10px 14px;
   }
 
   .simple-lab-grid {
@@ -1263,11 +1172,6 @@ const { visualTarget = false } = Astro.props;
       drop-shadow(0 0 14px rgba(255, 216, 77, 0.16));
   }
 
-  .speed-panel {
-    display: grid;
-    gap: var(--pl-space-3);
-  }
-
   .slider-field {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
@@ -1353,43 +1257,10 @@ const { visualTarget = false } = Astro.props;
   }
 
   .slider-field input:focus-visible,
-  .play-button:focus-visible,
-  .reset-button:focus-visible,
-  .scenario-row button:focus-visible,
   .answer-row button:focus-visible,
   .details-toggle:focus-visible {
     outline: 3px solid var(--pl-accent);
     outline-offset: 4px;
-  }
-
-  .quick-status {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--pl-space-2);
-  }
-
-  .quick-status span {
-    flex: 1 1 120px;
-    padding: 10px 12px;
-    border: 1px solid rgba(88, 216, 255, 0.18);
-    border-radius: var(--pl-radius);
-    color: var(--pl-text-muted);
-    background: rgba(255, 255, 255, 0.035);
-  }
-
-  .quick-status b {
-    color: var(--pl-accent);
-  }
-
-  .scenario-row button {
-    flex: 1 1 92px;
-    padding: 9px 12px;
-  }
-
-  .scenario-row button[aria-pressed="true"] {
-    border-color: rgba(255, 216, 77, 0.72);
-    color: #111317;
-    background: var(--pl-accent);
   }
 
   .explain-card {
@@ -1613,8 +1484,6 @@ const { visualTarget = false } = Astro.props;
       display: grid;
     }
 
-    .time-actions,
-    .scenario-row,
     .answer-row {
       display: grid;
       grid-template-columns: 1fr;
@@ -1842,67 +1711,6 @@ const { visualTarget = false } = Astro.props;
       drop-shadow(0 0 18px rgba(255, 216, 77, 0.18));
   }
 
-  .uniform-lab[data-visual-target="v1"] .speed-panel {
-    grid-template-columns: minmax(168px, 0.34fr) minmax(280px, 0.82fr) minmax(180px, 0.46fr);
-    align-items: center;
-    gap: var(--pl-space-3);
-    padding: var(--pl-space-3);
-    border-color: rgba(88, 216, 255, 0.14);
-    border-radius: 22px;
-    background:
-      linear-gradient(180deg, rgba(88, 216, 255, 0.055), rgba(255, 255, 255, 0.012)),
-      rgba(5, 14, 27, 0.76);
-    box-shadow:
-      inset 0 0 0 1px rgba(255, 255, 255, 0.035),
-      inset 0 0 34px rgba(88, 216, 255, 0.04),
-      0 18px 52px rgba(0, 0, 0, 0.2);
-  }
-
-  .uniform-lab[data-visual-target="v1"] .time-actions--dock {
-    display: grid;
-    grid-template-columns: minmax(120px, 1fr) minmax(96px, 0.74fr);
-    gap: var(--pl-space-2);
-  }
-
-  .uniform-lab[data-visual-target="v1"] .time-actions--dock .play-button,
-  .uniform-lab[data-visual-target="v1"] .time-actions--dock .reset-button,
-  .uniform-lab[data-visual-target="v1"] .scenario-row button {
-    border-color: rgba(255, 255, 255, 0.08);
-    border-radius: 12px;
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.07),
-      inset 0 -10px 20px rgba(0, 0, 0, 0.18);
-  }
-
-  .uniform-lab[data-visual-target="v1"] .time-actions--dock .play-button {
-    border-color: rgba(255, 216, 77, 0.64);
-    filter: drop-shadow(0 0 10px rgba(255, 216, 77, 0.14));
-  }
-
-  .uniform-lab[data-visual-target="v1"] .slider-field--hero {
-    min-width: 0;
-    padding: var(--pl-space-2) var(--pl-space-3);
-    border: 1px solid rgba(88, 216, 255, 0.09);
-    border-radius: 16px;
-    background: rgba(255, 255, 255, 0.026);
-  }
-
-  .uniform-lab[data-visual-target="v1"] .quick-status {
-    display: grid;
-    grid-template-columns: 1fr;
-  }
-
-  .uniform-lab[data-visual-target="v1"] .quick-status span {
-    border-color: rgba(88, 216, 255, 0.1);
-    background: rgba(255, 255, 255, 0.026);
-  }
-
-  .uniform-lab[data-visual-target="v1"] .scenario-row {
-    grid-column: 1 / -1;
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-
   .uniform-lab[data-visual-target="v1"] .explain-card,
   .uniform-lab[data-visual-target="v1"] .details-panel {
     color: rgba(214, 226, 240, 0.86);
@@ -1914,14 +1722,6 @@ const { visualTarget = false } = Astro.props;
       grid-template-columns: 1fr;
     }
 
-    .uniform-lab[data-visual-target="v1"] .speed-panel {
-      grid-template-columns: 1fr 1.35fr;
-    }
-
-    .uniform-lab[data-visual-target="v1"] .quick-status {
-      grid-column: 1 / -1;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
   }
 
   @media (max-width: 600px) {
@@ -1948,7 +1748,6 @@ const { visualTarget = false } = Astro.props;
     .uniform-lab[data-visual-target="v1"] .start-strip,
     .uniform-lab[data-visual-target="v1"] .motion-card,
     .uniform-lab[data-visual-target="v1"] .graph-card,
-    .uniform-lab[data-visual-target="v1"] .speed-panel,
     .uniform-lab[data-visual-target="v1"] .explain-card,
     .uniform-lab[data-visual-target="v1"] .details-panel,
     .uniform-lab[data-visual-target="v1"] .formula-panel,
@@ -1968,23 +1767,6 @@ const { visualTarget = false } = Astro.props;
 
     .uniform-lab[data-visual-target="v1"] .graph-card--main svg {
       min-height: 330px;
-    }
-
-    .uniform-lab[data-visual-target="v1"] .speed-panel {
-      grid-template-columns: 1fr;
-      gap: var(--pl-space-2);
-    }
-
-    .uniform-lab[data-visual-target="v1"] .time-actions--dock {
-      grid-template-columns: 1fr 1fr;
-    }
-
-    .uniform-lab[data-visual-target="v1"] .quick-status {
-      grid-template-columns: 1fr;
-    }
-
-    .uniform-lab[data-visual-target="v1"] .scenario-row {
-      grid-template-columns: 1fr;
     }
 
     .uniform-lab[data-visual-target="v1"] .slider-field input[type="range"] {

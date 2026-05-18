@@ -1,0 +1,394 @@
+---
+interface Props {
+  variant?: "dock" | "time-actions";
+  showTimeActions?: boolean;
+}
+
+const { variant = "dock", showTimeActions = false } = Astro.props;
+const isTimeActionsOnly = variant === "time-actions";
+const shouldShowTimeActions = isTimeActionsOnly || showTimeActions;
+const timeActionsClass = isTimeActionsOnly
+  ? "time-actions"
+  : "time-actions time-actions--dock";
+---
+
+{
+  isTimeActionsOnly ? (
+    <div class={timeActionsClass}>
+      <button
+        type="button"
+        class="play-button pl-lab-button pl-lab-button--primary"
+        data-play-toggle
+        aria-pressed="false"
+        aria-label="Запустить анимацию"
+      >
+        Запустить
+      </button>
+      <button type="button" class="reset-button pl-lab-button" data-reset>
+        Сбросить
+      </button>
+    </div>
+  ) : (
+    <div class="speed-panel pl-control-dock" aria-label="Главное управление скоростью">
+      {
+        shouldShowTimeActions && (
+          <div class={timeActionsClass}>
+            <button
+              type="button"
+              class="play-button pl-lab-button pl-lab-button--primary"
+              data-play-toggle
+              aria-pressed="false"
+              aria-label="Запустить анимацию"
+            >
+              Запустить
+            </button>
+            <button type="button" class="reset-button pl-lab-button" data-reset>
+              Сбросить
+            </button>
+          </div>
+        )
+      }
+
+      <label class="slider-field slider-field--hero">
+        <span>
+          <b>Скорость v</b>
+          <span>Чем больше скорость, тем круче линия.</span>
+        </span>
+        <output data-output="v">2 м/с</output>
+        <input
+          type="range"
+          min="-4"
+          max="4"
+          step="0.5"
+          value="2"
+          data-input="v"
+          aria-label="Скорость v в метрах в секунду"
+        />
+      </label>
+
+      <div class="quick-status" aria-label="Текущее состояние">
+        <span>t = <b data-value="t">0 с</b></span>
+        <span>x = <b data-value="x">0 м</b></span>
+      </div>
+
+      <div class="scenario-row" aria-label="Быстрые примеры движения">
+        <button type="button" class="pl-lab-button" data-scenario="forward" aria-pressed="true">вперёд</button>
+        <button type="button" class="pl-lab-button" data-scenario="still" aria-pressed="false">стоит</button>
+        <button type="button" class="pl-lab-button" data-scenario="backward" aria-pressed="false">назад</button>
+      </div>
+    </div>
+  )
+}
+
+<style>
+  .speed-panel {
+    display: grid;
+    min-width: 0;
+    gap: var(--pl-space-3);
+    padding: var(--pl-space-4);
+    border: 1px solid rgba(88, 216, 255, 0.24);
+    border-radius: 12px;
+    background:
+      linear-gradient(180deg, rgba(88, 216, 255, 0.055), transparent 54%),
+      radial-gradient(circle at 50% 18%, rgba(88, 216, 255, 0.06), transparent 24rem),
+      rgba(3, 13, 27, 0.78);
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 255, 255, 0.03),
+      inset 0 0 30px rgba(88, 216, 255, 0.025),
+      0 16px 42px rgba(0, 0, 0, 0.22);
+  }
+
+  .time-actions,
+  .scenario-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--pl-space-2);
+  }
+
+  .play-button,
+  .reset-button,
+  .scenario-row button {
+    min-height: 44px;
+    border: 1px solid rgba(88, 216, 255, 0.3);
+    border-radius: 10px;
+    color: var(--pl-text);
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.018)),
+      rgba(5, 18, 34, 0.86);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.06),
+      inset 0 -10px 20px rgba(0, 0, 0, 0.12),
+      0 8px 22px rgba(0, 0, 0, 0.2);
+    font-weight: 900;
+    transition:
+      border-color 160ms ease,
+      color 160ms ease,
+      background 160ms ease,
+      transform 160ms ease,
+      box-shadow 160ms ease;
+  }
+
+  .play-button:hover,
+  .reset-button:hover,
+  .scenario-row button:hover {
+    border-color: rgba(255, 216, 77, 0.42);
+    transform: translateY(-1px);
+  }
+
+  .play-button {
+    flex: 1 1 140px;
+    min-height: 52px;
+    border-color: rgba(255, 216, 77, 0.7);
+    color: #111317;
+    background:
+      linear-gradient(180deg, #ffe990, var(--pl-accent) 58%, var(--pl-accent-strong));
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.38),
+      0 0 0 1px rgba(255, 216, 77, 0.14),
+      0 12px 30px rgba(255, 216, 77, 0.16);
+  }
+
+  .play-button[aria-pressed="true"] {
+    color: var(--pl-accent);
+    background: rgba(255, 216, 77, 0.08);
+  }
+
+  .reset-button {
+    flex: 1 1 112px;
+    padding: 10px 14px;
+  }
+
+  .slider-field {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: var(--pl-space-3);
+    align-items: center;
+    min-width: 0;
+  }
+
+  .slider-field > span {
+    display: grid;
+    gap: var(--pl-space-1);
+    min-width: 0;
+  }
+
+  .slider-field b {
+    color: var(--pl-text);
+  }
+
+  .slider-field span span,
+  .slider-field output {
+    color: var(--pl-text-muted);
+    font-size: 0.94rem;
+  }
+
+  .slider-field output {
+    min-width: 74px;
+    color: var(--pl-text);
+    font-weight: 900;
+    text-align: right;
+  }
+
+  .slider-field input {
+    grid-column: 1 / -1;
+    width: 100%;
+    accent-color: var(--pl-accent);
+  }
+
+  .slider-field input[type="range"] {
+    height: 24px;
+    background: transparent;
+  }
+
+  .slider-field input[type="range"]::-webkit-slider-runnable-track {
+    height: 7px;
+    border: 1px solid rgba(88, 216, 255, 0.18);
+    border-radius: 999px;
+    background:
+      linear-gradient(90deg, rgba(255, 216, 77, 0.95), rgba(255, 216, 77, 0.56)),
+      rgba(255, 255, 255, 0.08);
+  }
+
+  .slider-field input[type="range"]::-webkit-slider-thumb {
+    width: 20px;
+    height: 20px;
+    margin-top: -7px;
+    border: 3px solid rgba(8, 14, 24, 0.96);
+    border-radius: 50%;
+    background: var(--pl-accent);
+    box-shadow: 0 0 0 5px rgba(255, 216, 77, 0.12);
+    appearance: none;
+  }
+
+  .slider-field input[type="range"]::-moz-range-track {
+    height: 7px;
+    border: 1px solid rgba(88, 216, 255, 0.18);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  .slider-field input[type="range"]::-moz-range-progress {
+    height: 7px;
+    border-radius: 999px;
+    background: rgba(255, 216, 77, 0.9);
+  }
+
+  .slider-field input[type="range"]::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border: 3px solid rgba(8, 14, 24, 0.96);
+    border-radius: 50%;
+    background: var(--pl-accent);
+    box-shadow: 0 0 0 5px rgba(255, 216, 77, 0.12);
+  }
+
+  .slider-field input:focus-visible,
+  .play-button:focus-visible,
+  .reset-button:focus-visible,
+  .scenario-row button:focus-visible {
+    outline: 3px solid var(--pl-accent);
+    outline-offset: 4px;
+  }
+
+  .quick-status {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--pl-space-2);
+  }
+
+  .quick-status span {
+    flex: 1 1 120px;
+    padding: 10px 12px;
+    border: 1px solid rgba(88, 216, 255, 0.18);
+    border-radius: var(--pl-radius);
+    color: var(--pl-text-muted);
+    background: rgba(255, 255, 255, 0.035);
+  }
+
+  .quick-status b {
+    color: var(--pl-accent);
+  }
+
+  .scenario-row button {
+    flex: 1 1 92px;
+    padding: 9px 12px;
+  }
+
+  .scenario-row button[aria-pressed="true"] {
+    border-color: rgba(255, 216, 77, 0.72);
+    color: #111317;
+    background: var(--pl-accent);
+  }
+
+  :global(.uniform-lab[data-visual-target="v1"]) .speed-panel {
+    grid-template-columns: minmax(168px, 0.34fr) minmax(280px, 0.82fr) minmax(180px, 0.46fr);
+    align-items: center;
+    gap: var(--pl-space-3);
+    padding: var(--pl-space-3);
+    border-color: rgba(88, 216, 255, 0.14);
+    border-radius: 22px;
+    background:
+      linear-gradient(180deg, rgba(88, 216, 255, 0.055), rgba(255, 255, 255, 0.012)),
+      rgba(5, 14, 27, 0.76);
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 255, 255, 0.035),
+      inset 0 0 34px rgba(88, 216, 255, 0.04),
+      0 18px 52px rgba(0, 0, 0, 0.2);
+  }
+
+  :global(.uniform-lab[data-visual-target="v1"]) .time-actions--dock {
+    display: grid;
+    grid-template-columns: minmax(120px, 1fr) minmax(96px, 0.74fr);
+    gap: var(--pl-space-2);
+  }
+
+  :global(.uniform-lab[data-visual-target="v1"]) .time-actions--dock .play-button,
+  :global(.uniform-lab[data-visual-target="v1"]) .time-actions--dock .reset-button,
+  :global(.uniform-lab[data-visual-target="v1"]) .scenario-row button {
+    border-color: rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.07),
+      inset 0 -10px 20px rgba(0, 0, 0, 0.18);
+  }
+
+  :global(.uniform-lab[data-visual-target="v1"]) .time-actions--dock .play-button {
+    border-color: rgba(255, 216, 77, 0.64);
+    filter: drop-shadow(0 0 10px rgba(255, 216, 77, 0.14));
+  }
+
+  :global(.uniform-lab[data-visual-target="v1"]) .slider-field--hero {
+    min-width: 0;
+    padding: var(--pl-space-2) var(--pl-space-3);
+    border: 1px solid rgba(88, 216, 255, 0.09);
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.026);
+  }
+
+  :global(.uniform-lab[data-visual-target="v1"]) .quick-status {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  :global(.uniform-lab[data-visual-target="v1"]) .quick-status span {
+    border-color: rgba(88, 216, 255, 0.1);
+    background: rgba(255, 255, 255, 0.026);
+  }
+
+  :global(.uniform-lab[data-visual-target="v1"]) .scenario-row {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  @media (max-width: 1040px) {
+    :global(.uniform-lab[data-visual-target="v1"]) .speed-panel {
+      grid-template-columns: 1fr 1.35fr;
+    }
+
+    :global(.uniform-lab[data-visual-target="v1"]) .quick-status {
+      grid-column: 1 / -1;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 600px) {
+    .time-actions,
+    .scenario-row {
+      display: grid;
+      grid-template-columns: 1fr;
+    }
+
+    .slider-field {
+      grid-template-columns: 1fr;
+      gap: var(--pl-space-2);
+    }
+
+    .slider-field output {
+      text-align: left;
+    }
+
+    :global(.uniform-lab[data-visual-target="v1"]) .speed-panel {
+      grid-template-columns: 1fr;
+      gap: var(--pl-space-2);
+      padding: var(--pl-space-3);
+      border-radius: 18px;
+    }
+
+    :global(.uniform-lab[data-visual-target="v1"]) .time-actions--dock {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    :global(.uniform-lab[data-visual-target="v1"]) .quick-status {
+      grid-template-columns: 1fr;
+    }
+
+    :global(.uniform-lab[data-visual-target="v1"]) .scenario-row {
+      grid-template-columns: 1fr;
+    }
+
+    :global(.uniform-lab[data-visual-target="v1"]) .slider-field input[type="range"] {
+      height: 32px;
+    }
+  }
+</style>
