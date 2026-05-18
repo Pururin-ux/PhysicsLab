@@ -2,6 +2,7 @@
 import Badge from "../ui/Badge.astro";
 import SurfaceCard from "../ui/SurfaceCard.astro";
 import ControlDock from "./ControlDock.astro";
+import InstrumentGraph from "./InstrumentGraph.astro";
 import MotionTrack from "./MotionTrack.astro";
 
 interface Props {
@@ -51,42 +52,16 @@ const { visualTarget = false } = Astro.props;
         </p>
       </div>
 
-      <figure class="graph-card graph-card--main pl-instrument-graph">
-        <figcaption>График x(t)</figcaption>
-        <svg
-          viewBox="0 0 320 220"
-          role="img"
-          aria-label="График координаты от времени"
-          preserveAspectRatio="xMidYMid meet"
-        >
-          <g class="grid-lines" data-grid="x"></g>
-          <line class="axis-line" x1="42" y1="188" x2="302" y2="188"></line>
-          <line class="axis-line" x1="42" y1="18" x2="42" y2="188"></line>
-          <g class="graph-tick-labels" aria-hidden="true">
-            <text x="38" y="205">0</text>
-            <text x="102" y="205">2</text>
-            <text x="167" y="205">4</text>
-            <text x="232" y="205">6</text>
-            <text x="294" y="205">8</text>
-            <text x="16" y="191">-24</text>
-            <text x="24" y="108">0</text>
-            <text x="18" y="42">24</text>
-          </g>
-          <text class="axis-text" x="282" y="210">t, с</text>
-          <text class="axis-text" x="14" y="28">x, м</text>
-          <g class="graph-projection" data-projection="x" aria-hidden="true">
-            <line data-projection-line="time" x1="42" y1="188" x2="42" y2="188"></line>
-            <line data-projection-line="position" x1="42" y1="188" x2="42" y2="188"></line>
-            <text data-projection-label="x" x="50" y="178">x</text>
-          </g>
-          <polyline class="graph-polyline graph-polyline--base" data-polyline="x"></polyline>
-          <polyline class="graph-polyline graph-polyline--current" data-current-polyline="x"></polyline>
-          <circle class="graph-current" data-point="x" r="5"></circle>
-        </svg>
-        <p data-graph-note="x">
-          Жёлтая точка на графике показывает, где тело сейчас.
-        </p>
-      </figure>
+      <InstrumentGraph
+        title="График x(t)"
+        graphKind="x"
+        xAxisLabel="t, с"
+        yAxisLabel="x, м"
+        ariaLabel="График координаты от времени"
+        note="Жёлтая точка на графике показывает, где тело сейчас."
+        showProjection
+        showTickLabels
+      />
     </div>
 
     <ControlDock showTimeActions={visualTarget} />
@@ -204,27 +179,15 @@ const { visualTarget = false } = Astro.props;
         </div>
       </div>
 
-      <figure class="graph-card graph-card--detail pl-instrument-graph">
-        <figcaption>График v(t)</figcaption>
-        <svg
-          viewBox="0 0 320 220"
-          role="img"
-          aria-label="График скорости от времени"
-          preserveAspectRatio="xMidYMid meet"
-        >
-          <g class="grid-lines" data-grid="v"></g>
-          <line class="axis-line" x1="42" y1="188" x2="302" y2="188"></line>
-          <line class="axis-line" x1="42" y1="18" x2="42" y2="188"></line>
-          <text class="axis-text" x="282" y="210">t, с</text>
-          <text class="axis-text" x="14" y="28">v, м/с</text>
-          <polyline class="graph-polyline graph-polyline--base" data-polyline="v"></polyline>
-          <polyline class="graph-polyline graph-polyline--current" data-current-polyline="v"></polyline>
-          <circle class="graph-current" data-point="v" r="5"></circle>
-        </svg>
-        <p data-graph-note="v">
-          При равномерном движении скорость не меняется.
-        </p>
-      </figure>
+      <InstrumentGraph
+        title="График v(t)"
+        graphKind="v"
+        variant="detail"
+        xAxisLabel="t, с"
+        yAxisLabel="v, м/с"
+        ariaLabel="График скорости от времени"
+        note="При равномерном движении скорость не меняется."
+      />
     </div>
   </section>
 </SurfaceCard>
@@ -811,7 +774,6 @@ const { visualTarget = false } = Astro.props;
 
   .start-strip,
   .motion-card,
-  .graph-card,
   .explain-card,
   .formula-panel,
   .exact-panel {
@@ -904,100 +866,11 @@ const { visualTarget = false } = Astro.props;
   }
 
   .motion-card p,
-  .graph-card p,
   .feedback,
   .substitution-delta {
     margin: 0;
     font-size: 0.96rem;
     line-height: 1.55;
-  }
-
-  .graph-card {
-    margin: 0;
-  }
-
-  .graph-card figcaption {
-    margin-bottom: var(--pl-space-2);
-    color: var(--pl-text);
-    font-size: 1.08rem;
-    font-weight: 900;
-  }
-
-  .graph-card svg {
-    display: block;
-    width: 100%;
-    max-width: 100%;
-    min-height: 260px;
-    margin-bottom: var(--pl-space-3);
-    overflow: visible;
-  }
-
-  .grid-line {
-    stroke: rgba(168, 190, 213, 0.12);
-    stroke-width: 1;
-  }
-
-  .zero-line {
-    stroke: rgba(244, 247, 251, 0.26);
-    stroke-dasharray: 5 5;
-    stroke-width: 1.2;
-  }
-
-  .axis-line {
-    stroke: rgba(244, 247, 251, 0.62);
-    stroke-width: 1.5;
-  }
-
-  .axis-text {
-    fill: var(--pl-text-muted);
-    font-size: 12px;
-    font-weight: 700;
-  }
-
-  .graph-tick-labels text {
-    fill: rgba(191, 204, 218, 0.72);
-    font-size: 10px;
-    font-weight: 800;
-  }
-
-  .graph-projection line {
-    stroke: rgba(255, 216, 77, 0.42);
-    stroke-dasharray: 5 6;
-    stroke-width: 1.4;
-  }
-
-  .graph-projection text {
-    fill: var(--pl-accent);
-    font-size: 11px;
-    font-weight: 900;
-    paint-order: stroke;
-    stroke: rgba(7, 14, 24, 0.94);
-    stroke-width: 3px;
-  }
-
-  .graph-polyline {
-    fill: none;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-  }
-
-  .graph-polyline--base {
-    stroke: rgba(88, 216, 255, 0.28);
-    stroke-width: 2.2;
-  }
-
-  .graph-polyline--current {
-    stroke: var(--pl-cyan);
-    stroke-width: 4;
-  }
-
-  .graph-current {
-    fill: var(--pl-accent);
-    stroke: rgba(255, 249, 214, 0.92);
-    stroke-width: 3.4;
-    filter:
-      drop-shadow(0 0 6px rgba(255, 216, 77, 0.38))
-      drop-shadow(0 0 14px rgba(255, 216, 77, 0.16));
   }
 
   .slider-field {
@@ -1159,15 +1032,6 @@ const { visualTarget = false } = Astro.props;
     display: none;
   }
 
-  .graph-card--detail {
-    grid-column: 1 / -1;
-  }
-
-  .graph-card--detail svg {
-    height: clamp(220px, 28vw, 320px);
-    min-height: 220px;
-  }
-
   .live-formula {
     display: flex;
     flex-wrap: wrap;
@@ -1317,10 +1181,6 @@ const { visualTarget = false } = Astro.props;
       grid-template-columns: 1fr;
     }
 
-    .graph-card svg {
-      min-height: 230px;
-    }
-
     .slider-field,
     .value-grid {
       grid-template-columns: 1fr;
@@ -1406,8 +1266,7 @@ const { visualTarget = false } = Astro.props;
     gap: clamp(var(--pl-space-4), 1.9vw, var(--pl-space-5));
   }
 
-  .uniform-lab[data-visual-target="v1"] .motion-card,
-  .uniform-lab[data-visual-target="v1"] .graph-card--main {
+  .uniform-lab[data-visual-target="v1"] .motion-card {
     border-color: rgba(88, 216, 255, 0.2);
     border-radius: 20px;
     background:
@@ -1421,42 +1280,10 @@ const { visualTarget = false } = Astro.props;
   }
 
   .uniform-lab[data-visual-target="v1"] .motion-card p,
-  .uniform-lab[data-visual-target="v1"] .graph-card p,
   .uniform-lab[data-visual-target="v1"] .feedback,
   .uniform-lab[data-visual-target="v1"] .substitution-delta {
     color: rgba(214, 226, 240, 0.82);
     font-weight: 520;
-  }
-
-  .uniform-lab[data-visual-target="v1"] .graph-card--main svg {
-    min-height: clamp(310px, 32vw, 410px);
-  }
-
-  .uniform-lab[data-visual-target="v1"] .axis-line {
-    stroke: rgba(222, 241, 255, 0.66);
-    stroke-width: 1.7;
-  }
-
-  .uniform-lab[data-visual-target="v1"] .grid-line {
-    stroke: rgba(88, 216, 255, 0.1);
-  }
-
-  .uniform-lab[data-visual-target="v1"] .graph-polyline--base {
-    stroke: rgba(88, 216, 255, 0.22);
-    stroke-width: 2;
-  }
-
-  .uniform-lab[data-visual-target="v1"] .graph-polyline--current {
-    stroke: rgba(88, 216, 255, 0.96);
-    stroke-width: 4.6;
-    filter: drop-shadow(0 0 8px rgba(88, 216, 255, 0.32));
-  }
-
-  .uniform-lab[data-visual-target="v1"] .graph-current {
-    r: 7.8px;
-    filter:
-      drop-shadow(0 0 8px rgba(255, 216, 77, 0.48))
-      drop-shadow(0 0 18px rgba(255, 216, 77, 0.18));
   }
 
   .uniform-lab[data-visual-target="v1"] .explain-card,
@@ -1495,7 +1322,6 @@ const { visualTarget = false } = Astro.props;
 
     .uniform-lab[data-visual-target="v1"] .start-strip,
     .uniform-lab[data-visual-target="v1"] .motion-card,
-    .uniform-lab[data-visual-target="v1"] .graph-card,
     .uniform-lab[data-visual-target="v1"] .explain-card,
     .uniform-lab[data-visual-target="v1"] .details-panel,
     .uniform-lab[data-visual-target="v1"] .formula-panel,
@@ -1506,10 +1332,6 @@ const { visualTarget = false } = Astro.props;
 
     .uniform-lab[data-visual-target="v1"] .simple-lab-grid {
       gap: var(--pl-space-4);
-    }
-
-    .uniform-lab[data-visual-target="v1"] .graph-card--main svg {
-      min-height: 330px;
     }
 
     .uniform-lab[data-visual-target="v1"] .slider-field input[type="range"] {
