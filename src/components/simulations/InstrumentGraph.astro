@@ -1,4 +1,13 @@
 ---
+import {
+  createTicks,
+  DEFAULT_GRAPH_HEIGHT,
+  DEFAULT_GRAPH_PADDING,
+  DEFAULT_GRAPH_WIDTH,
+  mapToGraphPoint
+} from "../../lib/physics/graphView";
+import type { GraphDomain, GraphTick } from "../../lib/physics/graphView";
+
 interface Props {
   title: string;
   ariaLabel: string;
@@ -7,7 +16,12 @@ interface Props {
   graphKind: "x" | "v";
   note: string;
   variant?: "main" | "detail";
+  domain?: GraphDomain;
+  xTicks?: GraphTick[];
+  yTicks?: GraphTick[];
+  showZeroLine?: boolean;
   showProjection?: boolean;
+  projectionLabel?: string;
   showTickLabels?: boolean;
 }
 
@@ -19,9 +33,39 @@ const {
   graphKind,
   note,
   variant = "main",
+  domain = {
+    xMin: 0,
+    xMax: 8,
+    yMin: -24,
+    yMax: 24
+  },
+  xTicks = createTicks(domain.xMin, domain.xMax, 5, (value) => `${value}`),
+  yTicks = createTicks(domain.yMin, domain.yMax, 5, (value) => `${value}`),
+  showZeroLine = true,
   showProjection = false,
+  projectionLabel = graphKind,
   showTickLabels = false
 } = Astro.props;
+
+const width = DEFAULT_GRAPH_WIDTH;
+const height = DEFAULT_GRAPH_HEIGHT;
+const pad = DEFAULT_GRAPH_PADDING;
+const plotLeft = pad.left;
+const plotRight = width - pad.right;
+const plotTop = pad.top;
+const plotBottom = height - pad.bottom;
+const canShowZeroLine = showZeroLine && domain.yMin <= 0 && domain.yMax >= 0;
+const verticalGridLines = xTicks.map((tick) => ({
+  ...tick,
+  x: mapToGraphPoint(tick.value, domain.yMin, domain).x
+}));
+const horizontalGridLines = yTicks.map((tick) => ({
+  ...tick,
+  y: mapToGraphPoint(domain.xMin, tick.value, domain).y
+}));
+const zeroLineY = canShowZeroLine
+  ? mapToGraphPoint(domain.xMin, 0, domain).y
+  : null;
 ---
 
 <figure class:list={["graph-card", `graph-card--${variant}`, "pl-instrument-graph"]}>
@@ -32,20 +76,38 @@ const {
     aria-label={ariaLabel}
     preserveAspectRatio="xMidYMid meet"
   >
-    <g class="grid-lines" data-grid={graphKind}></g>
-    <line class="axis-line" x1="42" y1="188" x2="302" y2="188"></line>
-    <line class="axis-line" x1="42" y1="18" x2="42" y2="188"></line>
+    <g class="grid-lines" data-grid={graphKind} aria-hidden="true">
+      {
+        verticalGridLines.map((line) => (
+          <line class="grid-line" x1={line.x} y1={plotTop} x2={line.x} y2={plotBottom}></line>
+        ))
+      }
+      {
+        horizontalGridLines.map((line) => (
+          <line class="grid-line" x1={plotLeft} y1={line.y} x2={plotRight} y2={line.y}></line>
+        ))
+      }
+      {
+        zeroLineY !== null && (
+          <line class="zero-line" x1={plotLeft} y1={zeroLineY} x2={plotRight} y2={zeroLineY}></line>
+        )
+      }
+    </g>
+    <line class="axis-line" x1={plotLeft} y1={plotBottom} x2={plotRight} y2={plotBottom}></line>
+    <line class="axis-line" x1={plotLeft} y1={plotTop} x2={plotLeft} y2={plotBottom}></line>
     {
       showTickLabels && (
         <g class="graph-tick-labels" aria-hidden="true">
-          <text x="38" y="205">0</text>
-          <text x="102" y="205">2</text>
-          <text x="167" y="205">4</text>
-          <text x="232" y="205">6</text>
-          <text x="294" y="205">8</text>
-          <text x="16" y="191">-24</text>
-          <text x="24" y="108">0</text>
-          <text x="18" y="42">24</text>
+          {
+            verticalGridLines.map((tick) => (
+              <text class="graph-tick-label graph-tick-label--x" x={tick.x} y="205">{tick.label}</text>
+            ))
+          }
+          {
+            horizontalGridLines.map((tick) => (
+              <text class="graph-tick-label graph-tick-label--y" x="34" y={tick.y + 3}>{tick.label}</text>
+            ))
+          }
         </g>
       )
     }
@@ -54,9 +116,9 @@ const {
     {
       showProjection && (
         <g class="graph-projection" data-projection={graphKind} aria-hidden="true">
-          <line data-projection-line="time" x1="42" y1="188" x2="42" y2="188"></line>
-          <line data-projection-line="position" x1="42" y1="188" x2="42" y2="188"></line>
-          <text data-projection-label={graphKind} x="50" y="178">{graphKind}</text>
+          <line data-projection-line="time" x1={plotLeft} y1={plotBottom} x2={plotLeft} y2={plotBottom}></line>
+          <line data-projection-line="position" x1={plotLeft} y1={plotBottom} x2={plotLeft} y2={plotBottom}></line>
+          <text data-projection-label={graphKind} x={plotLeft + 8} y={plotBottom - 10}>{projectionLabel}</text>
         </g>
       )
     }
@@ -132,6 +194,14 @@ const {
     fill: rgba(191, 204, 218, 0.72);
     font-size: 10px;
     font-weight: 800;
+  }
+
+  .graph-tick-label--x {
+    text-anchor: middle;
+  }
+
+  .graph-tick-label--y {
+    text-anchor: end;
   }
 
   .graph-projection line {

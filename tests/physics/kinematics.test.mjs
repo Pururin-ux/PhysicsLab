@@ -11,6 +11,7 @@ await mkdir(outputDir, { recursive: true });
 
 const physics = await importPhysicsModule("kinematics");
 const accelerated = await importPhysicsModule("acceleratedMotion");
+const graphView = await importPhysicsModule("graphView");
 
 assert.equal(physics.uniformPosition(0, 2, 3), 6);
 assert.equal(physics.uniformPosition(5, 0, 10), 5);
@@ -112,6 +113,59 @@ for (const point of accelerated.generateVelocitySeries({
   assert.equal(Number.isFinite(point.t), true);
   assert.equal(Number.isFinite(point.v), true);
 }
+
+assert.deepEqual(
+  graphView.mapToGraphPoint(0, -10, {
+    xMin: 0,
+    xMax: 8,
+    yMin: -10,
+    yMax: 10
+  }),
+  { x: 42, y: 188 }
+);
+assert.deepEqual(
+  graphView.mapToGraphPoint(8, 10, {
+    xMin: 0,
+    xMax: 8,
+    yMin: -10,
+    yMax: 10
+  }),
+  { x: 302, y: 18 }
+);
+assert.deepEqual(
+  graphView.mapToGraphPoint(12, -14, {
+    xMin: 0,
+    xMax: 8,
+    yMin: -10,
+    yMax: 10
+  }),
+  { x: 302, y: 188 }
+);
+assert.equal(
+  graphView.seriesToPolyline(
+    [
+      { t: 0, x: Number.NaN },
+      { t: Number.POSITIVE_INFINITY, x: 10 }
+    ],
+    (point) => graphView.mapToGraphPoint(point.t, point.x, {
+      xMin: 0,
+      xMax: 8,
+      yMin: -10,
+      yMax: 10
+    })
+  ),
+  "42,188 42,18"
+);
+assert.deepEqual(
+  graphView.createTicks(0, 8, 5, (value) => `${value} s`),
+  [
+    { value: 0, label: "0 s" },
+    { value: 2, label: "2 s" },
+    { value: 4, label: "4 s" },
+    { value: 6, label: "6 s" },
+    { value: 8, label: "8 s" }
+  ]
+);
 
 console.log("Physics kinematics checks passed.");
 

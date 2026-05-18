@@ -4,12 +4,33 @@ import SurfaceCard from "../ui/SurfaceCard.astro";
 import ControlDock from "./ControlDock.astro";
 import InstrumentGraph from "./InstrumentGraph.astro";
 import MotionTrack from "./MotionTrack.astro";
+import type { GraphDomain, GraphTick } from "../../lib/physics/graphView";
 
 interface Props {
   visualTarget?: boolean;
 }
 
 const { visualTarget = false } = Astro.props;
+
+const graphTimeTicks: GraphTick[] = [
+  { value: 0, label: "0" },
+  { value: 2, label: "2" },
+  { value: 4, label: "4" },
+  { value: 6, label: "6" },
+  { value: 8, label: "8" }
+];
+const uniformXGraphDomain: GraphDomain = { xMin: 0, xMax: 8, yMin: -24, yMax: 24 };
+const uniformVGraphDomain: GraphDomain = { xMin: 0, xMax: 8, yMin: -4.5, yMax: 4.5 };
+const uniformXTicks: GraphTick[] = [
+  { value: -24, label: "-24" },
+  { value: 0, label: "0" },
+  { value: 24, label: "24" }
+];
+const uniformVTicks: GraphTick[] = [
+  { value: -4, label: "-4" },
+  { value: 0, label: "0" },
+  { value: 4, label: "4" }
+];
 ---
 
 <SurfaceCard variant="lab">
@@ -59,6 +80,9 @@ const { visualTarget = false } = Astro.props;
         yAxisLabel="x, м"
         ariaLabel="График координаты от времени"
         note="Жёлтая точка на графике показывает, где тело сейчас."
+        domain={uniformXGraphDomain}
+        xTicks={graphTimeTicks}
+        yTicks={uniformXTicks}
         showProjection
         showTickLabels
       />
@@ -187,6 +211,9 @@ const { visualTarget = false } = Astro.props;
         yAxisLabel="v, м/с"
         ariaLabel="График скорости от времени"
         note="При равномерном движении скорость не меняется."
+        domain={uniformVGraphDomain}
+        xTicks={graphTimeTicks}
+        yTicks={uniformVTicks}
       />
     </div>
   </section>
@@ -204,18 +231,20 @@ const { visualTarget = false } = Astro.props;
     normalizeUniformMotionTime,
     uniformPosition
   } from "../../lib/physics/kinematics";
+  import { mapToGraphPoint, seriesToPolyline } from "../../lib/physics/graphView";
+  import type { GraphDomain, GraphPoint } from "../../lib/physics/graphView";
 
   type LabState = { x0: number; v: number; t: number };
   type InputName = keyof LabState;
   type Domain = { min: number; max: number };
-  type SvgPoint = { x: number; y: number };
 
-  const SVG_WIDTH = 320;
   const SVG_HEIGHT = 220;
   const PAD = { left: 42, right: 18, top: 18, bottom: 32 };
   const T_MAX = 8;
   const X_DOMAIN: Domain = { min: -24, max: 24 };
   const V_DOMAIN: Domain = { min: -4.5, max: 4.5 };
+  const X_GRAPH_DOMAIN: GraphDomain = { xMin: 0, xMax: T_MAX, yMin: X_DOMAIN.min, yMax: X_DOMAIN.max };
+  const V_GRAPH_DOMAIN: GraphDomain = { xMin: 0, xMax: T_MAX, yMin: V_DOMAIN.min, yMax: V_DOMAIN.max };
   const PLAYBACK_RATE = 1;
   const REDUCED_MOTION_STEP = 0.5;
 
@@ -290,9 +319,6 @@ const { visualTarget = false } = Astro.props;
     let hasStarted = false;
     let animationFrameId: number | null = null;
     let previousFrameTime: number | null = null;
-
-    drawGrid(lab.querySelector<SVGGElement>('[data-grid="x"]'), X_DOMAIN.min, X_DOMAIN.max);
-    drawGrid(lab.querySelector<SVGGElement>('[data-grid="v"]'), V_DOMAIN.min, V_DOMAIN.max);
 
     const syncInputs = () => {
       inputs.x0.value = formatPhysicsNumber(state.x0);
@@ -448,15 +474,35 @@ const { visualTarget = false } = Astro.props;
         step: 0.05
       });
 
-      xBaseLine.setAttribute("points", toPolyline(positionSeries, (point) => point.x, X_DOMAIN));
-      vBaseLine.setAttribute("points", toPolyline(velocitySeries, (point) => point.v, V_DOMAIN));
-      xCurrentLine.setAttribute("points", toPolyline(currentPositionSeries, (point) => point.x, X_DOMAIN));
-      vCurrentLine.setAttribute("points", toPolyline(currentVelocitySeries, (point) => point.v, V_DOMAIN));
+      xBaseLine.setAttribute(
+        "points",
+        seriesToPolyline(positionSeries, (point) =>
+          mapToGraphPoint(point.t, point.x, X_GRAPH_DOMAIN)
+        )
+      );
+      vBaseLine.setAttribute(
+        "points",
+        seriesToPolyline(velocitySeries, (point) =>
+          mapToGraphPoint(point.t, point.v, V_GRAPH_DOMAIN)
+        )
+      );
+      xCurrentLine.setAttribute(
+        "points",
+        seriesToPolyline(currentPositionSeries, (point) =>
+          mapToGraphPoint(point.t, point.x, X_GRAPH_DOMAIN)
+        )
+      );
+      vCurrentLine.setAttribute(
+        "points",
+        seriesToPolyline(currentVelocitySeries, (point) =>
+          mapToGraphPoint(point.t, point.v, V_GRAPH_DOMAIN)
+        )
+      );
       xCurrentLine.dataset.currentTime = formatPhysicsNumber(state.t, 2);
       vCurrentLine.dataset.currentTime = formatPhysicsNumber(state.t, 2);
 
-      const currentX = mapPoint(state.t, x, X_DOMAIN);
-      const currentV = mapPoint(state.t, state.v, V_DOMAIN);
+      const currentX = mapToGraphPoint(state.t, x, X_GRAPH_DOMAIN);
+      const currentV = mapToGraphPoint(state.t, state.v, V_GRAPH_DOMAIN);
       setSvgPoint(xPoint, currentX);
       setSvgPoint(vPoint, currentV);
       setProjectionLines(xProjection, currentX);
@@ -582,34 +628,14 @@ const { visualTarget = false } = Astro.props;
     };
   }
 
-  function toPolyline<TPoint extends { t: number }>(
-    series: TPoint[],
-    valueSelector: (point: TPoint) => number,
-    domain: Domain
-  ): string {
-    return series
-      .map((point) => {
-        const mapped = mapPoint(point.t, valueSelector(point), domain);
-        return `${formatPhysicsNumber(mapped.x, 1)},${formatPhysicsNumber(mapped.y, 1)}`;
-      })
-      .join(" ");
-  }
-
-  function mapPoint(t: number, value: number, domain: Domain): SvgPoint {
-    const x = PAD.left + (t / T_MAX) * (SVG_WIDTH - PAD.left - PAD.right);
-    const normalized = (value - domain.min) / (domain.max - domain.min);
-    const y = SVG_HEIGHT - PAD.bottom - normalized * (SVG_HEIGHT - PAD.top - PAD.bottom);
-    return { x, y: clampNumber(y, PAD.top, SVG_HEIGHT - PAD.bottom) };
-  }
-
-  function setSvgPoint(element: SVGCircleElement, point: SvgPoint): void {
+  function setSvgPoint(element: SVGCircleElement, point: GraphPoint): void {
     element.setAttribute("cx", formatPhysicsNumber(point.x, 1));
     element.setAttribute("cy", formatPhysicsNumber(point.y, 1));
   }
 
   function setProjectionLines(
     projection: { time: SVGLineElement; position: SVGLineElement; label: SVGTextElement },
-    point: SvgPoint
+    point: GraphPoint
   ): void {
     const x = formatPhysicsNumber(point.x, 1);
     const y = formatPhysicsNumber(point.y, 1);
@@ -623,21 +649,6 @@ const { visualTarget = false } = Astro.props;
     projection.position.setAttribute("y2", y);
     projection.label.setAttribute("x", formatPhysicsNumber(point.x + 8, 1));
     projection.label.setAttribute("y", formatPhysicsNumber(point.y - 8, 1));
-  }
-
-  function drawGrid(group: SVGGElement | null, min: number, max: number): void {
-    if (!group) return;
-
-    const lines = [];
-    for (let i = 0; i <= 4; i += 1) {
-      const x = PAD.left + (i / 4) * (SVG_WIDTH - PAD.left - PAD.right);
-      const y = PAD.top + (i / 4) * (SVG_HEIGHT - PAD.top - PAD.bottom);
-      lines.push(`<line class="grid-line" x1="${x}" y1="${PAD.top}" x2="${x}" y2="${SVG_HEIGHT - PAD.bottom}"></line>`);
-      lines.push(`<line class="grid-line" x1="${PAD.left}" y1="${y}" x2="${SVG_WIDTH - PAD.right}" y2="${y}"></line>`);
-    }
-    const zeroY = mapPoint(0, 0, { min, max }).y;
-    lines.push(`<line class="zero-line" x1="${PAD.left}" y1="${zeroY}" x2="${SVG_WIDTH - PAD.right}" y2="${zeroY}"></line>`);
-    group.innerHTML = lines.join("");
   }
 
   function highlightFormula(root: ParentNode, changed: InputName, soft = false): void {

@@ -1,6 +1,28 @@
 ---
 import InstrumentGraph from "./InstrumentGraph.astro";
 import MotionTrack from "./MotionTrack.astro";
+import type { GraphDomain, GraphTick } from "../../lib/physics/graphView";
+
+const graphTimeTicks: GraphTick[] = [
+  { value: 0, label: "0" },
+  { value: 2, label: "2" },
+  { value: 4, label: "4" },
+  { value: 6, label: "6" },
+  { value: 8, label: "8" }
+];
+const accelerationXGraphDomain: GraphDomain = { xMin: 0, xMax: 8, yMin: -32, yMax: 48 };
+const accelerationVGraphDomain: GraphDomain = { xMin: 0, xMax: 8, yMin: -10, yMax: 10 };
+const accelerationXTicks: GraphTick[] = [
+  { value: -32, label: "-32" },
+  { value: 0, label: "0" },
+  { value: 24, label: "24" },
+  { value: 48, label: "48" }
+];
+const accelerationVTicks: GraphTick[] = [
+  { value: -10, label: "-10" },
+  { value: 0, label: "0" },
+  { value: 10, label: "10" }
+];
 ---
 
 <section
@@ -57,6 +79,10 @@ import MotionTrack from "./MotionTrack.astro";
         yAxisLabel="v, м/с"
         ariaLabel="График скорости от времени при равноускоренном движении"
         note="Если a не равно нулю, скорость меняется со временем."
+        domain={accelerationVGraphDomain}
+        xTicks={graphTimeTicks}
+        yTicks={accelerationVTicks}
+        showTickLabels
       />
       <InstrumentGraph
         title="График x(t)"
@@ -65,6 +91,10 @@ import MotionTrack from "./MotionTrack.astro";
         yAxisLabel="x, м"
         ariaLabel="График координаты от времени при равноускоренном движении"
         note="x(t) становится кривой, потому что скорость уже не постоянная."
+        domain={accelerationXGraphDomain}
+        xTicks={graphTimeTicks}
+        yTicks={accelerationXTicks}
+        showTickLabels
       />
     </div>
   </div>
@@ -134,18 +164,18 @@ import MotionTrack from "./MotionTrack.astro";
     formatPhysicsNumber,
     normalizeUniformMotionTime
   } from "../../lib/physics/kinematics";
+  import { mapToGraphPoint, seriesToPolyline } from "../../lib/physics/graphView";
+  import type { GraphDomain, GraphPoint } from "../../lib/physics/graphView";
 
   type SceneState = { x0: number; v0: number; a: number; t: number };
   type Domain = { min: number; max: number };
-  type SvgPoint = { x: number; y: number };
   type Direction = ReturnType<typeof accelerationMotionDirection>;
 
-  const SVG_WIDTH = 320;
-  const SVG_HEIGHT = 220;
-  const PAD = { left: 42, right: 18, top: 18, bottom: 32 };
   const T_MAX = 8;
   const X_DOMAIN: Domain = { min: -32, max: 48 };
   const V_DOMAIN: Domain = { min: -10, max: 10 };
+  const X_GRAPH_DOMAIN: GraphDomain = { xMin: 0, xMax: T_MAX, yMin: X_DOMAIN.min, yMax: X_DOMAIN.max };
+  const V_GRAPH_DOMAIN: GraphDomain = { xMin: 0, xMax: T_MAX, yMin: V_DOMAIN.min, yMax: V_DOMAIN.max };
   const PLAYBACK_RATE = 1;
   const REDUCED_MOTION_STEP = 0.5;
 
@@ -188,9 +218,6 @@ import MotionTrack from "./MotionTrack.astro";
     let isReducedMotion = reducedMotionQuery.matches;
     let animationFrameId: number | null = null;
     let previousFrameTime: number | null = null;
-
-    drawGrid(scene.querySelector<SVGGElement>('[data-grid="x"]'), X_DOMAIN.min, X_DOMAIN.max);
-    drawGrid(scene.querySelector<SVGGElement>('[data-grid="v"]'), V_DOMAIN.min, V_DOMAIN.max);
 
     const syncInputs = () => {
       inputs.v0.value = formatPhysicsNumber(state.v0);
@@ -303,25 +330,33 @@ import MotionTrack from "./MotionTrack.astro";
       values.v.textContent = `${formatPhysicsNumber(v, 2)} м/с`;
       values.x.textContent = `${formatPhysicsNumber(x, 2)} м`;
 
-      xBaseLine.setAttribute("points", seriesToPolyline(
-        generatePositionSeries({ ...state, tMax: T_MAX }),
-        (point) => mapPoint(point.t, point.x, X_DOMAIN)
-      ));
-      xCurrentLine.setAttribute("points", seriesToPolyline(
-        generatePositionSeries({ ...state, tMax: state.t }),
-        (point) => mapPoint(point.t, point.x, X_DOMAIN)
-      ));
-      vBaseLine.setAttribute("points", seriesToPolyline(
-        generateVelocitySeries({ v0: state.v0, a: state.a, tMax: T_MAX }),
-        (point) => mapPoint(point.t, point.v, V_DOMAIN)
-      ));
-      vCurrentLine.setAttribute("points", seriesToPolyline(
-        generateVelocitySeries({ v0: state.v0, a: state.a, tMax: state.t }),
-        (point) => mapPoint(point.t, point.v, V_DOMAIN)
-      ));
+      xBaseLine.setAttribute(
+        "points",
+        seriesToPolyline(generatePositionSeries({ ...state, tMax: T_MAX }), (point) =>
+          mapToGraphPoint(point.t, point.x, X_GRAPH_DOMAIN)
+        )
+      );
+      xCurrentLine.setAttribute(
+        "points",
+        seriesToPolyline(generatePositionSeries({ ...state, tMax: state.t }), (point) =>
+          mapToGraphPoint(point.t, point.x, X_GRAPH_DOMAIN)
+        )
+      );
+      vBaseLine.setAttribute(
+        "points",
+        seriesToPolyline(generateVelocitySeries({ v0: state.v0, a: state.a, tMax: T_MAX }), (point) =>
+          mapToGraphPoint(point.t, point.v, V_GRAPH_DOMAIN)
+        )
+      );
+      vCurrentLine.setAttribute(
+        "points",
+        seriesToPolyline(generateVelocitySeries({ v0: state.v0, a: state.a, tMax: state.t }), (point) =>
+          mapToGraphPoint(point.t, point.v, V_GRAPH_DOMAIN)
+        )
+      );
 
-      const xGraphPoint = mapPoint(state.t, x, X_DOMAIN);
-      const vGraphPoint = mapPoint(state.t, v, V_DOMAIN);
+      const xGraphPoint = mapToGraphPoint(state.t, x, X_GRAPH_DOMAIN);
+      const vGraphPoint = mapToGraphPoint(state.t, v, V_GRAPH_DOMAIN);
       setCirclePoint(xPoint, xGraphPoint);
       setCirclePoint(vPoint, vGraphPoint);
 
@@ -382,44 +417,11 @@ import MotionTrack from "./MotionTrack.astro";
     };
   }
 
-  function drawGrid(target: SVGGElement | null, min: number, max: number) {
-    if (!target) return;
-
-    const lines: string[] = [];
-    for (let index = 0; index <= 4; index += 1) {
-      const x = PAD.left + ((SVG_WIDTH - PAD.left - PAD.right) / 4) * index;
-      const y = PAD.top + ((SVG_HEIGHT - PAD.top - PAD.bottom) / 4) * index;
-      lines.push(`<line class="grid-line" x1="${x}" y1="${PAD.top}" x2="${x}" y2="${SVG_HEIGHT - PAD.bottom}"></line>`);
-      lines.push(`<line class="grid-line" x1="${PAD.left}" y1="${y}" x2="${SVG_WIDTH - PAD.right}" y2="${y}"></line>`);
-    }
-
-    const zeroY = mapPoint(0, 0, { min, max }).y;
-    lines.push(`<line class="zero-line" x1="${PAD.left}" y1="${zeroY}" x2="${SVG_WIDTH - PAD.right}" y2="${zeroY}"></line>`);
-    target.innerHTML = lines.join("");
-  }
-
-  function mapPoint(t: number, value: number, domain: Domain): SvgPoint {
-    const x = PAD.left + (normalizeUniformMotionTime(t, T_MAX) / T_MAX) * (SVG_WIDTH - PAD.left - PAD.right);
-    const normalizedY = (clampNumber(value, domain.min, domain.max) - domain.min) / (domain.max - domain.min);
-    const y = SVG_HEIGHT - PAD.bottom - normalizedY * (SVG_HEIGHT - PAD.top - PAD.bottom);
-    return { x, y };
-  }
-
   function mapPercent(value: number, domain: Domain): number {
     return clampNumber(((value - domain.min) / (domain.max - domain.min)) * 100, 5, 95);
   }
 
-  function seriesToPolyline<TPoint>(
-    points: TPoint[],
-    mapper: (point: TPoint) => SvgPoint
-  ): string {
-    return points.map((point) => {
-      const mapped = mapper(point);
-      return `${formatPhysicsNumber(mapped.x, 2)},${formatPhysicsNumber(mapped.y, 2)}`;
-    }).join(" ");
-  }
-
-  function setCirclePoint(circle: SVGCircleElement, point: SvgPoint) {
+  function setCirclePoint(circle: SVGCircleElement, point: GraphPoint) {
     circle.setAttribute("cx", formatPhysicsNumber(point.x, 2));
     circle.setAttribute("cy", formatPhysicsNumber(point.y, 2));
   }
