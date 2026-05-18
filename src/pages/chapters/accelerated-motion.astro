@@ -5,6 +5,7 @@ import Badge from "../../components/ui/Badge.astro";
 import SurfaceCard from "../../components/ui/SurfaceCard.astro";
 
 const navItems = [
+  { href: "#predict", label: "Прогноз" },
   { href: "#lab", label: "Лаборатория" },
   { href: "#formula", label: "Формулы" },
   { href: "#check", label: "Проверка" }
@@ -40,13 +41,41 @@ const navItems = [
       </aside>
     </section>
 
+    <section id="predict" class="section chapter-section" aria-labelledby="predict-title">
+      <SurfaceCard>
+        <div class="prediction-panel" data-acceleration-predict>
+          <div>
+            <p class="eyebrow">Перед запуском</p>
+            <h2 id="predict-title">Сначала сделай простой прогноз</h2>
+            <p>
+              Не считай. Просто реши, что должно измениться на графиках, когда ты двигаешь ускорение a.
+            </p>
+          </div>
+          <div class="prediction-grid" aria-label="Прогноз перед лабораторией">
+            <article>
+              <strong>Если a &gt; 0</strong>
+              <p>Линия v(t) должна идти вверх: скорость растёт каждую секунду.</p>
+            </article>
+            <article>
+              <strong>Если a &lt; 0</strong>
+              <p>Линия v(t) идёт вниз. Но тело не обязано сразу ехать назад.</p>
+            </article>
+            <article>
+              <strong>Почему x(t) кривая</strong>
+              <p>Наклон x(t) — это скорость. Скорость меняется, значит меняется и наклон.</p>
+            </article>
+          </div>
+        </div>
+      </SurfaceCard>
+    </section>
+
     <section id="lab" class="section chapter-section" aria-labelledby="lab-title">
       <div class="chapter-section__head">
         <p class="eyebrow">Лаборатория</p>
-        <h2 id="lab-title">Сначала действие</h2>
+        <h2 id="lab-title">Теперь проверь руками</h2>
         <p>
-          Нажми «Запустить». Потом подвигай a: линия v(t) меняет наклон, а x(t)
-          перестаёт быть прямой.
+          Нажми «Запустить». Потом подвигай a: сначала в плюс, потом в минус. Следи за v(t),
+          а уже потом за x(t).
         </p>
       </div>
       <AccelerationScene />
@@ -61,16 +90,21 @@ const navItems = [
             <p class="formula">v = v₀ + at</p>
             <p>
               v₀ — скорость в начале. at — насколько скорость изменилась за время t.
+              Поэтому на графике v(t) ускорение видно как наклон.
             </p>
           </div>
           <div class="formula-card">
             <p class="formula">x = x₀ + v₀t + at²/2</p>
             <p>
-              Координата зависит не только от стартовой скорости: ускорение тоже успевает
-              изменить движение.
+              Координата зависит не только от стартовой скорости: ускорение меняет скорость,
+              поэтому линия x(t) изгибается.
             </p>
           </div>
         </div>
+        <p class="formula-note">
+          Частая ловушка: a &lt; 0 не означает «сразу назад». Сначала посмотри на v(t):
+          пока v положительная, тело ещё едет вправо.
+        </p>
       </SurfaceCard>
     </section>
 
@@ -79,20 +113,20 @@ const navItems = [
         <div
           class="chapter-check"
           data-acceleration-check
-          data-feedback-correct="Да. Ускорение показывает, как меняется скорость: на графике v(t) это видно как наклон линии."
-          data-feedback-wrong="Не совсем. Положение показывает x, а ускорение говорит, как меняется скорость."
+          data-feedback-correct="Да. Пока v больше нуля, тело ещё едет вправо. Отрицательное a только наклоняет v(t) вниз: скорость уменьшается."
+          data-feedback-wrong="Не совсем. Отрицательное a не означает мгновенно «назад». Сначала проверь знак скорости v: пока v > 0, тело ещё едет вправо."
         >
           <div>
-            <p class="eyebrow">Проверка без паники</p>
-            <h2 id="check-title">Что показывает ускорение a?</h2>
+            <p class="eyebrow">Перенос на задачу</p>
+            <h2 id="check-title">v₀ &gt; 0, но a &lt; 0. Что сначала происходит?</h2>
           </div>
           <div class="chapter-answer-row" role="group" aria-label="Варианты ответа">
-            <button type="button" data-check-answer="correct">Как меняется скорость</button>
-            <button type="button" data-check-answer="position">Где тело находится</button>
-            <button type="button" data-check-answer="map">Путь по карте</button>
+            <button type="button" data-check-answer="correct">Ещё едет вправо, но замедляется</button>
+            <button type="button" data-check-answer="instant-back">Сразу едет назад</button>
+            <button type="button" data-check-answer="straight-x">x(t) обязан быть прямой</button>
           </div>
           <p class="chapter-feedback" data-check-feedback aria-live="polite">
-            Выбери вариант и проверь себя по графику v(t).
+            Выбери вариант и проверь себя по знаку скорости на графике v(t).
           </p>
         </div>
       </SurfaceCard>
@@ -223,6 +257,46 @@ const navItems = [
       0 16px 42px rgba(0, 0, 0, 0.16);
   }
 
+  .prediction-panel {
+    display: grid;
+    gap: var(--pl-space-4);
+  }
+
+  .prediction-panel > div:first-child {
+    max-width: 760px;
+  }
+
+  .prediction-panel p:last-child {
+    margin-bottom: 0;
+  }
+
+  .prediction-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--pl-space-3);
+  }
+
+  .prediction-grid article {
+    min-width: 0;
+    padding: var(--pl-space-3);
+    border: 1px solid rgba(88, 216, 255, 0.1);
+    border-radius: 16px;
+    background:
+      linear-gradient(180deg, rgba(88, 216, 255, 0.045), rgba(255, 255, 255, 0.012)),
+      rgba(255, 255, 255, 0.018);
+  }
+
+  .prediction-grid strong {
+    display: block;
+    margin-bottom: var(--pl-space-2);
+    color: var(--pl-accent);
+  }
+
+  .prediction-grid p {
+    margin: 0;
+    line-height: 1.48;
+  }
+
   .formula-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -250,6 +324,16 @@ const navItems = [
 
   .formula-card p:last-child {
     margin-bottom: 0;
+  }
+
+  .formula-note {
+    margin: var(--pl-space-4) 0 0;
+    padding: var(--pl-space-3);
+    border: 1px solid rgba(255, 216, 77, 0.14);
+    border-radius: 16px;
+    color: var(--pl-text);
+    background: rgba(255, 216, 77, 0.045);
+    line-height: 1.55;
   }
 
   .chapter-check {
@@ -313,11 +397,13 @@ const navItems = [
 
   @media (max-width: 900px) {
     .chapter-intro,
+    .prediction-grid,
     .formula-grid {
       grid-template-columns: minmax(0, 1fr);
     }
 
     .chapter-intro > *,
+    .prediction-grid > *,
     .formula-grid > * {
       min-width: 0;
     }

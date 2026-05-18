@@ -41,10 +41,10 @@ const accelerationVTicks: GraphTick[] = [
   <div class="scene-head">
     <div>
       <p class="component-label">прототип v0</p>
-      <h3 id="acceleration-scene-title">Проверь, что делает ускорение</h3>
+      <h3 id="acceleration-scene-title">Проверь прогноз: a меняет скорость</h3>
       <p>
-        Ускорение меняет скорость. Из-за этого точка едет неравномерно, а линия x(t)
-        становится кривой.
+        Сначала смотри на v(t): ускорение меняет скорость. Потом смотри на x(t):
+        если скорость меняется, линия координаты становится кривой.
       </p>
     </div>
     <div class="scene-readouts" aria-label="Текущие значения">
@@ -78,7 +78,7 @@ const accelerationVTicks: GraphTick[] = [
         xAxisLabel="t, с"
         yAxisLabel="v, м/с"
         ariaLabel="График скорости от времени при равноускоренном движении"
-        note="Если a не равно нулю, скорость меняется со временем."
+        note="Наклон v(t) показывает ускорение: если a не равно нулю, скорость меняется."
         domain={accelerationVGraphDomain}
         xTicks={graphTimeTicks}
         yTicks={accelerationVTicks}
@@ -90,7 +90,7 @@ const accelerationVTicks: GraphTick[] = [
         xAxisLabel="t, с"
         yAxisLabel="x, м"
         ariaLabel="График координаты от времени при равноускоренном движении"
-        note="x(t) становится кривой, потому что скорость уже не постоянная."
+        note="x(t) становится кривой: её наклон меняется вместе со скоростью."
         domain={accelerationXGraphDomain}
         xTicks={graphTimeTicks}
         yTicks={accelerationXTicks}
@@ -118,7 +118,7 @@ const accelerationVTicks: GraphTick[] = [
     <label class="slider-field">
       <span>
         <b>Начальная скорость v₀</b>
-        <span>С какой скоростью начинаем.</span>
+        <span>Куда и как быстро едем в момент t = 0.</span>
       </span>
       <output data-output="v0">3 м/с</output>
       <input
@@ -135,7 +135,7 @@ const accelerationVTicks: GraphTick[] = [
     <label class="slider-field slider-field--accent">
       <span>
         <b>Ускорение a</b>
-        <span>Как меняется скорость каждую секунду.</span>
+        <span>На сколько меняется v за 1 секунду.</span>
       </span>
       <output data-output="a">0.8 м/с²</output>
       <input
@@ -148,6 +148,9 @@ const accelerationVTicks: GraphTick[] = [
         aria-label="Ускорение a в метрах в секунду в квадрате"
       />
     </label>
+    <p class="control-hint">
+      Сначала меняй a. v₀ задаёт старт линии v(t), а a меняет её наклон.
+    </p>
   </div>
 </section>
 
@@ -470,20 +473,20 @@ const accelerationVTicks: GraphTick[] = [
 
   function getPositionNote(a: number): string {
     if (a === 0) {
-      return "При a = 0 график x(t) снова прямая линия.";
+      return "При a = 0 скорость постоянная, поэтому x(t) снова прямая.";
     }
 
-    return "x(t) становится кривой: наклон меняется вместе со скоростью.";
+    return "x(t) кривая: её наклон всё время меняется, потому что меняется скорость.";
   }
 
   function getVelocityNote(a: number): string {
     if (a === 0) {
-      return "a = 0: линия v(t) горизонтальная, скорость постоянная.";
+      return "a = 0: v(t) горизонтальная. Скорость постоянная, значит движение снова равномерное.";
     }
 
     return a > 0
-      ? "a > 0: линия v(t) идёт вверх, скорость растёт."
-      : "a < 0: линия v(t) идёт вниз, скорость уменьшается или уходит в минус.";
+      ? "a > 0: v(t) идёт вверх. Наклон этой линии и есть ускорение."
+      : "a < 0: v(t) идёт вниз. Это уменьшает скорость, но назад тело поедет только когда v станет меньше нуля.";
   }
 
   function getVelocityArrowWidth(v: number): number {
@@ -638,7 +641,7 @@ const accelerationVTicks: GraphTick[] = [
 
   .acceleration-controls {
     display: grid;
-    grid-template-columns: minmax(170px, 0.32fr) repeat(2, minmax(220px, 1fr));
+    grid-template-columns: minmax(220px, 0.4fr) repeat(2, minmax(240px, 1fr));
     gap: var(--pl-space-3);
     align-items: center;
     padding: var(--pl-space-3);
@@ -651,7 +654,7 @@ const accelerationVTicks: GraphTick[] = [
 
   .time-actions {
     display: grid;
-    grid-template-columns: minmax(112px, 1fr) minmax(94px, 0.75fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: var(--pl-space-2);
   }
 
@@ -758,6 +761,15 @@ const accelerationVTicks: GraphTick[] = [
   .reset-button:focus-visible {
     outline: 3px solid var(--pl-accent);
     outline-offset: 4px;
+  }
+
+  .control-hint {
+    grid-column: 1 / -1;
+    margin: 0;
+    padding-inline: var(--pl-space-2);
+    color: var(--pl-text-muted);
+    font-size: 0.92rem;
+    line-height: 1.45;
   }
 
   @media (max-width: 1040px) {

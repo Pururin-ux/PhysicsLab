@@ -45,11 +45,15 @@ test.describe("accelerated-motion chapter screenshots", () => {
       await expect(page.getByRole("heading", { name: "Равноускоренное движение" })).toBeVisible();
       await expect(page.getByText("prototype v0").first()).toBeVisible();
       await expect(page.getByText("authorReviewRequired")).toBeVisible();
+      await expect(page.locator("[data-acceleration-predict]")).toBeVisible();
+      await expect(page.getByText("тело не обязано сразу ехать назад")).toBeVisible();
 
       const scene = sceneRoot(page);
       await expect(scene).toBeVisible();
       await expect(scene.locator('[data-input="v0"]')).toBeVisible();
       await expect(scene.locator('[data-input="a"]')).toBeVisible();
+      await expect(scene.getByText("Куда и как быстро едем в момент t = 0.")).toBeVisible();
+      await expect(scene.getByText("На сколько меняется v за 1 секунду.")).toBeVisible();
       await expect(scene.locator("[data-motion-point]")).toBeVisible();
       await expect(scene.locator("[data-velocity-arrow]")).toBeVisible();
       await expect(scene.locator('[data-polyline="x"]')).toHaveAttribute("points", /,/);
@@ -82,6 +86,7 @@ test.describe("accelerated-motion chapter screenshots", () => {
       await expect(scene).toHaveAttribute("data-current-a", "-2");
       await expect(scene).toHaveAttribute("data-motion-direction", "forward");
       await expect(scene.locator("[data-guidance]")).toContainText("ещё едет вправо");
+      await expect(scene.locator('[data-graph-note="v"]')).toContainText("назад тело поедет только когда v станет меньше нуля");
       await expect(scene.locator('[data-polyline="v"]')).not.toHaveAttribute(
         "points",
         velocityLineBefore ?? ""
@@ -94,7 +99,8 @@ test.describe("accelerated-motion chapter screenshots", () => {
       });
       await expect(scene).toHaveAttribute("data-current-a", "0");
       await expect(scene).toHaveAttribute("data-acceleration-mode", "uniform");
-      await expect(scene.locator('[data-graph-note="v"]')).toContainText("скорость постоянная");
+      await expect(scene.locator('[data-graph-note="v"]')).toContainText(/скорость постоянная/i);
+      await expect(scene.locator('[data-graph-note="x"]')).toContainText("x(t) снова прямая");
       await playButton.click();
       await expect
         .poll(async () => currentTime(scene), { timeout: 1800 })
@@ -102,8 +108,8 @@ test.describe("accelerated-motion chapter screenshots", () => {
       expect(Math.abs((await currentVelocity(scene)) - 3)).toBeLessThan(0.01);
       await resetButton.click();
 
-      await page.getByRole("button", { name: "Как меняется скорость" }).click();
-      await expect(page.locator("[data-check-feedback]")).toContainText("Ускорение показывает");
+      await page.getByRole("button", { name: "Ещё едет вправо, но замедляется" }).click();
+      await expect(page.locator("[data-check-feedback]")).toContainText("Пока v больше нуля");
 
       expect(await hasHorizontalScroll(page)).toBe(false);
 
