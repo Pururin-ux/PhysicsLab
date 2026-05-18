@@ -1,0 +1,813 @@
+---
+import InstrumentGraph from "./InstrumentGraph.astro";
+import MotionTrack from "./MotionTrack.astro";
+---
+
+<section
+  class="acceleration-scene pl-lab-glass-panel"
+  data-acceleration-scene
+  data-current-time="0"
+  data-current-x="0"
+  data-current-v="3"
+  data-current-a="0.8"
+  data-motion-direction="forward"
+  data-acceleration-mode="speeding-up"
+  data-playing="false"
+  data-animation-state="paused"
+  aria-labelledby="acceleration-scene-title"
+>
+  <div class="scene-head">
+    <div>
+      <p class="component-label">прототип v0</p>
+      <h3 id="acceleration-scene-title">Проверь, что делает ускорение</h3>
+      <p>
+        Ускорение меняет скорость. Из-за этого точка едет неравномерно, а линия x(t)
+        становится кривой.
+      </p>
+    </div>
+    <div class="scene-readouts" aria-label="Текущие значения">
+      <span>t = <b data-value="t">0 с</b></span>
+      <span>v = <b data-value="v">3 м/с</b></span>
+      <span>x = <b data-value="x">0 м</b></span>
+    </div>
+  </div>
+
+  <div class="scene-grid">
+    <div class="motion-panel pl-motion-track" aria-label="Движение точки по прямой">
+      <div class="panel-head">
+        <span>Тело на прямой</span>
+        <strong data-observation>скорость растёт</strong>
+      </div>
+      <MotionTrack
+        leftLabel="-32 м"
+        centerLabel="0"
+        rightLabel="48 м"
+        initialCoordinateLabel="x = 0 м"
+      />
+      <p data-guidance>
+        Сейчас a положительное: скорость растёт, поэтому точка разгоняется вправо.
+      </p>
+    </div>
+
+    <div class="graph-stack">
+      <InstrumentGraph
+        title="График v(t)"
+        graphKind="v"
+        xAxisLabel="t, с"
+        yAxisLabel="v, м/с"
+        ariaLabel="График скорости от времени при равноускоренном движении"
+        note="Если a не равно нулю, скорость меняется со временем."
+      />
+      <InstrumentGraph
+        title="График x(t)"
+        graphKind="x"
+        xAxisLabel="t, с"
+        yAxisLabel="x, м"
+        ariaLabel="График координаты от времени при равноускоренном движении"
+        note="x(t) становится кривой, потому что скорость уже не постоянная."
+      />
+    </div>
+  </div>
+
+  <div class="acceleration-controls pl-control-dock" aria-label="Управление равноускоренным движением">
+    <div class="time-actions">
+      <button
+        type="button"
+        class="play-button pl-lab-button pl-lab-button--primary"
+        data-play-toggle
+        aria-pressed="false"
+        aria-label="Запустить анимацию"
+      >
+        Запустить
+      </button>
+      <button type="button" class="reset-button pl-lab-button" data-reset>
+        Сбросить
+      </button>
+    </div>
+
+    <label class="slider-field">
+      <span>
+        <b>Начальная скорость v₀</b>
+        <span>С какой скоростью начинаем.</span>
+      </span>
+      <output data-output="v0">3 м/с</output>
+      <input
+        type="range"
+        min="-6"
+        max="6"
+        step="0.5"
+        value="3"
+        data-input="v0"
+        aria-label="Начальная скорость v ноль в метрах в секунду"
+      />
+    </label>
+
+    <label class="slider-field slider-field--accent">
+      <span>
+        <b>Ускорение a</b>
+        <span>Как меняется скорость каждую секунду.</span>
+      </span>
+      <output data-output="a">0.8 м/с²</output>
+      <input
+        type="range"
+        min="-3"
+        max="3"
+        step="0.2"
+        value="0.8"
+        data-input="a"
+        aria-label="Ускорение a в метрах в секунду в квадрате"
+      />
+    </label>
+  </div>
+</section>
+
+<script>
+  import {
+    accelerationMotionDirection,
+    generatePositionSeries,
+    generateVelocitySeries,
+    positionAt,
+    velocityAt
+  } from "../../lib/physics/acceleratedMotion";
+  import {
+    clampNumber,
+    formatPhysicsNumber,
+    normalizeUniformMotionTime
+  } from "../../lib/physics/kinematics";
+
+  type SceneState = { x0: number; v0: number; a: number; t: number };
+  type Domain = { min: number; max: number };
+  type SvgPoint = { x: number; y: number };
+  type Direction = ReturnType<typeof accelerationMotionDirection>;
+
+  const SVG_WIDTH = 320;
+  const SVG_HEIGHT = 220;
+  const PAD = { left: 42, right: 18, top: 18, bottom: 32 };
+  const T_MAX = 8;
+  const X_DOMAIN: Domain = { min: -32, max: 48 };
+  const V_DOMAIN: Domain = { min: -10, max: 10 };
+  const PLAYBACK_RATE = 1;
+  const REDUCED_MOTION_STEP = 0.5;
+
+  document.querySelectorAll<HTMLElement>("[data-acceleration-scene]").forEach((scene) => {
+    const inputs = {
+      v0: mustFind<HTMLInputElement>(scene, '[data-input="v0"]'),
+      a: mustFind<HTMLInputElement>(scene, '[data-input="a"]')
+    };
+
+    const outputs = {
+      v0: mustFind<HTMLOutputElement>(scene, '[data-output="v0"]'),
+      a: mustFind<HTMLOutputElement>(scene, '[data-output="a"]')
+    };
+
+    const values = {
+      t: mustFind<HTMLElement>(scene, '[data-value="t"]'),
+      v: mustFind<HTMLElement>(scene, '[data-value="v"]'),
+      x: mustFind<HTMLElement>(scene, '[data-value="x"]')
+    };
+
+    const xBaseLine = mustFind<SVGPolylineElement>(scene, '[data-polyline="x"]');
+    const vBaseLine = mustFind<SVGPolylineElement>(scene, '[data-polyline="v"]');
+    const xCurrentLine = mustFind<SVGPolylineElement>(scene, '[data-current-polyline="x"]');
+    const vCurrentLine = mustFind<SVGPolylineElement>(scene, '[data-current-polyline="v"]');
+    const xPoint = mustFind<SVGCircleElement>(scene, '[data-point="x"]');
+    const vPoint = mustFind<SVGCircleElement>(scene, '[data-point="v"]');
+    const motionPoint = mustFind<HTMLElement>(scene, "[data-motion-point]");
+    const velocityArrow = mustFind<HTMLElement>(scene, "[data-velocity-arrow]");
+    const motionXLabel = mustFind<HTMLElement>(scene, "[data-motion-x-label]");
+    const observation = mustFind<HTMLElement>(scene, "[data-observation]");
+    const guidance = mustFind<HTMLElement>(scene, "[data-guidance]");
+    const xNote = mustFind<HTMLElement>(scene, '[data-graph-note="x"]');
+    const vNote = mustFind<HTMLElement>(scene, '[data-graph-note="v"]');
+    const playButton = mustFind<HTMLButtonElement>(scene, "[data-play-toggle]");
+    const resetButton = mustFind<HTMLButtonElement>(scene, "[data-reset]");
+    const reducedMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+    let state: SceneState = { x0: 0, v0: 3, a: 0.8, t: 0 };
+    let isPlaying = false;
+    let isReducedMotion = reducedMotionQuery.matches;
+    let animationFrameId: number | null = null;
+    let previousFrameTime: number | null = null;
+
+    drawGrid(scene.querySelector<SVGGElement>('[data-grid="x"]'), X_DOMAIN.min, X_DOMAIN.max);
+    drawGrid(scene.querySelector<SVGGElement>('[data-grid="v"]'), V_DOMAIN.min, V_DOMAIN.max);
+
+    const syncInputs = () => {
+      inputs.v0.value = formatPhysicsNumber(state.v0);
+      inputs.a.value = formatPhysicsNumber(state.a);
+    };
+
+    const setState = (nextState: SceneState) => {
+      state = normalizeState(nextState);
+      updateScene();
+    };
+
+    const stopAnimation = () => {
+      if (animationFrameId !== null) {
+        window.cancelAnimationFrame(animationFrameId);
+        animationFrameId = null;
+      }
+
+      previousFrameTime = null;
+      isPlaying = false;
+      updatePlaybackControls();
+    };
+
+    const stepForward = () => {
+      stopAnimation();
+      state = normalizeState({
+        ...state,
+        t: state.t >= T_MAX
+          ? 0
+          : normalizeUniformMotionTime(state.t + REDUCED_MOTION_STEP, T_MAX)
+      });
+      updateScene();
+    };
+
+    const startAnimation = () => {
+      if (isReducedMotion) {
+        stepForward();
+        return;
+      }
+
+      if (state.t >= T_MAX) {
+        state = normalizeState({ ...state, t: 0 });
+      }
+
+      isPlaying = true;
+      previousFrameTime = null;
+      updateScene();
+      animationFrameId = window.requestAnimationFrame(tickAnimation);
+    };
+
+    const tickAnimation = (timestamp: number) => {
+      if (!isPlaying) return;
+
+      if (previousFrameTime === null) {
+        previousFrameTime = timestamp;
+      }
+
+      const deltaSeconds = ((timestamp - previousFrameTime) / 1000) * PLAYBACK_RATE;
+      previousFrameTime = timestamp;
+      const nextT = normalizeUniformMotionTime(state.t + deltaSeconds, T_MAX);
+      state = normalizeState({ ...state, t: nextT });
+      updateScene();
+
+      if (nextT >= T_MAX) {
+        stopAnimation();
+        return;
+      }
+
+      animationFrameId = window.requestAnimationFrame(tickAnimation);
+    };
+
+    const updatePlaybackControls = () => {
+      scene.dataset.playing = String(isPlaying);
+      scene.dataset.animationState = isPlaying ? "running" : "paused";
+
+      if (isReducedMotion) {
+        playButton.textContent = "Шаг вперёд";
+        playButton.setAttribute("aria-label", "Шаг вперёд по времени");
+        playButton.setAttribute("aria-pressed", "false");
+        playButton.dataset.mode = "step";
+        return;
+      }
+
+      playButton.textContent = isPlaying ? "Пауза" : "Запустить";
+      playButton.setAttribute(
+        "aria-label",
+        isPlaying ? "Пауза: остановить анимацию" : "Запустить анимацию"
+      );
+      playButton.setAttribute("aria-pressed", String(isPlaying));
+      playButton.dataset.mode = isPlaying ? "pause" : "play";
+    };
+
+    const updateScene = () => {
+      state = normalizeState(state);
+      syncInputs();
+      const x = positionAt(state.t, state.x0, state.v0, state.a);
+      const v = velocityAt(state.t, state.v0, state.a);
+      const direction = accelerationMotionDirection(state.t, state.v0, state.a);
+      const mode = getAccelerationMode(state, v);
+
+      scene.dataset.currentTime = formatPhysicsNumber(state.t, 2);
+      scene.dataset.currentX = formatPhysicsNumber(x, 2);
+      scene.dataset.currentV = formatPhysicsNumber(v, 2);
+      scene.dataset.currentA = formatPhysicsNumber(state.a, 2);
+      scene.dataset.motionDirection = direction;
+      scene.dataset.accelerationMode = mode;
+
+      outputs.v0.textContent = `${formatPhysicsNumber(state.v0)} м/с`;
+      outputs.a.textContent = `${formatPhysicsNumber(state.a)} м/с²`;
+      values.t.textContent = `${formatPhysicsNumber(state.t, 2)} с`;
+      values.v.textContent = `${formatPhysicsNumber(v, 2)} м/с`;
+      values.x.textContent = `${formatPhysicsNumber(x, 2)} м`;
+
+      xBaseLine.setAttribute("points", seriesToPolyline(
+        generatePositionSeries({ ...state, tMax: T_MAX }),
+        (point) => mapPoint(point.t, point.x, X_DOMAIN)
+      ));
+      xCurrentLine.setAttribute("points", seriesToPolyline(
+        generatePositionSeries({ ...state, tMax: state.t }),
+        (point) => mapPoint(point.t, point.x, X_DOMAIN)
+      ));
+      vBaseLine.setAttribute("points", seriesToPolyline(
+        generateVelocitySeries({ v0: state.v0, a: state.a, tMax: T_MAX }),
+        (point) => mapPoint(point.t, point.v, V_DOMAIN)
+      ));
+      vCurrentLine.setAttribute("points", seriesToPolyline(
+        generateVelocitySeries({ v0: state.v0, a: state.a, tMax: state.t }),
+        (point) => mapPoint(point.t, point.v, V_DOMAIN)
+      ));
+
+      const xGraphPoint = mapPoint(state.t, x, X_DOMAIN);
+      const vGraphPoint = mapPoint(state.t, v, V_DOMAIN);
+      setCirclePoint(xPoint, xGraphPoint);
+      setCirclePoint(vPoint, vGraphPoint);
+
+      const motionPercent = mapPercent(x, X_DOMAIN);
+      motionPoint.style.setProperty("--point-left", `${motionPercent}%`);
+      motionPoint.dataset.motionLabel = `v = ${formatPhysicsNumber(v, 1)} м/с`;
+      motionXLabel.style.setProperty("--point-left", `${motionPercent}%`);
+      motionXLabel.textContent = `x = ${formatPhysicsNumber(x, 1)} м`;
+      velocityArrow.style.setProperty("--point-left", `${motionPercent}%`);
+      velocityArrow.style.setProperty("--velocity-width", `${getVelocityArrowWidth(v)}px`);
+      velocityArrow.dataset.direction = direction;
+
+      observation.textContent = getObservation(mode, direction);
+      guidance.textContent = getGuidance(mode, direction);
+      xNote.textContent = getPositionNote(state.a);
+      vNote.textContent = getVelocityNote(state.a);
+      updatePlaybackControls();
+    };
+
+    playButton.addEventListener("click", () => {
+      if (isPlaying) {
+        stopAnimation();
+      } else {
+        startAnimation();
+      }
+    });
+
+    resetButton.addEventListener("click", () => {
+      stopAnimation();
+      setState({ x0: 0, v0: 3, a: 0.8, t: 0 });
+    });
+
+    inputs.v0.addEventListener("input", () => {
+      stopAnimation();
+      setState({ ...state, v0: Number(inputs.v0.value), t: 0 });
+    });
+
+    inputs.a.addEventListener("input", () => {
+      stopAnimation();
+      setState({ ...state, a: Number(inputs.a.value) });
+    });
+
+    reducedMotionQuery.addEventListener("change", (event) => {
+      isReducedMotion = event.matches;
+      stopAnimation();
+      updatePlaybackControls();
+    });
+
+    updateScene();
+  });
+
+  function normalizeState(state: SceneState): SceneState {
+    return {
+      x0: 0,
+      v0: clampNumber(state.v0, -6, 6),
+      a: clampNumber(state.a, -3, 3),
+      t: normalizeUniformMotionTime(state.t, T_MAX)
+    };
+  }
+
+  function drawGrid(target: SVGGElement | null, min: number, max: number) {
+    if (!target) return;
+
+    const lines: string[] = [];
+    for (let index = 0; index <= 4; index += 1) {
+      const x = PAD.left + ((SVG_WIDTH - PAD.left - PAD.right) / 4) * index;
+      const y = PAD.top + ((SVG_HEIGHT - PAD.top - PAD.bottom) / 4) * index;
+      lines.push(`<line class="grid-line" x1="${x}" y1="${PAD.top}" x2="${x}" y2="${SVG_HEIGHT - PAD.bottom}"></line>`);
+      lines.push(`<line class="grid-line" x1="${PAD.left}" y1="${y}" x2="${SVG_WIDTH - PAD.right}" y2="${y}"></line>`);
+    }
+
+    const zeroY = mapPoint(0, 0, { min, max }).y;
+    lines.push(`<line class="zero-line" x1="${PAD.left}" y1="${zeroY}" x2="${SVG_WIDTH - PAD.right}" y2="${zeroY}"></line>`);
+    target.innerHTML = lines.join("");
+  }
+
+  function mapPoint(t: number, value: number, domain: Domain): SvgPoint {
+    const x = PAD.left + (normalizeUniformMotionTime(t, T_MAX) / T_MAX) * (SVG_WIDTH - PAD.left - PAD.right);
+    const normalizedY = (clampNumber(value, domain.min, domain.max) - domain.min) / (domain.max - domain.min);
+    const y = SVG_HEIGHT - PAD.bottom - normalizedY * (SVG_HEIGHT - PAD.top - PAD.bottom);
+    return { x, y };
+  }
+
+  function mapPercent(value: number, domain: Domain): number {
+    return clampNumber(((value - domain.min) / (domain.max - domain.min)) * 100, 5, 95);
+  }
+
+  function seriesToPolyline<TPoint>(
+    points: TPoint[],
+    mapper: (point: TPoint) => SvgPoint
+  ): string {
+    return points.map((point) => {
+      const mapped = mapper(point);
+      return `${formatPhysicsNumber(mapped.x, 2)},${formatPhysicsNumber(mapped.y, 2)}`;
+    }).join(" ");
+  }
+
+  function setCirclePoint(circle: SVGCircleElement, point: SvgPoint) {
+    circle.setAttribute("cx", formatPhysicsNumber(point.x, 2));
+    circle.setAttribute("cy", formatPhysicsNumber(point.y, 2));
+  }
+
+  function getAccelerationMode(state: SceneState, v: number): string {
+    if (state.a === 0) return "uniform";
+    if (Math.abs(v) < 1e-9) return "turning-point";
+    if (state.v0 > 0 && state.a < 0 && v > 0) return "slowing-forward";
+    if (state.v0 < 0 && state.a > 0 && v < 0) return "slowing-backward";
+    if (v > 0) return "speeding-up";
+    return "moving-backward";
+  }
+
+  function getObservation(mode: string, direction: Direction): string {
+    if (mode === "uniform") return "как равномерное";
+    if (mode === "turning-point") return "почти остановка";
+    if (mode === "slowing-forward") return "ещё вправо";
+    if (mode === "slowing-backward") return "ещё назад";
+    if (direction === "backward") return "едет назад";
+    return "скорость растёт";
+  }
+
+  function getGuidance(mode: string, direction: Direction): string {
+    if (mode === "uniform") {
+      return "a = 0: скорость не меняется. Это снова равномерное движение.";
+    }
+
+    if (mode === "slowing-forward") {
+      return "a отрицательное, но тело ещё едет вправо: скорость уменьшается, а не направление сразу меняется.";
+    }
+
+    if (mode === "slowing-backward") {
+      return "a положительное, но тело ещё едет назад: скорость по модулю уменьшается.";
+    }
+
+    if (mode === "turning-point") {
+      return "В этот момент скорость стала почти нулевой. После этого направление может измениться.";
+    }
+
+    if (direction === "backward") {
+      return "Скорость стала отрицательной: теперь точка действительно едет назад.";
+    }
+
+    return "a положительное: скорость растёт, поэтому точка разгоняется вправо.";
+  }
+
+  function getPositionNote(a: number): string {
+    if (a === 0) {
+      return "При a = 0 график x(t) снова прямая линия.";
+    }
+
+    return "x(t) становится кривой: наклон меняется вместе со скоростью.";
+  }
+
+  function getVelocityNote(a: number): string {
+    if (a === 0) {
+      return "a = 0: линия v(t) горизонтальная, скорость постоянная.";
+    }
+
+    return a > 0
+      ? "a > 0: линия v(t) идёт вверх, скорость растёт."
+      : "a < 0: линия v(t) идёт вниз, скорость уменьшается или уходит в минус.";
+  }
+
+  function getVelocityArrowWidth(v: number): number {
+    if (Math.abs(v) < 1e-9) return 0;
+    return clampNumber(24 + Math.abs(v) * 8, 0, 96);
+  }
+
+  function mustFind<TElement extends Element>(
+    root: ParentNode,
+    selector: string
+  ): TElement {
+    const element = root.querySelector<TElement>(selector);
+    if (!element) {
+      throw new Error(`AccelerationScene: missing required element ${selector}`);
+    }
+
+    return element;
+  }
+</script>
+
+<style>
+  .acceleration-scene {
+    display: grid;
+    gap: clamp(var(--pl-space-4), 2vw, var(--pl-space-6));
+    padding: clamp(var(--pl-space-4), 2.2vw, var(--pl-space-6));
+    border-color: rgba(88, 216, 255, 0.2);
+    border-radius: 24px;
+    background:
+      radial-gradient(ellipse at 48% -12%, rgba(88, 216, 255, 0.1), transparent 34rem),
+      radial-gradient(ellipse at 80% 16%, rgba(255, 216, 77, 0.07), transparent 28rem),
+      rgba(4, 12, 24, 0.86);
+  }
+
+  .scene-head {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(220px, 0.4fr);
+    gap: var(--pl-space-4);
+    align-items: end;
+  }
+
+  .component-label {
+    display: inline-flex;
+    min-height: 26px;
+    margin: 0 0 var(--pl-space-2);
+    padding: 4px 10px;
+    border: 1px solid rgba(255, 216, 77, 0.24);
+    border-radius: 999px;
+    color: var(--pl-accent);
+    background: rgba(255, 216, 77, 0.055);
+    font-size: 0.72rem;
+    font-weight: 900;
+    text-transform: uppercase;
+  }
+
+  .scene-head h3 {
+    margin-bottom: var(--pl-space-2);
+    font-size: clamp(1.45rem, 3vw, 2.1rem);
+  }
+
+  .scene-head p {
+    max-width: 720px;
+    margin: 0;
+  }
+
+  .scene-readouts {
+    display: grid;
+    gap: var(--pl-space-2);
+  }
+
+  .scene-readouts span {
+    padding: 9px 12px;
+    border: 1px solid rgba(88, 216, 255, 0.14);
+    border-radius: 999px;
+    color: var(--pl-text-muted);
+    background: rgba(255, 255, 255, 0.032);
+  }
+
+  .scene-readouts b {
+    color: var(--pl-accent);
+  }
+
+  .scene-grid {
+    display: grid;
+    grid-template-columns: minmax(300px, 0.9fr) minmax(340px, 1.1fr);
+    gap: var(--pl-space-4);
+    align-items: stretch;
+  }
+
+  .motion-panel {
+    min-width: 0;
+    padding: var(--pl-space-4);
+    border-radius: 18px;
+    background:
+      radial-gradient(ellipse at 50% 14%, rgba(88, 216, 255, 0.11), transparent 22rem),
+      rgba(4, 13, 26, 0.78);
+  }
+
+  .panel-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--pl-space-3);
+    color: var(--pl-text);
+    font-weight: 900;
+  }
+
+  .panel-head strong {
+    color: var(--pl-accent);
+    text-align: right;
+  }
+
+  .motion-panel p,
+  .formula-card p,
+  .chapter-feedback {
+    margin: 0;
+    line-height: 1.55;
+  }
+
+  .graph-stack {
+    display: grid;
+    gap: var(--pl-space-4);
+    min-width: 0;
+  }
+
+  :global(.acceleration-scene .track) {
+    min-height: clamp(220px, 24vw, 270px);
+  }
+
+  :global(.acceleration-scene .track::before) {
+    bottom: 88px;
+  }
+
+  :global(.acceleration-scene .track-axis) {
+    bottom: 88px;
+  }
+
+  :global(.acceleration-scene .track-tick) {
+    bottom: 78px;
+  }
+
+  :global(.acceleration-scene .motion-point) {
+    bottom: 103px;
+  }
+
+  :global(.acceleration-scene .motion-x-label) {
+    bottom: 162px;
+  }
+
+  :global(.acceleration-scene .velocity-arrow) {
+    bottom: 119px;
+  }
+
+  .acceleration-controls {
+    display: grid;
+    grid-template-columns: minmax(170px, 0.32fr) repeat(2, minmax(220px, 1fr));
+    gap: var(--pl-space-3);
+    align-items: center;
+    padding: var(--pl-space-3);
+    border-color: rgba(88, 216, 255, 0.16);
+    border-radius: 20px;
+    background:
+      linear-gradient(90deg, rgba(255, 216, 77, 0.035), transparent 36%, rgba(88, 216, 255, 0.05)),
+      rgba(5, 14, 27, 0.76);
+  }
+
+  .time-actions {
+    display: grid;
+    grid-template-columns: minmax(112px, 1fr) minmax(94px, 0.75fr);
+    gap: var(--pl-space-2);
+  }
+
+  .play-button,
+  .reset-button {
+    min-height: 50px;
+    padding: 10px 14px;
+    font-weight: 900;
+  }
+
+  .play-button[aria-pressed="true"] {
+    color: var(--pl-accent);
+    background: rgba(255, 216, 77, 0.08);
+  }
+
+  .slider-field {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: var(--pl-space-2) var(--pl-space-3);
+    min-width: 0;
+    padding: var(--pl-space-2) var(--pl-space-3);
+    border: 1px solid rgba(88, 216, 255, 0.1);
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.026);
+  }
+
+  .slider-field > span {
+    display: grid;
+    gap: var(--pl-space-1);
+    min-width: 0;
+  }
+
+  .slider-field b {
+    color: var(--pl-text);
+  }
+
+  .slider-field span span,
+  .slider-field output {
+    color: var(--pl-text-muted);
+    font-size: 0.92rem;
+  }
+
+  .slider-field output {
+    color: var(--pl-text);
+    font-weight: 900;
+    text-align: right;
+  }
+
+  .slider-field input {
+    grid-column: 1 / -1;
+    width: 100%;
+    accent-color: var(--pl-accent);
+  }
+
+  .slider-field input[type="range"] {
+    height: 26px;
+    background: transparent;
+  }
+
+  .slider-field input[type="range"]::-webkit-slider-runnable-track {
+    height: 7px;
+    border: 1px solid rgba(88, 216, 255, 0.18);
+    border-radius: 999px;
+    background:
+      linear-gradient(90deg, rgba(255, 216, 77, 0.88), rgba(88, 216, 255, 0.56)),
+      rgba(255, 255, 255, 0.08);
+  }
+
+  .slider-field input[type="range"]::-webkit-slider-thumb {
+    width: 20px;
+    height: 20px;
+    margin-top: -7px;
+    border: 3px solid rgba(8, 14, 24, 0.96);
+    border-radius: 50%;
+    background: var(--pl-accent);
+    box-shadow: 0 0 0 5px rgba(255, 216, 77, 0.12);
+    appearance: none;
+  }
+
+  .slider-field input[type="range"]::-moz-range-track {
+    height: 7px;
+    border: 1px solid rgba(88, 216, 255, 0.18);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  .slider-field input[type="range"]::-moz-range-progress {
+    height: 7px;
+    border-radius: 999px;
+    background: rgba(255, 216, 77, 0.9);
+  }
+
+  .slider-field input[type="range"]::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border: 3px solid rgba(8, 14, 24, 0.96);
+    border-radius: 50%;
+    background: var(--pl-accent);
+    box-shadow: 0 0 0 5px rgba(255, 216, 77, 0.12);
+  }
+
+  .slider-field input:focus-visible,
+  .play-button:focus-visible,
+  .reset-button:focus-visible {
+    outline: 3px solid var(--pl-accent);
+    outline-offset: 4px;
+  }
+
+  @media (max-width: 1040px) {
+    .scene-head,
+    .scene-grid,
+    .acceleration-controls {
+      grid-template-columns: 1fr;
+    }
+
+    .scene-readouts {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 600px) {
+    .acceleration-scene {
+      padding: var(--pl-space-3);
+      border-radius: 20px;
+    }
+
+    .scene-readouts {
+      grid-template-columns: 1fr;
+    }
+
+    .motion-panel {
+      padding: var(--pl-space-3);
+      border-radius: 16px;
+    }
+
+    :global(.acceleration-scene .track) {
+      min-height: 230px;
+      margin-block: var(--pl-space-3);
+    }
+
+    .time-actions {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .slider-field {
+      grid-template-columns: 1fr;
+    }
+
+    .slider-field output {
+      text-align: left;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .slider-field input,
+    .play-button,
+    .reset-button {
+      transition: none;
+    }
+  }
+</style>

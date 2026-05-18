@@ -5,23 +5,12 @@ import { pathToFileURL } from "node:url";
 import ts from "typescript";
 
 const root = process.cwd();
-const sourcePath = path.join(root, "src/lib/physics/kinematics.ts");
 const outputDir = path.join(root, "artifacts/physics-tests");
-const outputPath = path.join(outputDir, "kinematics.mjs");
-
-const source = await readFile(sourcePath, "utf8");
-const transpiled = ts.transpileModule(source, {
-  compilerOptions: {
-    module: ts.ModuleKind.ES2022,
-    target: ts.ScriptTarget.ES2022,
-    strict: true
-  }
-});
 
 await mkdir(outputDir, { recursive: true });
-await writeFile(outputPath, transpiled.outputText, "utf8");
 
-const physics = await import(`${pathToFileURL(outputPath).href}?t=${Date.now()}`);
+const physics = await importPhysicsModule("kinematics");
+const accelerated = await importPhysicsModule("acceleratedMotion");
 
 assert.equal(physics.uniformPosition(0, 2, 3), 6);
 assert.equal(physics.uniformPosition(5, 0, 10), 5);
@@ -69,4 +58,75 @@ assert.deepEqual(
   ]
 );
 
+assert.equal(accelerated.velocityAt(3, 2, 4), 14);
+assert.equal(accelerated.velocityAt(5, 8, -2), -2);
+assert.equal(accelerated.positionAt(3, 1, 2, 4), 25);
+assert.equal(accelerated.positionAt(4, 5, 3, 0), physics.uniformPosition(5, 3, 4));
+assert.equal(accelerated.velocityAt(4, 3, 0), physics.uniformVelocity(3));
+assert.equal(accelerated.accelerationMotionDirection(1, 4, -2), "forward");
+assert.equal(accelerated.accelerationMotionDirection(2, 4, -2), "still");
+assert.equal(accelerated.accelerationMotionDirection(3, 4, -2), "backward");
+assert.deepEqual(
+  accelerated.generateVelocitySeries({
+    v0: 1,
+    a: 2,
+    tMax: 1,
+    step: 0.5
+  }),
+  [
+    { t: 0, v: 1 },
+    { t: 0.5, v: 2 },
+    { t: 1, v: 3 }
+  ]
+);
+assert.deepEqual(
+  accelerated.generatePositionSeries({
+    x0: 0,
+    v0: 2,
+    a: -1,
+    tMax: 1,
+    step: 0.5
+  }),
+  [
+    { t: 0, x: 0 },
+    { t: 0.5, x: 0.875 },
+    { t: 1, x: 1.5 }
+  ]
+);
+
+for (const point of accelerated.generatePositionSeries({
+  x0: Number.NaN,
+  v0: Number.POSITIVE_INFINITY,
+  a: Number.NEGATIVE_INFINITY,
+  tMax: Number.NaN
+})) {
+  assert.equal(Number.isFinite(point.t), true);
+  assert.equal(Number.isFinite(point.x), true);
+}
+
+for (const point of accelerated.generateVelocitySeries({
+  v0: Number.NaN,
+  a: Number.POSITIVE_INFINITY,
+  tMax: Number.NaN
+})) {
+  assert.equal(Number.isFinite(point.t), true);
+  assert.equal(Number.isFinite(point.v), true);
+}
+
 console.log("Physics kinematics checks passed.");
+
+async function importPhysicsModule(name) {
+  const sourcePath = path.join(root, `src/lib/physics/${name}.ts`);
+  const outputPath = path.join(outputDir, `${name}.mjs`);
+  const source = await readFile(sourcePath, "utf8");
+  const transpiled = ts.transpileModule(source, {
+    compilerOptions: {
+      module: ts.ModuleKind.ES2022,
+      target: ts.ScriptTarget.ES2022,
+      strict: true
+    }
+  });
+
+  await writeFile(outputPath, transpiled.outputText, "utf8");
+  return import(`${pathToFileURL(outputPath).href}?t=${Date.now()}`);
+}
