@@ -126,10 +126,24 @@ const navItems = [
             </p>
           </div>
         </div>
-        <p class="formula-note">
-          Частая ловушка: a &lt; 0 не означает «сразу назад». Сначала посмотри на v(t):
-          пока v положительная, тело ещё едет вправо.
-        </p>
+        <div class="formula-meta" aria-label="Переменные, единицы и условие применимости">
+          <div>
+            <h3>Переменные и единицы</h3>
+            <div class="variable-grid">
+              <span class="variable-chip" data-formula-variable="v" data-variable="v"><b>v</b> скорость <em>м/с</em></span>
+              <span class="variable-chip" data-formula-variable="v0" data-variable="v"><b>v₀</b> начальная скорость <em>м/с</em></span>
+              <span class="variable-chip" data-formula-variable="a" data-variable="a"><b>a</b> ускорение <em>м/с²</em></span>
+              <span class="variable-chip" data-formula-variable="t" data-variable="t"><b>t</b> время <em>с</em></span>
+              <span class="variable-chip" data-formula-variable="x" data-variable="x"><b>x</b> координата <em>м</em></span>
+              <span class="variable-chip" data-formula-variable="x0" data-variable="x"><b>x₀</b> начальная координата <em>м</em></span>
+            </div>
+          </div>
+          <div class="formula-condition">
+            <h3>Когда это работает</h3>
+            <p>Формулы подходят, если ускорение a постоянно.</p>
+            <p>Знак a не всегда задаёт направление. Направление задаёт знак скорости v.</p>
+          </div>
+        </div>
       </SurfaceCard>
     </section>
 
@@ -256,6 +270,15 @@ const navItems = [
     gap: var(--pl-space-5);
     align-items: end;
     padding-bottom: var(--pl-space-10);
+  }
+
+  .chapter-page > .section {
+    padding-block: clamp(var(--pl-space-10), 5.2vw, var(--pl-space-16));
+  }
+
+  .chapter-page > .chapter-intro {
+    padding-top: clamp(var(--pl-space-16), 7vw, var(--pl-space-20));
+    padding-bottom: clamp(var(--pl-space-8), 4vw, var(--pl-space-12));
   }
 
   .chapter-intro h1 {
@@ -422,8 +445,72 @@ const navItems = [
     margin-bottom: 0;
   }
 
-  .formula-note {
+  .formula-meta {
+    display: grid;
+    grid-template-columns: minmax(0, 1.35fr) minmax(240px, 0.8fr);
+    gap: var(--pl-space-4);
     margin: var(--pl-space-4) 0 0;
+  }
+
+  .formula-meta h3 {
+    margin: 0 0 var(--pl-space-3);
+    color: var(--pl-text);
+    font-size: 1rem;
+  }
+
+  .variable-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--pl-space-2);
+  }
+
+  .variable-chip {
+    display: flex;
+    align-items: center;
+    gap: var(--pl-space-2);
+    min-width: 0;
+    min-height: 44px;
+    padding: 8px 10px;
+    border: 1px solid rgba(88, 216, 255, 0.1);
+    border-radius: 14px;
+    color: var(--pl-text-muted);
+    background: rgba(255, 255, 255, 0.022);
+    line-height: 1.25;
+  }
+
+  .variable-chip b {
+    flex: 0 0 auto;
+    min-width: 2.2em;
+    color: var(--pl-text);
+    font-family: "Cascadia Mono", "JetBrains Mono", Consolas, monospace;
+    font-size: 1.12rem;
+  }
+
+  .variable-chip em {
+    flex: 0 0 auto;
+    margin-left: auto;
+    color: var(--pl-text-soft);
+    font-size: 0.86rem;
+    font-style: normal;
+  }
+
+  .variable-chip[data-variable="x"] b {
+    color: var(--pl-position);
+  }
+
+  .variable-chip[data-variable="v"] b {
+    color: var(--pl-velocity);
+  }
+
+  .variable-chip[data-variable="a"] b {
+    color: var(--pl-acceleration);
+  }
+
+  .variable-chip[data-variable="t"] b {
+    color: var(--pl-time);
+  }
+
+  .formula-condition {
     padding: var(--pl-space-3);
     border: 1px solid rgba(255, 216, 77, 0.14);
     border-radius: 16px;
@@ -432,20 +519,30 @@ const navItems = [
     line-height: 1.55;
   }
 
+  .formula-condition p {
+    margin: 0;
+  }
+
+  .formula-condition p + p {
+    margin-top: var(--pl-space-2);
+  }
+
   .chapter-check {
     display: grid;
     gap: var(--pl-space-4);
   }
 
   .chapter-answer-row {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr));
     gap: var(--pl-space-3);
+    align-items: stretch;
   }
 
   .chapter-answer-row button {
-    flex: 1 1 190px;
-    min-height: 46px;
+    display: flex;
+    align-items: center;
+    min-height: 58px;
     padding: 10px 12px;
     border: 1px solid rgba(88, 216, 255, 0.12);
     border-radius: 14px;
@@ -494,18 +591,26 @@ const navItems = [
   @media (max-width: 900px) {
     .chapter-intro,
     .prediction-grid,
-    .formula-grid {
+    .formula-grid,
+    .formula-meta,
+    .variable-grid {
       grid-template-columns: minmax(0, 1fr);
     }
 
     .chapter-intro > *,
     .prediction-grid > *,
-    .formula-grid > * {
+    .formula-grid > *,
+    .formula-meta > *,
+    .variable-grid > * {
       min-width: 0;
     }
   }
 
   @media (max-width: 600px) {
+    .chapter-page > .section {
+      padding-block: var(--pl-space-10);
+    }
+
     .chapter-intro {
       padding-top: var(--pl-space-10);
       padding-bottom: var(--pl-space-6);
@@ -518,6 +623,10 @@ const navItems = [
     .chapter-answer-row {
       display: grid;
       grid-template-columns: 1fr;
+    }
+
+    .chapter-answer-row button {
+      min-height: 54px;
     }
   }
 </style>

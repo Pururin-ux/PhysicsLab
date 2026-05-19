@@ -73,6 +73,9 @@ test.describe("accelerated-motion chapter screenshots", () => {
       await expect(scene.locator('[data-current-polyline="v"]')).toHaveAttribute("points", /,/);
       await expect(scene.locator('[data-point="x"]')).toHaveAttribute("cx", /\d/);
       await expect(scene.locator('[data-point="v"]')).toHaveAttribute("cx", /\d/);
+      await expect(page.getByText("Переменные и единицы")).toBeVisible();
+      await expect(page.getByText("Формулы подходят, если ускорение a постоянно.")).toBeVisible();
+      await expect(page.locator('[data-formula-variable="a"]')).toContainText("м/с²");
 
       const playButton = scene.locator("[data-play-toggle]");
       const resetButton = scene.locator("[data-reset]");

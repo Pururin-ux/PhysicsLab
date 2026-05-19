@@ -69,6 +69,11 @@ const accelerationVTicks: GraphTick[] = [
       <p data-guidance>
         Сейчас a положительное: скорость растёт, поэтому точка разгоняется вправо.
       </p>
+      <div class="motion-causality-strip" aria-label="Связь ускорения, скорости и координаты">
+        <span data-variable="a"><b>a</b> меняет v(t)</span>
+        <span data-variable="v"><b>v</b> двигает точку</span>
+        <span data-variable="x"><b>x</b> попадает на x(t)</span>
+      </div>
     </div>
 
     <div class="graph-stack">
@@ -570,12 +575,14 @@ const accelerationVTicks: GraphTick[] = [
 
   .scene-grid {
     display: grid;
-    grid-template-columns: minmax(300px, 0.9fr) minmax(340px, 1.1fr);
+    grid-template-columns: minmax(340px, 1fr) minmax(360px, 1.06fr);
     gap: var(--pl-space-4);
-    align-items: stretch;
+    align-items: start;
   }
 
   .motion-panel {
+    display: grid;
+    gap: var(--pl-space-3);
     min-width: 0;
     padding: var(--pl-space-4);
     border-radius: 18px;
@@ -612,7 +619,8 @@ const accelerationVTicks: GraphTick[] = [
   }
 
   :global(.acceleration-scene .track) {
-    min-height: clamp(220px, 24vw, 270px);
+    min-height: clamp(250px, 25vw, 300px);
+    margin-block: var(--pl-space-2);
   }
 
   :global(.acceleration-scene .track::before) {
@@ -639,6 +647,44 @@ const accelerationVTicks: GraphTick[] = [
     bottom: 119px;
   }
 
+  .motion-causality-strip {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--pl-space-2);
+    margin-top: var(--pl-space-1);
+  }
+
+  .motion-causality-strip span {
+    min-width: 0;
+    min-height: 44px;
+    padding: 8px 10px;
+    border: 1px solid rgba(88, 216, 255, 0.1);
+    border-radius: 14px;
+    color: var(--pl-text-muted);
+    background: rgba(255, 255, 255, 0.024);
+    font-size: 0.9rem;
+    line-height: 1.25;
+  }
+
+  .motion-causality-strip b {
+    display: block;
+    margin-bottom: 2px;
+    font-family: "Cascadia Mono", "JetBrains Mono", Consolas, monospace;
+    font-size: 1.05rem;
+  }
+
+  .motion-causality-strip [data-variable="a"] b {
+    color: var(--pl-acceleration);
+  }
+
+  .motion-causality-strip [data-variable="v"] b {
+    color: var(--pl-velocity);
+  }
+
+  .motion-causality-strip [data-variable="x"] b {
+    color: var(--pl-position);
+  }
+
   .acceleration-controls {
     display: grid;
     grid-template-columns: minmax(220px, 0.4fr) repeat(2, minmax(240px, 1fr));
@@ -647,6 +693,7 @@ const accelerationVTicks: GraphTick[] = [
     padding: var(--pl-space-3);
     border-color: rgba(88, 216, 255, 0.16);
     border-radius: 20px;
+    margin-top: calc(-1 * var(--pl-space-1));
     background:
       linear-gradient(90deg, rgba(255, 216, 77, 0.035), transparent 36%, rgba(88, 216, 255, 0.05)),
       rgba(5, 14, 27, 0.76);
@@ -800,8 +847,12 @@ const accelerationVTicks: GraphTick[] = [
     }
 
     :global(.acceleration-scene .track) {
-      min-height: 230px;
+      min-height: 250px;
       margin-block: var(--pl-space-3);
+    }
+
+    .motion-causality-strip {
+      grid-template-columns: 1fr;
     }
 
     .time-actions {
