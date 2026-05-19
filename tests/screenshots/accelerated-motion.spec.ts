@@ -119,8 +119,9 @@ test.describe("accelerated-motion chapter screenshots", () => {
       if (viewport.width <= 600) {
         expect(playTop - sceneTop).toBeLessThan(260);
         expect(accelerationInputTop - sceneTop).toBeLessThan(440);
-        expect(primaryGraphTop - sceneTop).toBeLessThan(620);
-        expect(motionPanelTop - sceneTop).toBeLessThan(960);
+        expect(motionPanelTop).toBeLessThan(primaryGraphTop);
+        expect(motionPanelTop - sceneTop).toBeLessThan(620);
+        expect(primaryGraphTop - sceneTop).toBeLessThan(960);
         expect(motionPanelBox.height).toBeLessThan(300);
       } else if (viewport.width >= 1200) {
         expect(Math.abs(primaryGraphTop - motionPanelTop)).toBeLessThan(80);

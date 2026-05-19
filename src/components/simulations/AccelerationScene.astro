@@ -571,6 +571,7 @@ const accelerationControlSliders = [
 
   .lab-console {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: var(--pl-space-3);
     min-width: 0;
   }
@@ -586,6 +587,11 @@ const accelerationControlSliders = [
   .primary-graph,
   .secondary-graph {
     min-width: 0;
+  }
+
+  .secondary-graph {
+    grid-column: 1 / -1;
+    width: 100%;
   }
 
   .motion-panel {
@@ -710,6 +716,7 @@ const accelerationControlSliders = [
 
   :global(.acceleration-scene .secondary-graph .graph-card) {
     display: grid;
+    width: 100%;
     grid-template-columns: minmax(320px, 0.62fr) minmax(220px, 0.38fr);
     grid-template-areas:
       "title note"
@@ -800,11 +807,11 @@ const accelerationControlSliders = [
       flex-direction: column;
     }
 
-    .primary-graph {
+    .motion-panel {
       order: 1;
     }
 
-    .motion-panel {
+    .primary-graph {
       order: 2;
     }
 
