@@ -78,12 +78,22 @@ const accelerationControlSliders = [
         если скорость меняется, линия координаты становится кривой.
       </p>
     </div>
-    <div class="scene-readouts" aria-label="Текущие значения">
+    <div class="scene-readouts" data-scene-readouts aria-label="Текущие значения">
       <span>t = <b data-value="t">0 с</b></span>
       <span>v = <b data-value="v">3 м/с</b></span>
       <span>x = <b data-value="x">0 м</b></span>
     </div>
   </div>
+
+  <ControlDock
+    rootClass="acceleration-controls"
+    ariaLabel="Управление равноускоренным движением"
+    showTimeActions
+    sliders={accelerationControlSliders}
+    readouts={[]}
+    scenarios={[]}
+    hint="Сначала меняй a. v₀ задаёт старт линии v(t), а a меняет её наклон."
+  />
 
   <div class="scene-grid">
     <div class="motion-panel pl-motion-track" aria-label="Движение точки по прямой">
@@ -107,7 +117,7 @@ const accelerationControlSliders = [
       </div>
     </div>
 
-    <div class="graph-stack">
+    <div class="graph-stack" data-graph-stack>
       <InstrumentGraph
         title="График v(t)"
         graphKind="v"
@@ -135,15 +145,6 @@ const accelerationControlSliders = [
     </div>
   </div>
 
-  <ControlDock
-    rootClass="acceleration-controls"
-    ariaLabel="Управление равноускоренным движением"
-    showTimeActions
-    sliders={accelerationControlSliders}
-    readouts={[]}
-    scenarios={[]}
-    hint="Сначала меняй a. v₀ задаёт старт линии v(t), а a меняет её наклон."
-  />
 </section>
 
 <script>

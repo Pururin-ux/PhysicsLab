@@ -27,6 +27,15 @@ const hasHorizontalScroll = async (page: Page) =>
     () => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1
   );
 
+const topOf = async (locator: Locator) => {
+  const box = await locator.boundingBox();
+  if (!box) {
+    throw new Error("Expected element to have a visible bounding box");
+  }
+
+  return box.y;
+};
+
 test.describe("accelerated-motion chapter screenshots", () => {
   test.beforeAll(async () => {
     await fs.rm(screenshotDir, { recursive: true, force: true });
@@ -86,6 +95,16 @@ test.describe("accelerated-motion chapter screenshots", () => {
       const resetButton = scene.locator("[data-reset]");
       await expect(playButton).toBeVisible();
       await expect(resetButton).toBeVisible();
+
+      const readoutsTop = await topOf(scene.locator("[data-scene-readouts]"));
+      const controlsTop = await topOf(scene.locator(".acceleration-controls"));
+      const graphStackTop = await topOf(scene.locator("[data-graph-stack]"));
+      const playTop = await topOf(playButton);
+      const accelerationInputTop = await topOf(scene.locator('[data-input="a"]'));
+      expect(readoutsTop).toBeLessThan(controlsTop);
+      expect(controlsTop).toBeLessThan(graphStackTop);
+      expect(playTop).toBeLessThan(graphStackTop);
+      expect(accelerationInputTop).toBeLessThan(graphStackTop);
 
       const startTime = await currentTime(scene);
       await playButton.click();
