@@ -489,9 +489,10 @@ const formatSliderValue = (value: number, unit: string) => `${value} ${unit}`;
   :global(.acceleration-scene) .acceleration-controls {
     grid-template-columns: minmax(220px, 0.4fr) repeat(2, minmax(240px, 1fr));
     align-items: center;
-    padding: var(--pl-space-3);
+    gap: var(--pl-space-2);
+    padding: var(--pl-space-2);
     border-color: rgba(88, 216, 255, 0.16);
-    border-radius: 20px;
+    border-radius: 18px;
     margin-top: 0;
     background:
       linear-gradient(90deg, rgba(255, 216, 77, 0.035), transparent 36%, rgba(88, 216, 255, 0.05)),
@@ -506,13 +507,13 @@ const formatSliderValue = (value: number, unit: string) => `${value} ${unit}`;
 
   :global(.acceleration-scene) .acceleration-controls .play-button,
   :global(.acceleration-scene) .acceleration-controls .reset-button {
-    min-height: 50px;
-    padding: 10px 14px;
+    min-height: 46px;
+    padding: 8px 12px;
   }
 
   :global(.acceleration-scene) .acceleration-controls .slider-field {
-    gap: var(--pl-space-2) var(--pl-space-3);
-    padding: var(--pl-space-2) var(--pl-space-3);
+    gap: var(--pl-space-1) var(--pl-space-2);
+    padding: 8px 10px;
     border: 1px solid rgba(88, 216, 255, 0.1);
     border-radius: 16px;
     background: rgba(255, 255, 255, 0.026);
@@ -520,11 +521,16 @@ const formatSliderValue = (value: number, unit: string) => `${value} ${unit}`;
 
   :global(.acceleration-scene) .acceleration-controls .slider-field span span,
   :global(.acceleration-scene) .acceleration-controls .slider-field output {
-    font-size: 0.92rem;
+    font-size: 0.86rem;
   }
 
   :global(.acceleration-scene) .acceleration-controls .slider-field input[type="range"] {
-    height: 26px;
+    height: 24px;
+  }
+
+  :global(.acceleration-scene) .acceleration-controls .control-hint {
+    font-size: 0.86rem;
+    line-height: 1.35;
   }
 
   @media (max-width: 1040px) {
@@ -568,6 +574,35 @@ const formatSliderValue = (value: number, unit: string) => `${value} ${unit}`;
     :global(.uniform-lab[data-visual-target="v1"]) .time-actions--dock,
     :global(.acceleration-scene) .acceleration-controls .time-actions {
       grid-template-columns: 1fr 1fr;
+    }
+
+    :global(.acceleration-scene) .acceleration-controls {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      padding: var(--pl-space-2);
+    }
+
+    :global(.acceleration-scene) .acceleration-controls .time-actions {
+      grid-column: 1 / -1;
+    }
+
+    :global(.acceleration-scene) .acceleration-controls .play-button,
+    :global(.acceleration-scene) .acceleration-controls .reset-button {
+      min-height: 44px;
+      padding: 8px 10px;
+    }
+
+    :global(.acceleration-scene) .acceleration-controls .slider-field {
+      grid-template-columns: 1fr;
+      padding: 7px 9px;
+    }
+
+    :global(.acceleration-scene) .acceleration-controls .slider-field output {
+      min-width: 0;
+      text-align: left;
+    }
+
+    :global(.acceleration-scene) .acceleration-controls .slider-field input[type="range"] {
+      height: 28px;
     }
 
     :global(.uniform-lab[data-visual-target="v1"]) .quick-status {

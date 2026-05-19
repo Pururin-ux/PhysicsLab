@@ -28,7 +28,7 @@ const accelerationControlSliders = [
   {
     key: "v0",
     label: "Начальная скорость v₀",
-    description: "Куда и как быстро едем в момент t = 0.",
+    description: "Старт движения при t = 0.",
     value: 3,
     min: -6,
     max: 6,
@@ -42,7 +42,7 @@ const accelerationControlSliders = [
   {
     key: "a",
     label: "Ускорение a",
-    description: "На сколько меняется v за 1 секунду.",
+    description: "Как меняется v за 1 секунду.",
     value: 0.8,
     min: -3,
     max: 3,
@@ -96,7 +96,7 @@ const accelerationControlSliders = [
   />
 
   <div class="scene-grid">
-    <div class="motion-panel pl-motion-track" aria-label="Движение точки по прямой">
+    <div class="motion-panel pl-motion-track" data-motion-panel aria-label="Движение точки по прямой">
       <div class="panel-head">
         <span>Тело на прямой</span>
         <strong data-observation>скорость растёт</strong>
@@ -503,8 +503,8 @@ const accelerationControlSliders = [
 <style>
   .acceleration-scene {
     display: grid;
-    gap: clamp(var(--pl-space-4), 2vw, var(--pl-space-6));
-    padding: clamp(var(--pl-space-4), 2.2vw, var(--pl-space-6));
+    gap: clamp(var(--pl-space-3), 1.35vw, var(--pl-space-4));
+    padding: clamp(var(--pl-space-3), 1.7vw, var(--pl-space-5));
     border-color: rgba(88, 216, 255, 0.2);
     border-radius: 24px;
     background:
@@ -516,15 +516,15 @@ const accelerationControlSliders = [
   .scene-head {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(220px, 0.4fr);
-    gap: var(--pl-space-4);
-    align-items: end;
+    gap: var(--pl-space-3);
+    align-items: center;
   }
 
   .component-label {
     display: inline-flex;
-    min-height: 26px;
-    margin: 0 0 var(--pl-space-2);
-    padding: 4px 10px;
+    min-height: 24px;
+    margin: 0 0 var(--pl-space-1);
+    padding: 3px 9px;
     border: 1px solid rgba(255, 216, 77, 0.24);
     border-radius: 999px;
     color: var(--pl-accent);
@@ -535,26 +535,29 @@ const accelerationControlSliders = [
   }
 
   .scene-head h3 {
-    margin-bottom: var(--pl-space-2);
-    font-size: clamp(1.45rem, 3vw, 2.1rem);
+    margin-bottom: var(--pl-space-1);
+    font-size: 1.55rem;
   }
 
   .scene-head p {
     max-width: 720px;
     margin: 0;
+    line-height: 1.45;
   }
 
   .scene-readouts {
     display: grid;
-    gap: var(--pl-space-2);
+    gap: var(--pl-space-1);
   }
 
   .scene-readouts span {
-    padding: 9px 12px;
+    padding: 6px 10px;
     border: 1px solid rgba(88, 216, 255, 0.14);
     border-radius: 999px;
     color: var(--pl-text-muted);
     background: rgba(255, 255, 255, 0.032);
+    font-size: 0.92rem;
+    line-height: 1.2;
   }
 
   .scene-readouts b {
@@ -563,16 +566,16 @@ const accelerationControlSliders = [
 
   .scene-grid {
     display: grid;
-    grid-template-columns: minmax(340px, 1fr) minmax(360px, 1.06fr);
-    gap: var(--pl-space-4);
+    grid-template-columns: minmax(300px, 0.94fr) minmax(360px, 1.06fr);
+    gap: var(--pl-space-3);
     align-items: start;
   }
 
   .motion-panel {
     display: grid;
-    gap: var(--pl-space-3);
+    gap: var(--pl-space-2);
     min-width: 0;
-    padding: var(--pl-space-4);
+    padding: var(--pl-space-3);
     border-radius: 18px;
     background:
       radial-gradient(ellipse at 50% 14%, rgba(88, 216, 255, 0.11), transparent 22rem),
@@ -597,42 +600,42 @@ const accelerationControlSliders = [
   .formula-card p,
   .chapter-feedback {
     margin: 0;
-    line-height: 1.55;
+    line-height: 1.45;
   }
 
   .graph-stack {
     display: grid;
-    gap: var(--pl-space-4);
+    gap: var(--pl-space-3);
     min-width: 0;
   }
 
   :global(.acceleration-scene .track) {
-    min-height: clamp(250px, 25vw, 300px);
-    margin-block: var(--pl-space-2);
+    min-height: clamp(190px, 18vw, 240px);
+    margin-block: var(--pl-space-1);
   }
 
   :global(.acceleration-scene .track::before) {
-    bottom: 88px;
+    bottom: 72px;
   }
 
   :global(.acceleration-scene .track-axis) {
-    bottom: 88px;
+    bottom: 72px;
   }
 
   :global(.acceleration-scene .track-tick) {
-    bottom: 78px;
+    bottom: 62px;
   }
 
   :global(.acceleration-scene .motion-point) {
-    bottom: 103px;
+    bottom: 87px;
   }
 
   :global(.acceleration-scene .motion-x-label) {
-    bottom: 162px;
+    bottom: 132px;
   }
 
   :global(.acceleration-scene .velocity-arrow) {
-    bottom: 119px;
+    bottom: 103px;
   }
 
   .motion-causality-strip {
@@ -644,13 +647,13 @@ const accelerationControlSliders = [
 
   .motion-causality-strip span {
     min-width: 0;
-    min-height: 44px;
-    padding: 8px 10px;
+    min-height: 38px;
+    padding: 6px 8px;
     border: 1px solid rgba(88, 216, 255, 0.1);
     border-radius: 14px;
     color: var(--pl-text-muted);
     background: rgba(255, 255, 255, 0.024);
-    font-size: 0.9rem;
+    font-size: 0.84rem;
     line-height: 1.25;
   }
 
@@ -658,7 +661,27 @@ const accelerationControlSliders = [
     display: block;
     margin-bottom: 2px;
     font-family: "Cascadia Mono", "JetBrains Mono", Consolas, monospace;
-    font-size: 1.05rem;
+    font-size: 0.98rem;
+  }
+
+  :global(.acceleration-scene .graph-card) {
+    padding: var(--pl-space-3);
+    border-radius: 14px;
+  }
+
+  :global(.acceleration-scene .graph-card figcaption) {
+    margin-bottom: var(--pl-space-1);
+    font-size: 1rem;
+  }
+
+  :global(.acceleration-scene .graph-card svg) {
+    min-height: 220px;
+    margin-bottom: var(--pl-space-2);
+  }
+
+  :global(.acceleration-scene .graph-card p) {
+    font-size: 0.9rem;
+    line-height: 1.42;
   }
 
   .motion-causality-strip [data-variable="a"] b {
@@ -682,30 +705,87 @@ const accelerationControlSliders = [
     .scene-readouts {
       grid-template-columns: repeat(3, minmax(0, 1fr));
     }
+
+    .scene-head h3 {
+      font-size: 1.42rem;
+    }
   }
 
   @media (max-width: 600px) {
     .acceleration-scene {
-      padding: var(--pl-space-3);
+      padding: var(--pl-space-2);
       border-radius: 20px;
     }
 
     .scene-readouts {
-      grid-template-columns: 1fr;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .scene-head h3 {
+      font-size: 1.28rem;
+    }
+
+    .scene-readouts span {
+      padding: 6px 7px;
+      font-size: 0.82rem;
+      text-align: center;
     }
 
     .motion-panel {
-      padding: var(--pl-space-3);
+      padding: var(--pl-space-2);
       border-radius: 16px;
     }
 
     :global(.acceleration-scene .track) {
-      min-height: 250px;
-      margin-block: var(--pl-space-3);
+      min-height: 188px;
+      margin-block: var(--pl-space-1);
+    }
+
+    :global(.acceleration-scene .track::before),
+    :global(.acceleration-scene .track-axis) {
+      bottom: 64px;
+    }
+
+    :global(.acceleration-scene .track-tick) {
+      bottom: 54px;
+    }
+
+    :global(.acceleration-scene .motion-point) {
+      bottom: 79px;
+    }
+
+    :global(.acceleration-scene .motion-x-label) {
+      bottom: 118px;
+    }
+
+    :global(.acceleration-scene .velocity-arrow) {
+      bottom: 95px;
     }
 
     .motion-causality-strip {
-      grid-template-columns: 1fr;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .motion-causality-strip span {
+      min-height: 34px;
+      padding: 5px 6px;
+      font-size: 0.76rem;
+    }
+
+    .motion-causality-strip b {
+      font-size: 0.88rem;
+    }
+
+    :global(.acceleration-scene .graph-card) {
+      padding: var(--pl-space-2);
+    }
+
+    :global(.acceleration-scene .graph-card svg) {
+      min-height: 190px;
+    }
+
+    :global(.acceleration-scene .graph-card p) {
+      font-size: 0.84rem;
     }
 
   }

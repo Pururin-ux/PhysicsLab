@@ -72,8 +72,8 @@ test.describe("accelerated-motion chapter screenshots", () => {
       await expect(scene).toBeVisible();
       await expect(scene.locator('[data-input="v0"]')).toBeVisible();
       await expect(scene.locator('[data-input="a"]')).toBeVisible();
-      await expect(scene.getByText("Куда и как быстро едем в момент t = 0.")).toBeVisible();
-      await expect(scene.getByText("На сколько меняется v за 1 секунду.")).toBeVisible();
+      await expect(scene.getByText("Старт движения при t = 0.")).toBeVisible();
+      await expect(scene.getByText("Как меняется v за 1 секунду.")).toBeVisible();
       await expect(scene.locator("[data-motion-point]")).toBeVisible();
       await expect(scene.locator("[data-velocity-arrow]")).toBeVisible();
       await expect(scene.locator('[data-polyline="x"]')).toHaveAttribute("points", /,/);
@@ -98,13 +98,22 @@ test.describe("accelerated-motion chapter screenshots", () => {
 
       const readoutsTop = await topOf(scene.locator("[data-scene-readouts]"));
       const controlsTop = await topOf(scene.locator(".acceleration-controls"));
+      const sceneTop = await topOf(scene);
+      const motionPanelTop = await topOf(scene.locator("[data-motion-panel]"));
       const graphStackTop = await topOf(scene.locator("[data-graph-stack]"));
       const playTop = await topOf(playButton);
       const accelerationInputTop = await topOf(scene.locator('[data-input="a"]'));
       expect(readoutsTop).toBeLessThan(controlsTop);
+      expect(controlsTop).toBeLessThan(motionPanelTop);
       expect(controlsTop).toBeLessThan(graphStackTop);
       expect(playTop).toBeLessThan(graphStackTop);
       expect(accelerationInputTop).toBeLessThan(graphStackTop);
+
+      if (viewport.width <= 600) {
+        expect(playTop - sceneTop).toBeLessThan(260);
+        expect(accelerationInputTop - sceneTop).toBeLessThan(440);
+        expect(motionPanelTop - sceneTop).toBeLessThan(620);
+      }
 
       const startTime = await currentTime(scene);
       await playButton.click();
