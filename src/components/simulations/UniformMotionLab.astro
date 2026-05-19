@@ -31,6 +31,31 @@ const uniformVTicks: GraphTick[] = [
   { value: 0, label: "0" },
   { value: 4, label: "4" }
 ];
+const uniformControlSliders = [
+  {
+    key: "v",
+    label: "Скорость v",
+    description: "Чем больше скорость, тем круче линия.",
+    value: 2,
+    min: -4,
+    max: 4,
+    step: 0.5,
+    unit: "м/с",
+    dataInput: "v",
+    dataOutput: "v",
+    ariaLabel: "Скорость v в метрах в секунду",
+    hero: true
+  }
+] as const;
+const uniformControlReadouts = [
+  { label: "t", value: "0 с", dataValue: "t" },
+  { label: "x", value: "0 м", dataValue: "x" }
+] as const;
+const uniformControlScenarios = [
+  { key: "forward", label: "вперёд", pressed: true },
+  { key: "still", label: "стоит", pressed: false },
+  { key: "backward", label: "назад", pressed: false }
+] as const;
 ---
 
 <SurfaceCard variant="lab">
@@ -88,7 +113,12 @@ const uniformVTicks: GraphTick[] = [
       />
     </div>
 
-    <ControlDock showTimeActions={visualTarget} />
+    <ControlDock
+      showTimeActions={visualTarget}
+      sliders={uniformControlSliders}
+      readouts={uniformControlReadouts}
+      scenarios={uniformControlScenarios}
+    />
 
     <div class="explain-card pl-quiz-console" aria-labelledby="uniform-check-title">
       <div>

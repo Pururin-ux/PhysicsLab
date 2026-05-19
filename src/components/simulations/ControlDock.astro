@@ -1,15 +1,90 @@
 ---
+type ControlTone = "velocity" | "acceleration" | "position" | "time";
+
+interface ControlSlider {
+  key: string;
+  label: string;
+  description: string;
+  value: number;
+  min: number;
+  max: number;
+  step: number;
+  unit: string;
+  dataInput: string;
+  dataOutput: string;
+  ariaLabel: string;
+  tone?: ControlTone;
+  hero?: boolean;
+}
+
+interface ControlReadout {
+  label: string;
+  value: string;
+  dataValue: string;
+}
+
+interface ControlScenario {
+  key: string;
+  label: string;
+  pressed?: boolean;
+}
+
 interface Props {
   variant?: "dock" | "time-actions";
   showTimeActions?: boolean;
+  ariaLabel?: string;
+  rootClass?: "speed-panel" | "acceleration-controls";
+  sliders?: readonly ControlSlider[];
+  readouts?: readonly ControlReadout[];
+  scenarios?: readonly ControlScenario[];
+  hint?: string;
 }
 
-const { variant = "dock", showTimeActions = false } = Astro.props;
+const defaultSliders: ControlSlider[] = [
+  {
+    key: "v",
+    label: "Скорость v",
+    description: "Чем больше скорость, тем круче линия.",
+    value: 2,
+    min: -4,
+    max: 4,
+    step: 0.5,
+    unit: "м/с",
+    dataInput: "v",
+    dataOutput: "v",
+    ariaLabel: "Скорость v в метрах в секунду",
+    hero: true
+  }
+];
+
+const defaultReadouts: ControlReadout[] = [
+  { label: "t", value: "0 с", dataValue: "t" },
+  { label: "x", value: "0 м", dataValue: "x" }
+];
+
+const defaultScenarios: ControlScenario[] = [
+  { key: "forward", label: "вперёд", pressed: true },
+  { key: "still", label: "стоит", pressed: false },
+  { key: "backward", label: "назад", pressed: false }
+];
+
+const {
+  variant = "dock",
+  showTimeActions = false,
+  ariaLabel = "Главное управление скоростью",
+  rootClass = "speed-panel",
+  sliders = defaultSliders,
+  readouts = defaultReadouts,
+  scenarios = defaultScenarios,
+  hint
+} = Astro.props;
+
 const isTimeActionsOnly = variant === "time-actions";
 const shouldShowTimeActions = isTimeActionsOnly || showTimeActions;
 const timeActionsClass = isTimeActionsOnly
   ? "time-actions"
   : "time-actions time-actions--dock";
+const formatSliderValue = (value: number, unit: string) => `${value} ${unit}`;
 ---
 
 {
@@ -29,7 +104,7 @@ const timeActionsClass = isTimeActionsOnly
       </button>
     </div>
   ) : (
-    <div class="speed-panel pl-control-dock" aria-label="Главное управление скоростью">
+    <div class:list={[rootClass, "pl-control-dock"]} aria-label={ariaLabel}>
       {
         shouldShowTimeActions && (
           <div class={timeActionsClass}>
@@ -49,39 +124,76 @@ const timeActionsClass = isTimeActionsOnly
         )
       }
 
-      <label class="slider-field slider-field--hero">
-        <span>
-          <b>Скорость v</b>
-          <span>Чем больше скорость, тем круче линия.</span>
-        </span>
-        <output data-output="v">2 м/с</output>
-        <input
-          type="range"
-          min="-4"
-          max="4"
-          step="0.5"
-          value="2"
-          data-input="v"
-          aria-label="Скорость v в метрах в секунду"
-        />
-      </label>
+      {
+        sliders.map((slider) => (
+          <label
+            class:list={[
+              "slider-field",
+              slider.hero && "slider-field--hero",
+              slider.tone && `slider-field--${slider.tone}`
+            ]}
+          >
+            <span>
+              <b>{slider.label}</b>
+              <span>{slider.description}</span>
+            </span>
+            <output data-output={slider.dataOutput}>
+              {formatSliderValue(slider.value, slider.unit)}
+            </output>
+            <input
+              type="range"
+              min={slider.min}
+              max={slider.max}
+              step={slider.step}
+              value={slider.value}
+              data-input={slider.dataInput}
+              aria-label={slider.ariaLabel}
+            />
+          </label>
+        ))
+      }
 
-      <div class="quick-status" aria-label="Текущее состояние">
-        <span>t = <b data-value="t">0 с</b></span>
-        <span>x = <b data-value="x">0 м</b></span>
-      </div>
+      {
+        readouts.length > 0 && (
+          <div class="quick-status" aria-label="Текущее состояние">
+            {readouts.map((readout) => (
+              <span>
+                {readout.label} = <b data-value={readout.dataValue}>{readout.value}</b>
+              </span>
+            ))}
+          </div>
+        )
+      }
 
-      <div class="scenario-row" aria-label="Быстрые примеры движения">
-        <button type="button" class="pl-lab-button" data-scenario="forward" aria-pressed="true">вперёд</button>
-        <button type="button" class="pl-lab-button" data-scenario="still" aria-pressed="false">стоит</button>
-        <button type="button" class="pl-lab-button" data-scenario="backward" aria-pressed="false">назад</button>
-      </div>
+      {
+        scenarios.length > 0 && (
+          <div class="scenario-row" aria-label="Быстрые примеры движения">
+            {scenarios.map((scenario) => (
+              <button
+                type="button"
+                class="pl-lab-button"
+                data-scenario={scenario.key}
+                aria-pressed={scenario.pressed ? "true" : "false"}
+              >
+                {scenario.label}
+              </button>
+            ))}
+          </div>
+        )
+      }
+
+      {
+        hint && (
+          <p class="control-hint">{hint}</p>
+        )
+      }
     </div>
   )
 }
 
 <style>
-  .speed-panel {
+  .speed-panel,
+  .acceleration-controls {
     display: grid;
     min-width: 0;
     gap: var(--pl-space-3);
@@ -164,6 +276,23 @@ const timeActionsClass = isTimeActionsOnly
     gap: var(--pl-space-3);
     align-items: center;
     min-width: 0;
+    --control-slider-accent: var(--pl-accent);
+  }
+
+  .slider-field--velocity {
+    --control-slider-accent: var(--pl-velocity);
+  }
+
+  .slider-field--acceleration {
+    --control-slider-accent: var(--pl-acceleration);
+  }
+
+  .slider-field--position {
+    --control-slider-accent: var(--pl-position);
+  }
+
+  .slider-field--time {
+    --control-slider-accent: var(--pl-time);
   }
 
   .slider-field > span {
@@ -174,6 +303,13 @@ const timeActionsClass = isTimeActionsOnly
 
   .slider-field b {
     color: var(--pl-text);
+  }
+
+  .slider-field--velocity b,
+  .slider-field--acceleration b,
+  .slider-field--position b,
+  .slider-field--time b {
+    color: var(--control-slider-accent);
   }
 
   .slider-field span span,
@@ -192,7 +328,7 @@ const timeActionsClass = isTimeActionsOnly
   .slider-field input {
     grid-column: 1 / -1;
     width: 100%;
-    accent-color: var(--pl-accent);
+    accent-color: var(--control-slider-accent);
   }
 
   .slider-field input[type="range"] {
@@ -215,7 +351,7 @@ const timeActionsClass = isTimeActionsOnly
     margin-top: -7px;
     border: 3px solid rgba(8, 14, 24, 0.96);
     border-radius: 50%;
-    background: var(--pl-accent);
+    background: var(--control-slider-accent);
     box-shadow: 0 0 0 5px rgba(255, 216, 77, 0.12);
     appearance: none;
   }
@@ -230,7 +366,7 @@ const timeActionsClass = isTimeActionsOnly
   .slider-field input[type="range"]::-moz-range-progress {
     height: 7px;
     border-radius: 999px;
-    background: rgba(255, 216, 77, 0.9);
+    background: var(--control-slider-accent);
   }
 
   .slider-field input[type="range"]::-moz-range-thumb {
@@ -238,7 +374,7 @@ const timeActionsClass = isTimeActionsOnly
     height: 18px;
     border: 3px solid rgba(8, 14, 24, 0.96);
     border-radius: 50%;
-    background: var(--pl-accent);
+    background: var(--control-slider-accent);
     box-shadow: 0 0 0 5px rgba(255, 216, 77, 0.12);
   }
 
@@ -278,6 +414,15 @@ const timeActionsClass = isTimeActionsOnly
     border-color: rgba(255, 216, 77, 0.72);
     color: #111317;
     background: var(--pl-accent);
+  }
+
+  .control-hint {
+    grid-column: 1 / -1;
+    margin: 0;
+    padding-inline: var(--pl-space-2);
+    color: var(--pl-text-muted);
+    font-size: 0.92rem;
+    line-height: 1.45;
   }
 
   :global(.uniform-lab[data-visual-target="v1"]) .speed-panel {
@@ -341,6 +486,47 @@ const timeActionsClass = isTimeActionsOnly
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
+  :global(.acceleration-scene) .acceleration-controls {
+    grid-template-columns: minmax(220px, 0.4fr) repeat(2, minmax(240px, 1fr));
+    align-items: center;
+    padding: var(--pl-space-3);
+    border-color: rgba(88, 216, 255, 0.16);
+    border-radius: 20px;
+    margin-top: calc(-1 * var(--pl-space-1));
+    background:
+      linear-gradient(90deg, rgba(255, 216, 77, 0.035), transparent 36%, rgba(88, 216, 255, 0.05)),
+      rgba(5, 14, 27, 0.76);
+  }
+
+  :global(.acceleration-scene) .acceleration-controls .time-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--pl-space-2);
+  }
+
+  :global(.acceleration-scene) .acceleration-controls .play-button,
+  :global(.acceleration-scene) .acceleration-controls .reset-button {
+    min-height: 50px;
+    padding: 10px 14px;
+  }
+
+  :global(.acceleration-scene) .acceleration-controls .slider-field {
+    gap: var(--pl-space-2) var(--pl-space-3);
+    padding: var(--pl-space-2) var(--pl-space-3);
+    border: 1px solid rgba(88, 216, 255, 0.1);
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.026);
+  }
+
+  :global(.acceleration-scene) .acceleration-controls .slider-field span span,
+  :global(.acceleration-scene) .acceleration-controls .slider-field output {
+    font-size: 0.92rem;
+  }
+
+  :global(.acceleration-scene) .acceleration-controls .slider-field input[type="range"] {
+    height: 26px;
+  }
+
   @media (max-width: 1040px) {
     :global(.uniform-lab[data-visual-target="v1"]) .speed-panel {
       grid-template-columns: 1fr 1.35fr;
@@ -349,6 +535,10 @@ const timeActionsClass = isTimeActionsOnly
     :global(.uniform-lab[data-visual-target="v1"]) .quick-status {
       grid-column: 1 / -1;
       grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    :global(.acceleration-scene) .acceleration-controls {
+      grid-template-columns: 1fr;
     }
   }
 
@@ -375,7 +565,8 @@ const timeActionsClass = isTimeActionsOnly
       border-radius: 18px;
     }
 
-    :global(.uniform-lab[data-visual-target="v1"]) .time-actions--dock {
+    :global(.uniform-lab[data-visual-target="v1"]) .time-actions--dock,
+    :global(.acceleration-scene) .acceleration-controls .time-actions {
       grid-template-columns: 1fr 1fr;
     }
 
@@ -389,6 +580,15 @@ const timeActionsClass = isTimeActionsOnly
 
     :global(.uniform-lab[data-visual-target="v1"]) .slider-field input[type="range"] {
       height: 32px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .slider-field input,
+    .play-button,
+    .reset-button,
+    .scenario-row button {
+      transition: none;
     }
   }
 </style>

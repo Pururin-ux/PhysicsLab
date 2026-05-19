@@ -1,4 +1,5 @@
 ---
+import ControlDock from "./ControlDock.astro";
 import InstrumentGraph from "./InstrumentGraph.astro";
 import MotionTrack from "./MotionTrack.astro";
 import type { GraphDomain, GraphTick } from "../../lib/physics/graphView";
@@ -23,6 +24,36 @@ const accelerationVTicks: GraphTick[] = [
   { value: 0, label: "0" },
   { value: 10, label: "10" }
 ];
+const accelerationControlSliders = [
+  {
+    key: "v0",
+    label: "Начальная скорость v₀",
+    description: "Куда и как быстро едем в момент t = 0.",
+    value: 3,
+    min: -6,
+    max: 6,
+    step: 0.5,
+    unit: "м/с",
+    dataInput: "v0",
+    dataOutput: "v0",
+    ariaLabel: "Начальная скорость v ноль в метрах в секунду",
+    tone: "velocity"
+  },
+  {
+    key: "a",
+    label: "Ускорение a",
+    description: "На сколько меняется v за 1 секунду.",
+    value: 0.8,
+    min: -3,
+    max: 3,
+    step: 0.2,
+    unit: "м/с²",
+    dataInput: "a",
+    dataOutput: "a",
+    ariaLabel: "Ускорение a в метрах в секунду в квадрате",
+    tone: "acceleration"
+  }
+] as const;
 ---
 
 <section
@@ -104,59 +135,15 @@ const accelerationVTicks: GraphTick[] = [
     </div>
   </div>
 
-  <div class="acceleration-controls pl-control-dock" aria-label="Управление равноускоренным движением">
-    <div class="time-actions">
-      <button
-        type="button"
-        class="play-button pl-lab-button pl-lab-button--primary"
-        data-play-toggle
-        aria-pressed="false"
-        aria-label="Запустить анимацию"
-      >
-        Запустить
-      </button>
-      <button type="button" class="reset-button pl-lab-button" data-reset>
-        Сбросить
-      </button>
-    </div>
-
-    <label class="slider-field">
-      <span>
-        <b>Начальная скорость v₀</b>
-        <span>Куда и как быстро едем в момент t = 0.</span>
-      </span>
-      <output data-output="v0">3 м/с</output>
-      <input
-        type="range"
-        min="-6"
-        max="6"
-        step="0.5"
-        value="3"
-        data-input="v0"
-        aria-label="Начальная скорость v ноль в метрах в секунду"
-      />
-    </label>
-
-    <label class="slider-field slider-field--accent">
-      <span>
-        <b>Ускорение a</b>
-        <span>На сколько меняется v за 1 секунду.</span>
-      </span>
-      <output data-output="a">0.8 м/с²</output>
-      <input
-        type="range"
-        min="-3"
-        max="3"
-        step="0.2"
-        value="0.8"
-        data-input="a"
-        aria-label="Ускорение a в метрах в секунду в квадрате"
-      />
-    </label>
-    <p class="control-hint">
-      Сначала меняй a. v₀ задаёт старт линии v(t), а a меняет её наклон.
-    </p>
-  </div>
+  <ControlDock
+    rootClass="acceleration-controls"
+    ariaLabel="Управление равноускоренным движением"
+    showTimeActions
+    sliders={accelerationControlSliders}
+    readouts={[]}
+    scenarios={[]}
+    hint="Сначала меняй a. v₀ задаёт старт линии v(t), а a меняет её наклон."
+  />
 </section>
 
 <script>
@@ -685,144 +672,9 @@ const accelerationVTicks: GraphTick[] = [
     color: var(--pl-position);
   }
 
-  .acceleration-controls {
-    display: grid;
-    grid-template-columns: minmax(220px, 0.4fr) repeat(2, minmax(240px, 1fr));
-    gap: var(--pl-space-3);
-    align-items: center;
-    padding: var(--pl-space-3);
-    border-color: rgba(88, 216, 255, 0.16);
-    border-radius: 20px;
-    margin-top: calc(-1 * var(--pl-space-1));
-    background:
-      linear-gradient(90deg, rgba(255, 216, 77, 0.035), transparent 36%, rgba(88, 216, 255, 0.05)),
-      rgba(5, 14, 27, 0.76);
-  }
-
-  .time-actions {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: var(--pl-space-2);
-  }
-
-  .play-button,
-  .reset-button {
-    min-height: 50px;
-    padding: 10px 14px;
-    font-weight: 900;
-  }
-
-  .play-button[aria-pressed="true"] {
-    color: var(--pl-accent);
-    background: rgba(255, 216, 77, 0.08);
-  }
-
-  .slider-field {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    gap: var(--pl-space-2) var(--pl-space-3);
-    min-width: 0;
-    padding: var(--pl-space-2) var(--pl-space-3);
-    border: 1px solid rgba(88, 216, 255, 0.1);
-    border-radius: 16px;
-    background: rgba(255, 255, 255, 0.026);
-  }
-
-  .slider-field > span {
-    display: grid;
-    gap: var(--pl-space-1);
-    min-width: 0;
-  }
-
-  .slider-field b {
-    color: var(--pl-text);
-  }
-
-  .slider-field span span,
-  .slider-field output {
-    color: var(--pl-text-muted);
-    font-size: 0.92rem;
-  }
-
-  .slider-field output {
-    color: var(--pl-text);
-    font-weight: 900;
-    text-align: right;
-  }
-
-  .slider-field input {
-    grid-column: 1 / -1;
-    width: 100%;
-    accent-color: var(--pl-accent);
-  }
-
-  .slider-field input[type="range"] {
-    height: 26px;
-    background: transparent;
-  }
-
-  .slider-field input[type="range"]::-webkit-slider-runnable-track {
-    height: 7px;
-    border: 1px solid rgba(88, 216, 255, 0.18);
-    border-radius: 999px;
-    background:
-      linear-gradient(90deg, rgba(255, 216, 77, 0.88), rgba(88, 216, 255, 0.56)),
-      rgba(255, 255, 255, 0.08);
-  }
-
-  .slider-field input[type="range"]::-webkit-slider-thumb {
-    width: 20px;
-    height: 20px;
-    margin-top: -7px;
-    border: 3px solid rgba(8, 14, 24, 0.96);
-    border-radius: 50%;
-    background: var(--pl-accent);
-    box-shadow: 0 0 0 5px rgba(255, 216, 77, 0.12);
-    appearance: none;
-  }
-
-  .slider-field input[type="range"]::-moz-range-track {
-    height: 7px;
-    border: 1px solid rgba(88, 216, 255, 0.18);
-    border-radius: 999px;
-    background: rgba(255, 255, 255, 0.08);
-  }
-
-  .slider-field input[type="range"]::-moz-range-progress {
-    height: 7px;
-    border-radius: 999px;
-    background: rgba(255, 216, 77, 0.9);
-  }
-
-  .slider-field input[type="range"]::-moz-range-thumb {
-    width: 18px;
-    height: 18px;
-    border: 3px solid rgba(8, 14, 24, 0.96);
-    border-radius: 50%;
-    background: var(--pl-accent);
-    box-shadow: 0 0 0 5px rgba(255, 216, 77, 0.12);
-  }
-
-  .slider-field input:focus-visible,
-  .play-button:focus-visible,
-  .reset-button:focus-visible {
-    outline: 3px solid var(--pl-accent);
-    outline-offset: 4px;
-  }
-
-  .control-hint {
-    grid-column: 1 / -1;
-    margin: 0;
-    padding-inline: var(--pl-space-2);
-    color: var(--pl-text-muted);
-    font-size: 0.92rem;
-    line-height: 1.45;
-  }
-
   @media (max-width: 1040px) {
     .scene-head,
-    .scene-grid,
-    .acceleration-controls {
+    .scene-grid {
       grid-template-columns: 1fr;
     }
 
@@ -855,24 +707,6 @@ const accelerationVTicks: GraphTick[] = [
       grid-template-columns: 1fr;
     }
 
-    .time-actions {
-      grid-template-columns: 1fr 1fr;
-    }
-
-    .slider-field {
-      grid-template-columns: 1fr;
-    }
-
-    .slider-field output {
-      text-align: left;
-    }
   }
 
-  @media (prefers-reduced-motion: reduce) {
-    .slider-field input,
-    .play-button,
-    .reset-button {
-      transition: none;
-    }
-  }
 </style>
