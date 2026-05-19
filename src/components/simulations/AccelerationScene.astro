@@ -95,41 +95,46 @@ const accelerationControlSliders = [
     hint="Сначала меняй a. v₀ задаёт старт линии v(t), а a меняет её наклон."
   />
 
-  <div class="scene-grid">
-    <div class="motion-panel pl-motion-track" data-motion-panel aria-label="Движение точки по прямой">
-      <div class="panel-head">
-        <span>Тело на прямой</span>
-        <strong data-observation>скорость растёт</strong>
+  <div class="lab-console" data-lab-console data-graph-stack>
+    <div class="primary-observation">
+      <div class="motion-panel pl-motion-track" data-motion-panel aria-label="Движение точки по прямой">
+        <div class="panel-head">
+          <span>Тело на прямой</span>
+          <strong data-observation>скорость растёт</strong>
+        </div>
+        <MotionTrack
+          leftLabel="-32 м"
+          centerLabel="0"
+          rightLabel="48 м"
+          initialCoordinateLabel="x = 0 м"
+        />
+        <p data-guidance>
+          Сейчас a положительное: скорость растёт, поэтому точка разгоняется вправо.
+        </p>
+        <div class="motion-causality-strip" aria-label="Связь ускорения, скорости и координаты">
+          <span data-variable="a"><b>a</b> → v(t)</span>
+          <span data-variable="v"><b>v</b> → точка</span>
+          <span data-variable="x"><b>x</b> → x(t)</span>
+        </div>
       </div>
-      <MotionTrack
-        leftLabel="-32 м"
-        centerLabel="0"
-        rightLabel="48 м"
-        initialCoordinateLabel="x = 0 м"
-      />
-      <p data-guidance>
-        Сейчас a положительное: скорость растёт, поэтому точка разгоняется вправо.
-      </p>
-      <div class="motion-causality-strip" aria-label="Связь ускорения, скорости и координаты">
-        <span data-variable="a"><b>a</b> меняет v(t)</span>
-        <span data-variable="v"><b>v</b> двигает точку</span>
-        <span data-variable="x"><b>x</b> попадает на x(t)</span>
+
+      <div class="primary-graph" data-primary-graph="v">
+        <InstrumentGraph
+          title="График v(t)"
+          graphKind="v"
+          xAxisLabel="t, с"
+          yAxisLabel="v, м/с"
+          ariaLabel="График скорости от времени при равноускоренном движении"
+          note="Наклон v(t) показывает ускорение: если a не равно нулю, скорость меняется."
+          domain={accelerationVGraphDomain}
+          xTicks={graphTimeTicks}
+          yTicks={accelerationVTicks}
+          showTickLabels
+        />
       </div>
     </div>
 
-    <div class="graph-stack" data-graph-stack>
-      <InstrumentGraph
-        title="График v(t)"
-        graphKind="v"
-        xAxisLabel="t, с"
-        yAxisLabel="v, м/с"
-        ariaLabel="График скорости от времени при равноускоренном движении"
-        note="Наклон v(t) показывает ускорение: если a не равно нулю, скорость меняется."
-        domain={accelerationVGraphDomain}
-        xTicks={graphTimeTicks}
-        yTicks={accelerationVTicks}
-        showTickLabels
-      />
+    <div class="secondary-graph" data-secondary-graph="x">
       <InstrumentGraph
         title="График x(t)"
         graphKind="x"
@@ -564,11 +569,23 @@ const accelerationControlSliders = [
     color: var(--pl-accent);
   }
 
-  .scene-grid {
+  .lab-console {
+    display: grid;
+    gap: var(--pl-space-3);
+    min-width: 0;
+  }
+
+  .primary-observation {
     display: grid;
     grid-template-columns: minmax(300px, 0.94fr) minmax(360px, 1.06fr);
     gap: var(--pl-space-3);
-    align-items: start;
+    align-items: stretch;
+    min-width: 0;
+  }
+
+  .primary-graph,
+  .secondary-graph {
+    min-width: 0;
   }
 
   .motion-panel {
@@ -603,14 +620,8 @@ const accelerationControlSliders = [
     line-height: 1.45;
   }
 
-  .graph-stack {
-    display: grid;
-    gap: var(--pl-space-3);
-    min-width: 0;
-  }
-
   :global(.acceleration-scene .track) {
-    min-height: clamp(190px, 18vw, 240px);
+    min-height: clamp(176px, 16vw, 218px);
     margin-block: var(--pl-space-1);
   }
 
@@ -684,6 +695,52 @@ const accelerationControlSliders = [
     line-height: 1.42;
   }
 
+  :global(.acceleration-scene .primary-graph .graph-card) {
+    height: 100%;
+    border-color: rgba(88, 216, 255, 0.28);
+    background:
+      radial-gradient(ellipse at 50% 16%, rgba(88, 216, 255, 0.11), transparent 22rem),
+      linear-gradient(180deg, rgba(88, 216, 255, 0.055), transparent 54%),
+      rgba(3, 13, 27, 0.8);
+  }
+
+  :global(.acceleration-scene .primary-graph .graph-card svg) {
+    min-height: clamp(212px, 20vw, 260px);
+  }
+
+  :global(.acceleration-scene .secondary-graph .graph-card) {
+    display: grid;
+    grid-template-columns: minmax(320px, 0.62fr) minmax(220px, 0.38fr);
+    grid-template-areas:
+      "title note"
+      "chart note";
+    gap: var(--pl-space-2) var(--pl-space-3);
+    align-items: center;
+    border-color: rgba(88, 216, 255, 0.14);
+    background:
+      linear-gradient(90deg, rgba(88, 216, 255, 0.045), transparent 46%),
+      rgba(3, 13, 27, 0.7);
+  }
+
+  :global(.acceleration-scene .secondary-graph .graph-card figcaption) {
+    grid-area: title;
+  }
+
+  :global(.acceleration-scene .secondary-graph .graph-card svg) {
+    grid-area: chart;
+    min-height: clamp(160px, 16vw, 210px);
+    margin-bottom: 0;
+  }
+
+  :global(.acceleration-scene .secondary-graph .graph-card p) {
+    grid-area: note;
+    align-self: center;
+    padding: var(--pl-space-2);
+    border: 1px solid rgba(88, 216, 255, 0.1);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.022);
+  }
+
   .motion-causality-strip [data-variable="a"] b {
     color: var(--pl-acceleration);
   }
@@ -698,7 +755,7 @@ const accelerationControlSliders = [
 
   @media (max-width: 1040px) {
     .scene-head,
-    .scene-grid {
+    .primary-observation {
       grid-template-columns: 1fr;
     }
 
@@ -708,6 +765,19 @@ const accelerationControlSliders = [
 
     .scene-head h3 {
       font-size: 1.42rem;
+    }
+
+    :global(.acceleration-scene .secondary-graph .graph-card) {
+      grid-template-columns: 1fr;
+      grid-template-areas:
+        "title"
+        "chart"
+        "note";
+    }
+
+    :global(.acceleration-scene .secondary-graph .graph-card svg) {
+      min-height: 190px;
+      margin-bottom: var(--pl-space-2);
     }
   }
 
@@ -725,6 +795,19 @@ const accelerationControlSliders = [
       font-size: 1.28rem;
     }
 
+    .primary-observation {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .primary-graph {
+      order: 1;
+    }
+
+    .motion-panel {
+      order: 2;
+    }
+
     .scene-readouts span {
       padding: 6px 7px;
       font-size: 0.82rem;
@@ -737,29 +820,29 @@ const accelerationControlSliders = [
     }
 
     :global(.acceleration-scene .track) {
-      min-height: 188px;
+      min-height: 132px;
       margin-block: var(--pl-space-1);
     }
 
     :global(.acceleration-scene .track::before),
     :global(.acceleration-scene .track-axis) {
-      bottom: 64px;
+      bottom: 46px;
     }
 
     :global(.acceleration-scene .track-tick) {
-      bottom: 54px;
+      bottom: 36px;
     }
 
     :global(.acceleration-scene .motion-point) {
-      bottom: 79px;
+      bottom: 61px;
     }
 
     :global(.acceleration-scene .motion-x-label) {
-      bottom: 118px;
+      bottom: 94px;
     }
 
     :global(.acceleration-scene .velocity-arrow) {
-      bottom: 95px;
+      bottom: 77px;
     }
 
     .motion-causality-strip {
@@ -773,6 +856,8 @@ const accelerationControlSliders = [
     }
 
     .motion-causality-strip b {
+      display: inline;
+      margin: 0 2px 0 0;
       font-size: 0.88rem;
     }
 
@@ -781,11 +866,19 @@ const accelerationControlSliders = [
     }
 
     :global(.acceleration-scene .graph-card svg) {
-      min-height: 190px;
+      min-height: 178px;
     }
 
     :global(.acceleration-scene .graph-card p) {
       font-size: 0.84rem;
+    }
+
+    :global(.acceleration-scene .primary-graph .graph-card svg) {
+      min-height: 182px;
+    }
+
+    :global(.acceleration-scene .secondary-graph .graph-card svg) {
+      min-height: 168px;
     }
 
   }

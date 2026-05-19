@@ -27,14 +27,16 @@ const hasHorizontalScroll = async (page: Page) =>
     () => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1
   );
 
-const topOf = async (locator: Locator) => {
+const boxOf = async (locator: Locator) => {
   const box = await locator.boundingBox();
   if (!box) {
     throw new Error("Expected element to have a visible bounding box");
   }
 
-  return box.y;
+  return box;
 };
+
+const topOf = async (locator: Locator) => (await boxOf(locator)).y;
 
 test.describe("accelerated-motion chapter screenshots", () => {
   test.beforeAll(async () => {
@@ -99,20 +101,29 @@ test.describe("accelerated-motion chapter screenshots", () => {
       const readoutsTop = await topOf(scene.locator("[data-scene-readouts]"));
       const controlsTop = await topOf(scene.locator(".acceleration-controls"));
       const sceneTop = await topOf(scene);
-      const motionPanelTop = await topOf(scene.locator("[data-motion-panel]"));
+      const motionPanelBox = await boxOf(scene.locator("[data-motion-panel]"));
+      const motionPanelTop = motionPanelBox.y;
       const graphStackTop = await topOf(scene.locator("[data-graph-stack]"));
+      const primaryGraphTop = await topOf(scene.locator('[data-primary-graph="v"]'));
+      const secondaryGraphTop = await topOf(scene.locator('[data-secondary-graph="x"]'));
       const playTop = await topOf(playButton);
       const accelerationInputTop = await topOf(scene.locator('[data-input="a"]'));
       expect(readoutsTop).toBeLessThan(controlsTop);
       expect(controlsTop).toBeLessThan(motionPanelTop);
       expect(controlsTop).toBeLessThan(graphStackTop);
+      expect(controlsTop).toBeLessThan(primaryGraphTop);
+      expect(primaryGraphTop).toBeLessThan(secondaryGraphTop);
       expect(playTop).toBeLessThan(graphStackTop);
       expect(accelerationInputTop).toBeLessThan(graphStackTop);
 
       if (viewport.width <= 600) {
         expect(playTop - sceneTop).toBeLessThan(260);
         expect(accelerationInputTop - sceneTop).toBeLessThan(440);
-        expect(motionPanelTop - sceneTop).toBeLessThan(620);
+        expect(primaryGraphTop - sceneTop).toBeLessThan(620);
+        expect(motionPanelTop - sceneTop).toBeLessThan(960);
+        expect(motionPanelBox.height).toBeLessThan(300);
+      } else if (viewport.width >= 1200) {
+        expect(Math.abs(primaryGraphTop - motionPanelTop)).toBeLessThan(80);
       }
 
       const startTime = await currentTime(scene);
