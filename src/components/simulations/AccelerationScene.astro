@@ -571,17 +571,17 @@ const accelerationControlSliders = [
 
   .lab-console {
     display: grid;
-    grid-template-columns: minmax(0, 1fr);
+    grid-template-columns: minmax(280px, 0.82fr) minmax(420px, 1.18fr);
+    grid-template-areas:
+      "motion primary"
+      "secondary secondary";
     gap: var(--pl-space-3);
+    align-items: stretch;
     min-width: 0;
   }
 
   .primary-observation {
-    display: grid;
-    grid-template-columns: minmax(300px, 0.94fr) minmax(360px, 1.06fr);
-    gap: var(--pl-space-3);
-    align-items: stretch;
-    min-width: 0;
+    display: contents;
   }
 
   .primary-graph,
@@ -589,8 +589,16 @@ const accelerationControlSliders = [
     min-width: 0;
   }
 
+  .motion-panel {
+    grid-area: motion;
+  }
+
+  .primary-graph {
+    grid-area: primary;
+  }
+
   .secondary-graph {
-    grid-column: 1 / -1;
+    grid-area: secondary;
     width: 100%;
   }
 
@@ -682,7 +690,7 @@ const accelerationControlSliders = [
   }
 
   :global(.acceleration-scene .graph-card) {
-    padding: var(--pl-space-3);
+    padding: clamp(var(--pl-space-2), 1.15vw, var(--pl-space-3));
     border-radius: 14px;
   }
 
@@ -692,7 +700,8 @@ const accelerationControlSliders = [
   }
 
   :global(.acceleration-scene .graph-card svg) {
-    min-height: 220px;
+    height: clamp(190px, 18vw, 250px);
+    min-height: 0;
     margin-bottom: var(--pl-space-2);
   }
 
@@ -711,7 +720,8 @@ const accelerationControlSliders = [
   }
 
   :global(.acceleration-scene .primary-graph .graph-card svg) {
-    min-height: clamp(212px, 20vw, 260px);
+    height: clamp(220px, 23vw, 310px);
+    min-height: 0;
   }
 
   :global(.acceleration-scene .secondary-graph .graph-card) {
@@ -735,7 +745,8 @@ const accelerationControlSliders = [
 
   :global(.acceleration-scene .secondary-graph .graph-card svg) {
     grid-area: chart;
-    min-height: clamp(160px, 16vw, 210px);
+    height: clamp(160px, 15vw, 210px);
+    min-height: 0;
     margin-bottom: 0;
   }
 
@@ -761,9 +772,16 @@ const accelerationControlSliders = [
   }
 
   @media (max-width: 1040px) {
-    .scene-head,
-    .primary-observation {
+    .scene-head {
       grid-template-columns: 1fr;
+    }
+
+    .lab-console {
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-areas:
+        "motion"
+        "primary"
+        "secondary";
     }
 
     .scene-readouts {
@@ -783,7 +801,8 @@ const accelerationControlSliders = [
     }
 
     :global(.acceleration-scene .secondary-graph .graph-card svg) {
-      min-height: 190px;
+      height: 190px;
+      min-height: 0;
       margin-bottom: var(--pl-space-2);
     }
   }
@@ -800,19 +819,6 @@ const accelerationControlSliders = [
 
     .scene-head h3 {
       font-size: 1.28rem;
-    }
-
-    .primary-observation {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .motion-panel {
-      order: 1;
-    }
-
-    .primary-graph {
-      order: 2;
     }
 
     .scene-readouts span {
@@ -873,7 +879,8 @@ const accelerationControlSliders = [
     }
 
     :global(.acceleration-scene .graph-card svg) {
-      min-height: 178px;
+      height: 178px;
+      min-height: 0;
     }
 
     :global(.acceleration-scene .graph-card p) {
@@ -881,11 +888,13 @@ const accelerationControlSliders = [
     }
 
     :global(.acceleration-scene .primary-graph .graph-card svg) {
-      min-height: 182px;
+      height: 182px;
+      min-height: 0;
     }
 
     :global(.acceleration-scene .secondary-graph .graph-card svg) {
-      min-height: 168px;
+      height: 168px;
+      min-height: 0;
     }
 
   }

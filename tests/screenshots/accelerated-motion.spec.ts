@@ -104,8 +104,10 @@ test.describe("accelerated-motion chapter screenshots", () => {
       const motionPanelBox = await boxOf(scene.locator("[data-motion-panel]"));
       const motionPanelTop = motionPanelBox.y;
       const graphStackTop = await topOf(scene.locator("[data-graph-stack]"));
-      const primaryGraphTop = await topOf(scene.locator('[data-primary-graph="v"]'));
-      const secondaryGraphTop = await topOf(scene.locator('[data-secondary-graph="x"]'));
+      const primaryGraphBox = await boxOf(scene.locator('[data-primary-graph="v"]'));
+      const secondaryGraphBox = await boxOf(scene.locator('[data-secondary-graph="x"]'));
+      const primaryGraphTop = primaryGraphBox.y;
+      const secondaryGraphTop = secondaryGraphBox.y;
       const playTop = await topOf(playButton);
       const accelerationInputTop = await topOf(scene.locator('[data-input="a"]'));
       expect(readoutsTop).toBeLessThan(controlsTop);
@@ -125,6 +127,11 @@ test.describe("accelerated-motion chapter screenshots", () => {
         expect(motionPanelBox.height).toBeLessThan(300);
       } else if (viewport.width >= 1200) {
         expect(Math.abs(primaryGraphTop - motionPanelTop)).toBeLessThan(80);
+        expect(secondaryGraphBox.x).toBeLessThanOrEqual(motionPanelBox.x + 4);
+        expect(secondaryGraphBox.x + secondaryGraphBox.width).toBeGreaterThanOrEqual(
+          primaryGraphBox.x + primaryGraphBox.width - 4
+        );
+        expect(secondaryGraphBox.height).toBeLessThan(primaryGraphBox.height);
       }
 
       const startTime = await currentTime(scene);
