@@ -76,6 +76,11 @@ test.describe("accelerated-motion chapter screenshots", () => {
       await expect(page.getByText("Переменные и единицы")).toBeVisible();
       await expect(page.getByText("Формулы подходят, если ускорение a постоянно.")).toBeVisible();
       await expect(page.locator('[data-formula-variable="a"]')).toContainText("м/с²");
+      const formulaSection = page.locator("#formula");
+      await expect(formulaSection).toContainText("вправо считаем положительным");
+      await expect(formulaSection).toContainText("v > 0");
+      await expect(formulaSection).toContainText("ускорение меняется во времени");
+      await expect(formulaSection).toContainText("x₀ зафиксировано как 0");
 
       const playButton = scene.locator("[data-play-toggle]");
       const resetButton = scene.locator("[data-reset]");
