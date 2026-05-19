@@ -48,21 +48,46 @@ const navItems = [
             <p class="eyebrow">Перед запуском</p>
             <h2 id="predict-title">Сначала сделай простой прогноз</h2>
             <p>
-              Не считай. Просто реши, что должно измениться на графиках, когда ты двигаешь ускорение a.
+              Не считай. Сначала выбери догадку, а потом проверь её в лаборатории.
             </p>
           </div>
-          <div class="prediction-grid" aria-label="Прогноз перед лабораторией">
+
+          <div
+            class="prediction-question"
+            data-feedback-correct="Да. Отрицательное a наклоняет v(t) вниз, но пока v > 0, тело ещё едет вправо."
+            data-feedback-wrong="Не совсем. Сначала смотри на знак v, а не на знак a. Если v ещё положительная, тело движется вправо."
+          >
+            <p class="prediction-prompt">v₀ &gt; 0, но a &lt; 0. Что сначала будет с телом?</p>
+            <div class="chapter-answer-row prediction-answer-row" role="group" aria-label="Варианты прогноза">
+              <button type="button" data-prediction-answer="correct" aria-pressed="false">
+                Ещё едет вправо, но замедляется
+              </button>
+              <button type="button" data-prediction-answer="instant-back" aria-pressed="false">
+                Сразу едет назад
+              </button>
+              <button type="button" data-prediction-answer="instant-stop" aria-pressed="false">
+                Остановится мгновенно
+              </button>
+              <button type="button" data-prediction-answer="straight-x" aria-pressed="false">
+                x(t) обязан быть прямой
+              </button>
+            </div>
+            <p class="chapter-feedback prediction-feedback" data-prediction-feedback aria-live="polite">
+              Выбери прогноз. Потом сравни его с графиком v(t).
+            </p>
+            <p class="prediction-next-step" data-prediction-hint hidden>
+              Теперь выставь a &lt; 0 и смотри, когда v(t) пересечёт ноль.
+            </p>
+          </div>
+
+          <div class="prediction-grid" aria-label="На что смотреть в лаборатории">
             <article>
-              <strong>Если a &gt; 0</strong>
-              <p>Линия v(t) должна идти вверх: скорость растёт каждую секунду.</p>
+              <strong>Сначала v(t)</strong>
+              <p>Знак скорости показывает направление, а наклон показывает ускорение.</p>
             </article>
             <article>
-              <strong>Если a &lt; 0</strong>
-              <p>Линия v(t) идёт вниз. Но тело не обязано сразу ехать назад.</p>
-            </article>
-            <article>
-              <strong>Почему x(t) кривая</strong>
-              <p>Наклон x(t) — это скорость. Скорость меняется, значит меняется и наклон.</p>
+              <strong>Потом x(t)</strong>
+              <p>Если скорость меняется, наклон x(t) тоже меняется.</p>
             </article>
           </div>
         </div>
@@ -113,20 +138,26 @@ const navItems = [
         <div
           class="chapter-check"
           data-acceleration-check
-          data-feedback-correct="Да. Пока v больше нуля, тело ещё едет вправо. Отрицательное a только наклоняет v(t) вниз: скорость уменьшается."
-          data-feedback-wrong="Не совсем. Отрицательное a не означает мгновенно «назад». Сначала проверь знак скорости v: пока v > 0, тело ещё едет вправо."
+          data-feedback-correct="Да. После пересечения нуля скорость стала отрицательной: точка едет назад, а координата уменьшается."
+          data-feedback-wrong="Не совсем. Направление задаёт знак скорости v. Если v(t) уже ниже нуля, движение идёт назад, даже если старт был вправо."
         >
           <div>
             <p class="eyebrow">Перенос на задачу</p>
-            <h2 id="check-title">v₀ &gt; 0, но a &lt; 0. Что сначала происходит?</h2>
+            <h2 id="check-title">v(t) пересекла ноль и стала ниже оси. Что теперь делает тело?</h2>
           </div>
           <div class="chapter-answer-row" role="group" aria-label="Варианты ответа">
-            <button type="button" data-check-answer="correct">Ещё едет вправо, но замедляется</button>
-            <button type="button" data-check-answer="instant-back">Сразу едет назад</button>
-            <button type="button" data-check-answer="straight-x">x(t) обязан быть прямой</button>
+            <button type="button" data-check-answer="correct" aria-pressed="false">
+              Едет назад: координата уменьшается
+            </button>
+            <button type="button" data-check-answer="start-wins" aria-pressed="false">
+              Всё ещё вправо, потому что v₀ было положительным
+            </button>
+            <button type="button" data-check-answer="stopped" aria-pressed="false">
+              Остановилось навсегда
+            </button>
           </div>
           <p class="chapter-feedback" data-check-feedback aria-live="polite">
-            Выбери вариант и проверь себя по знаку скорости на графике v(t).
+            Выбери вариант и проверь себя по положению линии v(t) относительно нуля.
           </p>
         </div>
       </SurfaceCard>
@@ -135,29 +166,61 @@ const navItems = [
 </BaseLayout>
 
 <script>
-  document.querySelectorAll<HTMLElement>("[data-acceleration-check]").forEach((check) => {
-    const buttons = check.querySelectorAll<HTMLButtonElement>("[data-check-answer]");
-    const feedback = check.querySelector<HTMLElement>("[data-check-feedback]");
-    const correctFeedback = check.dataset.feedbackCorrect ?? "";
-    const wrongFeedback = check.dataset.feedbackWrong ?? "";
+  setupChoiceBlock({
+    rootSelector: "[data-acceleration-predict] .prediction-question",
+    buttonSelector: "[data-prediction-answer]",
+    answerAttribute: "data-prediction-answer",
+    feedbackSelector: "[data-prediction-feedback]",
+    hintSelector: "[data-prediction-hint]"
+  });
 
-    buttons.forEach((button) => {
-      button.addEventListener("click", () => {
-        const isCorrect = button.dataset.checkAnswer === "correct";
-        buttons.forEach((item) => {
-          item.classList.remove("is-correct", "is-wrong");
-          item.setAttribute("aria-pressed", "false");
+  setupChoiceBlock({
+    rootSelector: "[data-acceleration-check]",
+    buttonSelector: "[data-check-answer]",
+    answerAttribute: "data-check-answer",
+    feedbackSelector: "[data-check-feedback]"
+  });
+
+  type ChoiceBlockOptions = {
+    rootSelector: string;
+    buttonSelector: string;
+    answerAttribute: string;
+    feedbackSelector: string;
+    hintSelector?: string;
+  };
+
+  function setupChoiceBlock(options: ChoiceBlockOptions) {
+    document.querySelectorAll<HTMLElement>(options.rootSelector).forEach((block) => {
+      const buttons = block.querySelectorAll<HTMLButtonElement>(options.buttonSelector);
+      const feedback = block.querySelector<HTMLElement>(options.feedbackSelector);
+      const hint = options.hintSelector
+        ? block.querySelector<HTMLElement>(options.hintSelector)
+        : null;
+      const correctFeedback = block.dataset.feedbackCorrect ?? "";
+      const wrongFeedback = block.dataset.feedbackWrong ?? "";
+
+      buttons.forEach((button) => {
+        button.addEventListener("click", () => {
+          const isCorrect = button.getAttribute(options.answerAttribute) === "correct";
+          buttons.forEach((item) => {
+            item.classList.remove("is-correct", "is-wrong");
+            item.setAttribute("aria-pressed", "false");
+          });
+          button.classList.add(isCorrect ? "is-correct" : "is-wrong");
+          button.setAttribute("aria-pressed", "true");
+
+          if (feedback) {
+            feedback.dataset.state = isCorrect ? "success" : "warning";
+            feedback.textContent = isCorrect ? correctFeedback : wrongFeedback;
+          }
+
+          if (hint) {
+            hint.hidden = false;
+          }
         });
-        button.classList.add(isCorrect ? "is-correct" : "is-wrong");
-        button.setAttribute("aria-pressed", "true");
-
-        if (feedback) {
-          feedback.dataset.state = isCorrect ? "success" : "warning";
-          feedback.textContent = isCorrect ? correctFeedback : wrongFeedback;
-        }
       });
     });
-  });
+  }
 </script>
 
 <style>
@@ -270,9 +333,42 @@ const navItems = [
     margin-bottom: 0;
   }
 
+  .prediction-question {
+    display: grid;
+    gap: var(--pl-space-3);
+    padding: var(--pl-space-4);
+    border: 1px solid rgba(255, 216, 77, 0.12);
+    border-radius: 18px;
+    background:
+      linear-gradient(135deg, rgba(255, 216, 77, 0.06), rgba(88, 216, 255, 0.026)),
+      rgba(255, 255, 255, 0.018);
+  }
+
+  .prediction-prompt {
+    margin: 0;
+    color: var(--pl-text);
+    font-size: clamp(1.08rem, 2.4vw, 1.35rem);
+    font-weight: 900;
+    line-height: 1.35;
+  }
+
+  .prediction-answer-row button {
+    flex-basis: 210px;
+  }
+
+  .prediction-next-step {
+    margin: 0;
+    padding: var(--pl-space-3);
+    border: 1px solid rgba(88, 216, 255, 0.14);
+    border-radius: 14px;
+    color: var(--pl-text);
+    background: rgba(88, 216, 255, 0.045);
+    line-height: 1.5;
+  }
+
   .prediction-grid {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: var(--pl-space-3);
   }
 

@@ -45,8 +45,19 @@ test.describe("accelerated-motion chapter screenshots", () => {
       await expect(page.getByRole("heading", { name: "Равноускоренное движение" })).toBeVisible();
       await expect(page.getByText("prototype v0").first()).toBeVisible();
       await expect(page.getByText("authorReviewRequired")).toBeVisible();
-      await expect(page.locator("[data-acceleration-predict]")).toBeVisible();
-      await expect(page.getByText("тело не обязано сразу ехать назад")).toBeVisible();
+      const prediction = page.locator("[data-acceleration-predict]");
+      await expect(prediction).toBeVisible();
+      await expect(prediction.getByText("v₀ > 0, но a < 0. Что сначала будет с телом?")).toBeVisible();
+      const wrongPrediction = prediction.getByRole("button", { name: "Сразу едет назад" });
+      const correctPrediction = prediction.getByRole("button", { name: "Ещё едет вправо, но замедляется" });
+      await wrongPrediction.click();
+      await expect(wrongPrediction).toHaveAttribute("aria-pressed", "true");
+      await expect(prediction.locator("[data-prediction-feedback]")).toContainText("Сначала смотри на знак v");
+      await expect(prediction.locator("[data-prediction-hint]")).toBeVisible();
+      await correctPrediction.click();
+      await expect(correctPrediction).toHaveAttribute("aria-pressed", "true");
+      await expect(wrongPrediction).toHaveAttribute("aria-pressed", "false");
+      await expect(prediction.locator("[data-prediction-feedback]")).toContainText("Отрицательное a наклоняет v(t) вниз");
 
       const scene = sceneRoot(page);
       await expect(scene).toBeVisible();
@@ -108,8 +119,8 @@ test.describe("accelerated-motion chapter screenshots", () => {
       expect(Math.abs((await currentVelocity(scene)) - 3)).toBeLessThan(0.01);
       await resetButton.click();
 
-      await page.getByRole("button", { name: "Ещё едет вправо, но замедляется" }).click();
-      await expect(page.locator("[data-check-feedback]")).toContainText("Пока v больше нуля");
+      await page.getByRole("button", { name: "Едет назад: координата уменьшается" }).click();
+      await expect(page.locator("[data-check-feedback]")).toContainText("После пересечения нуля");
 
       expect(await hasHorizontalScroll(page)).toBe(false);
 
