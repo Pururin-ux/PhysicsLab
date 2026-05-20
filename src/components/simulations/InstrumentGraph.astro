@@ -54,6 +54,12 @@ const plotLeft = pad.left;
 const plotRight = width - pad.right;
 const plotTop = pad.top;
 const plotBottom = height - pad.bottom;
+const xTickLabelY = plotBottom + 10;
+const yTickLabelX = plotLeft - 9;
+const xAxisLabelX = plotRight - 18;
+const xAxisLabelY = height - 10;
+const yAxisLabelX = 13;
+const yAxisLabelY = plotTop + (plotBottom - plotTop) / 2;
 const canShowZeroLine = showZeroLine && domain.yMin <= 0 && domain.yMax >= 0;
 const verticalGridLines = xTicks.map((tick) => ({
   ...tick,
@@ -74,8 +80,19 @@ const zeroLineY = canShowZeroLine
     viewBox="0 0 320 220"
     role="img"
     aria-label={ariaLabel}
+    data-graph-svg={graphKind}
     preserveAspectRatio="xMidYMid meet"
   >
+    <rect
+      class="plot-area"
+      data-plot-area={graphKind}
+      x={plotLeft}
+      y={plotTop}
+      width={plotRight - plotLeft}
+      height={plotBottom - plotTop}
+      rx="3"
+      aria-hidden="true"
+    ></rect>
     <g class="grid-lines" data-grid={graphKind} aria-hidden="true">
       {
         verticalGridLines.map((line) => (
@@ -93,26 +110,57 @@ const zeroLineY = canShowZeroLine
         )
       }
     </g>
-    <line class="axis-line" x1={plotLeft} y1={plotBottom} x2={plotRight} y2={plotBottom}></line>
-    <line class="axis-line" x1={plotLeft} y1={plotTop} x2={plotLeft} y2={plotBottom}></line>
+    <line class="axis-line axis-line--x" x1={plotLeft} y1={plotBottom} x2={plotRight} y2={plotBottom}></line>
+    <line class="axis-line axis-line--y" x1={plotLeft} y1={plotTop} x2={plotLeft} y2={plotBottom}></line>
     {
       showTickLabels && (
         <g class="graph-tick-labels" aria-hidden="true">
           {
             verticalGridLines.map((tick) => (
-              <text class="graph-tick-label graph-tick-label--x" x={tick.x} y="205">{tick.label}</text>
+              <text
+                class="graph-tick-label graph-tick-label--x"
+                data-tick-label="x"
+                x={tick.x}
+                y={xTickLabelY}
+              >
+                {tick.label}
+              </text>
             ))
           }
           {
             horizontalGridLines.map((tick) => (
-              <text class="graph-tick-label graph-tick-label--y" x="34" y={tick.y + 3}>{tick.label}</text>
+              <text
+                class="graph-tick-label graph-tick-label--y"
+                data-tick-label="y"
+                x={yTickLabelX}
+                y={tick.y}
+              >
+                {tick.label}
+              </text>
             ))
           }
         </g>
       )
     }
-    <text class="axis-text" x="282" y="210">{xAxisLabel}</text>
-    <text class="axis-text" x="14" y="28">{yAxisLabel}</text>
+    <g class="axis-labels">
+      <text
+        class="axis-text axis-text--x"
+        data-axis-label="x"
+        x={xAxisLabelX}
+        y={xAxisLabelY}
+      >
+        {xAxisLabel}
+      </text>
+      <text
+        class="axis-text axis-text--y"
+        data-axis-label="y"
+        x={yAxisLabelX}
+        y={yAxisLabelY}
+        transform={`rotate(-90 ${yAxisLabelX} ${yAxisLabelY})`}
+      >
+        {yAxisLabel}
+      </text>
+    </g>
     {
       showProjection && (
         <g class="graph-projection" data-projection={graphKind} aria-hidden="true">
@@ -162,6 +210,12 @@ const zeroLineY = canShowZeroLine
     overflow: visible;
   }
 
+  .plot-area {
+    fill: rgba(88, 216, 255, 0.026);
+    stroke: rgba(88, 216, 255, 0.095);
+    stroke-width: 1;
+  }
+
   .graph-card p {
     margin: 0;
     font-size: 0.96rem;
@@ -169,39 +223,60 @@ const zeroLineY = canShowZeroLine
   }
 
   .graph-card :global(.grid-line) {
-    stroke: rgba(168, 190, 213, 0.12);
+    stroke: rgba(168, 190, 213, 0.11);
     stroke-width: 1;
   }
 
   .graph-card :global(.zero-line) {
-    stroke: rgba(244, 247, 251, 0.26);
-    stroke-dasharray: 5 5;
-    stroke-width: 1.2;
+    stroke: rgba(244, 247, 251, 0.31);
+    stroke-dasharray: 5 6;
+    stroke-width: 1.25;
   }
 
   .axis-line {
-    stroke: rgba(244, 247, 251, 0.62);
-    stroke-width: 1.5;
+    stroke: rgba(226, 241, 255, 0.72);
+    stroke-width: 1.6;
+    vector-effect: non-scaling-stroke;
   }
 
   .axis-text {
-    fill: var(--pl-text-muted);
-    font-size: 12px;
+    fill: rgba(226, 241, 255, 0.86);
+    font-size: 11.4px;
     font-weight: 700;
+    paint-order: stroke;
+    stroke: rgba(3, 13, 27, 0.92);
+    stroke-width: 3.6px;
+    text-rendering: geometricPrecision;
+  }
+
+  .axis-text--x {
+    text-anchor: end;
+    dominant-baseline: central;
+  }
+
+  .axis-text--y {
+    text-anchor: middle;
+    dominant-baseline: central;
   }
 
   .graph-tick-labels text {
-    fill: rgba(191, 204, 218, 0.72);
-    font-size: 10px;
+    fill: rgba(202, 218, 233, 0.78);
+    font-size: 9.6px;
     font-weight: 800;
+    paint-order: stroke;
+    stroke: rgba(3, 13, 27, 0.9);
+    stroke-width: 3px;
+    text-rendering: geometricPrecision;
   }
 
   .graph-tick-label--x {
     text-anchor: middle;
+    dominant-baseline: central;
   }
 
   .graph-tick-label--y {
     text-anchor: end;
+    dominant-baseline: central;
   }
 
   .graph-projection line {
