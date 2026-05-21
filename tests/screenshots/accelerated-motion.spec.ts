@@ -186,12 +186,15 @@ test.describe("accelerated-motion chapter screenshots", () => {
       const prediction = page.locator("[data-acceleration-predict]");
       await expect(prediction).toBeVisible();
       await expect(prediction.getByText("v₀ > 0, но a < 0. Что сначала будет с телом?")).toBeVisible();
+      await expect(prediction).toContainText("Сначала v(t)");
+      await expect(prediction).toContainText("Потом x(t)");
       const wrongPrediction = prediction.getByRole("button", { name: "Сразу едет назад" });
       const correctPrediction = prediction.getByRole("button", { name: "Ещё едет вправо, но замедляется" });
       await wrongPrediction.click();
       await expect(wrongPrediction).toHaveAttribute("aria-pressed", "true");
       await expect(prediction.locator("[data-prediction-feedback]")).toContainText("Сначала смотри на знак v");
       await expect(prediction.locator("[data-prediction-hint]")).toBeVisible();
+      await expect(prediction.locator("[data-prediction-hint]")).toContainText("Теперь выставь a < 0");
       await correctPrediction.click();
       await expect(correctPrediction).toHaveAttribute("aria-pressed", "true");
       await expect(wrongPrediction).toHaveAttribute("aria-pressed", "false");
