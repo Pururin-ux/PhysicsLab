@@ -135,21 +135,29 @@ test.describe("ui-playground screenshots", () => {
 
       await page.locator('[data-formula-part="v"]').hover();
       await expect(formulaCard).toHaveAttribute("data-active-part", "x0");
+      await page.mouse.move(0, 0);
       await page.locator('[data-formula-part="x0"]').blur();
       await page.locator('[data-formula-part="v"]').hover();
-      await expect(formulaCard).toHaveAttribute("data-active-part", "v");
-      await expect(page.locator('[data-graph-element="line"]')).toHaveAttribute(
-        "data-active",
-        ""
-      );
-      await expect(page.locator('[data-graph-element="slope-family"]')).toHaveAttribute(
-        "data-active",
-        ""
-      );
-      await expect(page.locator('[data-graph-element="slope-label"]')).toHaveAttribute(
-        "data-active",
-        ""
-      );
+      await expect
+        .poll(() =>
+          formulaCard.evaluate((card) => {
+            const hasActiveGraphElement = (name: string) =>
+              Boolean(card.querySelector(`[data-graph-element="${name}"][data-active]`));
+
+            return {
+              activePart: card.getAttribute("data-active-part"),
+              line: hasActiveGraphElement("line"),
+              slopeFamily: hasActiveGraphElement("slope-family"),
+              slopeLabel: hasActiveGraphElement("slope-label")
+            };
+          })
+        )
+        .toEqual({
+          activePart: "v",
+          line: true,
+          slopeFamily: true,
+          slopeLabel: true
+        });
       await expect(page.locator('[data-graph-element="slope-label"]')).toHaveAttribute(
         "x",
         "188"
