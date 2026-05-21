@@ -145,11 +145,28 @@ const navItems = [
           </div>
           <div class="formula-condition">
             <h3>Когда это работает</h3>
-            <p>В этой главе вправо считаем положительным направлением. Знаки x, v и a — это знаки проекций на эту ось.</p>
-            <p>v &gt; 0 значит движение вправо, v &lt; 0 — назад. Ускорение a показывает, как меняется v, и не обязано совпадать с направлением движения.</p>
-            <p>x — координата на оси, а Δx = x - x₀ — перемещение по оси. Путь не то же самое, особенно если тело развернулось.</p>
-            <p>Формулы подходят, если ускорение a постоянно. Если ускорение меняется во времени, их нельзя просто подставлять как есть.</p>
-            <p>В лаборатории x₀ зафиксировано как 0, чтобы фокус был на v₀ и a.</p>
+            <div class="condition-note-grid" aria-label="Условия применения формул">
+              <article class="condition-note" data-formula-condition-note="axis">
+                <strong>Ось</strong>
+                <p>В этой главе вправо считаем положительным направлением. Знаки x, v и a — это знаки проекций на эту ось.</p>
+              </article>
+              <article class="condition-note" data-formula-condition-note="direction">
+                <strong>Направление</strong>
+                <p>v &gt; 0 значит движение вправо, v &lt; 0 — назад. Ускорение a меняет v и не обязано совпадать с направлением движения.</p>
+              </article>
+              <article class="condition-note" data-formula-condition-note="coordinate">
+                <strong>Координата</strong>
+                <p>x — координата на оси, а Δx = x - x₀ — перемещение. Путь может отличаться, если тело развернулось.</p>
+              </article>
+              <article class="condition-note condition-note--accent" data-formula-condition-note="constant-a">
+                <strong>Условие</strong>
+                <p>Формулы подходят, если ускорение a постоянно. Если ускорение меняется во времени, их нельзя просто подставлять как есть.</p>
+              </article>
+              <article class="condition-note" data-formula-condition-note="lab">
+                <strong>В этой лаборатории</strong>
+                <p>x₀ зафиксировано как 0, чтобы фокус был на v₀ и a.</p>
+              </article>
+            </div>
           </div>
         </div>
       </SurfaceCard>
@@ -538,15 +555,46 @@ const navItems = [
     border-radius: 16px;
     color: var(--pl-text);
     background: rgba(255, 216, 77, 0.045);
-    line-height: 1.55;
+    line-height: 1.45;
   }
 
-  .formula-condition p {
+  .condition-note-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--pl-space-2);
+    align-items: stretch;
+  }
+
+  .condition-note {
+    min-width: 0;
+    padding: 10px 11px;
+    border: 1px solid rgba(255, 216, 77, 0.1);
+    border-radius: 12px;
+    background: rgba(8, 14, 24, 0.28);
+  }
+
+  .condition-note--accent {
+    border-color: rgba(255, 216, 77, 0.24);
+    background:
+      linear-gradient(135deg, rgba(255, 216, 77, 0.075), rgba(255, 255, 255, 0.018)),
+      rgba(8, 14, 24, 0.28);
+  }
+
+  .condition-note strong {
+    display: block;
+    margin-bottom: 4px;
+    color: var(--pl-accent);
+    font-size: 0.82rem;
+    font-weight: 900;
+    letter-spacing: 0;
+    text-transform: uppercase;
+  }
+
+  .condition-note p {
     margin: 0;
-  }
-
-  .formula-condition p + p {
-    margin-top: var(--pl-space-2);
+    color: var(--pl-text-muted);
+    font-size: 0.92rem;
+    line-height: 1.42;
   }
 
   .chapter-check {
@@ -631,6 +679,19 @@ const navItems = [
   @media (max-width: 600px) {
     .chapter-page > .section {
       padding-block: var(--pl-space-10);
+    }
+
+    .condition-note-grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .condition-note {
+      padding: 10px;
+    }
+
+    .condition-note p {
+      font-size: 0.9rem;
+      line-height: 1.44;
     }
 
     .chapter-intro {

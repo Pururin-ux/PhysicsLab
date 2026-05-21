@@ -251,6 +251,14 @@ test.describe("accelerated-motion chapter screenshots", () => {
       await expect(formulaSection).toContainText("v > 0");
       await expect(formulaSection).toContainText("ускорение меняется во времени");
       await expect(formulaSection).toContainText("x₀ зафиксировано как 0");
+      const formulaCondition = formulaSection.locator(".formula-condition");
+      const conditionNotes = formulaCondition.locator("[data-formula-condition-note]");
+      await expect(conditionNotes).toHaveCount(5);
+      await expect(formulaSection.locator(".formula-condition > p")).toHaveCount(0);
+      await expect(formulaCondition.locator('[data-formula-condition-note="axis"]')).toContainText("вправо считаем положительным");
+      await expect(formulaCondition.locator('[data-formula-condition-note="direction"]')).toContainText("v > 0");
+      await expect(formulaCondition.locator('[data-formula-condition-note="direction"]')).toContainText("v < 0");
+      await expect(formulaCondition.locator('[data-formula-condition-note="constant-a"]')).toContainText("Формулы подходят, если ускорение a постоянно.");
 
       const playButton = scene.locator("[data-play-toggle]");
       const resetButton = scene.locator("[data-reset]");
