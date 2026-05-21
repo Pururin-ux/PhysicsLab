@@ -1,6 +1,7 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import AccelerationScene from "../../components/simulations/AccelerationScene.astro";
+import MathFormula from "../../components/math/MathFormula.astro";
 import Badge from "../../components/ui/Badge.astro";
 import SurfaceCard from "../../components/ui/SurfaceCard.astro";
 
@@ -112,14 +113,18 @@ const navItems = [
         <h2 id="formula-title">Формулы записывают то, что ты увидел</h2>
         <div class="formula-grid">
           <div class="formula-card">
-            <p class="formula">v = v₀ + at</p>
+            <div class="formula">
+              <MathFormula tex="v = v_0 + at" display />
+            </div>
             <p>
               v₀ — скорость в начале. at — насколько скорость изменилась за время t.
               Поэтому на графике v(t) ускорение видно как наклон.
             </p>
           </div>
           <div class="formula-card">
-            <p class="formula">x = x₀ + v₀t + at²/2</p>
+            <div class="formula">
+              <MathFormula tex={"x = x_0 + v_0 t + \\frac{a t^2}{2}"} display />
+            </div>
             <p>
               Координата зависит не только от стартовой скорости: ускорение меняет скорость,
               поэтому линия x(t) изгибается.
@@ -437,11 +442,25 @@ const navItems = [
     max-width: 100%;
     margin-bottom: var(--pl-space-3);
     color: var(--pl-text);
-    font-family: "Cascadia Mono", "JetBrains Mono", Consolas, monospace;
-    font-size: clamp(1.5rem, 4vw, 2.35rem);
-    font-weight: 900;
-    line-height: 1.14;
-    overflow-wrap: anywhere;
+    min-width: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-inline: contain;
+  }
+
+  .formula :global(.math-formula--display) {
+    display: block;
+    width: 100%;
+    padding: 0;
+  }
+
+  .formula :global(.math-formula--display .katex-display) {
+    text-align: left;
+  }
+
+  .formula :global(.math-formula--display .katex) {
+    font-size: clamp(1.35rem, 3.1vw, 2.08rem);
+    line-height: 1.18;
   }
 
   .formula-card p:last-child {

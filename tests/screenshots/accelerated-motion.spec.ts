@@ -218,6 +218,35 @@ test.describe("accelerated-motion chapter screenshots", () => {
       await expect(page.getByText("Формулы подходят, если ускорение a постоянно.")).toBeVisible();
       await expect(page.locator('[data-formula-variable="a"]')).toContainText("м/с²");
       const formulaSection = page.locator("#formula");
+      const formulaReadability = await formulaSection.evaluate((section) => {
+        const formulas = [...section.querySelectorAll("[data-math-formula]")];
+        const sectionRect = section.getBoundingClientRect();
+        const isInsideSection = (rect: DOMRect) => (
+          rect.left >= sectionRect.left - 2 &&
+          rect.right <= sectionRect.right + 2 &&
+          rect.top >= sectionRect.top - 2 &&
+          rect.bottom <= sectionRect.bottom + 2
+        );
+
+        return {
+          count: formulas.length,
+          visibleCount: formulas.filter((formula) => {
+            const rect = formula.getBoundingClientRect();
+            return rect.width > 0 && rect.height > 0 && isInsideSection(rect);
+          }).length,
+          katexCount: formulas.filter((formula) => formula.querySelector(".katex")).length,
+          displayCount: formulas.filter((formula) => formula.getAttribute("data-display") === "true").length,
+          hasFraction: formulas.some((formula) => Boolean(formula.querySelector(".frac-line"))),
+          hasMathMl: formulas.every((formula) => Boolean(formula.querySelector("math")))
+        };
+      });
+
+      expect(formulaReadability.count).toBe(2);
+      expect(formulaReadability.visibleCount).toBe(2);
+      expect(formulaReadability.katexCount).toBe(2);
+      expect(formulaReadability.displayCount).toBe(2);
+      expect(formulaReadability.hasFraction).toBe(true);
+      expect(formulaReadability.hasMathMl).toBe(true);
       await expect(formulaSection).toContainText("вправо считаем положительным");
       await expect(formulaSection).toContainText("v > 0");
       await expect(formulaSection).toContainText("ускорение меняется во времени");
