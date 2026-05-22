@@ -96,7 +96,7 @@ const accelerationControlSliders = [
   />
 
   <div class="lab-console" data-lab-console data-graph-stack>
-    <div class="primary-observation">
+    <div class="primary-observation" data-primary-observation>
       <div class="motion-panel pl-motion-track" data-motion-panel aria-label="Движение точки по прямой">
         <div class="panel-head">
           <span>Тело на прямой</span>
@@ -571,17 +571,32 @@ const accelerationControlSliders = [
 
   .lab-console {
     display: grid;
-    grid-template-columns: minmax(280px, 0.82fr) minmax(420px, 1.18fr);
+    grid-template-columns: minmax(0, 1fr);
     grid-template-areas:
-      "motion primary"
-      "secondary secondary";
-    gap: var(--pl-space-3);
+      "primary"
+      "secondary";
+    gap: var(--pl-space-2);
     align-items: stretch;
     min-width: 0;
   }
 
   .primary-observation {
-    display: contents;
+    grid-area: primary;
+    display: grid;
+    grid-template-columns: minmax(280px, 0.82fr) minmax(420px, 1.18fr);
+    grid-template-areas: "motion primary";
+    gap: var(--pl-space-2);
+    align-items: stretch;
+    min-width: 0;
+    padding: var(--pl-space-2);
+    border: 1px solid rgba(88, 216, 255, 0.18);
+    border-radius: 18px;
+    background:
+      linear-gradient(135deg, rgba(88, 216, 255, 0.07), rgba(88, 216, 255, 0.018) 46%, transparent 70%),
+      rgba(255, 255, 255, 0.018);
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 255, 255, 0.025),
+      inset 0 24px 70px rgba(88, 216, 255, 0.026);
   }
 
   .primary-graph,
@@ -608,9 +623,10 @@ const accelerationControlSliders = [
     min-width: 0;
     padding: var(--pl-space-3);
     border-radius: 18px;
+    border: 1px solid rgba(88, 216, 255, 0.1);
     background:
       radial-gradient(ellipse at 50% 14%, rgba(88, 216, 255, 0.11), transparent 22rem),
-      rgba(4, 13, 26, 0.78);
+      rgba(4, 13, 26, 0.68);
   }
 
   .panel-head {
@@ -717,6 +733,10 @@ const accelerationControlSliders = [
       radial-gradient(ellipse at 50% 16%, rgba(88, 216, 255, 0.11), transparent 22rem),
       linear-gradient(180deg, rgba(88, 216, 255, 0.055), transparent 54%),
       rgba(3, 13, 27, 0.8);
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 255, 255, 0.035),
+      inset 0 0 34px rgba(88, 216, 255, 0.035),
+      0 18px 44px rgba(0, 0, 0, 0.24);
   }
 
   :global(.acceleration-scene .primary-graph .graph-card svg) {
@@ -733,10 +753,10 @@ const accelerationControlSliders = [
       "chart note";
     gap: var(--pl-space-2) var(--pl-space-3);
     align-items: center;
-    border-color: rgba(88, 216, 255, 0.14);
+    border-color: rgba(88, 216, 255, 0.11);
     background:
-      linear-gradient(90deg, rgba(88, 216, 255, 0.045), transparent 46%),
-      rgba(3, 13, 27, 0.7);
+      linear-gradient(90deg, rgba(88, 216, 255, 0.026), transparent 46%),
+      rgba(3, 13, 27, 0.62);
   }
 
   :global(.acceleration-scene .secondary-graph .graph-card figcaption) {
@@ -753,10 +773,10 @@ const accelerationControlSliders = [
   :global(.acceleration-scene .secondary-graph .graph-card p) {
     grid-area: note;
     align-self: center;
-    padding: var(--pl-space-2);
-    border: 1px solid rgba(88, 216, 255, 0.1);
+    padding: 8px 10px;
+    border: 1px solid rgba(88, 216, 255, 0.075);
     border-radius: 12px;
-    background: rgba(255, 255, 255, 0.022);
+    background: rgba(255, 255, 255, 0.016);
   }
 
   .motion-causality-strip [data-variable="a"] b {
@@ -779,9 +799,15 @@ const accelerationControlSliders = [
     .lab-console {
       grid-template-columns: minmax(0, 1fr);
       grid-template-areas:
-        "motion"
         "primary"
         "secondary";
+    }
+
+    .primary-observation {
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-areas:
+        "motion"
+        "primary";
     }
 
     .scene-readouts {
@@ -830,6 +856,11 @@ const accelerationControlSliders = [
     .motion-panel {
       padding: var(--pl-space-2);
       border-radius: 16px;
+    }
+
+    .primary-observation {
+      padding: 6px;
+      border-radius: 17px;
     }
 
     :global(.acceleration-scene .track) {

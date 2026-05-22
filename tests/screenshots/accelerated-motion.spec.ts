@@ -271,6 +271,11 @@ test.describe("accelerated-motion chapter screenshots", () => {
       const readoutsTop = await topOf(scene.locator("[data-scene-readouts]"));
       const controlsTop = await topOf(scene.locator(".acceleration-controls"));
       const sceneTop = await topOf(scene);
+      const primaryObservation = scene.locator("[data-primary-observation]");
+      await expect(primaryObservation).toBeVisible();
+      await expect(primaryObservation.locator("[data-motion-panel]")).toBeVisible();
+      await expect(primaryObservation.locator('[data-primary-graph="v"]')).toBeVisible();
+      const primaryObservationBox = await boxOf(primaryObservation);
       const motionPanelBox = await boxOf(scene.locator("[data-motion-panel]"));
       const motionPanelTop = motionPanelBox.y;
       const graphStackTop = await topOf(scene.locator("[data-graph-stack]"));
@@ -283,8 +288,18 @@ test.describe("accelerated-motion chapter screenshots", () => {
       expect(readoutsTop).toBeLessThan(controlsTop);
       expect(controlsTop).toBeLessThan(motionPanelTop);
       expect(controlsTop).toBeLessThan(graphStackTop);
+      expect(controlsTop).toBeLessThan(primaryObservationBox.y);
       expect(controlsTop).toBeLessThan(primaryGraphTop);
       expect(primaryGraphTop).toBeLessThan(secondaryGraphTop);
+      expect(secondaryGraphTop).toBeGreaterThan(primaryObservationBox.y);
+      expect(motionPanelBox.y).toBeGreaterThanOrEqual(primaryObservationBox.y - 2);
+      expect(primaryGraphBox.y).toBeGreaterThanOrEqual(primaryObservationBox.y - 2);
+      expect(motionPanelBox.y + motionPanelBox.height).toBeLessThanOrEqual(
+        primaryObservationBox.y + primaryObservationBox.height + 2
+      );
+      expect(primaryGraphBox.y + primaryGraphBox.height).toBeLessThanOrEqual(
+        primaryObservationBox.y + primaryObservationBox.height + 2
+      );
       expect(playTop).toBeLessThan(graphStackTop);
       expect(accelerationInputTop).toBeLessThan(graphStackTop);
 
