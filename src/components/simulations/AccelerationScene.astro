@@ -59,6 +59,7 @@ const accelerationControlSliders = [
 <section
   class="acceleration-scene pl-lab-glass-panel"
   data-acceleration-scene
+  data-component-stage="prototype-v0"
   data-current-time="0"
   data-current-x="0"
   data-current-v="3"
@@ -71,7 +72,6 @@ const accelerationControlSliders = [
 >
   <div class="scene-head">
     <div>
-      <p class="component-label">прототип v0</p>
       <h3 id="acceleration-scene-title">Проверь прогноз: a меняет скорость</h3>
       <p>
         Сначала смотри на v(t): ускорение меняет скорость. Потом смотри на x(t):
@@ -523,20 +523,6 @@ const accelerationControlSliders = [
     grid-template-columns: minmax(0, 1fr) minmax(220px, 0.4fr);
     gap: var(--pl-space-3);
     align-items: center;
-  }
-
-  .component-label {
-    display: inline-flex;
-    min-height: 24px;
-    margin: 0 0 var(--pl-space-1);
-    padding: 3px 9px;
-    border: 1px solid rgba(255, 216, 77, 0.24);
-    border-radius: 999px;
-    color: var(--pl-accent);
-    background: rgba(255, 216, 77, 0.055);
-    font-size: 0.72rem;
-    font-weight: 900;
-    text-transform: uppercase;
   }
 
   .scene-head h3 {

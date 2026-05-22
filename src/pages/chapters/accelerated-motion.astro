@@ -2,7 +2,6 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import AccelerationScene from "../../components/simulations/AccelerationScene.astro";
 import MathFormula from "../../components/math/MathFormula.astro";
-import Badge from "../../components/ui/Badge.astro";
 import SurfaceCard from "../../components/ui/SurfaceCard.astro";
 
 const navItems = [
@@ -15,18 +14,19 @@ const navItems = [
 
 <BaseLayout
   title="Равноускоренное движение — PhysicsLab"
-  description="Low-fi прототип главы PhysicsLab про равноускоренное движение."
+  description="Интерактивная глава о равноускоренном движении: проверь, как ускорение меняет скорость, график v(t) и координату x(t)."
   navItems={navItems}
   brandHref="/chapters/accelerated-motion/"
   brandLabel="Глава: Равноускоренное движение"
 >
-  <article class="chapter-page" data-accelerated-motion-chapter>
+  <article
+    class="chapter-page"
+    data-accelerated-motion-chapter
+    data-release-stage="prototype-v0"
+    data-review-status="author-review-required"
+  >
     <section class="section chapter-intro" aria-labelledby="chapter-title">
       <div>
-        <div class="chapter-meta" aria-label="Статус главы">
-          <Badge tone="info">prototype v0</Badge>
-          <Badge tone="accent">authorReviewRequired</Badge>
-        </div>
         <h1 id="chapter-title">Равноускоренное движение</h1>
         <p class="chapter-lead">
           Сначала запусти движение, потом меняй ускорение a. Смотри не только на точку,
@@ -265,12 +265,6 @@ const navItems = [
 <style>
   .chapter-page {
     min-width: 0;
-  }
-
-  .chapter-page :global(.badge) {
-    max-width: 100%;
-    overflow-wrap: anywhere;
-    white-space: normal;
   }
 
   :global(.topbar) {

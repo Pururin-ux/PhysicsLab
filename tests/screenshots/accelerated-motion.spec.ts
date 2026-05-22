@@ -181,8 +181,15 @@ test.describe("accelerated-motion chapter screenshots", () => {
       await page.goto("/chapters/accelerated-motion/", { waitUntil: "networkidle" });
 
       await expect(page.getByRole("heading", { name: "Равноускоренное движение" })).toBeVisible();
-      await expect(page.getByText("prototype v0").first()).toBeVisible();
-      await expect(page.getByText("authorReviewRequired")).toBeVisible();
+      const chapter = page.locator("[data-accelerated-motion-chapter]");
+      await expect(chapter).toHaveAttribute("data-release-stage", "prototype-v0");
+      await expect(chapter).toHaveAttribute("data-review-status", "author-review-required");
+      await expect(page.locator("[data-acceleration-scene]")).toHaveAttribute(
+        "data-component-stage",
+        "prototype-v0"
+      );
+      const visiblePageText = await page.locator("body").evaluate((body) => (body as HTMLElement).innerText);
+      expect(visiblePageText).not.toMatch(/prototype|authorReviewRequired|прототип|demo/i);
       const prediction = page.locator("[data-acceleration-predict]");
       await expect(prediction).toBeVisible();
       await expect(prediction.getByText("v₀ > 0, но a < 0. Что сначала будет с телом?")).toBeVisible();
