@@ -85,6 +85,14 @@ const accelerationControlSliders = [
     </div>
   </div>
 
+  <p class="sr-only" data-dynamic-summary aria-live="polite" aria-atomic="true">
+    Сводка лаборатории: t = 0 с, v = 3 м/с, x = 0 м, a = 0.8 м/с². Движется вправо.
+    Скорость растёт.
+  </p>
+  <p class="sr-only" data-graph-meaning-summary>
+    Смысл графиков: v(t) — наклон показывает ускорение. x(t) — наклон показывает скорость.
+  </p>
+
   <ControlDock
     rootClass="acceleration-controls"
     ariaLabel="Управление равноускоренным движением"
@@ -208,6 +216,7 @@ const accelerationControlSliders = [
     const motionXLabel = mustFind<HTMLElement>(scene, "[data-motion-x-label]");
     const observation = mustFind<HTMLElement>(scene, "[data-observation]");
     const guidance = mustFind<HTMLElement>(scene, "[data-guidance]");
+    const dynamicSummary = mustFind<HTMLElement>(scene, "[data-dynamic-summary]");
     const xNote = mustFind<HTMLElement>(scene, '[data-graph-note="x"]');
     const vNote = mustFind<HTMLElement>(scene, '[data-graph-note="v"]');
     const playButton = mustFind<HTMLButtonElement>(scene, "[data-play-toggle]");
@@ -219,6 +228,7 @@ const accelerationControlSliders = [
     let isReducedMotion = reducedMotionQuery.matches;
     let animationFrameId: number | null = null;
     let previousFrameTime: number | null = null;
+    let lastDynamicSummaryKey = "";
 
     const syncInputs = () => {
       inputs.v0.value = formatPhysicsNumber(state.v0);
@@ -374,7 +384,39 @@ const accelerationControlSliders = [
       guidance.textContent = getGuidance(mode, direction);
       xNote.textContent = getPositionNote(state.a);
       vNote.textContent = getVelocityNote(state.a);
+      updateDynamicSummary();
       updatePlaybackControls();
+    };
+
+    const updateDynamicSummary = () => {
+      const summaryTime = isPlaying ? Math.floor(state.t) : state.t;
+      const summaryX = positionAt(summaryTime, state.x0, state.v0, state.a);
+      const summaryV = velocityAt(summaryTime, state.v0, state.a);
+      const summaryDirection = accelerationMotionDirection(summaryTime, state.v0, state.a);
+      const summaryMode = getAccelerationMode({ ...state, t: summaryTime }, summaryV);
+      const summaryKey = [
+        isPlaying ? "playing" : "paused",
+        formatPhysicsNumber(summaryTime, isPlaying ? 0 : 2),
+        formatPhysicsNumber(summaryV, 1),
+        formatPhysicsNumber(summaryX, 1),
+        formatPhysicsNumber(state.a, 1),
+        summaryDirection,
+        summaryMode
+      ].join("|");
+
+      if (summaryKey === lastDynamicSummaryKey) {
+        return;
+      }
+
+      lastDynamicSummaryKey = summaryKey;
+      dynamicSummary.textContent = [
+        `Сводка лаборатории: t = ${formatPhysicsNumber(summaryTime, isPlaying ? 0 : 2)} с, ` +
+          `v = ${formatPhysicsNumber(summaryV, 1)} м/с, ` +
+          `x = ${formatPhysicsNumber(summaryX, 1)} м, ` +
+          `a = ${formatPhysicsNumber(state.a, 1)} м/с².`,
+        getDirectionSummary(summaryDirection, summaryMode),
+        getSpeedSummary(summaryV, state.a)
+      ].join(" ");
     };
 
     playButton.addEventListener("click", () => {
@@ -467,6 +509,30 @@ const accelerationControlSliders = [
     }
 
     return "a положительное: скорость растёт, поэтому точка разгоняется вправо.";
+  }
+
+  function getDirectionSummary(direction: Direction, mode: string): string {
+    if (mode === "turning-point" || direction === "still") {
+      return "Сейчас v = 0: тело мгновенно остановилось, это точка разворота.";
+    }
+
+    return direction === "backward"
+      ? "Движется влево/назад."
+      : "Движется вправо.";
+  }
+
+  function getSpeedSummary(v: number, a: number): string {
+    if (Math.abs(v) < 1e-9) {
+      return "Скорость сейчас равна нулю.";
+    }
+
+    if (a === 0) {
+      return "Скорость постоянная.";
+    }
+
+    return v * a > 0
+      ? "Скорость растёт."
+      : "Скорость уменьшается.";
   }
 
   function getPositionNote(a: number): string {

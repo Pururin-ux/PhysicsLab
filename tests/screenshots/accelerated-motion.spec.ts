@@ -211,6 +211,24 @@ test.describe("accelerated-motion chapter screenshots", () => {
       await expect(scene).toBeVisible();
       await expect(scene.locator('[data-input="v0"]')).toBeVisible();
       await expect(scene.locator('[data-input="a"]')).toBeVisible();
+      const dynamicSummary = scene.locator("[data-dynamic-summary]");
+      await expect(dynamicSummary).toBeAttached();
+      await expect(dynamicSummary).toHaveAttribute("aria-live", "polite");
+      await expect(dynamicSummary).toHaveAttribute("aria-atomic", "true");
+      await expect(dynamicSummary).toContainText("t = 0 с");
+      await expect(dynamicSummary).toContainText("v = 3 м/с");
+      await expect(dynamicSummary).toContainText("x = 0 м");
+      await expect(dynamicSummary).toContainText("a = 0.8 м/с²");
+      await expect(dynamicSummary).toContainText("Движется вправо");
+      await expect(dynamicSummary).toContainText("Скорость растёт");
+      await expect(dynamicSummary).not.toContainText("График v(t): наклон показывает ускорение");
+      await expect(dynamicSummary).not.toContainText("График x(t): наклон показывает скорость");
+      const graphMeaningSummary = scene.locator("[data-graph-meaning-summary]");
+      await expect(graphMeaningSummary).toBeAttached();
+      expect(await graphMeaningSummary.getAttribute("aria-live")).toBeNull();
+      await expect(graphMeaningSummary).toContainText("Смысл графиков");
+      await expect(graphMeaningSummary).toContainText("v(t) — наклон показывает ускорение");
+      await expect(graphMeaningSummary).toContainText("x(t) — наклон показывает скорость");
       await expect(scene.getByText("Старт движения при t = 0.")).toBeVisible();
       await expect(scene.getByText("Как меняется v за 1 секунду.")).toBeVisible();
       await expect(scene.locator("[data-motion-point]")).toBeVisible();
@@ -327,13 +345,18 @@ test.describe("accelerated-motion chapter screenshots", () => {
       }
 
       const startTime = await currentTime(scene);
+      const summaryBeforePlay = await dynamicSummary.textContent();
       await playButton.click();
       await expect
         .poll(async () => currentTime(scene), { timeout: 1800 })
         .toBeGreaterThan(startTime);
+      await expect
+        .poll(async () => dynamicSummary.textContent(), { timeout: 2600 })
+        .not.toBe(summaryBeforePlay);
 
       await resetButton.click();
       await expect.poll(async () => currentTime(scene)).toBe(0);
+      await expect(dynamicSummary).toContainText("t = 0 с");
 
       const velocityLineBefore = await scene.locator('[data-polyline="v"]').getAttribute("points");
       await scene.locator('[data-input="a"]').evaluate((element) => {
@@ -344,6 +367,8 @@ test.describe("accelerated-motion chapter screenshots", () => {
       await expect(scene).toHaveAttribute("data-current-a", "-2");
       await expect(scene).toHaveAttribute("data-motion-direction", "forward");
       await expect(scene.locator("[data-guidance]")).toContainText("ещё едет вправо");
+      await expect(dynamicSummary).toContainText("a = -2 м/с²");
+      await expect(dynamicSummary).toContainText("Скорость уменьшается");
       await expect(scene.locator('[data-graph-note="v"]')).toContainText("назад тело поедет только когда v станет меньше нуля");
       await expect(scene.locator('[data-polyline="v"]')).not.toHaveAttribute(
         "points",
@@ -364,6 +389,17 @@ test.describe("accelerated-motion chapter screenshots", () => {
         .poll(async () => currentTime(scene), { timeout: 1800 })
         .toBeGreaterThan(0);
       expect(Math.abs((await currentVelocity(scene)) - 3)).toBeLessThan(0.01);
+      await resetButton.click();
+
+      await scene.locator('[data-input="v0"]').evaluate((element) => {
+        const input = element as HTMLInputElement;
+        input.value = "-3";
+        input.dispatchEvent(new Event("input", { bubbles: true }));
+      });
+      await expect(scene).toHaveAttribute("data-current-v", "-3");
+      await expect(scene).toHaveAttribute("data-motion-direction", "backward");
+      await expect(dynamicSummary).toContainText("v = -3 м/с");
+      await expect(dynamicSummary).toContainText("Движется влево/назад");
       await resetButton.click();
 
       await page.getByRole("button", { name: "Едет назад: координата уменьшается" }).click();
