@@ -72,10 +72,10 @@ const accelerationControlSliders = [
 >
   <div class="scene-head">
     <div>
-      <h3 id="acceleration-scene-title">Проверь прогноз: a меняет скорость</h3>
+      <h3 id="acceleration-scene-title">Проверь ответ: ускорение меняет скорость</h3>
       <p>
-        Сначала смотри на v(t): ускорение меняет скорость. Потом смотри на x(t):
-        если скорость меняется, линия координаты становится кривой.
+        Сначала смотри на v(t): его наклон показывает ускорение.
+        Потом смотри на x(t): меняется скорость, меняется наклон координаты.
       </p>
     </div>
     <div class="scene-readouts" data-scene-readouts aria-label="Текущие значения">
@@ -100,7 +100,7 @@ const accelerationControlSliders = [
     sliders={accelerationControlSliders}
     readouts={[]}
     scenarios={[]}
-    hint="Сначала меняй a. v₀ задаёт старт линии v(t), а a меняет её наклон."
+    hint="Меняй a: наклон v(t) сразу меняется. v₀ задаёт стартовую скорость."
   />
 
   <div class="lab-console" data-lab-console data-graph-stack>
@@ -149,7 +149,7 @@ const accelerationControlSliders = [
         xAxisLabel="t, с"
         yAxisLabel="x, м"
         ariaLabel="График координаты от времени при равноускоренном движении"
-        note="x(t) становится кривой: её наклон меняется вместе со скоростью."
+        note="Координата изгибается: скорость меняет её наклон."
         domain={accelerationXGraphDomain}
         xTicks={graphTimeTicks}
         yTicks={accelerationXTicks}
@@ -489,15 +489,15 @@ const accelerationControlSliders = [
 
   function getGuidance(mode: string, direction: Direction): string {
     if (mode === "uniform") {
-      return "a = 0: скорость не меняется. Это снова равномерное движение.";
+      return "a = 0: скорость постоянная. Движение снова равномерное.";
     }
 
     if (mode === "slowing-forward") {
-      return "a отрицательное, но тело ещё едет вправо: скорость уменьшается, а не направление сразу меняется.";
+      return "a направлено влево, но тело ещё едет вправо. Скорость уменьшается, направление пока не сменилось.";
     }
 
     if (mode === "slowing-backward") {
-      return "a положительное, но тело ещё едет назад: скорость по модулю уменьшается.";
+      return "a направлено вправо, но тело ещё едет назад. Скорость по модулю уменьшается.";
     }
 
     if (mode === "turning-point") {
@@ -508,7 +508,7 @@ const accelerationControlSliders = [
       return "Скорость стала отрицательной: теперь точка действительно едет назад.";
     }
 
-    return "a положительное: скорость растёт, поэтому точка разгоняется вправо.";
+    return "a направлено вправо: скорость растёт, точка разгоняется вправо.";
   }
 
   function getDirectionSummary(direction: Direction, mode: string): string {
@@ -540,7 +540,7 @@ const accelerationControlSliders = [
       return "При a = 0 скорость постоянная, поэтому x(t) снова прямая.";
     }
 
-    return "x(t) кривая: её наклон всё время меняется, потому что меняется скорость.";
+    return "Координата изгибается: скорость меняется, поэтому наклон меняется.";
   }
 
   function getVelocityNote(a: number): string {
@@ -703,7 +703,7 @@ const accelerationControlSliders = [
   }
 
   :global(.acceleration-scene .track) {
-    min-height: clamp(176px, 16vw, 218px);
+    min-height: clamp(190px, 16vw, 226px);
     margin-block: var(--pl-space-1);
   }
 
@@ -723,8 +723,21 @@ const accelerationControlSliders = [
     bottom: 87px;
   }
 
+  :global(.acceleration-scene .motion-point::after) {
+    top: -35px;
+    padding: 3px 7px;
+    border: 1px solid rgba(255, 216, 77, 0.2);
+    border-radius: 999px;
+    color: var(--pl-text);
+    background: rgba(5, 12, 23, 0.84);
+    line-height: 1.2;
+    filter: drop-shadow(0 0 10px rgba(255, 216, 77, 0.16));
+  }
+
   :global(.acceleration-scene .motion-x-label) {
-    bottom: 132px;
+    bottom: 160px;
+    max-width: none;
+    padding: 4px 8px;
   }
 
   :global(.acceleration-scene .velocity-arrow) {
@@ -799,11 +812,12 @@ const accelerationControlSliders = [
   :global(.acceleration-scene .secondary-graph .graph-card) {
     display: grid;
     width: 100%;
-    grid-template-columns: minmax(320px, 0.62fr) minmax(220px, 0.38fr);
+    grid-template-columns: minmax(0, 1fr);
     grid-template-areas:
-      "title note"
-      "chart note";
-    gap: var(--pl-space-2) var(--pl-space-3);
+      "title"
+      "chart"
+      "note";
+    gap: var(--pl-space-2);
     align-items: center;
     border-color: rgba(88, 216, 255, 0.11);
     background:
@@ -817,18 +831,24 @@ const accelerationControlSliders = [
 
   :global(.acceleration-scene .secondary-graph .graph-card svg) {
     grid-area: chart;
-    height: clamp(160px, 15vw, 210px);
+    height: clamp(205px, 18vw, 250px);
     min-height: 0;
     margin-bottom: 0;
   }
 
   :global(.acceleration-scene .secondary-graph .graph-card p) {
     grid-area: note;
-    align-self: center;
+    align-self: auto;
+    display: block;
+    max-width: none;
     padding: 8px 10px;
-    border: 1px solid rgba(88, 216, 255, 0.075);
+    border: 1px solid rgba(88, 216, 255, 0.085);
+    border-left-color: rgba(88, 216, 255, 0.32);
+    border-left-width: 3px;
     border-radius: 12px;
-    background: rgba(255, 255, 255, 0.016);
+    background:
+      linear-gradient(180deg, rgba(88, 216, 255, 0.035), rgba(255, 255, 255, 0.012)),
+      rgba(255, 255, 255, 0.014);
   }
 
   .motion-causality-strip [data-variable="a"] b {
@@ -871,15 +891,11 @@ const accelerationControlSliders = [
     }
 
     :global(.acceleration-scene .secondary-graph .graph-card) {
-      grid-template-columns: 1fr;
-      grid-template-areas:
-        "title"
-        "chart"
-        "note";
+      grid-template-columns: minmax(0, 1fr);
     }
 
     :global(.acceleration-scene .secondary-graph .graph-card svg) {
-      height: 190px;
+      height: 210px;
       min-height: 0;
       margin-bottom: var(--pl-space-2);
     }
@@ -906,7 +922,8 @@ const accelerationControlSliders = [
     }
 
     .motion-panel {
-      padding: var(--pl-space-2);
+      gap: 6px;
+      padding: 8px;
       border-radius: 16px;
     }
 
@@ -916,7 +933,7 @@ const accelerationControlSliders = [
     }
 
     :global(.acceleration-scene .track) {
-      min-height: 132px;
+      min-height: 150px;
       margin-block: var(--pl-space-1);
     }
 
@@ -934,7 +951,7 @@ const accelerationControlSliders = [
     }
 
     :global(.acceleration-scene .motion-x-label) {
-      bottom: 94px;
+      bottom: 126px;
     }
 
     :global(.acceleration-scene .velocity-arrow) {
@@ -976,7 +993,7 @@ const accelerationControlSliders = [
     }
 
     :global(.acceleration-scene .secondary-graph .graph-card svg) {
-      height: 168px;
+      height: 190px;
       min-height: 0;
     }
 

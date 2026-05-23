@@ -165,6 +165,81 @@ const expectReadableInstrumentGraphs = async (
   }
 };
 
+const expectMotionLabelsSeparated = async (scene: Locator) => {
+  const layout = await scene.locator("[data-motion-panel]").evaluate((panel) => {
+    const motionPoint = panel.querySelector("[data-motion-point]");
+    const xLabel = panel.querySelector("[data-motion-x-label]");
+    const toRect = (element: Element) => {
+      const rect = element.getBoundingClientRect();
+      return {
+        left: rect.left,
+        top: rect.top,
+        right: rect.right,
+        bottom: rect.bottom,
+        width: rect.width,
+        height: rect.height
+      };
+    };
+    const toNumber = (value: string) => {
+      const parsed = Number.parseFloat(value);
+      return Number.isFinite(parsed) ? parsed : 0;
+    };
+    const overlaps = (
+      a: ReturnType<typeof toRect>,
+      b: ReturnType<typeof toRect>
+    ) => !(a.right <= b.left + 1 || b.right <= a.left + 1 || a.bottom <= b.top + 1 || b.bottom <= a.top + 1);
+
+    if (!motionPoint || !xLabel) {
+      return {
+        missing: true,
+        overlap: true,
+        verticalGap: 0,
+        xLabel: null,
+        vLabel: null
+      };
+    }
+
+    const pointRect = toRect(motionPoint);
+    const xLabelRect = toRect(xLabel);
+    const labelStyle = window.getComputedStyle(motionPoint, "::after");
+    const fontSize = toNumber(labelStyle.fontSize) || 13;
+    const lineHeight = labelStyle.lineHeight === "normal"
+      ? fontSize * 1.2
+      : toNumber(labelStyle.lineHeight) || fontSize * 1.2;
+    const paddingX = toNumber(labelStyle.paddingLeft) + toNumber(labelStyle.paddingRight);
+    const paddingY = toNumber(labelStyle.paddingTop) + toNumber(labelStyle.paddingBottom);
+    const borderX = toNumber(labelStyle.borderLeftWidth) + toNumber(labelStyle.borderRightWidth);
+    const borderY = toNumber(labelStyle.borderTopWidth) + toNumber(labelStyle.borderBottomWidth);
+    const labelText = motionPoint.getAttribute("data-motion-label") ?? "";
+    const labelWidth = Math.max(24, labelText.length * fontSize * 0.58 + paddingX + borderX);
+    const labelHeight = lineHeight + paddingY + borderY;
+    const labelTop = pointRect.top + toNumber(labelStyle.top);
+    const vLabelRect = {
+      left: pointRect.left + pointRect.width / 2 - labelWidth / 2,
+      top: labelTop,
+      right: pointRect.left + pointRect.width / 2 + labelWidth / 2,
+      bottom: labelTop + labelHeight,
+      width: labelWidth,
+      height: labelHeight
+    };
+    const verticalGap = xLabelRect.bottom <= vLabelRect.top
+      ? vLabelRect.top - xLabelRect.bottom
+      : xLabelRect.top - vLabelRect.bottom;
+
+    return {
+      missing: false,
+      overlap: overlaps(xLabelRect, vLabelRect),
+      verticalGap,
+      xLabel: xLabelRect,
+      vLabel: vLabelRect
+    };
+  });
+
+  expect(layout.missing, "motion x and v labels exist").toBe(false);
+  expect(layout.overlap, `x and v motion labels overlap: ${JSON.stringify(layout)}`).toBe(false);
+  expect(layout.verticalGap, `x and v motion label gap: ${JSON.stringify(layout)}`).toBeGreaterThanOrEqual(2);
+};
+
 test.describe("accelerated-motion chapter screenshots", () => {
   test.beforeAll(async () => {
     await fs.rm(screenshotDir, { recursive: true, force: true });
@@ -190,22 +265,28 @@ test.describe("accelerated-motion chapter screenshots", () => {
       );
       const visiblePageText = await page.locator("body").evaluate((body) => (body as HTMLElement).innerText);
       expect(visiblePageText).not.toMatch(/prototype|authorReviewRequired|прототип|demo/i);
+      expect(visiblePageText).not.toMatch(/прогноз/i);
       const prediction = page.locator("[data-acceleration-predict]");
       await expect(prediction).toBeVisible();
-      await expect(prediction.getByText("v₀ > 0, но a < 0. Что сначала будет с телом?")).toBeVisible();
-      await expect(prediction).toContainText("Сначала v(t)");
-      await expect(prediction).toContainText("Потом x(t)");
-      const wrongPrediction = prediction.getByRole("button", { name: "Сразу едет назад" });
+      const predictionPrompt = prediction.locator(".prediction-prompt");
+      await expect(predictionPrompt).toHaveText("Тело сначала едет вправо, а ускорение направлено влево. Что сначала будет происходить?");
+      await expect(predictionPrompt).not.toContainText("v₀ > 0");
+      await expect(predictionPrompt).not.toContainText("a < 0");
+      await expect(prediction).not.toContainText("x(t) обязан быть прямой");
+      await expect(prediction).toContainText("Будет ехать вправо всё быстрее");
+      await expect(prediction).toContainText("Сначала скорость");
+      await expect(prediction).toContainText("Потом координата");
+      const wrongPrediction = prediction.getByRole("button", { name: "Будет ехать вправо всё быстрее" });
       const correctPrediction = prediction.getByRole("button", { name: "Ещё едет вправо, но замедляется" });
       await wrongPrediction.click();
       await expect(wrongPrediction).toHaveAttribute("aria-pressed", "true");
-      await expect(prediction.locator("[data-prediction-feedback]")).toContainText("Сначала смотри на знак v");
+      await expect(prediction.locator("[data-prediction-feedback]")).toContainText("Сначала смотри на знак скорости");
       await expect(prediction.locator("[data-prediction-hint]")).toBeVisible();
-      await expect(prediction.locator("[data-prediction-hint]")).toContainText("Теперь выставь a < 0");
+      await expect(prediction.locator("[data-prediction-hint]")).toContainText("линия скорости пересечёт ноль");
       await correctPrediction.click();
       await expect(correctPrediction).toHaveAttribute("aria-pressed", "true");
       await expect(wrongPrediction).toHaveAttribute("aria-pressed", "false");
-      await expect(prediction.locator("[data-prediction-feedback]")).toContainText("Отрицательное a наклоняет v(t) вниз");
+      await expect(prediction.locator("[data-prediction-feedback]")).toContainText("Ускорение влево опускает линию скорости");
 
       const scene = sceneRoot(page);
       await expect(scene).toBeVisible();
@@ -233,6 +314,7 @@ test.describe("accelerated-motion chapter screenshots", () => {
       await expect(scene.getByText("Как меняется v за 1 секунду.")).toBeVisible();
       await expect(scene.locator("[data-motion-point]")).toBeVisible();
       await expect(scene.locator("[data-velocity-arrow]")).toBeVisible();
+      await expectMotionLabelsSeparated(scene);
       await expect(scene.locator('[data-polyline="x"]')).toHaveAttribute("points", /,/);
       await expect(scene.locator('[data-current-polyline="x"]')).toHaveAttribute("points", /,/);
       await expect(scene.locator('[data-polyline="v"]')).toHaveAttribute("points", /,/);
@@ -246,6 +328,9 @@ test.describe("accelerated-motion chapter screenshots", () => {
       await expect(page.getByText("Формулы подходят, если ускорение a постоянно.")).toBeVisible();
       await expect(page.locator('[data-formula-variable="a"]')).toContainText("м/с²");
       const formulaSection = page.locator("#formula");
+      await expect(formulaSection.locator(".formula-intro")).toContainText("Сначала свяжи скорость с графиком v(t)");
+      await expect(formulaSection).toContainText("Справочник");
+      await expect(formulaSection).toContainText("Можно подсмотреть");
       const formulaReadability = await formulaSection.evaluate((section) => {
         const formulas = [...section.querySelectorAll("[data-math-formula]")];
         const sectionRect = section.getBoundingClientRect();
@@ -276,27 +361,37 @@ test.describe("accelerated-motion chapter screenshots", () => {
       expect(formulaReadability.hasFraction).toBe(true);
       expect(formulaReadability.hasMathMl).toBe(true);
       await expect(formulaSection.locator(".formula-card [data-math-formula]")).toHaveCount(2);
+      await expect(formulaSection.locator("[data-formula-seq]")).toHaveCount(0);
+      await expect(formulaSection.locator("[data-step]")).toHaveCount(0);
+      await expect(formulaSection.locator("[data-formula-gate]")).toHaveCount(0);
+      await expect(formulaSection.locator("[data-formula-continue]")).toHaveCount(0);
       const workedExample = formulaSection.locator("[data-formula-worked-example]");
       await expect(workedExample).toBeVisible();
       await expect(workedExample).toContainText("v₀ = 3 м/с");
       await expect(workedExample).toContainText("a = −2 м/с²");
       await expect(workedExample).toContainText("t = 1 с");
       await expect(workedExample).toContainText("v = 1 м/с");
-      await expect(workedExample).toContainText("Проверка единиц");
+      await expect(workedExample).toContainText("Дано");
+      await expect(workedExample).toContainText("Подставляем");
+      await expect(workedExample).toContainText("Получаем");
+      await expect(workedExample).toContainText("Значит");
+      await expect(workedExample).toContainText("Единицы");
       await expect(workedExample).toContainText("(м/с²) · с = м/с");
-      await expect(workedExample).toContainText("Скорость v всё ещё положительная");
+      await expect(workedExample).toContainText("v всё ещё положительная");
       await expect(workedExample).toContainText("тело движется вправо");
       await expect(workedExample).toContainText("скорость уменьшается");
       await expect(workedExample).toContainText("Направление задаёт знак v");
-      await expect(formulaSection).toContainText("вправо считаем положительным");
+      await expect(formulaSection).not.toContainText("4. Переменные");
+      await expect(formulaSection).not.toContainText("5. Когда применять");
+      await expect(formulaSection).toContainText("Вправо считаем положительным");
       await expect(formulaSection).toContainText("v > 0");
-      await expect(formulaSection).toContainText("ускорение меняется во времени");
+      await expect(formulaSection).toContainText("другая модель");
       await expect(formulaSection).toContainText("x₀ зафиксировано как 0");
       const formulaCondition = formulaSection.locator(".formula-condition");
       const conditionNotes = formulaCondition.locator("[data-formula-condition-note]");
       await expect(conditionNotes).toHaveCount(5);
       await expect(formulaSection.locator(".formula-condition > p")).toHaveCount(0);
-      await expect(formulaCondition.locator('[data-formula-condition-note="axis"]')).toContainText("вправо считаем положительным");
+      await expect(formulaCondition.locator('[data-formula-condition-note="axis"]')).toContainText("Вправо считаем положительным");
       await expect(formulaCondition.locator('[data-formula-condition-note="direction"]')).toContainText("v > 0");
       await expect(formulaCondition.locator('[data-formula-condition-note="direction"]')).toContainText("v < 0");
       await expect(formulaCondition.locator('[data-formula-condition-note="constant-a"]')).toContainText("Формулы подходят, если ускорение a постоянно.");

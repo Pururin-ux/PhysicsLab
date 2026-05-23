@@ -5,7 +5,7 @@ import MathFormula from "../../components/math/MathFormula.astro";
 import SurfaceCard from "../../components/ui/SurfaceCard.astro";
 
 const navItems = [
-  { href: "#predict", label: "Прогноз" },
+  { href: "#predict", label: "Сначала" },
   { href: "#lab", label: "Лаборатория" },
   { href: "#formula", label: "Формулы" },
   { href: "#check", label: "Проверка" }
@@ -46,20 +46,20 @@ const navItems = [
       <SurfaceCard>
         <div class="prediction-panel" data-acceleration-predict>
           <div>
-            <p class="eyebrow">Перед запуском</p>
-            <h2 id="predict-title">Сначала сделай простой прогноз</h2>
+            <p class="eyebrow">Сначала подумай</p>
+            <h2 id="predict-title">Как сначала поведёт себя тело?</h2>
             <p>
-              Не считай: выбери догадку и проверь её в лаборатории.
+              Ответь без расчёта. Потом проверь ответ в лаборатории.
             </p>
           </div>
 
           <div
             class="prediction-question"
-            data-feedback-correct="Да. Отрицательное a наклоняет v(t) вниз, но пока v > 0, тело ещё едет вправо."
-            data-feedback-wrong="Не совсем. Сначала смотри на знак v, а не на знак a. Пока v положительная, тело движется вправо."
+            data-feedback-correct="Да. Ускорение влево опускает линию скорости, но пока скорость положительная, тело ещё едет вправо."
+            data-feedback-wrong="Не совсем. Сначала смотри на знак скорости. Пока скорость положительная, тело движется вправо."
           >
-            <p class="prediction-prompt">v₀ &gt; 0, но a &lt; 0. Что сначала будет с телом?</p>
-            <div class="chapter-answer-row prediction-answer-row" role="group" aria-label="Варианты прогноза">
+            <p class="prediction-prompt">Тело сначала едет вправо, а ускорение направлено влево. Что сначала будет происходить?</p>
+            <div class="chapter-answer-row prediction-answer-row" role="group" aria-label="Варианты ответа">
               <button type="button" data-prediction-answer="correct" aria-pressed="false">
                 Ещё едет вправо, но замедляется
               </button>
@@ -69,26 +69,26 @@ const navItems = [
               <button type="button" data-prediction-answer="instant-stop" aria-pressed="false">
                 Остановится мгновенно
               </button>
-              <button type="button" data-prediction-answer="straight-x" aria-pressed="false">
-                x(t) обязан быть прямой
+              <button type="button" data-prediction-answer="speed-up" aria-pressed="false">
+                Будет ехать вправо всё быстрее
               </button>
             </div>
             <p class="chapter-feedback prediction-feedback" data-prediction-feedback aria-live="polite">
-              Выбери прогноз и сравни с графиком v(t).
+              Выбери ответ. Потом сравни с графиком скорости.
             </p>
             <p class="prediction-next-step" data-prediction-hint hidden>
-              Теперь выставь a &lt; 0 и смотри, когда v(t) пересечёт ноль.
+              Теперь выставь ускорение влево и смотри, когда линия скорости пересечёт ноль.
             </p>
           </div>
 
           <div class="prediction-grid" aria-label="На что смотреть в лаборатории">
             <article>
-              <strong>Сначала v(t)</strong>
-              <p>Знак v — направление, наклон v(t) — ускорение.</p>
+              <strong>Сначала скорость</strong>
+              <p>Пока скорость положительная, тело едет вправо.</p>
             </article>
             <article>
-              <strong>Потом x(t)</strong>
-              <p>Если v меняется, меняется и наклон x(t).</p>
+              <strong>Потом координата</strong>
+              <p>Когда скорость меняется, линия координаты изгибается.</p>
             </article>
           </div>
         </div>
@@ -110,75 +110,103 @@ const navItems = [
     <section id="formula" class="section chapter-section" aria-labelledby="formula-title">
       <SurfaceCard>
         <p class="eyebrow">После наблюдения</p>
-        <h2 id="formula-title">Формулы записывают то, что ты увидел</h2>
+        <h2 id="formula-title">От наблюдения к формуле</h2>
+        <p class="formula-intro">
+          Сначала свяжи скорость с графиком v(t). Затем проверь координату, единицы и знак на одной подстановке.
+        </p>
         <div class="formula-grid">
           <div class="formula-card">
+            <span class="formula-step">Скорость</span>
             <div class="formula">
               <MathFormula tex="v = v_0 + at" display />
             </div>
             <p>
-              v₀ — скорость в начале. at — насколько скорость изменилась за время t.
-              Поэтому на графике v(t) ускорение видно как наклон.
+              v₀ — скорость в начале. at — изменение скорости за время t.
+              На графике v(t) это видно как наклон.
             </p>
           </div>
           <div class="formula-card">
+            <span class="formula-step">Координата</span>
             <div class="formula">
               <MathFormula tex={"x = x_0 + v_0 t + \\frac{a t^2}{2}"} display />
             </div>
             <p>
-              Координата зависит не только от стартовой скорости: ускорение меняет скорость,
-              поэтому линия x(t) изгибается.
+              x зависит от скорости. Если скорость меняется, наклон x(t) тоже меняется,
+              и линия становится кривой.
             </p>
           </div>
         </div>
+
         <div class="formula-worked-example" data-formula-worked-example>
-          <div class="formula-worked-example__main">
-            <h3>Подстановка и проверка знака</h3>
-            <div class="formula-worked-example__givens" aria-label="Дано">
-              <span class="formula-worked-example__given"><b>v₀</b> = 3 м/с</span>
-              <span class="formula-worked-example__given"><b>a</b> = −2 м/с²</span>
-              <span class="formula-worked-example__given"><b>t</b> = 1 с</span>
-            </div>
-            <div class="formula">
-              <MathFormula tex={"v = 3 + (-2)\\cdot 1 = 1"} display />
-            </div>
-            <p><strong>Ответ:</strong> v = 1 м/с.</p>
+          <div class="formula-worked-example__header">
+            <span class="formula-step">Одна подстановка</span>
+            <h3>Скорость через 1 секунду</h3>
           </div>
-          <div class="formula-worked-example__checks" aria-label="Проверка единиц и направления">
-            <p><strong>Проверка единиц:</strong> (м/с²) · с = м/с, поэтому at можно прибавлять к скорости.</p>
-            <p><strong>Знак:</strong> Скорость v всё ещё положительная, значит тело движется вправо. При a &lt; 0 и v &gt; 0 скорость уменьшается. Направление задаёт знак v.</p>
+          <div class="formula-worked-example__flow">
+            <div class="worked-step worked-step--givens">
+              <span class="worked-step__label">Дано</span>
+              <div class="formula-worked-example__givens" aria-label="Дано">
+                <span class="formula-worked-example__given"><b>v₀</b> = 3 м/с</span>
+                <span class="formula-worked-example__given"><b>a</b> = −2 м/с²</span>
+                <span class="formula-worked-example__given"><b>t</b> = 1 с</span>
+              </div>
+            </div>
+
+            <div class="worked-step worked-step--substitution">
+              <span class="worked-step__label">Подставляем</span>
+              <div class="formula">
+                <MathFormula tex={"v = 3 + (-2)\\cdot 1 = 1"} display />
+              </div>
+            </div>
+
+            <div class="worked-step worked-step--result">
+              <span class="worked-step__label">Получаем</span>
+              <p><strong>v = 1 м/с</strong></p>
+            </div>
+
+            <div class="worked-step worked-step--meaning" aria-label="Проверка единиц и направления">
+              <span class="worked-step__label">Значит</span>
+              <ul>
+                <li><strong>Единицы:</strong> (м/с²) · с = м/с, поэтому at можно прибавлять к скорости.</li>
+                <li><strong>Знак:</strong> v всё ещё положительная — тело движется вправо.</li>
+                <li><strong>Ускорение против скорости:</strong> скорость уменьшается.</li>
+                <li>Направление задаёт знак v.</li>
+              </ul>
+            </div>
           </div>
         </div>
-        <div class="formula-meta" aria-label="Переменные, единицы и условие применимости">
-          <div>
+        <div class="formula-meta" aria-label="Справочник по переменным, единицам и условию применимости">
+          <div class="formula-reference">
+            <span class="formula-reference__label">Справочник</span>
             <h3>Переменные и единицы</h3>
             <div class="variable-grid">
-              <span class="variable-chip" data-formula-variable="v" data-variable="v"><b>v</b> скорость <em>м/с</em></span>
-              <span class="variable-chip" data-formula-variable="v0" data-variable="v"><b>v₀</b> начальная скорость <em>м/с</em></span>
-              <span class="variable-chip" data-formula-variable="a" data-variable="a"><b>a</b> ускорение <em>м/с²</em></span>
-              <span class="variable-chip" data-formula-variable="t" data-variable="t"><b>t</b> время <em>с</em></span>
-              <span class="variable-chip" data-formula-variable="x" data-variable="x"><b>x</b> координата <em>м</em></span>
-              <span class="variable-chip" data-formula-variable="x0" data-variable="x"><b>x₀</b> начальная координата <em>м</em></span>
+              <span class="variable-chip" data-formula-variable="v" data-variable="v" data-var="v"><b>v</b> скорость <em>м/с</em></span>
+              <span class="variable-chip" data-formula-variable="v0" data-variable="v" data-var="v"><b>v₀</b> начальная скорость <em>м/с</em></span>
+              <span class="variable-chip" data-formula-variable="a" data-variable="a" data-var="a"><b>a</b> ускорение <em>м/с²</em></span>
+              <span class="variable-chip" data-formula-variable="t" data-variable="t" data-var="t"><b>t</b> время <em>с</em></span>
+              <span class="variable-chip" data-formula-variable="x" data-variable="x" data-var="x"><b>x</b> координата <em>м</em></span>
+              <span class="variable-chip" data-formula-variable="x0" data-variable="x" data-var="x"><b>x₀</b> начальная координата <em>м</em></span>
             </div>
           </div>
-          <div class="formula-condition">
-            <h3>Когда это работает</h3>
+          <div class="formula-condition formula-reference">
+            <span class="formula-reference__label">Можно подсмотреть</span>
+            <h3>Короткие условия</h3>
             <div class="condition-note-grid" aria-label="Условия применения формул">
               <article class="condition-note" data-formula-condition-note="axis">
                 <strong>Ось</strong>
-                <p>В этой главе вправо считаем положительным направлением. Знаки x, v и a — это знаки проекций на эту ось.</p>
+                <p>Вправо считаем положительным направлением. Знаки x, v и a — проекции на эту ось.</p>
               </article>
               <article class="condition-note" data-formula-condition-note="direction">
                 <strong>Направление</strong>
-                <p>v &gt; 0 значит движение вправо, v &lt; 0 — назад. Ускорение a меняет v и не обязано совпадать с направлением движения.</p>
+                <p>v &gt; 0 — движение вправо. v &lt; 0 — назад. Ускорение a меняет v.</p>
               </article>
               <article class="condition-note" data-formula-condition-note="coordinate">
                 <strong>Координата</strong>
-                <p>x — координата на оси, а Δx = x - x₀ — перемещение. Путь может отличаться, если тело развернулось.</p>
+                <p>x — положение на оси. Δx = x - x₀ — перемещение.</p>
               </article>
               <article class="condition-note condition-note--accent" data-formula-condition-note="constant-a">
                 <strong>Условие</strong>
-                <p>Формулы подходят, если ускорение a постоянно. Если ускорение меняется во времени, их нельзя просто подставлять как есть.</p>
+                <p>Формулы подходят, если ускорение a постоянно. Если a меняется во времени, нужна другая модель.</p>
               </article>
               <article class="condition-note" data-formula-condition-note="lab">
                 <strong>В этой лаборатории</strong>
@@ -278,6 +306,7 @@ const navItems = [
       });
     });
   }
+
 </script>
 
 <style>
@@ -402,12 +431,15 @@ const navItems = [
   .prediction-question {
     display: grid;
     gap: var(--pl-space-2);
-    padding: var(--pl-space-3);
-    border: 1px solid rgba(255, 216, 77, 0.12);
+    padding: clamp(var(--pl-space-3), 2vw, var(--pl-space-4));
+    border: 1px solid rgba(255, 216, 77, 0.16);
     border-radius: 18px;
     background:
-      linear-gradient(135deg, rgba(255, 216, 77, 0.06), rgba(88, 216, 255, 0.026)),
-      rgba(255, 255, 255, 0.018);
+      linear-gradient(135deg, rgba(255, 216, 77, 0.075), rgba(88, 216, 255, 0.032)),
+      rgba(255, 255, 255, 0.02);
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 255, 255, 0.024),
+      inset 0 18px 48px rgba(255, 216, 77, 0.022);
   }
 
   .prediction-prompt {
@@ -440,9 +472,9 @@ const navItems = [
 
   .prediction-grid article {
     min-width: 0;
-    padding: 10px 11px;
+    padding: 10px 12px;
     border: 1px solid rgba(88, 216, 255, 0.1);
-    border-radius: 16px;
+    border-radius: 14px;
     background:
       linear-gradient(180deg, rgba(88, 216, 255, 0.045), rgba(255, 255, 255, 0.012)),
       rgba(255, 255, 255, 0.018);
@@ -464,15 +496,35 @@ const navItems = [
   .formula-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: var(--pl-space-4);
+    gap: var(--pl-space-3);
+    margin-top: var(--pl-space-3);
+  }
+
+  .formula-intro {
+    max-width: 760px;
+    margin: var(--pl-space-2) 0 0;
+    color: var(--pl-text-muted);
+    line-height: 1.45;
+  }
+
+  .formula-step {
+    display: block;
+    margin: 0 0 var(--pl-space-2);
+    color: var(--pl-accent);
+    font-size: 0.78rem;
+    font-weight: 900;
+    letter-spacing: 0;
+    text-transform: uppercase;
   }
 
   .formula-card {
     min-width: 0;
-    padding: var(--pl-space-4);
+    padding: var(--pl-space-3);
     border: 1px solid rgba(88, 216, 255, 0.14);
-    border-radius: 18px;
-    background: rgba(255, 255, 255, 0.026);
+    border-radius: 16px;
+    background:
+      linear-gradient(180deg, rgba(88, 216, 255, 0.042), rgba(255, 255, 255, 0.012)),
+      rgba(255, 255, 255, 0.022);
   }
 
   .formula {
@@ -505,25 +557,39 @@ const navItems = [
   }
 
   .formula-worked-example {
+    position: relative;
     display: grid;
-    grid-template-columns: minmax(0, 0.95fr) minmax(250px, 1fr);
-    gap: var(--pl-space-3);
-    margin-top: var(--pl-space-4);
-    padding: var(--pl-space-3);
-    border: 1px solid rgba(110, 231, 168, 0.16);
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--pl-space-2);
+    margin-top: var(--pl-space-3);
+    padding: var(--pl-space-3) var(--pl-space-3) var(--pl-space-3) var(--pl-space-4);
+    border: 1px solid rgba(88, 216, 255, 0.16);
     border-radius: 16px;
     background:
-      linear-gradient(135deg, rgba(110, 231, 168, 0.055), rgba(88, 216, 255, 0.026)),
+      linear-gradient(135deg, rgba(110, 231, 168, 0.05), rgba(88, 216, 255, 0.032)),
       rgba(255, 255, 255, 0.018);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.022);
   }
 
-  .formula-worked-example__main,
-  .formula-worked-example__checks {
+  .formula-worked-example::before {
+    content: "";
+    position: absolute;
+    top: var(--pl-space-3);
+    bottom: var(--pl-space-3);
+    left: var(--pl-space-3);
+    width: 3px;
+    border-radius: 999px;
+    background: linear-gradient(180deg, rgba(110, 231, 168, 0.85), rgba(88, 216, 255, 0.76));
+  }
+
+  .formula-worked-example__header,
+  .formula-worked-example__flow,
+  .worked-step {
     min-width: 0;
   }
 
   .formula-worked-example h3 {
-    margin: 0 0 var(--pl-space-2);
+    margin: 0;
     color: var(--pl-text);
     font-size: 1rem;
   }
@@ -543,15 +609,48 @@ const navItems = [
     color: var(--pl-text);
   }
 
-  .formula-worked-example__givens {
-    display: flex;
-    flex-wrap: wrap;
+  .formula-worked-example__flow {
+    display: grid;
+    grid-template-columns: minmax(190px, 0.8fr) minmax(250px, 1fr) minmax(160px, 0.55fr);
     gap: var(--pl-space-2);
+    align-items: stretch;
+  }
+
+  .worked-step {
+    display: grid;
+    align-content: start;
+    gap: 8px;
+    padding: 10px 11px;
+    border: 1px solid rgba(88, 216, 255, 0.1);
+    border-radius: 12px;
+    background: rgba(4, 13, 26, 0.28);
+  }
+
+  .worked-step--meaning {
+    grid-column: span 3;
+    background:
+      linear-gradient(90deg, rgba(110, 231, 168, 0.052), rgba(88, 216, 255, 0.018)),
+      rgba(4, 13, 26, 0.28);
+  }
+
+  .worked-step__label {
+    color: var(--pl-accent);
+    font-size: 0.78rem;
+    font-weight: 900;
+    letter-spacing: 0;
+    text-transform: uppercase;
+  }
+
+  .formula-worked-example__givens {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 6px;
   }
 
   .formula-worked-example__given {
     display: inline-flex;
     align-items: baseline;
+    justify-content: center;
     gap: 0.38em;
     min-width: 0;
     padding: 5px 8px;
@@ -570,30 +669,64 @@ const navItems = [
   }
 
   .formula-worked-example .formula {
-    margin: var(--pl-space-2) 0;
+    margin: 0;
   }
 
   .formula-worked-example .formula :global(.math-formula--display .katex) {
     font-size: clamp(1.15rem, 2.4vw, 1.55rem);
   }
 
-  .formula-worked-example__checks {
+  .worked-step--meaning ul {
     display: grid;
-    align-content: center;
-    gap: var(--pl-space-2);
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 7px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .worked-step--meaning li {
+    min-width: 0;
+    padding: 8px 9px;
+    border: 1px solid rgba(110, 231, 168, 0.1);
+    border-radius: 10px;
+    color: var(--pl-text-muted);
+    background: rgba(255, 255, 255, 0.018);
+    font-size: 0.9rem;
+    line-height: 1.35;
   }
 
   .formula-meta {
     display: grid;
-    grid-template-columns: minmax(0, 1.35fr) minmax(240px, 0.8fr);
-    gap: var(--pl-space-4);
+    grid-template-columns: minmax(0, 0.95fr) minmax(320px, 1.05fr);
+    gap: var(--pl-space-3);
     margin: var(--pl-space-4) 0 0;
+    padding-top: var(--pl-space-3);
+    border-top: 1px solid rgba(126, 179, 218, 0.08);
+  }
+
+  .formula-reference {
+    min-width: 0;
+    padding: var(--pl-space-3);
+    border: 1px solid rgba(126, 179, 218, 0.08);
+    border-radius: 14px;
+    background: rgba(8, 14, 24, 0.14);
+  }
+
+  .formula-reference__label {
+    display: block;
+    margin-bottom: var(--pl-space-2);
+    color: var(--pl-text-soft);
+    font-size: 0.74rem;
+    font-weight: 900;
+    letter-spacing: 0;
+    text-transform: uppercase;
   }
 
   .formula-meta h3 {
     margin: 0 0 var(--pl-space-3);
-    color: var(--pl-text);
-    font-size: 1rem;
+    color: var(--pl-text-muted);
+    font-size: 0.94rem;
   }
 
   .variable-grid {
@@ -607,12 +740,12 @@ const navItems = [
     align-items: center;
     gap: var(--pl-space-2);
     min-width: 0;
-    min-height: 44px;
-    padding: 8px 10px;
-    border: 1px solid rgba(88, 216, 255, 0.1);
-    border-radius: 14px;
+    min-height: 40px;
+    padding: 7px 9px;
+    border: 1px solid rgba(88, 216, 255, 0.075);
+    border-radius: 12px;
     color: var(--pl-text-muted);
-    background: rgba(255, 255, 255, 0.022);
+    background: rgba(255, 255, 255, 0.012);
     line-height: 1.25;
   }
 
@@ -632,58 +765,52 @@ const navItems = [
     font-style: normal;
   }
 
-  .variable-chip[data-variable="x"] b {
+  .variable-chip[data-var="x"] b {
     color: var(--pl-position);
   }
 
-  .variable-chip[data-variable="v"] b {
+  .variable-chip[data-var="v"] b {
     color: var(--pl-velocity);
   }
 
-  .variable-chip[data-variable="a"] b {
+  .variable-chip[data-var="a"] b {
     color: var(--pl-acceleration);
   }
 
-  .variable-chip[data-variable="t"] b {
+  .variable-chip[data-var="t"] b {
     color: var(--pl-time);
   }
 
   .formula-condition {
-    padding: var(--pl-space-3);
-    border: 1px solid rgba(255, 216, 77, 0.14);
-    border-radius: 16px;
     color: var(--pl-text);
-    background: rgba(255, 216, 77, 0.045);
     line-height: 1.45;
   }
 
   .condition-note-grid {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     gap: var(--pl-space-2);
     align-items: stretch;
   }
 
   .condition-note {
     min-width: 0;
-    padding: 10px 11px;
-    border: 1px solid rgba(255, 216, 77, 0.1);
-    border-radius: 12px;
-    background: rgba(8, 14, 24, 0.28);
+    padding: 9px 10px;
+    border: 1px solid rgba(255, 216, 77, 0.07);
+    border-radius: 10px;
+    background: rgba(8, 14, 24, 0.16);
   }
 
   .condition-note--accent {
-    border-color: rgba(255, 216, 77, 0.24);
-    background:
-      linear-gradient(135deg, rgba(255, 216, 77, 0.075), rgba(255, 255, 255, 0.018)),
-      rgba(8, 14, 24, 0.28);
+    border-color: rgba(255, 216, 77, 0.13);
+    background: rgba(255, 216, 77, 0.035);
   }
 
   .condition-note strong {
     display: block;
     margin-bottom: 4px;
-    color: var(--pl-accent);
-    font-size: 0.82rem;
+    color: var(--pl-text-soft);
+    font-size: 0.76rem;
     font-weight: 900;
     letter-spacing: 0;
     text-transform: uppercase;
@@ -692,8 +819,8 @@ const navItems = [
   .condition-note p {
     margin: 0;
     color: var(--pl-text-muted);
-    font-size: 0.92rem;
-    line-height: 1.42;
+    font-size: 0.88rem;
+    line-height: 1.35;
   }
 
   .chapter-check {
@@ -787,6 +914,18 @@ const navItems = [
     }
 
     .formula-worked-example {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .formula-worked-example__flow {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .worked-step--meaning {
+      grid-column: auto;
+    }
+
+    .worked-step--meaning ul {
       grid-template-columns: minmax(0, 1fr);
     }
   }
