@@ -131,6 +131,24 @@ const navItems = [
             </p>
           </div>
         </div>
+        <div class="formula-worked-example" data-formula-worked-example>
+          <div class="formula-worked-example__main">
+            <h3>Подстановка и проверка знака</h3>
+            <div class="formula-worked-example__givens" aria-label="Дано">
+              <span class="formula-worked-example__given"><b>v₀</b> = 3 м/с</span>
+              <span class="formula-worked-example__given"><b>a</b> = −2 м/с²</span>
+              <span class="formula-worked-example__given"><b>t</b> = 1 с</span>
+            </div>
+            <div class="formula">
+              <MathFormula tex={"v = 3 + (-2)\\cdot 1 = 1"} display />
+            </div>
+            <p><strong>Ответ:</strong> v = 1 м/с.</p>
+          </div>
+          <div class="formula-worked-example__checks" aria-label="Проверка единиц и направления">
+            <p><strong>Проверка единиц:</strong> (м/с²) · с = м/с, поэтому at можно прибавлять к скорости.</p>
+            <p><strong>Знак:</strong> Скорость v всё ещё положительная, значит тело движется вправо. При a &lt; 0 и v &gt; 0 скорость уменьшается. Направление задаёт знак v.</p>
+          </div>
+        </div>
         <div class="formula-meta" aria-label="Переменные, единицы и условие применимости">
           <div>
             <h3>Переменные и единицы</h3>
@@ -486,6 +504,85 @@ const navItems = [
     margin-bottom: 0;
   }
 
+  .formula-worked-example {
+    display: grid;
+    grid-template-columns: minmax(0, 0.95fr) minmax(250px, 1fr);
+    gap: var(--pl-space-3);
+    margin-top: var(--pl-space-4);
+    padding: var(--pl-space-3);
+    border: 1px solid rgba(110, 231, 168, 0.16);
+    border-radius: 16px;
+    background:
+      linear-gradient(135deg, rgba(110, 231, 168, 0.055), rgba(88, 216, 255, 0.026)),
+      rgba(255, 255, 255, 0.018);
+  }
+
+  .formula-worked-example__main,
+  .formula-worked-example__checks {
+    min-width: 0;
+  }
+
+  .formula-worked-example h3 {
+    margin: 0 0 var(--pl-space-2);
+    color: var(--pl-text);
+    font-size: 1rem;
+  }
+
+  .formula-worked-example p {
+    margin: 0;
+    color: var(--pl-text-muted);
+    font-size: 0.94rem;
+    line-height: 1.43;
+  }
+
+  .formula-worked-example p + p {
+    margin-top: var(--pl-space-2);
+  }
+
+  .formula-worked-example strong {
+    color: var(--pl-text);
+  }
+
+  .formula-worked-example__givens {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--pl-space-2);
+  }
+
+  .formula-worked-example__given {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.38em;
+    min-width: 0;
+    padding: 5px 8px;
+    border: 1px solid rgba(88, 216, 255, 0.12);
+    border-radius: 10px;
+    color: var(--pl-text-muted);
+    background: rgba(8, 14, 24, 0.24);
+    font-family: "Cascadia Mono", "JetBrains Mono", Consolas, monospace;
+    font-size: 0.88rem;
+    line-height: 1.2;
+    white-space: nowrap;
+  }
+
+  .formula-worked-example__given b {
+    color: var(--pl-text);
+  }
+
+  .formula-worked-example .formula {
+    margin: var(--pl-space-2) 0;
+  }
+
+  .formula-worked-example .formula :global(.math-formula--display .katex) {
+    font-size: clamp(1.15rem, 2.4vw, 1.55rem);
+  }
+
+  .formula-worked-example__checks {
+    display: grid;
+    align-content: center;
+    gap: var(--pl-space-2);
+  }
+
   .formula-meta {
     display: grid;
     grid-template-columns: minmax(0, 1.35fr) minmax(240px, 0.8fr);
@@ -687,6 +784,10 @@ const navItems = [
     .formula-meta > *,
     .variable-grid > * {
       min-width: 0;
+    }
+
+    .formula-worked-example {
+      grid-template-columns: minmax(0, 1fr);
     }
   }
 
