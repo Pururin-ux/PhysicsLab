@@ -354,7 +354,7 @@ test.describe("accelerated-motion chapter screenshots", () => {
         };
       });
 
-      expect(formulaReadability.count).toBeGreaterThanOrEqual(3);
+      expect(formulaReadability.count).toBeGreaterThanOrEqual(2);
       expect(formulaReadability.visibleCount).toBe(formulaReadability.count);
       expect(formulaReadability.katexCount).toBe(formulaReadability.count);
       expect(formulaReadability.displayCount).toBe(formulaReadability.count);
@@ -365,22 +365,69 @@ test.describe("accelerated-motion chapter screenshots", () => {
       await expect(formulaSection.locator("[data-step]")).toHaveCount(0);
       await expect(formulaSection.locator("[data-formula-gate]")).toHaveCount(0);
       await expect(formulaSection.locator("[data-formula-continue]")).toHaveCount(0);
-      const workedExample = formulaSection.locator("[data-formula-worked-example]");
-      await expect(workedExample).toBeVisible();
-      await expect(workedExample).toContainText("v₀ = 3 м/с");
-      await expect(workedExample).toContainText("a = −2 м/с²");
-      await expect(workedExample).toContainText("t = 1 с");
-      await expect(workedExample).toContainText("v = 1 м/с");
-      await expect(workedExample).toContainText("Дано");
-      await expect(workedExample).toContainText("Подставляем");
-      await expect(workedExample).toContainText("Получаем");
-      await expect(workedExample).toContainText("Значит");
-      await expect(workedExample).toContainText("Единицы");
-      await expect(workedExample).toContainText("(м/с²) · с = м/с");
-      await expect(workedExample).toContainText("v всё ещё положительная");
-      await expect(workedExample).toContainText("тело движется вправо");
-      await expect(workedExample).toContainText("скорость уменьшается");
-      await expect(workedExample).toContainText("Направление задаёт знак v");
+      const liveSubstitution = formulaSection.locator("[data-live-substitution]");
+      await expect(liveSubstitution).toBeVisible();
+      await expect(liveSubstitution).toHaveAttribute("data-current-t", "1");
+      await expect(liveSubstitution).toHaveAttribute("data-current-v", "1");
+      await expect(liveSubstitution).toHaveAttribute("data-direction", "right");
+      await expect(liveSubstitution).toContainText("Живая подстановка");
+      await expect(liveSubstitution).toContainText("v₀ = 3 м/с");
+      await expect(liveSubstitution).toContainText("a = −2 м/с²");
+      await expect(liveSubstitution.locator("[data-live-time-input]")).toHaveAttribute("min", "0");
+      await expect(liveSubstitution.locator("[data-live-time-input]")).toHaveAttribute("max", "3");
+      await expect(liveSubstitution.locator("[data-live-time-input]")).toHaveAttribute("step", "0.5");
+      await expect(liveSubstitution.locator("[data-live-body]")).toBeVisible();
+      await expect(liveSubstitution.locator("[data-live-arrow]")).toBeVisible();
+      await expect(liveSubstitution.locator("[data-live-ticks] span")).toHaveCount(5);
+      await expect(liveSubstitution.locator("[data-live-expression]")).toContainText("v = 3 + (−2) · 1 = 1");
+      await expect(liveSubstitution.locator("[data-live-result]")).toHaveText("v = 1 м/с");
+      await expect(liveSubstitution.locator("[data-live-state]")).toHaveText("тело движется вправо");
+      await expect(liveSubstitution.locator("[data-live-explanation]")).toContainText("Пока v не дошла до 0");
+      await expect(liveSubstitution).toContainText("Единицы");
+      await expect(liveSubstitution).toContainText("(м/с²) · с = м/с");
+      await expect(liveSubstitution).toContainText("направление задаёт знак v");
+
+      const setLiveTime = async (value: string) => {
+        await liveSubstitution.locator("[data-live-time-input]").evaluate((element, nextValue) => {
+          const input = element as HTMLInputElement;
+          input.value = nextValue;
+          input.dispatchEvent(new Event("input", { bubbles: true }));
+        }, value);
+      };
+
+      await setLiveTime("1");
+      await expect(liveSubstitution).toHaveAttribute("data-current-v", "1");
+      await expect(liveSubstitution).toHaveAttribute("data-direction", "right");
+      await expect(liveSubstitution.locator("[data-live-result]")).toHaveText("v = 1 м/с");
+      await expect(liveSubstitution.locator("[data-live-state]")).toHaveText("тело движется вправо");
+      await liveSubstitution.locator("[data-live-time-input]").focus();
+      await liveSubstitution.locator("[data-live-time-input]").press("ArrowRight");
+      await expect(liveSubstitution).toHaveAttribute("data-current-t", "1.5");
+      await expect(liveSubstitution).toHaveAttribute("data-current-v", "0");
+      await expect(liveSubstitution.locator("[data-live-state]")).toHaveText("мгновенно остановилось");
+
+      await setLiveTime("1.5");
+      await expect(liveSubstitution).toHaveAttribute("data-current-t", "1.5");
+      await expect(liveSubstitution).toHaveAttribute("data-current-v", "0");
+      await expect(liveSubstitution).toHaveAttribute("data-direction", "stop");
+      await expect(liveSubstitution.locator("[data-live-result]")).toHaveText("v = 0 м/с");
+      await expect(liveSubstitution.locator("[data-live-state]")).toHaveText("мгновенно остановилось");
+      await expect(liveSubstitution.locator("[data-live-explanation]")).toContainText("В этот миг v = 0");
+      await expect(liveSubstitution.locator("[data-live-body]")).toBeVisible();
+      await expect
+        .poll(async () => liveSubstitution.locator("[data-live-arrow]").evaluate((arrow) => arrow.getBoundingClientRect().width))
+        .toBeLessThanOrEqual(1);
+      await expect
+        .poll(async () => liveSubstitution.locator("[data-live-arrow]").evaluate((arrow) => window.getComputedStyle(arrow).opacity))
+        .toBe("0");
+
+      await setLiveTime("2");
+      await expect(liveSubstitution).toHaveAttribute("data-current-t", "2");
+      await expect(liveSubstitution).toHaveAttribute("data-current-v", "-1");
+      await expect(liveSubstitution).toHaveAttribute("data-direction", "left");
+      await expect(liveSubstitution.locator("[data-live-result]")).toHaveText("v = -1 м/с");
+      await expect(liveSubstitution.locator("[data-live-state]")).toHaveText("тело движется влево/назад");
+      await expect(liveSubstitution.locator("[data-live-explanation]")).toContainText("После смены знака v");
       await expect(formulaSection).not.toContainText("4. Переменные");
       await expect(formulaSection).not.toContainText("5. Когда применять");
       await expect(formulaSection).toContainText("Вправо считаем положительным");
