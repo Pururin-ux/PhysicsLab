@@ -1,6 +1,8 @@
 node_modules/
 dist/
 .astro/
+.agents/
+artifacts/
 artifacts/screenshots/
 artifacts/playwright-results/
 artifacts/physics-tests/
@@ -9,3 +11,12 @@ test-results/
 .env
 .env.*
 !.env.example
+PhysLabProt-main/.emergent/
+PhysLabProt-main/backend/*.log
+PhysLabProt-main/frontend/*.log
+PhysLabProt-main/test_reports/
+**/__pycache__/
+**/.pytest_cache/
+*.tmp
+*.cache
+*.log

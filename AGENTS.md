@@ -89,3 +89,15 @@ When asked to commit:
 3. Run final checks.
 4. Commit only the accepted scope.
 5. Push only after successful checks.
+
+## Prototype / Monorepo transition rules
+
+- `PhysLabProt-main` is intentional prototype code, not random trash.
+- Do not delete `PhysLabProt-main` unless explicitly requested.
+- Do not move folders into `apps/**` until an approved migration task.
+- Do not touch root Astro and `PhysLabProt-main` in the same task unless explicitly requested.
+- UI generators may provide prototypes; Codex must integrate only approved scope.
+- Never commit local logs, `.emergent`, `.agents`, `artifacts`, PDFs, TXT corpora, or test reports.
+- Before any commit show `git status --short`, `git diff --name-only`, and `git diff --stat`.
+- Never use `git add .`.
+- Never push to `main`.
