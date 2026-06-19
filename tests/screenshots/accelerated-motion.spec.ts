@@ -371,6 +371,8 @@ test.describe("accelerated-motion chapter screenshots", () => {
       await expect(liveSubstitution).toHaveAttribute("data-current-v", "1");
       await expect(liveSubstitution).toHaveAttribute("data-direction", "right");
       await expect(liveSubstitution).toContainText("Живая подстановка");
+      await expect(liveSubstitution.locator("[data-live-route-summary]")).toContainText("Потяни t");
+      await expect(liveSubstitution.locator("[data-live-first-action]")).toContainText("Потяни ползунок t");
       await expect(liveSubstitution).toContainText("v₀ = 3 м/с");
       await expect(liveSubstitution).toContainText("a = −2 м/с²");
       await expect(liveSubstitution.locator("[data-live-time-input]")).toHaveAttribute("min", "0");
@@ -383,9 +385,15 @@ test.describe("accelerated-motion chapter screenshots", () => {
       await expect(liveSubstitution.locator("[data-live-result]")).toHaveText("v = 1 м/с");
       await expect(liveSubstitution.locator("[data-live-state]")).toHaveText("тело движется вправо");
       await expect(liveSubstitution.locator("[data-live-explanation]")).toContainText("Пока v не дошла до 0");
+      const stopCoordinate = liveSubstitution.locator("[data-live-stop-coordinate]");
+      await expect(stopCoordinate).toContainText("x = 2,25 м");
+      await expect(stopCoordinate).toContainText("координата");
       await expect(liveSubstitution).toContainText("Единицы");
       await expect(liveSubstitution).toContainText("(м/с²) · с = м/с");
       await expect(liveSubstitution).toContainText("направление задаёт знак v");
+      const liveDetails = liveSubstitution.locator("[data-live-details]");
+      await expect(liveDetails.locator("summary")).toContainText("Проверка единиц и знака");
+      expect(await liveDetails.getAttribute("open")).toBeNull();
 
       const setLiveTime = async (value: string) => {
         await liveSubstitution.locator("[data-live-time-input]").evaluate((element, nextValue) => {
@@ -447,6 +455,9 @@ test.describe("accelerated-motion chapter screenshots", () => {
       const resetButton = scene.locator("[data-reset]");
       await expect(playButton).toBeVisible();
       await expect(resetButton).toBeVisible();
+
+      await scene.scrollIntoViewIfNeeded();
+      await expect(scene).toBeInViewport();
 
       const readoutsTop = await topOf(scene.locator("[data-scene-readouts]"));
       const controlsTop = await topOf(scene.locator(".acceleration-controls"));

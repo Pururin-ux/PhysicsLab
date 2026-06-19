@@ -150,10 +150,19 @@ const navItems = [
             <span class="formula-step">Живая подстановка</span>
             <h3>Меняй t и смотри на знак скорости</h3>
             <p>Ускорение направлено влево, но направление движения задаёт знак v.</p>
+            <p class="live-substitution__route" data-live-route-summary>
+              Потяни t → вектор v сжимается или разворачивается → направление задаёт знак v.
+            </p>
           </div>
 
           <div class="formula-live-substitution__instrument">
             <div class="live-substitution__controls" aria-label="Данные для подстановки">
+              <div class="live-substitution__first-action" data-live-first-action>
+                <span>Сначала сделай</span>
+                <strong>Потяни ползунок t</strong>
+                <small>Начни с 1 с и доведи до 2 с.</small>
+              </div>
+
               <div class="live-substitution__givens">
                 <span class="live-substitution__chip"><b>v₀</b> = 3 м/с</span>
                 <span class="live-substitution__chip"><b>a</b> = −2 м/с²</span>
@@ -186,6 +195,7 @@ const navItems = [
             </div>
 
             <div class="live-substitution__motion" aria-hidden="true">
+              <span class="live-substitution__stage-label">Что изменится: вектор скорости v</span>
               <div class="live-substitution__axis">
                 <span>назад</span>
                 <span>0</span>
@@ -204,17 +214,23 @@ const navItems = [
             </div>
 
             <div class="live-substitution__state" data-live-state-panel>
-              <span class="formula-step">Получаем</span>
+              <span class="formula-step">Что понять</span>
               <strong data-live-result>v = 1 м/с</strong>
               <p data-live-state>тело движется вправо</p>
               <p data-live-explanation>Пока v не дошла до 0, тело всё ещё едет вправо. Скорость уменьшается.</p>
+              <p class="live-substitution__stop-coordinate" data-live-stop-coordinate>
+                При t = 1,5 с: v = 0, x = 2,25 м. Это координата остановки на оси, а не весь пройденный путь.
+              </p>
             </div>
           </div>
 
-          <div class="live-substitution__meaning" aria-label="Проверка единиц и направления">
-            <span><strong>Единицы:</strong> (м/с²) · с = м/с, поэтому at можно прибавлять к скорости.</span>
-            <span><strong>Знак:</strong> направление задаёт знак v.</span>
-          </div>
+          <details class="live-substitution__details" data-live-details>
+            <summary>Проверка единиц и знака</summary>
+            <div class="live-substitution__meaning" aria-label="Проверка единиц и направления">
+              <span><strong>Единицы:</strong> (м/с²) · с = м/с, поэтому at можно прибавлять к скорости.</span>
+              <span><strong>Знак:</strong> направление задаёт знак v.</span>
+            </div>
+          </details>
 
           <p class="sr-only" aria-live="polite" aria-atomic="true" data-live-announcement>
             t = 1 с, v = 1 м/с: тело движется вправо.
@@ -717,9 +733,25 @@ const navItems = [
     line-height: 1.42;
   }
 
+  .live-substitution__route {
+    display: inline-flex;
+    align-items: center;
+    width: fit-content;
+    max-width: 100%;
+    margin-top: 5px;
+    padding: 7px 10px;
+    border: 1px solid rgba(255, 216, 77, 0.14);
+    border-radius: 12px;
+    color: var(--pl-text);
+    background: rgba(255, 216, 77, 0.055);
+    font-size: 0.9rem;
+    font-weight: 800;
+    line-height: 1.3;
+  }
+
   .formula-live-substitution__instrument {
     display: grid;
-    grid-template-columns: minmax(240px, 0.72fr) minmax(310px, 1.22fr) minmax(200px, 0.68fr);
+    grid-template-columns: minmax(220px, 0.58fr) minmax(360px, 1.52fr) minmax(190px, 0.52fr);
     gap: var(--pl-space-3);
     align-items: stretch;
     min-width: 0;
@@ -738,6 +770,31 @@ const navItems = [
     display: grid;
     gap: var(--pl-space-3);
     padding: var(--pl-space-3);
+  }
+
+  .live-substitution__first-action {
+    display: grid;
+    gap: 3px;
+    padding: 10px 11px;
+    border: 1px solid rgba(255, 216, 77, 0.18);
+    border-radius: 12px;
+    background:
+      linear-gradient(90deg, rgba(255, 216, 77, 0.09), rgba(110, 231, 168, 0.025)),
+      rgba(255, 255, 255, 0.014);
+  }
+
+  .live-substitution__first-action span,
+  .live-substitution__first-action small {
+    color: var(--pl-text-soft);
+    font-size: 0.76rem;
+    font-weight: 800;
+    line-height: 1.25;
+  }
+
+  .live-substitution__first-action strong {
+    color: var(--pl-accent);
+    font-size: 1rem;
+    line-height: 1.2;
   }
 
   .live-substitution__givens {
@@ -912,13 +969,20 @@ const navItems = [
 
   .live-substitution__motion {
     display: grid;
-    grid-template-rows: auto minmax(136px, 1fr);
+    grid-template-rows: auto auto minmax(150px, 1fr);
     gap: var(--pl-space-2);
     padding: var(--pl-space-3);
     overflow: hidden;
     background:
       linear-gradient(180deg, rgba(88, 216, 255, 0.038), rgba(4, 13, 26, 0.34)),
       rgba(4, 13, 26, 0.32);
+  }
+
+  .live-substitution__stage-label {
+    color: var(--pl-text);
+    font-size: 0.88rem;
+    font-weight: 900;
+    line-height: 1.25;
   }
 
   .live-substitution__axis {
@@ -937,7 +1001,7 @@ const navItems = [
 
   .live-substitution__track {
     position: relative;
-    min-height: 148px;
+    min-height: 164px;
     border: 1px solid rgba(126, 179, 218, 0.08);
     border-radius: 18px;
     background:
@@ -1098,10 +1162,10 @@ const navItems = [
     align-content: center;
     gap: 7px;
     padding: var(--pl-space-3);
-    border-color: color-mix(in srgb, var(--live-state-color) 34%, transparent);
+    border-color: color-mix(in srgb, var(--live-state-color) 24%, rgba(126, 179, 218, 0.08));
     background:
-      linear-gradient(180deg, color-mix(in srgb, var(--live-state-color) 10%, transparent), rgba(4, 13, 26, 0.28)),
-      rgba(4, 13, 26, 0.32);
+      linear-gradient(180deg, color-mix(in srgb, var(--live-state-color) 6%, transparent), rgba(4, 13, 26, 0.22)),
+      rgba(4, 13, 26, 0.26);
   }
 
   .live-substitution__state strong {
@@ -1127,11 +1191,49 @@ const navItems = [
     line-height: 1.32;
   }
 
+  .live-substitution__stop-coordinate {
+    margin-top: 4px;
+    padding: 9px 10px;
+    border: 1px solid rgba(110, 231, 168, 0.12);
+    border-radius: 12px;
+    color: var(--pl-text-muted);
+    background: rgba(110, 231, 168, 0.035);
+    font-size: 0.82rem;
+    font-weight: 800;
+    line-height: 1.35;
+  }
+
+  .live-substitution__details {
+    min-width: 0;
+    border: 1px solid rgba(126, 179, 218, 0.08);
+    border-radius: 14px;
+    background: rgba(4, 13, 26, 0.18);
+  }
+
+  .live-substitution__details summary {
+    cursor: pointer;
+    padding: 10px 12px;
+    color: var(--pl-text-muted);
+    font-size: 0.9rem;
+    font-weight: 900;
+    list-style-position: inside;
+  }
+
+  .live-substitution__details summary:focus-visible {
+    outline: 3px solid var(--pl-accent);
+    outline-offset: 3px;
+  }
+
+  .live-substitution__details[open] summary {
+    color: var(--pl-text);
+  }
+
   .live-substitution__meaning {
     display: grid;
     grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
     gap: var(--pl-space-2);
     min-width: 0;
+    padding: 0 10px 10px;
   }
 
   .live-substitution__meaning span {
@@ -1147,6 +1249,16 @@ const navItems = [
 
   .live-substitution__meaning strong {
     color: var(--pl-text);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .formula-live-substitution *,
+    .formula-live-substitution *::before,
+    .formula-live-substitution *::after {
+      transition-duration: 0.001ms !important;
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+    }
   }
 
   .formula-meta {
@@ -1370,6 +1482,18 @@ const navItems = [
     .live-substitution__meaning {
       grid-template-columns: minmax(0, 1fr);
     }
+
+    .live-substitution__controls {
+      order: 1;
+    }
+
+    .live-substitution__motion {
+      order: 2;
+    }
+
+    .live-substitution__state {
+      order: 3;
+    }
   }
 
   @media (max-width: 600px) {
@@ -1382,16 +1506,23 @@ const navItems = [
       padding: var(--pl-space-3);
     }
 
+    .live-substitution__route {
+      width: 100%;
+      font-size: 0.86rem;
+    }
+
     .live-substitution__motion {
-      grid-template-rows: auto minmax(118px, 1fr);
+      grid-template-rows: auto auto minmax(136px, 1fr);
+      padding: 12px;
     }
 
     .live-substitution__track {
-      min-height: 124px;
+      min-height: 146px;
     }
 
     .live-substitution__state {
       align-content: start;
+      box-shadow: 0 14px 32px rgba(0, 0, 0, 0.24);
     }
 
     .condition-note-grid {
