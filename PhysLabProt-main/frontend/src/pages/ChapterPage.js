@@ -1,4 +1,4 @@
-import React, { lazy, Suspense, useEffect, useMemo, useState } from 'react';
+import React, { lazy, Suspense, useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Mascot } from '@/components/Mascot';
@@ -6,7 +6,6 @@ import {
   AnimatedRepresentationCard,
   ChapterVisualHero,
   VisualMethodStrip,
-  getFriendlyLesson,
 } from '@/components/PhysicsChapterVisual';
 import { FormulaDisplay, PhysicsInline, PhysicsRichText } from '@/components/PhysicsText';
 import { Button } from '@/components/ui/button';
@@ -50,37 +49,6 @@ function InfoCard({ icon: Icon, title, children, color = '#FFD700', className = 
   );
 }
 
-function FriendlyBridge({ lesson, chapter }) {
-  return (
-    <div className="surface-elevated mb-5 rounded-3xl p-5 sm:p-6">
-      <div className="grid gap-5 lg:grid-cols-[1fr_0.78fr] lg:items-center">
-        <div>
-          <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.18em] text-[#00E5FF]/70">коротко перед теорией</p>
-          <h2 className="font-heading text-xl font-black text-white sm:text-2xl">{lesson.title}</h2>
-          <p className="mt-3 max-w-2xl text-[14px] leading-7 text-white/62">
-            <PhysicsInline>{lesson.hook}</PhysicsInline>
-          </p>
-        </div>
-        <div className="grid grid-cols-3 gap-2">
-          {lesson.steps.map((step, index) => (
-            <div key={step} className="rounded-2xl border border-white/[0.06] bg-black/20 px-3 py-3">
-              <span className="font-mono text-[11px] text-[#FFD700]">0{index + 1}</span>
-              <p className="mt-1 text-[11px] font-bold uppercase leading-snug tracking-wide text-white/48">
-                <PhysicsInline>{step}</PhysicsInline>
-              </p>
-            </div>
-          ))}
-        </div>
-      </div>
-      {chapter?.school_mastery?.goal && (
-        <p className="mt-4 rounded-2xl border border-[#00E5FF]/12 bg-[#00E5FF]/[0.06] px-4 py-3 text-[13px] leading-6 text-white/64">
-          <PhysicsInline>{chapter.school_mastery.goal}</PhysicsInline>
-        </p>
-      )}
-    </div>
-  );
-}
-
 export default function ChapterPage() {
   const { chapterId } = useParams();
   const navigate = useNavigate();
@@ -116,8 +84,6 @@ export default function ChapterPage() {
       .catch(() => setError('Не удалось загрузить главу. Проверь подключение к backend или вернись к курсу.'))
       .finally(() => setLoading(false));
   }, [chapterId]);
-
-  const lesson = useMemo(() => getFriendlyLesson(chapter), [chapter]);
 
   if (loading) {
     return (
@@ -232,8 +198,6 @@ export default function ChapterPage() {
         <AnimatePresence mode="wait">
           {tab === 'theory' && (
             <motion.div key="theory" {...tabMotion}>
-              <FriendlyBridge lesson={lesson} chapter={chapter} />
-
               <div className="mb-5 grid grid-cols-1 gap-4 lg:grid-cols-[1.1fr_0.9fr]">
                 <InfoCard icon={GraduationCap} title="Для школы" color="#00E5FF">
                   <p className="mb-4 text-[13px] leading-7 text-white/62">

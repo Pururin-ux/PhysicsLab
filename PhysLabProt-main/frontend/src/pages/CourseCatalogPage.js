@@ -3,32 +3,104 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Mascot } from '@/components/Mascot';
 import { apiClient } from '@/lib/api';
-import { BookOpen, Rocket, Thermometer, Zap, Activity, Eye, Atom, ClipboardCheck, Calculator, Timer, GraduationCap, ArrowRight, Route, ShieldCheck } from 'lucide-react';
+import {
+  Activity,
+  ArrowRight,
+  Atom,
+  BookOpen,
+  Calculator,
+  ClipboardCheck,
+  Eye,
+  GraduationCap,
+  Rocket,
+  Route,
+  ShieldCheck,
+  Thermometer,
+  Timer,
+  Zap,
+} from 'lucide-react';
 
 const ICONS = {
   Rocket, Thermometer, Zap, Activity, Eye, Atom,
-  ClipboardCheck, Calculator, Timer
+  ClipboardCheck, Calculator, Timer,
 };
 
-const LEARNING_ART = `${process.env.PUBLIC_URL}/learning/physics-panels.png`;
 const Mascot3D = lazy(() => import('@/components/Mascot3D'));
 
 const TRACK_META = {
   school: {
     icon: Route,
-    title: 'Трек понимания',
-    metric: 'метрика: мастерство темы',
-    points: ['короткие визуальные объяснения', 'мини-проверки после темы', 'контроль типичных ошибок'],
+    title: 'Понять тему',
+    shortTitle: 'Школа',
+    description: 'Когда нужно разобраться спокойно: рисунок, смысл, формула, короткая проверка.',
+    points: ['сначала простая модель', 'потом формула', 'в конце пара задач'],
     color: '#00E5FF',
+    href: '/school',
   },
   exam: {
     icon: ShieldCheck,
-    title: 'Трек результата ЦТ/ЦЭ',
-    metric: 'метрика: балл, темп, пропуски',
-    points: ['часть A и B отдельно', 'тайминг 210 минут', 'задания по blueprint, без копирования'],
+    title: 'Готовиться к ЦТ/ЦЭ',
+    shortTitle: 'Экзамен',
+    description: 'Когда тему уже знаешь и хочешь тренировать скорость, формат и ошибки.',
+    points: ['части A и B отдельно', 'таймер как на экзамене', 'новые задания без заучивания'],
     color: '#FFD700',
+    href: '/exam',
   },
 };
+
+function TrackSwitch({ active }) {
+  return (
+    <div className="inline-flex rounded-2xl border border-white/[0.08] bg-white/[0.035] p-1">
+      {Object.entries(TRACK_META).map(([slug, track]) => {
+        const isActive = active === slug;
+        return (
+          <Link
+            key={slug}
+            to={track.href}
+            className={`flex items-center gap-2 rounded-xl px-3 py-2 text-[12px] font-bold transition-colors ${
+              isActive ? 'bg-white/[0.1] text-white' : 'text-white/42 hover:bg-white/[0.06] hover:text-white/72'
+            }`}
+            data-testid={`track-switch-${slug}`}
+          >
+            <track.icon className="h-3.5 w-3.5" style={{ color: isActive ? track.color : undefined }} />
+            {track.shortTitle}
+          </Link>
+        );
+      })}
+    </div>
+  );
+}
+
+function TrackChoiceCard({ slug, track }) {
+  return (
+    <Link
+      to={track.href}
+      className="group block rounded-3xl border border-white/[0.07] bg-white/[0.035] p-5 transition-colors hover:border-white/[0.16] hover:bg-white/[0.055]"
+      data-testid={`track-choice-${slug}`}
+    >
+      <div className="mb-4 flex items-start justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <div className="flex h-11 w-11 items-center justify-center rounded-2xl border" style={{ backgroundColor: `${track.color}12`, borderColor: `${track.color}28` }}>
+            <track.icon className="h-5 w-5" style={{ color: track.color }} />
+          </div>
+          <div>
+            <h2 className="font-heading text-[18px] font-black text-white">{track.title}</h2>
+            <p className="mt-0.5 text-[12px] text-white/36">{track.shortTitle}</p>
+          </div>
+        </div>
+        <ArrowRight className="mt-2 h-4 w-4 text-white/24 transition-colors group-hover:text-white/70" />
+      </div>
+      <p className="mb-4 text-[13px] leading-6 text-white/56">{track.description}</p>
+      <div className="grid gap-2 sm:grid-cols-3">
+        {track.points.map((point) => (
+          <span key={point} className="rounded-xl border border-white/[0.06] bg-black/18 px-3 py-2 text-[11px] font-medium leading-snug text-white/50">
+            {point}
+          </span>
+        ))}
+      </div>
+    </Link>
+  );
+}
 
 export default function CourseCatalogPage({ pathFilter }) {
   const [courses, setCourses] = useState([]);
@@ -39,102 +111,80 @@ export default function CourseCatalogPage({ pathFilter }) {
     setLoading(true);
     setError('');
     apiClient.get('/courses', { params: pathFilter ? { path: pathFilter } : undefined })
-      .then(r => setCourses(r.data))
-      .catch(() => setError('Не удалось загрузить курсы. Проверь подключение к backend и обнови страницу.'))
+      .then((response) => setCourses(response.data))
+      .catch(() => setError('Не получилось загрузить темы. Проверь интернет или обнови страницу.'))
       .finally(() => setLoading(false));
   }, [pathFilter]);
 
-  const title = pathFilter === 'school' ? 'Школьная программа' : pathFilter === 'exam' ? 'ЦТ / ЦЭ Тренажёр' : 'Библиотека курсов';
-  const desc = pathFilter === 'school' ? 'Твёрдая база знаний VII–XI классов. Выучи теорию и отточи её на мини-тестах.' : pathFilter === 'exam' ? 'Методика РИКЗ: 30 заданий, 210 минут, набивай руку на части А и Б.' : 'Выбери свой путь: глубокое изучение или подготовка к экзамену.';
-  const color = pathFilter === 'school' ? '#00E5FF' : pathFilter === 'exam' ? '#FFD700' : '#39FF14';
   const activeTrack = pathFilter ? TRACK_META[pathFilter] : null;
+  const title = pathFilter === 'school'
+    ? 'Школьная физика'
+    : pathFilter === 'exam'
+      ? 'Тренировка ЦТ/ЦЭ'
+      : 'Что хочешь сделать сейчас?';
+  const desc = pathFilter === 'school'
+    ? 'Выбери тему. Внутри будет короткое объяснение, рисунок или график и проверка на пару задач.'
+    : pathFilter === 'exam'
+      ? 'Решай задания в формате экзамена. Здесь важны время, внимательность и слабые места.'
+      : 'Если тема непонятна - начни со школы. Если хочешь набить руку перед экзаменом - открой тренировку.';
+  const color = activeTrack?.color || '#39FF14';
 
   return (
-    <div className="min-h-screen bg-[#08080A] pt-24 pb-16 relative overflow-hidden noise">
-      <div className="max-w-7xl mx-auto px-6 lg:px-12 relative z-10">
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col md:flex-row md:items-center gap-6 mb-12">
+    <div className="noise relative min-h-screen overflow-hidden bg-[#08080A] pb-16 pt-24">
+      <div className="relative z-10 mx-auto max-w-7xl px-6 lg:px-12">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-8 grid gap-5 md:grid-cols-[auto_1fr_auto] md:items-center"
+        >
           <Suspense fallback={<Mascot pose="pointing" size="md" noFloat />}>
             <Mascot3D compact className="-my-6 -ml-5 -mr-2" />
           </Suspense>
-          <div>
-            <div className="flex items-center gap-3 mb-2">
-              <div className="w-8 h-8 rounded-lg flex items-center justify-center border" style={{ backgroundColor: `${color}15`, borderColor: `${color}30` }}>
-                {pathFilter === 'school' ? <BookOpen className="w-4 h-4" style={{ color }} /> : <GraduationCap className="w-4 h-4" style={{ color }} />}
+
+          <div className="min-w-0">
+            <div className="mb-3 flex items-center gap-3">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl border" style={{ backgroundColor: `${color}15`, borderColor: `${color}30` }}>
+                {pathFilter === 'exam' ? <GraduationCap className="h-4 w-4" style={{ color }} /> : <BookOpen className="h-4 w-4" style={{ color }} />}
               </div>
-              <span className="text-[11px] font-bold uppercase tracking-widest" style={{ color }}>{pathFilter === 'school' ? 'Режим: Освоение' : 'Режим: Экзамен'}</span>
+              <span className="text-[11px] font-bold uppercase tracking-widest" style={{ color }}>
+                {pathFilter === 'exam' ? 'тренировка формата' : pathFilter === 'school' ? 'учимся без спешки' : 'выбор пути'}
+              </span>
             </div>
-            <h1 className="font-heading text-3xl sm:text-4xl font-black text-white tracking-tight mb-3">{title}</h1>
-            <p className="text-[15px] text-white/50 max-w-2xl leading-relaxed">{desc}</p>
+            <h1 className="font-heading mb-3 text-3xl font-black tracking-tight text-white sm:text-4xl">{title}</h1>
+            <p className="max-w-2xl text-[15px] leading-relaxed text-white/56">{desc}</p>
           </div>
+
+          <TrackSwitch active={pathFilter} />
         </motion.div>
 
-        <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08 }} className="relative mb-8 overflow-hidden rounded-[2rem] border border-white/[0.07] bg-[#0D0F12]">
-          <img src={LEARNING_ART} alt="" className="absolute inset-0 h-full w-full object-cover opacity-28" loading="lazy" />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#08080A] via-[#08080A]/80 to-[#08080A]/45" />
-          <div className="relative grid gap-4 p-5 sm:grid-cols-[1fr_auto] sm:items-center">
-            <div>
-              <p className="mb-2 text-[11px] font-mono font-bold uppercase tracking-[0.18em] text-[#00E5FF]/70">визуальная методика</p>
-              <h2 className="font-heading text-xl font-black text-white sm:text-2xl">Каждый раздел начинается с модели, а не со стены текста</h2>
-              <p className="mt-2 max-w-2xl text-[13px] leading-relaxed text-white/50">
-                Кинематика, силы, электричество и оптика показываются через сцену, график и типовые ловушки. Экзаменационный режим тренирует структуру задания отдельно от школьного освоения темы.
-              </p>
-            </div>
-            <div className="grid grid-cols-1 gap-2 sm:w-[330px] sm:grid-cols-3">
-              {['модель', 'формула', 'тренажёр'].map((item, idx) => (
-                <div key={item} className="rounded-2xl border border-white/[0.06] bg-black/25 px-3 py-3 backdrop-blur-md">
-                  <span className="font-mono text-[11px] text-[#FFD700]">0{idx + 1}</span>
-                  <p className="mt-1 text-[11px] font-bold uppercase tracking-wide text-white/45">{item}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </motion.div>
-
-        {activeTrack ? (
-          <div className="grid grid-cols-1 lg:grid-cols-[0.9fr_1.1fr] gap-4 mb-8">
-            <div className="surface-overlay rounded-2xl p-5 border" style={{ borderColor: `${activeTrack.color}25` }}>
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ backgroundColor: `${activeTrack.color}12` }}>
-                  <activeTrack.icon className="w-4 h-4" style={{ color: activeTrack.color }} />
-                </div>
-                <div>
-                  <p className="text-[12px] text-white font-bold">{activeTrack.title}</p>
-                  <p className="text-[11px] text-white/35">{activeTrack.metric}</p>
-                </div>
-              </div>
-              <p className="text-[13px] text-white/45 leading-relaxed">
-                Этот раздел ведёт отдельный прогресс: школьное понимание не смешивается с экзаменационной скоростью.
-              </p>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              {activeTrack.points.map((point) => (
-                <div key={point} className="surface-base rounded-2xl p-4 border border-white/[0.06]">
-                  <span className="block w-1.5 h-1.5 rounded-full mb-3" style={{ backgroundColor: activeTrack.color }} />
-                  <p className="text-[12px] text-white/60 leading-snug font-medium">{point}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+        {!pathFilter && (
+          <div className="mb-8 grid gap-4 md:grid-cols-2">
             {Object.entries(TRACK_META).map(([slug, track]) => (
-              <Link key={slug} to={`/${slug}`} className="surface-overlay rounded-2xl p-5 border border-white/[0.06] hover:border-white/15 transition-colors group">
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ backgroundColor: `${track.color}12` }}>
-                    <track.icon className="w-5 h-5" style={{ color: track.color }} />
-                  </div>
-                  <div>
-                    <p className="text-white font-bold">{track.title}</p>
-                    <p className="text-[12px] text-white/35">{track.metric}</p>
-                  </div>
-                </div>
-                <div className="flex items-center justify-between">
-                  <p className="text-[13px] text-white/45">{slug === 'school' ? 'Для повышения успеваемости.' : 'Для результата на ЦТ/ЦЭ.'}</p>
-                  <ArrowRight className="w-4 h-4 text-white/25 group-hover:text-white/70 transition-colors" />
-                </div>
-              </Link>
+              <TrackChoiceCard key={slug} slug={slug} track={track} />
             ))}
           </div>
+        )}
+
+        {activeTrack && (
+          <motion.div
+            initial={{ opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.08 }}
+            className="mb-8 grid gap-3 rounded-[2rem] border border-white/[0.07] bg-white/[0.035] p-4 sm:grid-cols-[1fr_auto] sm:items-center"
+          >
+            <div>
+              <p className="mb-1 text-[12px] font-bold text-white">Как это работает</p>
+              <p className="text-[13px] leading-6 text-white/52">{activeTrack.description}</p>
+            </div>
+            <div className="grid gap-2 sm:w-[420px] sm:grid-cols-3">
+              {activeTrack.points.map((point, index) => (
+                <div key={point} className="rounded-2xl border border-white/[0.06] bg-black/18 px-3 py-3">
+                  <span className="font-mono text-[11px]" style={{ color: activeTrack.color }}>0{index + 1}</span>
+                  <p className="mt-1 text-[11px] font-semibold leading-snug text-white/54">{point}</p>
+                </div>
+              ))}
+            </div>
+          </motion.div>
         )}
 
         {error && (
@@ -144,37 +194,47 @@ export default function CourseCatalogPage({ pathFilter }) {
         )}
 
         {loading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[1, 2, 3].map(i => <div key={i} className="h-48 surface-elevated rounded-3xl skeleton" />)}
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {[1, 2, 3].map((item) => <div key={item} className="skeleton h-48 rounded-3xl surface-elevated" />)}
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {courses.map((course, i) => {
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {courses.map((course, index) => {
               const Icon = ICONS[course.icon] || BookOpen;
+              const href = course.path === 'exam' && course.chapters_count === 0 ? '/exam-trainer' : `/courses/${course._id}`;
+
               return (
-                <motion.div key={course._id} initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: i * 0.05, duration: 0.4 }}>
-                  <Link to={course.path === 'exam' && course.chapters_count === 0 ? '/exam-trainer' : `/courses/${course._id}`} className="block h-full group">
-                    <div className="relative surface-base border border-white/5 hover:border-white/10 rounded-3xl p-6 transition-all duration-300 h-full overflow-hidden">
-                      {/* Glow inside card */}
-                      <div className="absolute top-0 right-0 w-32 h-32 rounded-full blur-[60px] opacity-0 group-hover:opacity-20 transition-opacity duration-700 pointer-events-none" style={{ backgroundColor: course.color }} />
-                      
-                      <div className="relative z-10 flex items-start justify-between mb-6">
-                        <div className="w-12 h-12 rounded-2xl flex items-center justify-center backdrop-blur-sm border" style={{ backgroundColor: `${course.color}15`, borderColor: `${course.color}20` }}>
-                          <Icon className="w-6 h-6" style={{ color: course.color }} />
+                <motion.div
+                  key={course._id}
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: index * 0.05, duration: 0.35 }}
+                >
+                  <Link to={href} className="group block h-full" data-testid={`course-card-${index}`}>
+                    <div className="relative h-full overflow-hidden rounded-3xl border border-white/[0.06] bg-white/[0.035] p-6 transition-colors duration-200 hover:border-white/[0.13] hover:bg-white/[0.055]">
+                      <div className="absolute right-0 top-0 h-32 w-32 rounded-full opacity-0 blur-[60px] transition-opacity duration-500 group-hover:opacity-20" style={{ backgroundColor: course.color }} />
+
+                      <div className="relative z-10 mb-6 flex items-start justify-between">
+                        <div className="flex h-12 w-12 items-center justify-center rounded-2xl border backdrop-blur-sm" style={{ backgroundColor: `${course.color}15`, borderColor: `${course.color}20` }}>
+                          <Icon className="h-6 w-6" style={{ color: course.color }} />
                         </div>
                         {course.grade && (
-                          <span className="text-[10px] font-mono font-bold px-2 py-1 rounded bg-white/5 text-white/40 border border-white/10">КЛАСС {course.grade}</span>
+                          <span className="rounded bg-white/[0.05] px-2 py-1 font-mono text-[10px] font-bold text-white/40">
+                            {course.grade} класс
+                          </span>
                         )}
                       </div>
-                      
-                      <h3 className="font-heading text-lg font-bold text-white mb-2 tracking-tight group-hover:translate-x-1 transition-transform">{course.title}</h3>
-                      <p className="text-[13px] text-white/40 line-clamp-2 leading-relaxed mb-6 group-hover:text-white/60 transition-colors">{course.description}</p>
-                      
-                      <div className="mt-auto flex items-center justify-between border-t border-white/5 pt-4">
-                        <span className="text-[11px] font-bold tracking-widest uppercase text-white/30">{course.chapters_count > 0 ? `${course.chapters_count} ГЛАВ` : 'ТРЕНАЖЁР'}</span>
-                        <div className="w-6 h-6 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-white/10 transition-colors">
-                          <ArrowRight className="w-3 h-3 text-white/50 group-hover:text-white" />
-                        </div>
+
+                      <h3 className="font-heading mb-2 text-lg font-bold tracking-tight text-white transition-colors group-hover:text-[#FFD700]">{course.title}</h3>
+                      <p className="mb-6 line-clamp-2 text-[13px] leading-relaxed text-white/46">{course.description}</p>
+
+                      <div className="mt-auto flex items-center justify-between border-t border-white/[0.06] pt-4">
+                        <span className="text-[11px] font-bold uppercase tracking-widest text-white/34">
+                          {course.chapters_count > 0 ? `${course.chapters_count} главы` : 'тренажер'}
+                        </span>
+                        <span className="inline-flex items-center gap-1.5 text-[12px] font-bold text-white/58 transition-colors group-hover:text-white">
+                          Открыть <ArrowRight className="h-3.5 w-3.5" />
+                        </span>
                       </div>
                     </div>
                   </Link>

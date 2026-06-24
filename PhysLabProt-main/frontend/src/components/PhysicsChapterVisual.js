@@ -26,6 +26,14 @@ const TYPE_META = {
     steps: ['ось и направление', 'скорость/ускорение', 'график как подсказка'],
     formulas: ['v = v_0 + at', 'x = x_0 + v_0t + \\frac{at^2}{2}'],
   },
+  kinematics: {
+    icon: Gauge,
+    accent: '#00E5FF',
+    title: 'Движение видно на графике',
+    hook: 'Сначала ищем не формулу, а картинку движения: где скорость постоянна, где растет, где площадь под $v(t)$ дает перемещение.',
+    steps: ['ось и направление', 'скорость/ускорение', 'график как подсказка'],
+    formulas: ['v = v_0 + at', 'x = x_0 + v_0t + \\frac{at^2}{2}'],
+  },
   forces: {
     icon: MoveUpRight,
     accent: '#FFD700',
@@ -130,6 +138,15 @@ function includesAny(text, words) {
 
 export function pickChapterVisualType(chapter) {
   const title = `${chapter?.title || ''}`.toLowerCase();
+  const identityText = [
+    chapter?.slug,
+    chapter?.chapterSlug,
+    chapter?.chapter_slug,
+    chapter?.path,
+    chapter?.url,
+    chapter?.href,
+  ].filter(Boolean).join(' ').toLowerCase();
+  const chapterId = `${chapter?._id || chapter?.id || ''}`.toLowerCase();
   const text = [
     chapter?.title,
     chapter?.description,
@@ -142,6 +159,13 @@ export function pickChapterVisualType(chapter) {
   if (isExamChapter && includesAny(text, ['числов', 'часть b', 'ответ без единиц', 'расчёт', 'расчет'])) return 'examNumeric';
   if (isExamChapter && includesAny(text, ['график', 'таблиц', 'соответств'])) return 'examGraph';
   if (isExamChapter && includesAny(text, ['часть a', 'модель', 'исключен', 'выбор ответа'])) return 'examModel';
+  const titleLooksKinematic = includesAny(title, ['motion', 'движение']) && includesAny(text, ['v(t)', 'x(t)', 'v_0', 'x_0', 'скорост', 'ускор', 'перемещ']);
+  if (
+    chapterId === '6a2d03171856d6d16274f141' ||
+    includesAny(identityText, ['motion', 'движение', 'kinematics', '6a2d03']) ||
+    titleLooksKinematic ||
+    includesAny(text, ['равномер', 'равноускор', 'кинемат', 'kinematic'])
+  ) return 'kinematics';
   if (includesAny(text, ['квант', 'ядер', 'фотоэффект', 'атом'])) return 'quantum';
   if (includesAny(text, ['оптик', 'линз', 'свет', 'прелом'])) return 'optics';
   if (includesAny(text, ['колеб', 'волн', 'звук', 'маятн'])) return 'waves';
@@ -170,6 +194,97 @@ function SceneFrame({ children, accent = '#00E5FF', className = '' }) {
       <div className="absolute inset-0 opacity-[0.08]" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,.16) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.16) 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
       <div className="relative h-full">{children}</div>
     </div>
+  );
+}
+
+const UNIFORM_MOTION_VT = [
+  { t: 0, v: 2 },
+  { t: 1, v: 2 },
+  { t: 2, v: 2 },
+  { t: 3, v: 2 },
+  { t: 4, v: 2 },
+  { t: 5, v: 2 },
+];
+
+const ACCELERATED_MOTION_XT = [
+  { t: 0, x: 0 },
+  { t: 1, x: 1 },
+  { t: 2, x: 4 },
+  { t: 3, x: 9 },
+  { t: 4, x: 16 },
+  { t: 5, x: 25 },
+];
+
+const KINEMATICS_GRAPHS = [
+  {
+    title: 'A',
+    xLabel: 't, с',
+    yLabel: 'v, м/с',
+    valueKey: 'v',
+    xDomain: [0, 5],
+    yDomain: [0, 10],
+    data: UNIFORM_MOTION_VT,
+  },
+  {
+    title: 'B',
+    xLabel: 't, с',
+    yLabel: 'x, м',
+    valueKey: 'x',
+    xDomain: [0, 5],
+    yDomain: [0, 25],
+    data: ACCELERATED_MOTION_XT,
+  },
+];
+
+function mapGraphPoint(point, graph, box) {
+  const [xMin, xMax] = graph.xDomain;
+  const [yMin, yMax] = graph.yDomain;
+  const x = box.x + ((point.t - xMin) / (xMax - xMin)) * box.width;
+  const y = box.y + box.height - ((point[graph.valueKey] - yMin) / (yMax - yMin)) * box.height;
+  return { x, y };
+}
+
+function graphPath(graph, box) {
+  return graph.data
+    .map((point, index) => {
+      const mapped = mapGraphPoint(point, graph, box);
+      return `${index === 0 ? 'M' : 'L'}${mapped.x.toFixed(1)} ${mapped.y.toFixed(1)}`;
+    })
+    .join(' ');
+}
+
+function KinematicsMotionDiagram() {
+  const graphBoxes = [
+    { x: 58, y: 36, width: 92, height: 92 },
+    { x: 208, y: 36, width: 92, height: 92 },
+  ];
+
+  return (
+    <svg viewBox="0 0 340 180" className="h-full w-full" aria-hidden="true">
+      {KINEMATICS_GRAPHS.map((graph, index) => {
+        const box = graphBoxes[index];
+        const pathD = graphPath(graph, box);
+
+        return (
+          <g key={graph.title}>
+            <path d={`M${box.x} ${box.y + box.height} H${box.x + box.width} M${box.x} ${box.y + box.height + 12} V${box.y}`} stroke="rgba(255,255,255,0.20)" strokeWidth="3" strokeLinecap="round" />
+            <text x={box.x - 18} y={box.y - 8} fill="rgba(255,255,255,0.62)" fontSize="9" fontWeight="700">
+              {graph.yLabel}
+            </text>
+            <text x={box.x + box.width - 18} y={box.y + box.height + 19} fill="rgba(255,255,255,0.62)" fontSize="9" fontWeight="700">
+              {graph.xLabel}
+            </text>
+            <text x={box.x - 22} y={box.y + 11} fill="#FFD700" fontSize="11" fontWeight="800">
+              {graph.title}
+            </text>
+            <motion.path d={pathD} fill="none" stroke="#00E5FF" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 2.4, repeat: Infinity, repeatType: 'reverse', ease: 'easeInOut' }} />
+            <circle r="5" fill="#FFD700">
+              <animateMotion dur="4.6s" repeatCount="indefinite" path={pathD} />
+            </circle>
+          </g>
+        );
+      })}
+    </svg>
   );
 }
 
@@ -370,6 +485,7 @@ function ExamNumericDiagram() {
 }
 
 const DIAGRAMS = {
+  kinematics: KinematicsMotionDiagram,
   motion: MotionDiagram,
   forces: ForcesDiagram,
   energy: EnergyDiagram,

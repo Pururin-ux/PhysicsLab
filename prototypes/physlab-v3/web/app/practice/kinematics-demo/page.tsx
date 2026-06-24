@@ -1,6 +1,6 @@
 import { ConceptReveal } from "../../../components/theory/ConceptReveal";
 import { TheoryBlock } from "../../../components/theory/TheoryBlock";
-import { QuizSession } from "../../../components/quiz/QuizSession";
+import { KinematicsPracticeModes } from "../../../components/quiz/KinematicsPracticeModes";
 import {
   ACCELERATED_MOTION_XT,
   UNIFORM_MOTION_VT,
@@ -61,7 +61,7 @@ export default function KinematicsDemoPage() {
           </p>
           <h2 className="text-xl font-bold text-white">10 задач в формате ЦТ</h2>
         </div>
-        <QuizSession />
+        <KinematicsPracticeModes />
       </section>
     </div>
   );

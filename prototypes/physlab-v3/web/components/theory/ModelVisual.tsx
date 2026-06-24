@@ -7,6 +7,9 @@ interface ModelVisualProps {
   title: string;
   caption?: string;
   className?: string;
+  framed?: boolean;
+  showArea?: boolean;
+  compact?: boolean;
 }
 
 const chart = {
@@ -36,6 +39,9 @@ export function ModelVisual({
   title,
   caption,
   className,
+  framed = true,
+  showArea = false,
+  compact = false,
 }: ModelVisualProps) {
   const plotWidth = chart.width - chart.left - chart.right;
   const plotHeight = chart.height - chart.top - chart.bottom;
@@ -60,15 +66,29 @@ export function ModelVisual({
   const linePath = points
     .map((point, index) => `${index === 0 ? "M" : "L"} ${point.x} ${point.y}`)
     .join(" ");
+  const baselineY = chart.height - chart.bottom;
+  const areaPath =
+    showArea && points.length > 1
+      ? `${linePath} L ${points[points.length - 1].x} ${baselineY} L ${points[0].x} ${baselineY} Z`
+      : null;
 
-  return (
-    <Card className={cn("p-0", className)}>
-      <figure className="flex flex-col gap-4 p-4 md:p-5">
+  const figure = (
+    <figure
+      data-testid="model-visual"
+      className={cn(
+        "flex flex-col",
+        compact ? "gap-2 p-3 md:p-4" : "gap-4 p-4 md:p-5",
+        framed ? null : "rounded-option border border-nova-cyan/[.10] bg-space-950/50",
+        framed ? null : className,
+      )}
+    >
         <figcaption className="flex flex-col gap-1">
           <span className="text-[11px] font-bold uppercase tracking-[.14em] text-white/50">
             Модель движения
           </span>
-          <span className="text-xl font-bold text-white">{title}</span>
+          <span className={compact ? "text-[15px] font-bold text-white" : "text-xl font-bold text-white"}>
+            {title}
+          </span>
           {caption ? (
             <span className="text-[13px] font-normal leading-[1.6] text-white/60">
               {caption}
@@ -76,7 +96,7 @@ export function ModelVisual({
           ) : null}
         </figcaption>
 
-        <div className="w-full px-1 pb-1 pt-2 md:px-2">
+        <div className={cn("w-full px-1 pb-1 pt-2 md:px-2", compact ? "pt-1" : null)}>
           <svg
             viewBox={`0 0 ${chart.width} ${chart.height}`}
             role="img"
@@ -171,6 +191,9 @@ export function ModelVisual({
             />
 
             <g className={accentClass}>
+              {areaPath ? (
+                <path d={areaPath} className="fill-current opacity-15" />
+              ) : null}
               <path
                 d={linePath}
                 className="fill-none stroke-current drop-shadow-sm"
@@ -191,6 +214,7 @@ export function ModelVisual({
           </svg>
         </div>
       </figure>
-    </Card>
   );
+
+  return framed ? <Card className={cn("p-0", className)}>{figure}</Card> : figure;
 }

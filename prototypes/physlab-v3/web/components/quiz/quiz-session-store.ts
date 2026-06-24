@@ -4,6 +4,18 @@ import type { OptionState } from "./OptionItem";
 export type QuizOption = {
   id: string;
   text: string;
+  value?: number;
+  correct?: boolean;
+};
+
+export type QuizGraph = {
+  type: "vt" | "xt" | "at";
+  series: { t: number; v?: number; x?: number; a?: number }[];
+  xLabel: string;
+  yLabel: string;
+  xRange: [number, number];
+  yRange: [number, number];
+  color?: "cyan" | "gold";
 };
 
 export type QuizTask = {
@@ -13,6 +25,7 @@ export type QuizTask = {
   difficulty: 1 | 2 | 3;
   text: string;
   formula?: string;
+  graph?: QuizGraph | null;
   options: QuizOption[];
   answer: string;
   explanation: string;

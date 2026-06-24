@@ -5,27 +5,36 @@ import { motion } from 'framer-motion';
 import { Mascot } from '@/components/Mascot';
 import { Progress } from '@/components/ui/progress';
 import { apiClient } from '@/lib/api';
-import { Zap, Flame, BookOpen, ArrowRight, Target, CheckCircle2, Timer, Brain, ShieldCheck, AlertTriangle } from 'lucide-react';
+import {
+  AlertTriangle,
+  ArrowRight,
+  BookOpen,
+  CheckCircle2,
+  Flame,
+  Target,
+  Zap,
+} from 'lucide-react';
 
 const Mascot3D = lazy(() => import('@/components/Mascot3D'));
 
-function AnimatedCard({ icon: Icon, color, title, value, subtitle, delay }) {
+function StatCard({ icon: Icon, color, title, value, subtitle, delay, testId }) {
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.95, y: 20 }}
       animate={{ opacity: 1, scale: 1, y: 0 }}
-      transition={{ delay, type: "spring", stiffness: 200, damping: 20 }}
-      className="relative overflow-hidden surface-elevated rounded-3xl p-6 group"
+      transition={{ delay, type: 'spring', stiffness: 200, damping: 20 }}
+      className="group relative overflow-hidden rounded-3xl surface-elevated p-6"
+      data-testid={testId}
     >
-      <div className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-[${color}]/20 to-transparent rounded-full blur-2xl -translate-y-1/2 translate-x-1/2 group-hover:scale-150 transition-transform duration-700`} style={{ background: `radial-gradient(circle, ${color}20 0%, transparent 70%)` }} />
-      
-      <div className="relative z-10 flex items-center justify-between mb-4">
-        <div className="w-12 h-12 rounded-2xl flex items-center justify-center backdrop-blur-md border" style={{ backgroundColor: `${color}15`, borderColor: `${color}30` }}>
-          <Icon className="w-6 h-6" style={{ color }} />
+      <div className="absolute right-0 top-0 h-32 w-32 -translate-y-1/2 translate-x-1/2 rounded-full blur-2xl transition-transform duration-700 group-hover:scale-150" style={{ background: `radial-gradient(circle, ${color}20 0%, transparent 70%)` }} />
+
+      <div className="relative z-10 mb-4 flex items-center justify-between">
+        <div className="flex h-12 w-12 items-center justify-center rounded-2xl border backdrop-blur-md" style={{ backgroundColor: `${color}15`, borderColor: `${color}30` }}>
+          <Icon className="h-6 w-6" style={{ color }} />
         </div>
         <div className="text-right">
-          <p className="text-[12px] font-bold uppercase tracking-widest mb-1 text-white/40">{title}</p>
-          <p className="text-2xl font-black font-mono tracking-tighter" style={{ color }}>{value}</p>
+          <p className="mb-1 text-[12px] font-bold uppercase tracking-widest text-white/40">{title}</p>
+          <p className="font-mono text-2xl font-black tracking-tighter" style={{ color }}>{value}</p>
         </div>
       </div>
       <div className="relative z-10">{subtitle}</div>
@@ -37,38 +46,58 @@ export default function DashboardPage() {
   const { user } = useAuth();
   const [progress, setProgress] = useState([]);
   const [stats, setStats] = useState({ xp: 0, level: 1, streak: 0 });
+  const [recommendedCourse, setRecommendedCourse] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
   useEffect(() => {
     setError('');
-    apiClient.get('/progress')
-    .then((progRes) => {
-      setProgress(progRes.data.progress || []);
-      setStats({ xp: progRes.data.xp || 0, level: progRes.data.level || 1, streak: progRes.data.streak || 0 });
-    })
-    .catch(() => setError('Не удалось обновить прогресс. Можно продолжать обучение, а статистика подтянется после следующего запроса.'))
-    .finally(() => setLoading(false));
+    Promise.allSettled([
+      apiClient.get('/progress'),
+      apiClient.get('/courses', { params: { path: 'school' } }),
+    ])
+      .then(([progressResult, coursesResult]) => {
+        if (progressResult.status === 'fulfilled') {
+          const data = progressResult.value.data;
+          setProgress(data.progress || []);
+          setStats({ xp: data.xp || 0, level: data.level || 1, streak: data.streak || 0 });
+        } else {
+          setError('Не получилось обновить прогресс. Учиться можно дальше - статистика подтянется позже.');
+        }
+
+        if (coursesResult.status === 'fulfilled') {
+          setRecommendedCourse((coursesResult.value.data || [])[0] || null);
+        }
+      })
+      .finally(() => setLoading(false));
   }, []);
 
-  const xpProgress = ((stats.xp % 100) / 100) * 100;
-  const completedChapters = progress.filter(p => p.completed).length;
+  const xpRemainder = stats.xp % 100;
+  const xpProgress = (xpRemainder / 100) * 100;
+  const xpToNextLevel = xpRemainder === 0 ? 100 : 100 - xpRemainder;
+  const completedChapters = progress.filter((item) => item.completed).length;
+  const lessonHref = recommendedCourse ? `/courses/${recommendedCourse._id}` : '/school';
+  const lessonTitle = recommendedCourse?.title || 'первая тема по физике';
 
   return (
-    <div className="min-h-screen bg-[#08080A] pt-24 pb-16 overflow-hidden">
-      <div className="max-w-7xl mx-auto px-6 lg:px-12 relative">
-        <motion.div initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} className="flex items-end gap-6 mb-12">
+    <div className="min-h-screen overflow-hidden bg-[#08080A] pb-16 pt-24">
+      <div className="relative mx-auto max-w-7xl px-6 lg:px-12">
+        <motion.div
+          initial={{ opacity: 0, x: -30 }}
+          animate={{ opacity: 1, x: 0 }}
+          className="mb-8 grid gap-5 md:grid-cols-[auto_1fr] md:items-end"
+        >
           <div className="relative">
-            <div className="absolute inset-0 bg-[#FFD700]/20 blur-3xl rounded-full scale-150" />
+            <div className="absolute inset-0 rounded-full bg-[#FFD700]/20 blur-3xl" />
             <Suspense fallback={<Mascot pose="explaining" size="sm" noFloat />}>
               <Mascot3D compact className="-my-6 -ml-5 -mr-2" />
             </Suspense>
           </div>
           <div className="pb-2">
-            <h1 className="font-heading text-3xl md:text-4xl font-black text-white tracking-tight mb-2">
-              Привет, <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FFD700] to-[#FF8C00]">{user?.name}</span>!
+            <h1 className="font-heading mb-2 text-3xl font-black tracking-tight text-white md:text-4xl">
+              Привет, <span className="bg-gradient-to-r from-[#FFD700] to-[#FF8C00] bg-clip-text text-transparent">{user?.name}</span>!
             </h1>
-            <p className="text-white/40 font-medium">Твоя личная физическая лаборатория готова к работе.</p>
+            <p className="font-medium text-white/46">Давай начнем с одного понятного шага. Не нужно разбирать все сразу.</p>
           </div>
         </motion.div>
 
@@ -79,102 +108,133 @@ export default function DashboardPage() {
           </div>
         )}
 
+        <motion.section
+          initial={{ opacity: 0, y: 18 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.08 }}
+          className="mb-8 grid gap-4 rounded-[2rem] border border-[#FFD700]/18 bg-[#FFD700]/[0.055] p-5 lg:grid-cols-[1fr_auto] lg:items-center"
+          data-testid="today-lesson"
+        >
+          <div className="min-w-0">
+            <div className="mb-3 flex items-center gap-2 text-[#FFD700]">
+              <Target className="h-4 w-4" />
+              <span className="font-mono text-[10px] font-bold uppercase tracking-[0.18em]">твоё занятие сегодня</span>
+            </div>
+            <h2 className="font-heading text-2xl font-black text-white">Начни с темы: {lessonTitle}</h2>
+            <p className="mt-2 max-w-2xl text-[14px] leading-6 text-white/58">
+              Сначала посмотри модель и график, потом реши короткую проверку. Это лучше, чем просто читать длинный текст.
+            </p>
+          </div>
+          <Link
+            to={lessonHref}
+            className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-[#FFD700] px-6 text-[14px] font-black text-black shadow-[0_12px_32px_rgba(255,215,0,0.18)] transition-transform hover:-translate-y-0.5"
+            data-testid="today-lesson-cta"
+          >
+            Начать <ArrowRight className="h-4 w-4" />
+          </Link>
+        </motion.section>
+
         {loading ? (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-            {[1,2,3].map(i => <div key={i} className="h-40 rounded-3xl skeleton" />)}
+          <div className="mb-10 grid grid-cols-1 gap-6 md:grid-cols-3">
+            {[1, 2, 3].map((item) => <div key={item} className="skeleton h-40 rounded-3xl" />)}
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-            <AnimatedCard
-              icon={Zap} color="#FFD700" title="Опыт" value={`${stats.xp} XP`} delay={0.1}
-              subtitle={
+          <div className="mb-10 grid grid-cols-1 gap-6 md:grid-cols-3">
+            <StatCard
+              icon={Zap}
+              color="#FFD700"
+              title="Опыт"
+              value={`${stats.xp} XP`}
+              delay={0.1}
+              testId="stats-xp"
+              subtitle={(
                 <div>
-                  <div className="flex justify-between text-[11px] font-bold text-white/50 mb-2">
-                    <span>УРОВЕНЬ {stats.level}</span>
-                    <span>ДО {stats.level + 1}</span>
+                  <div className="mb-2 flex justify-between text-[11px] font-bold text-white/52">
+                    <span>Уровень {stats.level}</span>
+                    <span>{xpToNextLevel} XP до следующего</span>
                   </div>
-                  <Progress value={xpProgress} className="h-2 bg-white/5" />
+                  <Progress value={xpProgress} className="h-3 bg-white/8" />
                 </div>
-              }
+              )}
             />
-            <AnimatedCard
-              icon={Flame} color="#FF4500" title="Серия" value={`${stats.streak} ДНЕЙ`} delay={0.2}
-              subtitle={<p className="text-[13px] text-white/40 leading-snug">Заходи каждый день для бонусного XP.</p>}
+            <StatCard
+              icon={Flame}
+              color="#FF6B2A"
+              title="Серия"
+              value={stats.streak > 0 ? `${stats.streak} дн.` : 'Старт'}
+              delay={0.2}
+              testId={stats.streak > 0 ? 'active-streak' : 'empty-streak'}
+              subtitle={(
+                <p className="text-[13px] leading-snug text-white/46">
+                  {stats.streak > 0 ? 'Зайди сегодня еще раз, чтобы серия не сбилась.' : 'Серия начнется после первого занятия сегодня.'}
+                </p>
+              )}
             />
-            <AnimatedCard
-              icon={CheckCircle2} color="#39FF14" title="Выучено" value={`${completedChapters}`} delay={0.3}
-              subtitle={<p className="text-[13px] text-white/40 leading-snug">Глав успешно пройдено на 60%+.</p>}
+            <StatCard
+              icon={CheckCircle2}
+              color="#39FF14"
+              title="Темы"
+              value={completedChapters > 0 ? `${completedChapters}` : 'Старт'}
+              delay={0.3}
+              testId={completedChapters > 0 ? 'completed-chapters' : 'empty-completed'}
+              subtitle={(
+                <p className="text-[13px] leading-snug text-white/46">
+                  {completedChapters > 0 ? 'Столько тем уже закрыто проверкой.' : 'Здесь появятся пройденные темы. Начни с одной.'}
+                </p>
+              )}
             />
           </div>
         )}
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
-          {[
-            { icon: Brain, color: '#00E5FF', title: 'Сегодня: понять', text: '1 школьная тема с визуальной картой и короткой проверкой.' },
-            { icon: Timer, color: '#FFD700', title: 'Сегодня: формат', text: '10-15 заданий ЦТ/ЦЭ по слабому blueprint без повторов.' },
-            { icon: ShieldCheck, color: '#39FF14', title: 'Правило базы', text: 'Школьный прогресс и экзаменационный темп считаются отдельно.' },
-          ].map((item) => (
-            <div key={item.title} className="surface-base rounded-2xl p-4 border border-white/[0.06]">
-              <div className="flex items-center gap-3 mb-2">
-                <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ backgroundColor: `${item.color}12` }}>
-                  <item.icon className="w-4 h-4" style={{ color: item.color }} />
-                </div>
-                <p className="text-[12px] font-bold text-white">{item.title}</p>
-              </div>
-              <p className="text-[12px] text-white/42 leading-snug">{item.text}</p>
-            </div>
-          ))}
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-16">
-          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="relative group">
-            <div className="absolute inset-0 bg-gradient-to-br from-[#00E5FF]/20 to-transparent rounded-[2rem] blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-            <div className="relative surface-base border border-[#00E5FF]/20 rounded-[2rem] p-8 h-full flex flex-col justify-between overflow-hidden">
-              <div className="absolute -top-10 -right-10 w-40 h-40 bg-[#00E5FF]/10 rounded-full blur-2xl" />
+        <div className="mb-16 grid grid-cols-1 gap-8 lg:grid-cols-2">
+          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="group relative">
+            <div className="absolute inset-0 rounded-[2rem] bg-gradient-to-br from-[#00E5FF]/20 to-transparent opacity-0 blur-xl transition-opacity duration-500 group-hover:opacity-100" />
+            <div className="relative flex h-full flex-col justify-between overflow-hidden rounded-[2rem] border border-[#00E5FF]/20 surface-base p-8">
+              <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-[#00E5FF]/10 blur-2xl" />
               <div>
-                <div className="w-14 h-14 rounded-2xl bg-[#00E5FF]/10 flex items-center justify-center mb-6">
-                  <BookOpen className="w-7 h-7 text-[#00E5FF]" />
+                <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#00E5FF]/10">
+                  <BookOpen className="h-7 w-7 text-[#00E5FF]" />
                 </div>
-                <h2 className="font-heading text-2xl font-bold text-white tracking-tight mb-3">Школьная успеваемость</h2>
-                <p className="text-[15px] text-white/50 leading-relaxed mb-6">
-                  Глубокое изучение механики, термодинамики и электродинамики по школьной программе VII-XI классов. Повышай средний балл без стресса.
+                <h2 className="font-heading mb-3 text-2xl font-bold tracking-tight text-white">Школьные темы</h2>
+                <p className="mb-6 text-[15px] leading-relaxed text-white/52">
+                  Для обычной учебы: понять тему, решить пару задач и не потеряться на контрольной.
                 </p>
-                <ul className="space-y-3 mb-8">
-                  {['Пошаговые алгоритмы решений', 'Анимированные визуализации процессов', 'Срезы знаний после каждой темы'].map((item, i) => (
-                    <li key={i} className="flex items-center gap-3 text-[13px] text-white/70">
-                      <div className="w-1.5 h-1.5 rounded-full bg-[#00E5FF]" /> {item}
+                <ul className="mb-8 space-y-3">
+                  {['короткое объяснение', 'рисунок или график перед формулой', 'проверка после темы'].map((item) => (
+                    <li key={item} className="flex items-center gap-3 text-[13px] text-white/70">
+                      <div className="h-1.5 w-1.5 rounded-full bg-[#00E5FF]" /> {item}
                     </li>
                   ))}
                 </ul>
               </div>
-              <Link to="/school" className="inline-flex items-center justify-center gap-2 bg-[#00E5FF]/10 hover:bg-[#00E5FF]/20 text-[#00E5FF] font-bold py-3.5 px-6 rounded-xl transition-colors">
-                Перейти в школьный раздел <ArrowRight className="w-4 h-4" />
+              <Link to="/school" className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#00E5FF]/10 px-6 py-3.5 font-bold text-[#00E5FF] transition-colors hover:bg-[#00E5FF]/20">
+                Открыть школьные темы <ArrowRight className="h-4 w-4" />
               </Link>
             </div>
           </motion.div>
 
-          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="relative group">
-            <div className="absolute inset-0 bg-gradient-to-br from-[#FFD700]/20 to-transparent rounded-[2rem] blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-            <div className="relative surface-base border border-[#FFD700]/20 rounded-[2rem] p-8 h-full flex flex-col justify-between overflow-hidden">
-              <div className="absolute -top-10 -right-10 w-40 h-40 bg-[#FFD700]/10 rounded-full blur-2xl" />
+          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="group relative">
+            <div className="absolute inset-0 rounded-[2rem] bg-gradient-to-br from-[#FFD700]/20 to-transparent opacity-0 blur-xl transition-opacity duration-500 group-hover:opacity-100" />
+            <div className="relative flex h-full flex-col justify-between overflow-hidden rounded-[2rem] border border-[#FFD700]/20 surface-base p-8">
+              <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-[#FFD700]/10 blur-2xl" />
               <div>
-                <div className="w-14 h-14 rounded-2xl bg-[#FFD700]/10 flex items-center justify-center mb-6">
-                  <Target className="w-7 h-7 text-[#FFD700]" />
+                <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#FFD700]/10">
+                  <Target className="h-7 w-7 text-[#FFD700]" />
                 </div>
-                <h2 className="font-heading text-2xl font-bold text-white tracking-tight mb-3">Подготовка к ЦТ / ЦЭ</h2>
-                <p className="text-[15px] text-white/50 leading-relaxed mb-6">
-                  Оригинальные варианты, разработанные на основе методики РИКЗ. Тренируй распределение времени на Часть А и Часть Б.
+                <h2 className="font-heading mb-3 text-2xl font-bold tracking-tight text-white">ЦТ / ЦЭ</h2>
+                <p className="mb-6 text-[15px] leading-relaxed text-white/52">
+                  Для тренировки формата: решать быстрее, замечать ловушки и привыкать к времени.
                 </p>
-                <ul className="space-y-3 mb-8">
-                  {['Строгий тайминг в 210 минут', 'Никаких повторяющихся заданий', 'Анализ ловушек и типичных ошибок'].map((item, i) => (
-                    <li key={i} className="flex items-center gap-3 text-[13px] text-white/70">
-                      <div className="w-1.5 h-1.5 rounded-full bg-[#FFD700]" /> {item}
+                <ul className="mb-8 space-y-3">
+                  {['таймер как на экзамене', 'части A и B отдельно', 'разбор слабых мест после ответа'].map((item) => (
+                    <li key={item} className="flex items-center gap-3 text-[13px] text-white/70">
+                      <div className="h-1.5 w-1.5 rounded-full bg-[#FFD700]" /> {item}
                     </li>
                   ))}
                 </ul>
               </div>
-              <Link to="/exam" className="inline-flex items-center justify-center gap-2 bg-[#FFD700] hover:bg-[#FFD700]/90 text-black font-bold py-3.5 px-6 rounded-xl shadow-[0_4px_20px_rgba(255,215,0,0.3)] transition-all">
-                Открыть экзаменационный тренажёр <ArrowRight className="w-4 h-4" />
+              <Link to="/exam" className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#FFD700] px-6 py-3.5 font-bold text-black shadow-[0_4px_20px_rgba(255,215,0,0.3)] transition-all hover:bg-[#FFD700]/90">
+                Открыть тренировку <ArrowRight className="h-4 w-4" />
               </Link>
             </div>
           </motion.div>

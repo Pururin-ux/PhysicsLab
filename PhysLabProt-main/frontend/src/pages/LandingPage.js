@@ -149,18 +149,16 @@ export default function LandingPage() {
 
           <motion.div initial={{ opacity: 0, y: 22, scale: 0.98 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={{ duration: 0.62, ease: [0.33, 1, 0.68, 1] }} className="relative">
             <PhysicsPreview />
-            <div className="pointer-events-none absolute -right-72 -top-10 hidden h-[430px] w-[310px] lg:block">
+            <div className="pointer-events-none absolute right-0 top-12 hidden h-[260px] w-[190px] lg:block xl:right-2">
               {isLargeViewport && (
                 <Suspense fallback={<Mascot pose="pointing" size="hero" interactive={false} />}>
-                  <Mascot3D pose="presenting" className="h-[430px]" />
+                  <Mascot3D pose="presenting" className="h-full" />
                 </Suspense>
               )}
             </div>
             {!isLargeViewport && (
               <div className="mt-6 flex justify-center">
-                <Suspense fallback={<Mascot pose="pointing" size="lg" interactive={false} />}>
-                  <Mascot3D compact pose="presenting" />
-                </Suspense>
+                <Mascot pose="pointing" size="lg" interactive={false} noFloat />
               </div>
             )}
           </motion.div>

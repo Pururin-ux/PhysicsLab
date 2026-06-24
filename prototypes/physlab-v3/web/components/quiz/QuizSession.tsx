@@ -1,7 +1,7 @@
 "use client";
 
 import { useStore } from "@nanostores/react";
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { CoachBubble } from "../coach/CoachBubble";
 import { useCoach } from "../coach/useCoach";
 import { ExplanationSection } from "./ExplanationSection";
@@ -18,17 +18,31 @@ import {
 } from "./quiz-session-store";
 import { Badge } from "../ui/Badge";
 import { Button } from "../ui/Button";
+import { Card } from "../ui/Card";
 import { addXP, resetSessionProgress } from "../../lib/stores/session-store";
 import kinematicsData from "../../content/tasks/kinematics-10.json";
 
 interface QuizSessionProps {
   data?: QuizData;
+  mode?: "static" | "generated";
+  generatedTemplate?: string;
 }
 
 const defaultQuizData = kinematicsData as QuizData;
+const emptyTasks: QuizData["tasks"] = [];
 
-export function QuizSession({ data = defaultQuizData }: QuizSessionProps) {
+export function QuizSession({
+  data = defaultQuizData,
+  mode = "static",
+  generatedTemplate = "free-fall",
+}: QuizSessionProps) {
   const session = useStore($quizSession);
+  const [generatedData, setGeneratedData] = useState<QuizData | null>(null);
+  const [generatedStatus, setGeneratedStatus] = useState<"idle" | "loading" | "ready" | "error">(
+    mode === "generated" ? "loading" : "idle",
+  );
+  const [generatedError, setGeneratedError] = useState<string | null>(null);
+  const [generatedBatch, setGeneratedBatch] = useState(0);
   const {
     bubble,
     emitCoachEvent,
@@ -39,7 +53,8 @@ export function QuizSession({ data = defaultQuizData }: QuizSessionProps) {
   const sessionStartTimerRef = useRef<ReturnType<typeof setTimeout> | null>(
     null,
   );
-  const tasks = data.tasks;
+  const activeData = mode === "generated" ? generatedData : data;
+  const tasks = activeData?.tasks ?? emptyTasks;
   const currentTask = tasks[session.currentIndex];
   const isLastTask = session.currentIndex >= session.total - 1;
   const progressLabel = `${Math.min(session.currentIndex + 1, session.total)} / ${session.total}`;
@@ -53,6 +68,61 @@ export function QuizSession({ data = defaultQuizData }: QuizSessionProps) {
   );
 
   useEffect(() => {
+    if (mode !== "generated") {
+      return;
+    }
+
+    const controller = new AbortController();
+
+    async function loadGeneratedTasks() {
+      setGeneratedStatus("loading");
+      setGeneratedError(null);
+
+      try {
+        const params = new URLSearchParams({
+          template: generatedTemplate,
+          count: "10",
+          batch: String(generatedBatch),
+        });
+        const response = await fetch(`/api/tasks?${params.toString()}`, {
+          cache: "no-store",
+          signal: controller.signal,
+        });
+        const payload = await response.json();
+
+        if (!response.ok) {
+          throw new Error(payload.error ?? "Не удалось сгенерировать задачи.");
+        }
+
+        setGeneratedData({
+          id: `generated-${generatedTemplate}-${generatedBatch}`,
+          topic: "Кинематика",
+          title: "Тренировка ЦТ",
+          tasks: payload.tasks,
+        });
+        setGeneratedStatus("ready");
+      } catch (error) {
+        if (controller.signal.aborted) {
+          return;
+        }
+
+        setGeneratedStatus("error");
+        setGeneratedError(error instanceof Error ? error.message : "Не удалось сгенерировать задачи.");
+      }
+    }
+
+    loadGeneratedTasks();
+
+    return () => {
+      controller.abort();
+    };
+  }, [generatedBatch, generatedTemplate, mode]);
+
+  useEffect(() => {
+    if (tasks.length === 0) {
+      return;
+    }
+
     resetSessionProgress();
     resetQuizSession(tasks.length);
 
@@ -132,6 +202,14 @@ export function QuizSession({ data = defaultQuizData }: QuizSessionProps) {
   }
 
   function handleRestart() {
+    if (mode === "generated") {
+      resetSessionProgress();
+      hideCoach();
+      setGeneratedData(null);
+      setGeneratedBatch((current) => current + 1);
+      return;
+    }
+
     resetSessionProgress();
     restartQuizSession();
     hideCoach();
@@ -148,9 +226,43 @@ export function QuizSession({ data = defaultQuizData }: QuizSessionProps) {
           total={session.total}
           weakTraps={weakTraps}
           onRestart={handleRestart}
+          restartLabel={mode === "generated" ? "Ещё 10 задач" : undefined}
         />
         <CoachBubble {...bubble} />
       </>
+    );
+  }
+
+  if (mode === "generated" && generatedStatus === "loading") {
+    return (
+      <section className="relative mx-auto flex max-w-[580px] flex-col gap-4 pb-32 sm:pb-8">
+        <Card className="flex flex-col gap-3">
+          <Badge tone="cyan">Тренировка ЦТ</Badge>
+          <p className="text-[14px] font-normal leading-[1.7] text-white/70">
+            Генерирую новый набор задач...
+          </p>
+        </Card>
+      </section>
+    );
+  }
+
+  if (mode === "generated" && generatedStatus === "error") {
+    return (
+      <section className="relative mx-auto flex max-w-[580px] flex-col gap-4 pb-32 sm:pb-8">
+        <Card className="flex flex-col gap-4">
+          <Badge tone="gold">Ошибка генерации</Badge>
+          <p className="text-[14px] font-normal leading-[1.7] text-white/70">
+            {generatedError}
+          </p>
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={() => setGeneratedBatch((current) => current + 1)}
+          >
+            Повторить запрос
+          </Button>
+        </Card>
+      </section>
     );
   }
 
@@ -170,6 +282,7 @@ export function QuizSession({ data = defaultQuizData }: QuizSessionProps) {
         difficulty={currentTask.difficulty}
         text={currentTask.text}
         formula={currentTask.formula}
+        graph={currentTask.graph}
       />
 
       <OptionList

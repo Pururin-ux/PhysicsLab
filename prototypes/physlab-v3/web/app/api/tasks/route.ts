@@ -1,0 +1,125 @@
+import { generateTasks } from "../../../../tools/generator/generate.ts";
+import type { GeneratedTask } from "../../../../tools/generator/types.ts";
+
+export const dynamic = "force-dynamic";
+
+const supportedTemplates = ["free-fall", "vt-slope", "vt-area"] as const;
+type SupportedTemplate = (typeof supportedTemplates)[number];
+
+function normalizeCount(value: string | null) {
+  const parsed = Number.parseInt(value ?? "10", 10);
+  if (!Number.isFinite(parsed) || parsed < 1) {
+    return 10;
+  }
+
+  return Math.min(parsed, 20);
+}
+
+function normalizeBatch(value: string | null) {
+  const parsed = Number.parseInt(value ?? "", 10);
+  if (Number.isFinite(parsed) && parsed >= 0) {
+    return parsed;
+  }
+
+  return Date.now();
+}
+
+function hashSeed(seed: string) {
+  let hash = 2166136261;
+
+  for (const character of seed) {
+    hash ^= character.charCodeAt(0);
+    hash = Math.imul(hash, 16777619);
+  }
+
+  return hash >>> 0;
+}
+
+function unitFor(task: GeneratedTask) {
+  return task.blueprint === "vt-slope" ? "м/с²" : "м";
+}
+
+function withUnit(value: string, unit: string) {
+  return `${value} ${unit}`;
+}
+
+function toQuizTask(task: GeneratedTask) {
+  const unit = unitFor(task);
+
+  return {
+    ...task,
+    type: "single_choice" as const,
+    graph: task.graph ?? null,
+    options: task.options.map((option) => ({
+      id: option.id,
+      text: withUnit(option.text, unit),
+      value: option.value,
+      correct: option.id === task.answer,
+    })),
+    explanation: task.coach_lines.correct,
+    explanation_latex: `${task.formula},\\quad ${task.answerValue}\\text{ ${unit}}`,
+    coach_lines: {
+      correct: task.coach_lines.correct,
+      wrong: task.coach_lines.wrong,
+      hint: task.trap,
+    },
+  };
+}
+
+function generateRandomizedTasks(template: SupportedTemplate, count: number, batch: number, index = 0) {
+  const offset = hashSeed(`${template}:${batch}:${index}`) % 60;
+  return generateTasks(template, count + offset).slice(offset, offset + count);
+}
+
+function generateMixedTasks(count: number, batch: number) {
+  return Array.from({ length: count }, (_, index) => {
+    const template = supportedTemplates[index % supportedTemplates.length];
+    const task = generateRandomizedTasks(template, index + 1, batch, index).at(-1);
+
+    if (!task) {
+      throw new Error(`Template "${template}" produced no task.`);
+    }
+
+    return {
+      ...task,
+      id: `mixed-${index + 1}-${task.id}`,
+    };
+  });
+}
+
+export async function GET(req: Request) {
+  const { searchParams } = new URL(req.url);
+  const template = searchParams.get("template") ?? "free-fall";
+  const count = normalizeCount(searchParams.get("count"));
+  const batch = normalizeBatch(searchParams.get("batch"));
+
+  try {
+    const generatedTasks =
+      template === "mixed"
+        ? generateMixedTasks(count, batch)
+        : supportedTemplates.includes(template as SupportedTemplate)
+          ? generateRandomizedTasks(template as SupportedTemplate, count, batch)
+          : null;
+
+    if (!generatedTasks) {
+      return Response.json(
+        {
+          error: `Unknown template "${template}". Available templates: ${[
+            ...supportedTemplates,
+            "mixed",
+          ].join(", ")}.`,
+        },
+        { status: 400 },
+      );
+    }
+
+    return Response.json({ tasks: generatedTasks.map(toQuizTask) });
+  } catch (error) {
+    return Response.json(
+      {
+        error: error instanceof Error ? error.message : "Task generation failed.",
+      },
+      { status: 400 },
+    );
+  }
+}

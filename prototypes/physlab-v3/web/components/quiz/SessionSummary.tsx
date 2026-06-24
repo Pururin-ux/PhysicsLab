@@ -11,6 +11,7 @@ interface SessionSummaryProps {
   weakTraps: string[];
   onRestart: () => void;
   onNext?: () => void;
+  restartLabel?: string;
 }
 
 function getResultCopy(score: number, total: number) {
@@ -61,6 +62,7 @@ export function SessionSummary({
   weakTraps,
   onRestart,
   onNext,
+  restartLabel = "Повторить",
 }: SessionSummaryProps) {
   const copy = getResultCopy(score, total);
   const uniqueWeakTraps = Array.from(new Set(weakTraps));
@@ -114,7 +116,7 @@ export function SessionSummary({
 
         <div className="grid w-full gap-3 sm:grid-cols-2">
           <Button type="button" variant="primary" size="lg" onClick={onRestart}>
-            Повторить
+            {restartLabel}
           </Button>
           <Button type="button" variant="ghost" size="lg" disabled onClick={onNext}>
             Следующая тема →
