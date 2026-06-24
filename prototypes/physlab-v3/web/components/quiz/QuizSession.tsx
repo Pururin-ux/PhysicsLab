@@ -26,6 +26,8 @@ interface QuizSessionProps {
   data?: QuizData;
   mode?: "static" | "generated";
   generatedTemplate?: string;
+  generatedTopic?: string;
+  generatedTitle?: string;
 }
 
 const defaultQuizData = kinematicsData as QuizData;
@@ -35,6 +37,8 @@ export function QuizSession({
   data = defaultQuizData,
   mode = "static",
   generatedTemplate = "free-fall",
+  generatedTopic = "Кинематика",
+  generatedTitle = "Тренировка ЦТ",
 }: QuizSessionProps) {
   const session = useStore($quizSession);
   const [generatedData, setGeneratedData] = useState<QuizData | null>(null);
@@ -96,8 +100,8 @@ export function QuizSession({
 
         setGeneratedData({
           id: `generated-${generatedTemplate}-${generatedBatch}`,
-          topic: "Кинематика",
-          title: "Тренировка ЦТ",
+          topic: generatedTopic,
+          title: generatedTitle,
           tasks: payload.tasks,
         });
         setGeneratedStatus("ready");
@@ -116,7 +120,7 @@ export function QuizSession({
     return () => {
       controller.abort();
     };
-  }, [generatedBatch, generatedTemplate, mode]);
+  }, [generatedBatch, generatedTemplate, generatedTitle, generatedTopic, mode]);
 
   useEffect(() => {
     if (tasks.length === 0) {
@@ -227,6 +231,7 @@ export function QuizSession({
           weakTraps={weakTraps}
           onRestart={handleRestart}
           restartLabel={mode === "generated" ? "Ещё 10 задач" : undefined}
+          topic={activeData?.topic}
         />
         <CoachBubble {...bubble} />
       </>

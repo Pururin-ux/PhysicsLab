@@ -3,7 +3,15 @@ import type { GeneratedTask } from "../../../../tools/generator/types.ts";
 
 export const dynamic = "force-dynamic";
 
-const supportedTemplates = ["free-fall", "vt-slope", "vt-area"] as const;
+const kinematicsTemplates = ["free-fall", "vt-slope", "vt-area"] as const;
+const dynamicsTemplates = [
+  "newton-second",
+  "friction-force",
+  "incline-force",
+  "resultant-force",
+  "weight-lift",
+] as const;
+const supportedTemplates = [...kinematicsTemplates, ...dynamicsTemplates] as const;
 type SupportedTemplate = (typeof supportedTemplates)[number];
 
 function normalizeCount(value: string | null) {
@@ -35,16 +43,12 @@ function hashSeed(seed: string) {
   return hash >>> 0;
 }
 
-function unitFor(task: GeneratedTask) {
-  return task.blueprint === "vt-slope" ? "м/с²" : "м";
-}
-
 function withUnit(value: string, unit: string) {
   return `${value} ${unit}`;
 }
 
 function toQuizTask(task: GeneratedTask) {
-  const unit = unitFor(task);
+  const unit = task.answerUnit;
 
   return {
     ...task,
@@ -71,9 +75,14 @@ function generateRandomizedTasks(template: SupportedTemplate, count: number, bat
   return generateTasks(template, count + offset).slice(offset, offset + count);
 }
 
-function generateMixedTasks(count: number, batch: number) {
+function generateMixedTasks(
+  templates: readonly SupportedTemplate[],
+  groupId: string,
+  count: number,
+  batch: number,
+) {
   return Array.from({ length: count }, (_, index) => {
-    const template = supportedTemplates[index % supportedTemplates.length];
+    const template = templates[index % templates.length];
     const task = generateRandomizedTasks(template, index + 1, batch, index).at(-1);
 
     if (!task) {
@@ -82,7 +91,7 @@ function generateMixedTasks(count: number, batch: number) {
 
     return {
       ...task,
-      id: `mixed-${index + 1}-${task.id}`,
+      id: `${groupId}-${index + 1}-${task.id}`,
     };
   });
 }
@@ -96,7 +105,9 @@ export async function GET(req: Request) {
   try {
     const generatedTasks =
       template === "mixed"
-        ? generateMixedTasks(count, batch)
+        ? generateMixedTasks(kinematicsTemplates, "mixed", count, batch)
+        : template === "dynamics-mixed"
+          ? generateMixedTasks(dynamicsTemplates, "dynamics-mixed", count, batch)
         : supportedTemplates.includes(template as SupportedTemplate)
           ? generateRandomizedTasks(template as SupportedTemplate, count, batch)
           : null;
@@ -107,6 +118,7 @@ export async function GET(req: Request) {
           error: `Unknown template "${template}". Available templates: ${[
             ...supportedTemplates,
             "mixed",
+            "dynamics-mixed",
           ].join(", ")}.`,
         },
         { status: 400 },

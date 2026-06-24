@@ -35,6 +35,7 @@ export const freeFallBlueprint: TaskBlueprint = {
     t: { min: 1, max: 6, step: 1, unit: "с" },
   },
   formula: "h=\\frac{gt^2}{2}",
+  answerUnit: "м",
   solver: freeFallDistance,
   distractors: freeFallDistractors,
   textTemplate: (p) =>

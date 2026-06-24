@@ -1,7 +1,12 @@
 import { pathToFileURL } from "node:url";
+import { frictionForceBlueprint } from "./templates/friction-force.ts";
 import { freeFallBlueprint } from "./templates/free-fall.ts";
+import { inclineForceBlueprint } from "./templates/incline-force.ts";
+import { newtonSecondBlueprint } from "./templates/newton-second.ts";
+import { resultantForceBlueprint } from "./templates/resultant-force.ts";
 import { vtAreaBlueprint } from "./templates/vt-area.ts";
 import { vtSlopeBlueprint } from "./templates/vt-slope.ts";
+import { weightLiftBlueprint } from "./templates/weight-lift.ts";
 import type {
   GeneratedOption,
   GeneratedTask,
@@ -10,6 +15,7 @@ import type {
   ParamRange,
   TaskBlueprint,
 } from "./types.ts";
+import { GENERATED_TASK_VARIANT } from "./types.ts";
 import { formatAnswerValue, normalizeAnswerValue } from "./validator.ts";
 
 const optionIds: GeneratedOption["id"][] = ["a", "b", "c", "d"];
@@ -19,6 +25,11 @@ export const blueprints = {
   "free-fall": freeFallBlueprint,
   "vt-slope": vtSlopeBlueprint,
   "vt-area": vtAreaBlueprint,
+  "newton-second": newtonSecondBlueprint,
+  "friction-force": frictionForceBlueprint,
+  "incline-force": inclineForceBlueprint,
+  "resultant-force": resultantForceBlueprint,
+  "weight-lift": weightLiftBlueprint,
 };
 
 export type TemplateId = keyof typeof blueprints;
@@ -78,6 +89,12 @@ function graphFor(blueprint: TaskBlueprint, params: Params): GraphSpec | undefin
   return typeof blueprint.graph === "function" ? blueprint.graph(params) : blueprint.graph;
 }
 
+function answerUnitFor(blueprint: TaskBlueprint, params: Params): string {
+  return typeof blueprint.answerUnit === "function"
+    ? blueprint.answerUnit(params)
+    : blueprint.answerUnit;
+}
+
 function seededShuffle<T>(items: T[], seed: number): T[] {
   const shuffled = [...items];
   let state = seed >>> 0;
@@ -131,6 +148,7 @@ function createTask(blueprint: TaskBlueprint, params: Params, index: number): Ge
   }
 
   return {
+    [GENERATED_TASK_VARIANT]: params.__variant,
     id: `${blueprint.id}-${String(index + 1).padStart(4, "0")}`,
     blueprint: blueprint.id,
     skill: blueprint.skill,
@@ -139,6 +157,7 @@ function createTask(blueprint: TaskBlueprint, params: Params, index: number): Ge
     params: publicParams(params),
     text: blueprint.textTemplate(params, answerValue),
     formula: blueprint.formula,
+    answerUnit: answerUnitFor(blueprint, params),
     graph: graphFor(blueprint, params),
     options,
     answer: answerOption.id,

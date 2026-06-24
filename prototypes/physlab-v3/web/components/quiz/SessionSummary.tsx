@@ -12,10 +12,12 @@ interface SessionSummaryProps {
   onRestart: () => void;
   onNext?: () => void;
   restartLabel?: string;
+  topic?: string;
 }
 
-function getResultCopy(score: number, total: number) {
+function getResultCopy(score: number, total: number, topic?: string) {
   const ratio = total === 0 ? 0 : score / total;
+  const isDynamics = topic === "Динамика";
 
   if (ratio >= 0.9) {
     return {
@@ -23,7 +25,9 @@ function getResultCopy(score: number, total: number) {
       scoreClass: "text-nova-cyan",
       marker: "✦",
       title: "Отличная подготовка к ЦТ",
-      body: "Ты уверенно держишь базовую кинематику и замечаешь типовые ловушки ЦТ.",
+      body: isDynamics
+        ? "Ты уверенно определяешь силы, выбираешь ось и замечаешь типовые ловушки динамики."
+        : "Ты уверенно держишь базовую кинематику и замечаешь типовые ловушки ЦТ.",
     };
   }
 
@@ -33,7 +37,9 @@ function getResultCopy(score: number, total: number) {
       scoreClass: "text-nova-cyan",
       marker: "◈",
       title: "Хороший результат — разбери ошибки",
-      body: "Разбор ошибок покажет, где теряется балл: график, знак перемещения или выбор формулы.",
+      body: isDynamics
+        ? "Разбор ошибок покажет, где теряется балл: направление силы, проекция или знак ускорения."
+        : "Разбор ошибок покажет, где теряется балл: график, знак перемещения или выбор формулы.",
     };
   }
 
@@ -43,7 +49,9 @@ function getResultCopy(score: number, total: number) {
       scoreClass: "text-nova-gold",
       marker: "△",
       title: "Есть над чем поработать",
-      body: "Разбор ошибок покажет, где теряется балл: график, знак перемещения или выбор формулы.",
+      body: isDynamics
+        ? "Сначала нарисуй силы и выбери положительное направление, затем записывай второй закон Ньютона."
+        : "Разбор ошибок покажет, где теряется балл: график, знак перемещения или выбор формулы.",
     };
   }
 
@@ -52,7 +60,9 @@ function getResultCopy(score: number, total: number) {
     scoreClass: "text-nova-gold",
     marker: "○",
     title: "Повтори теорию и попробуй снова",
-    body: "Вернись к моделям выше и проверь, что именно показывает график перед вычислением.",
+    body: isDynamics
+      ? "Вернись к моделям выше и проверь направления всех сил до вычислений."
+      : "Вернись к моделям выше и проверь, что именно показывает график перед вычислением.",
   };
 }
 
@@ -63,8 +73,9 @@ export function SessionSummary({
   onRestart,
   onNext,
   restartLabel = "Повторить",
+  topic,
 }: SessionSummaryProps) {
-  const copy = getResultCopy(score, total);
+  const copy = getResultCopy(score, total, topic);
   const uniqueWeakTraps = Array.from(new Set(weakTraps));
   const ratio = total === 0 ? 0 : score / total;
 

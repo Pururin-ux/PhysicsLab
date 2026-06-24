@@ -29,6 +29,7 @@ export const vtSlopeBlueprint: TaskBlueprint = {
   },
   graph: graphFor,
   formula: "a=\\frac{\\Delta v}{\\Delta t}=\\frac{v_2-v_1}{t_2-t_1}",
+  answerUnit: "м/с²",
   solver: vtSlopeAcceleration,
   distractors: vtSlopeDistractors,
   textTemplate: (p) =>

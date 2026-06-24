@@ -6,6 +6,7 @@ import type {
   ValidationIssue,
   ValidationResult,
 } from "./types.ts";
+import { GENERATED_TASK_VARIANT } from "./types.ts";
 
 const formulaCache = new Map<string, ValidationIssue | null>();
 
@@ -89,10 +90,16 @@ export function validateGeneratedTask(
   blueprint: TaskBlueprint,
 ): ValidationResult {
   const issues: ValidationIssue[] = [];
-  const answer = normalizeAnswerValue(blueprint.solver(task.params));
+  const validationParams = {
+    ...task.params,
+    ...(task[GENERATED_TASK_VARIANT] === undefined
+      ? {}
+      : { __variant: task[GENERATED_TASK_VARIANT] }),
+  };
+  const answer = normalizeAnswerValue(blueprint.solver(validationParams));
   const distractors = blueprint.distractors.map((rule) => ({
     label: rule.label,
-    value: normalizeAnswerValue(rule.compute(task.params)),
+    value: normalizeAnswerValue(rule.compute(validationParams)),
   }));
 
   issues.push(...validatePhysicalRanges(task.params));
@@ -140,6 +147,10 @@ export function validateGeneratedTask(
   const formulaIssue = validateFormula(task.formula);
   if (formulaIssue) {
     issues.push(formulaIssue);
+  }
+
+  if (typeof task.answerUnit !== "string" || task.answerUnit.trim().length === 0) {
+    issues.push(issue("answer_unit", "Единица ответа должна быть непустой строкой."));
   }
 
   if (typeof task.text !== "string" || task.text.trim().length === 0) {

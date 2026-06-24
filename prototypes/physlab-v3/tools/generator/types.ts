@@ -2,6 +2,8 @@ export type Difficulty = 1 | 2 | 3;
 
 export type Params = Record<string, number>;
 
+export const GENERATED_TASK_VARIANT = Symbol("generatedTaskVariant");
+
 export interface ParamRange {
   min: number;
   max: number;
@@ -31,6 +33,7 @@ export interface TaskBlueprint {
   params: Record<string, ParamRange>;
   graph?: GraphSpec | ((p: Params) => GraphSpec);
   formula: string;
+  answerUnit: string | ((p: Params) => string);
   solver: (p: Params) => number;
   distractors: DistractorRule[];
   textTemplate: (p: Params, answer: number) => string;
@@ -50,6 +53,7 @@ export interface GeneratedOption {
 }
 
 export interface GeneratedTask {
+  [GENERATED_TASK_VARIANT]?: number;
   id: string;
   blueprint: string;
   skill: string;
@@ -58,6 +62,7 @@ export interface GeneratedTask {
   params: Params;
   text: string;
   formula: string;
+  answerUnit: string;
   graph?: GraphSpec;
   options: GeneratedOption[];
   answer: GeneratedOption["id"];

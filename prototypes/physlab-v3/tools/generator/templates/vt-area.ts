@@ -33,6 +33,7 @@ export const vtAreaBlueprint: TaskBlueprint = {
   },
   graph: graphFor,
   formula: "s=v(t_1+t_2)+\\frac{\\Delta v\\,t_2}{2}",
+  answerUnit: "м",
   solver: vtAreaDisplacement,
   distractors: vtAreaDistractors,
   textTemplate: (p) =>

@@ -1,12 +1,15 @@
 "use client";
 
 import { useStore } from "@nanostores/react";
+import { usePathname } from "next/navigation";
 import { $quizSession } from "../quiz/quiz-session-store";
 import { ProgressDots } from "../ui/ProgressDots";
 import { XPBadge } from "./XPBadge";
 
 export function NavBar() {
   const session = useStore($quizSession);
+  const pathname = usePathname();
+  const topic = pathname.startsWith("/practice/dynamics") ? "Динамика" : "Кинематика";
   const total = Math.max(session.total, 1);
   const currentStep =
     session.phase === "completed"
@@ -30,7 +33,7 @@ export function NavBar() {
             Physics<span className="text-nova-cyan">Lab</span>
           </span>
           <span className="mt-1 text-[10px] font-bold uppercase tracking-[.14em] text-white/50 md:text-[11px]">
-            Кинематика
+            {topic}
           </span>
         </div>
 
