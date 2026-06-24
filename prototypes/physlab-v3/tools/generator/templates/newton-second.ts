@@ -44,10 +44,24 @@ function wrongCoachLine(p: Params, selected: number, correct: number): string {
   return `Сначала выразите искомую величину из F = ma: ${relation}. Правильный результат ${correct}, а не ${selected}.`;
 }
 
+function explanationFor(p: Params, answer: number): string {
+  const force = forceFor(p);
+
+  switch (targetFor(p)) {
+    case "mass":
+      return `Выражаем массу из F = ma: m = F/a = ${force}/${p.a} = ${answer} кг. Вариант F · a — ловушка неверной перестановки формулы.`;
+    case "acceleration":
+      return `Выражаем ускорение: a = F/m = ${force}/${p.m} = ${answer} м/с². Вариант F · m получается при неверном выборе действия.`;
+    default:
+      return `Равнодействующая задаёт ускорение: F = ma = ${p.m} · ${p.a} = ${answer} Н. Отношения m/a и a/m здесь не описывают силу.`;
+  }
+}
+
 export const newtonSecondBlueprint: TaskBlueprint = {
   id: "newton-second",
   skill: "Второй закон Ньютона",
   topic: "Динамика",
+  group: "dynamics",
   difficulty: 1,
   params: {
     m: { min: 1, max: 100, step: 1, unit: "кг" },
@@ -64,9 +78,11 @@ export const newtonSecondBlueprint: TaskBlueprint = {
         return "Н";
     }
   },
+  answerKind: "positive",
   solver: newtonSecondAnswer,
   distractors: newtonSecondDistractors,
   textTemplate: questionFor,
+  explanationTemplate: explanationFor,
   trap: "Не выражает искомую величину из F = ma и выбирает обратное арифметическое действие.",
   coachLines: {
     correct: correctCoachLine,

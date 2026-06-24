@@ -24,6 +24,7 @@ export const vtAreaBlueprint: TaskBlueprint = {
   id: "vt-area",
   skill: "Площадь под графиком v(t)",
   topic: "Кинематика",
+  group: "kinematics",
   difficulty: 2,
   params: {
     v: { min: 2, max: 10, step: 2, unit: "м/с" },
@@ -34,10 +35,13 @@ export const vtAreaBlueprint: TaskBlueprint = {
   graph: graphFor,
   formula: "s=v(t_1+t_2)+\\frac{\\Delta v\\,t_2}{2}",
   answerUnit: "м",
+  answerKind: "positive",
   solver: vtAreaDisplacement,
   distractors: vtAreaDistractors,
   textTemplate: (p) =>
     `По графику v(t): первые ${p.t1} с скорость равна ${p.v} м/с, затем за следующие ${p.t2} с скорость равномерно увеличивается на ${p.dv} м/с. Найдите перемещение тела.`,
+  explanationTemplate: (p, answer) =>
+    `Перемещение равно площади под v(t): прямоугольник ${p.v} · (${p.t1} + ${p.t2}) и треугольная добавка ${p.dv} · ${p.t2} / 2. Сумма равна ${answer} м.`,
   trap: "Считает только прямоугольник, только треугольник или умножает конечную скорость на все время.",
   coachLines: {
     correct: (p) =>

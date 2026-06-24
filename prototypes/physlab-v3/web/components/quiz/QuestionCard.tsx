@@ -11,6 +11,7 @@ interface QuestionCardProps {
   text: string;
   formula?: string;
   graph?: QuizGraph | null;
+  showSolutionContent?: boolean;
   className?: string;
 }
 
@@ -30,6 +31,7 @@ export function QuestionCard({
   text,
   formula,
   graph,
+  showSolutionContent = false,
   className,
 }: QuestionCardProps) {
   const graphConfig = graph
@@ -70,7 +72,11 @@ export function QuestionCard({
         />
       ) : null}
 
-      {formula ? <FormulaBox formula={formula} /> : null}
+      {formula && showSolutionContent ? (
+        <div data-testid="question-formula">
+          <FormulaBox formula={formula} />
+        </div>
+      ) : null}
     </Card>
   );
 }

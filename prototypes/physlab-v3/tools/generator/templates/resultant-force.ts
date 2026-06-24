@@ -10,6 +10,7 @@ export const resultantForceBlueprint: TaskBlueprint = {
   id: "resultant-force",
   skill: "Равнодействующая коллинеарных сил",
   topic: "Динамика",
+  group: "dynamics",
   difficulty: 1,
   params: {
     f1: { min: 10, max: 100, step: 5, unit: "Н" },
@@ -17,6 +18,7 @@ export const resultantForceBlueprint: TaskBlueprint = {
   },
   formula: "F_{\\text{рез}}=\\left|\\vec F_1+\\vec F_2\\right|",
   answerUnit: "Н",
+  answerKind: "positive",
   solver: resultantForce,
   distractors: resultantForceDistractors,
   textTemplate: (p) => {
@@ -25,6 +27,10 @@ export const resultantForceBlueprint: TaskBlueprint = {
       : "в противоположных направлениях";
     return `На тело вдоль одной прямой действуют силы ${p.f1} Н и ${p.f2} Н ${direction}. Найдите модуль равнодействующей.`;
   },
+  explanationTemplate: (p, answer) =>
+    forcesAreCodirectional(p)
+      ? `Силы сонаправлены, поэтому их модули складываются: ${p.f1} + ${p.f2} = ${answer} Н. Вычитание здесь было бы ловушкой направления.`
+      : `Силы направлены встречно, поэтому из большего модуля вычитаем меньший: |${p.f1} − ${p.f2}| = ${answer} Н. Складывать их модули нельзя.`,
   trap: "Складывает модули встречных сил вместо вычитания или вычитает попутные силы.",
   coachLines: {
     correct: (p) =>

@@ -25,6 +25,7 @@ export function ForceModel({ variant, title, caption }: ForceModelProps) {
         <div className="rounded-option border border-white/[.07] bg-space-950/60 p-2">
           <svg
             viewBox="0 0 420 230"
+            preserveAspectRatio="xMidYMid meet"
             role="img"
             aria-label={`${title}. ${caption}`}
             className="h-auto w-full"
@@ -84,7 +85,7 @@ export function ForceModel({ variant, title, caption }: ForceModelProps) {
                     strokeWidth="4"
                     markerEnd={`url(#${markerId}-gold)`}
                   />
-                  <text x="82" y="118" textAnchor="middle" className="fill-current text-[14px] font-bold">
+                  <text x="82" y="116" textAnchor="middle" className="fill-current text-[18px] font-bold">
                     F₁
                   </text>
                 </g>
@@ -99,7 +100,7 @@ export function ForceModel({ variant, title, caption }: ForceModelProps) {
                     strokeWidth="4"
                     markerEnd={`url(#${markerId}-cyan)`}
                   />
-                  <text x="340" y="118" textAnchor="middle" className="fill-current text-[14px] font-bold">
+                  <text x="340" y="116" textAnchor="middle" className="fill-current text-[18px] font-bold">
                     F₂
                   </text>
                 </g>
@@ -115,7 +116,7 @@ export function ForceModel({ variant, title, caption }: ForceModelProps) {
                     strokeDasharray="7 6"
                     markerEnd={`url(#${markerId}-cyan)`}
                   />
-                  <text x="230" y="49" textAnchor="middle" className="fill-current text-[13px] font-bold">
+                  <text x="230" y="47" textAnchor="middle" className="fill-current text-[17px] font-bold">
                     a
                   </text>
                 </g>
@@ -166,7 +167,7 @@ export function ForceModel({ variant, title, caption }: ForceModelProps) {
                     strokeWidth="4"
                     markerEnd={`url(#${markerId}-cyan)`}
                   />
-                  <text x="229" y="91" className="fill-current text-[14px] font-bold">
+                  <text x="230" y="91" className="fill-current text-[17px] font-bold">
                     N
                   </text>
                 </g>
@@ -181,7 +182,7 @@ export function ForceModel({ variant, title, caption }: ForceModelProps) {
                     strokeWidth="4"
                     markerEnd={`url(#${markerId}-gold)`}
                   />
-                  <text x="229" y="202" className="fill-current text-[14px] font-bold">
+                  <text x="230" y="202" className="fill-current text-[17px] font-bold">
                     mg
                   </text>
                 </g>
@@ -197,7 +198,7 @@ export function ForceModel({ variant, title, caption }: ForceModelProps) {
                     strokeDasharray="7 6"
                     markerEnd={`url(#${markerId}-cyan)`}
                   />
-                  <text x="367" y="115" className="fill-current text-[13px] font-bold">
+                  <text x="367" y="115" className="fill-current text-[17px] font-bold">
                     a
                   </text>
                 </g>

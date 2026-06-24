@@ -15,7 +15,16 @@ export default function DynamicsDemoPage() {
         eyebrow="Динамика"
         title="Сначала силы, затем уравнение"
         description="До подстановки чисел отметь каждую силу, выбери положительное направление и только потом запиши второй закон Ньютона в проекциях."
+        layout="stack"
       >
+        <a
+          href="#practice"
+          className="mx-auto inline-flex min-h-11 items-center justify-center gap-2 rounded-option border border-nova-cyan/25 bg-nova-cyan/[.06] px-4 text-[13px] font-semibold text-nova-cyan transition-colors hover:border-nova-cyan/45 hover:bg-nova-cyan-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/60 sm:hidden"
+        >
+          Сразу к практике
+          <span aria-hidden="true">↓</span>
+        </a>
+
         <article className="flex min-w-0 flex-col gap-4">
           <ForceModel
             variant="resultant"
@@ -23,7 +32,10 @@ export default function DynamicsDemoPage() {
             caption="Сонаправленные силы складываются, встречные — вычитаются с учётом выбранной оси."
           />
 
-          <Card variant="elevated" className="flex flex-col gap-3">
+          <Card
+            variant="elevated"
+            className="flex flex-col gap-3 border-l-2 border-l-nova-blue/55"
+          >
             <p className="text-[11px] font-bold uppercase tracking-[.14em] text-white/50">
               Смысл
             </p>
@@ -31,7 +43,7 @@ export default function DynamicsDemoPage() {
               Ускорение создаёт не отдельная сила, а векторная сумма всех сил. Знак проекции
               показывает направление, а не «плохой» отрицательный ответ.
             </p>
-            <div className="rounded-option border border-nova-gold/25 bg-nova-gold-10 px-4 py-3 text-[13px] leading-[1.6] text-white/75">
+            <div className="rounded-option border border-white/[.09] border-l-2 border-l-nova-gold/70 bg-nova-gold/[.04] px-4 py-3 text-[13px] leading-[1.6] text-white/75">
               Ловушка ЦТ: складывать модули сил, не проверив их направления.
             </div>
           </Card>
@@ -48,6 +60,14 @@ export default function DynamicsDemoPage() {
           />
         </article>
 
+        <div className="flex items-center gap-4 px-1" aria-hidden="true">
+          <span className="h-px flex-1 bg-white/[.08]" />
+          <span className="text-[10px] font-bold uppercase tracking-[.16em] text-white/35">
+            Та же логика по вертикали
+          </span>
+          <span className="h-px flex-1 bg-white/[.08]" />
+        </div>
+
         <article className="flex min-w-0 flex-col gap-4">
           <ForceModel
             variant="lift"
@@ -55,7 +75,10 @@ export default function DynamicsDemoPage() {
             caption="Вес равен силе реакции опоры N и меняется, когда ускорение направлено вверх или вниз."
           />
 
-          <Card variant="elevated" className="flex flex-col gap-3">
+          <Card
+            variant="elevated"
+            className="flex flex-col gap-3 border-l-2 border-l-nova-blue/55"
+          >
             <p className="text-[11px] font-bold uppercase tracking-[.14em] text-white/50">
               Смысл
             </p>
@@ -63,7 +86,7 @@ export default function DynamicsDemoPage() {
               При ускорении вверх опора действует сильнее: N больше mg. При ускорении вниз
               кажущийся вес уменьшается, хотя масса тела не меняется.
             </p>
-            <div className="rounded-option border border-nova-gold/25 bg-nova-gold-10 px-4 py-3 text-[13px] leading-[1.6] text-white/75">
+            <div className="rounded-option border border-white/[.09] border-l-2 border-l-nova-gold/70 bg-nova-gold/[.04] px-4 py-3 text-[13px] leading-[1.6] text-white/75">
               Ловушка ЦТ: выбирать знак по направлению скорости лифта вместо направления ускорения.
             </div>
           </Card>
@@ -82,7 +105,7 @@ export default function DynamicsDemoPage() {
         </article>
       </TheoryBlock>
 
-      <section className="flex flex-col gap-5">
+      <section id="practice" className="scroll-mt-24 flex flex-col gap-5">
         <div className="mx-auto flex w-full max-w-[580px] flex-col gap-2">
           <p className="text-[11px] font-bold uppercase tracking-[.14em] text-white/50">
             Практика

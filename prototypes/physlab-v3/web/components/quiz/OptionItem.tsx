@@ -14,10 +14,11 @@ interface OptionItemProps {
 
 const stateClasses: Record<OptionState, string> = {
   idle:
-    "border-white/[.08] bg-white/[.025] text-white/80 hover:border-nova-blue/45 hover:bg-space-800",
+    "border-white/[.09] bg-white/[.025] text-white/85 hover:-translate-y-px hover:border-nova-blue/55 hover:bg-space-800 hover:shadow-[0_8px_26px_rgba(0,0,0,.22)]",
   correct:
-    "border-nova-cyan/50 bg-nova-cyan-10 text-white shadow-cyan-glow",
-  wrong: "border-nova-gold/35 bg-nova-gold-10 text-white",
+    "border-nova-cyan/55 bg-nova-cyan-10 text-white shadow-[inset_3px_0_0_#00E0FF]",
+  wrong:
+    "border-nova-gold/45 bg-nova-gold/[.07] text-white shadow-[inset_3px_0_0_#D4AF37]",
   dimmed: "border-white/[.06] bg-white/[.015] text-white/45 opacity-50",
 };
 
@@ -32,9 +33,11 @@ export function OptionItem({
     <button
       type="button"
       disabled={disabled}
+      data-state={state}
+      aria-pressed={state === "correct" || state === "wrong"}
       onClick={onClick}
       className={cn(
-        "flex min-h-12 w-full items-center gap-3 rounded-option border px-3 py-3 text-left transition-colors md:px-[18px] md:py-[14px]",
+        "flex min-h-14 w-full items-center gap-3 rounded-option border px-3.5 py-3 text-left transition-[border-color,background-color,box-shadow,transform] md:px-[18px] md:py-[15px]",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/60 focus-visible:ring-offset-2 focus-visible:ring-offset-space-950",
         "disabled:cursor-default",
         stateClasses[state],
@@ -42,7 +45,7 @@ export function OptionItem({
     >
       <span
         className={cn(
-          "grid h-7 w-7 shrink-0 place-items-center rounded-badge border text-[13px] font-bold uppercase",
+          "grid h-6 w-6 shrink-0 place-items-center rounded-badge border text-[11px] font-bold uppercase",
           state === "correct"
             ? "border-nova-cyan/50 bg-nova-cyan-20 text-white"
             : state === "wrong"
@@ -52,9 +55,18 @@ export function OptionItem({
       >
         {id}
       </span>
-      <span className="min-w-0 flex-1 break-words text-[13px] font-normal leading-[1.55] md:text-[14px]">
+      <span className="min-w-0 flex-1 break-words text-[14px] font-medium leading-[1.55] md:text-[15px]">
         {text}
       </span>
+      {state === "correct" ? (
+        <span className="shrink-0 text-[16px] font-bold text-nova-cyan" aria-hidden="true">
+          ✓
+        </span>
+      ) : state === "wrong" ? (
+        <span className="shrink-0 text-[17px] font-bold text-nova-gold" aria-hidden="true">
+          ×
+        </span>
+      ) : null}
     </button>
   );
 }

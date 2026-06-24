@@ -20,6 +20,7 @@ export const vtSlopeBlueprint: TaskBlueprint = {
   id: "vt-slope",
   skill: "Наклон графика v(t)",
   topic: "Кинематика",
+  group: "kinematics",
   difficulty: 2,
   params: {
     v1: { min: 2, max: 10, step: 2, unit: "м/с" },
@@ -30,10 +31,13 @@ export const vtSlopeBlueprint: TaskBlueprint = {
   graph: graphFor,
   formula: "a=\\frac{\\Delta v}{\\Delta t}=\\frac{v_2-v_1}{t_2-t_1}",
   answerUnit: "м/с²",
+  answerKind: "positive",
   solver: vtSlopeAcceleration,
   distractors: vtSlopeDistractors,
   textTemplate: (p) =>
     `На графике v(t) прямая проходит через точки (${p.t1} с; ${p.v1} м/с) и (${p.t2} с; ${p.v2} м/с). Найдите ускорение тела.`,
+  explanationTemplate: (p, answer) =>
+    `Ускорение равно наклону v(t): a = (${p.v2} − ${p.v1}) / (${p.t2} − ${p.t1}) = ${answer} м/с². Ловушка — брать v/t вместо Δv/Δt.`,
   trap: "Берет отношение скорости ко времени вместо изменения скорости к изменению времени.",
   coachLines: {
     correct: (p) =>

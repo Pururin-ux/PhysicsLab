@@ -17,6 +17,7 @@ export const inclineForceBlueprint: TaskBlueprint = {
   id: "incline-force",
   skill: "Проекция силы тяжести на наклонную плоскость",
   topic: "Динамика",
+  group: "dynamics",
   difficulty: 2,
   params: {
     angle: { min: 30, max: 60, step: 15, unit: "°" },
@@ -24,10 +25,13 @@ export const inclineForceBlueprint: TaskBlueprint = {
   },
   formula: "F_{\\parallel}=mg\\sin\\alpha",
   answerUnit: "Н",
+  answerKind: "positive",
   solver: inclineForce,
   distractors: inclineForceDistractors,
   textTemplate: (p) =>
     `${contextFor(p)} под углом ${p.angle}° к горизонту. Масса тела ${p.m} кг, g = 10 м/с². Найдите модуль составляющей силы тяжести вдоль плоскости.`,
+  explanationTemplate: (p, answer) =>
+    `Вдоль плоскости направлена составляющая mg sin α: ${p.m} · 10 · sin ${p.angle}° = ${answer} Н. Выражение mg cos α даёт перпендикулярную составляющую.`,
   trap: "Путает составляющие mg sin α и mg cos α.",
   coachLines: {
     correct: (p) =>

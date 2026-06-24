@@ -14,9 +14,14 @@ import type {
   Params,
   ParamRange,
   TaskBlueprint,
+  TemplateGroup,
 } from "./types.ts";
 import { GENERATED_TASK_VARIANT } from "./types.ts";
-import { formatAnswerValue, normalizeAnswerValue } from "./validator.ts";
+import {
+  formatAnswerValue,
+  isAnswerValueAllowed,
+  normalizeAnswerValue,
+} from "./validator.ts";
 
 const optionIds: GeneratedOption["id"][] = ["a", "b", "c", "d"];
 const candidateCache = new Map<string, Params[]>();
@@ -33,6 +38,36 @@ export const blueprints = {
 };
 
 export type TemplateId = keyof typeof blueprints;
+
+export type TemplateRegistryEntry = {
+  id: TemplateId;
+  topic: string;
+  skill: string;
+  group: TemplateGroup;
+};
+
+export const templateRegistry: readonly TemplateRegistryEntry[] = (
+  Object.keys(blueprints) as TemplateId[]
+).map((id) => {
+  const blueprint = blueprints[id];
+
+  return {
+    id,
+    topic: blueprint.topic,
+    skill: blueprint.skill,
+    group: blueprint.group,
+  };
+});
+
+export function isTemplateId(templateId: string): templateId is TemplateId {
+  return templateId in blueprints;
+}
+
+export function getTemplateIdsByGroup(group: TemplateGroup): TemplateId[] {
+  return templateRegistry
+    .filter((entry) => entry.group === group)
+    .map((entry) => entry.id);
+}
 
 function valuesFromRange(range: ParamRange): number[] {
   const values: number[] = [];
@@ -130,8 +165,7 @@ function isValidCandidate(blueprint: TaskBlueprint, params: Params): boolean {
   ];
 
   return (
-    Number.isFinite(answer) &&
-    answer > 0 &&
+    isAnswerValueAllowed(blueprint.answerKind, answer) &&
     values.every((value) => Number.isFinite(value)) &&
     new Set(values).size === values.length
   );
@@ -158,6 +192,7 @@ function createTask(blueprint: TaskBlueprint, params: Params, index: number): Ge
     text: blueprint.textTemplate(params, answerValue),
     formula: blueprint.formula,
     answerUnit: answerUnitFor(blueprint, params),
+    explanation: blueprint.explanationTemplate?.(params, answerValue),
     graph: graphFor(blueprint, params),
     options,
     answer: answerOption.id,
@@ -171,19 +206,29 @@ function createTask(blueprint: TaskBlueprint, params: Params, index: number): Ge
 }
 
 export function getBlueprint(templateId: string): TaskBlueprint {
-  const blueprint = blueprints[templateId as TemplateId];
-  if (!blueprint) {
+  if (!isTemplateId(templateId)) {
     throw new Error(
       `Unknown template "${templateId}". Available templates: ${Object.keys(blueprints).join(", ")}.`,
     );
   }
 
-  return blueprint;
+  return blueprints[templateId];
 }
 
-export function generateTasks(templateId: string, count: number): GeneratedTask[] {
+export interface GenerateTasksOptions {
+  offset?: number;
+}
+
+export function generateTasks(
+  templateId: string,
+  count: number,
+  { offset = 0 }: GenerateTasksOptions = {},
+): GeneratedTask[] {
   if (!Number.isInteger(count) || count < 1) {
     throw new Error(`Count must be a positive integer, received ${count}.`);
+  }
+  if (!Number.isInteger(offset) || offset < 0) {
+    throw new Error(`Offset must be a non-negative integer, received ${offset}.`);
   }
 
   const blueprint = getBlueprint(templateId);
@@ -197,8 +242,9 @@ export function generateTasks(templateId: string, count: number): GeneratedTask[
   }
 
   return Array.from({ length: count }, (_, index) => {
-    const params = validCandidates[index % validCandidates.length];
-    return createTask(blueprint, params, index);
+    const absoluteIndex = offset + index;
+    const params = validCandidates[absoluteIndex % validCandidates.length];
+    return createTask(blueprint, params, absoluteIndex);
   });
 }
 

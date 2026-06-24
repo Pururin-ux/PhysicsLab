@@ -37,9 +37,15 @@ export function NavBar() {
           </span>
         </div>
 
-        <div className="flex min-w-0 items-center justify-center">
-          <span className="whitespace-nowrap text-[12px] font-semibold text-white/55 md:hidden">
+        <div className="flex min-w-0 items-center justify-center md:gap-3">
+          <span
+            className="whitespace-nowrap text-[12px] font-semibold text-white/55 md:hidden"
+            aria-label={`Прогресс задач: ${currentStep} из ${total}`}
+          >
             {currentStep} / {total}
+          </span>
+          <span className="hidden text-[10px] font-bold uppercase tracking-[.12em] text-white/40 md:inline">
+            Прогресс
           </span>
           <ProgressDots
             className="hidden md:flex"

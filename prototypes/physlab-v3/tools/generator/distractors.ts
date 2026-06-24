@@ -54,28 +54,29 @@ function newtonWrongOperation(p: Params): number {
   }
 }
 
-function newtonExtraDivision(p: Params): number {
+function newtonInvertedRatio(p: Params): number {
   const force = p.m * p.a;
 
   switch (variantIndex(p, 3)) {
     case 1:
-      return force / (p.a * p.a);
+      return p.a / force;
     case 2:
-      return force / (p.m * p.m);
+      return p.m / force;
     default:
-      return p.m + p.a;
+      return p.a / p.m;
   }
 }
 
-function newtonUsesGravity(p: Params): number {
+function newtonAddsGivenValues(p: Params): number {
   const force = p.m * p.a;
 
   switch (variantIndex(p, 3)) {
     case 1:
+      return force + p.a;
     case 2:
-      return force / GRAVITY;
+      return force + p.m;
     default:
-      return p.m * GRAVITY;
+      return p.m + p.a;
   }
 }
 
@@ -181,16 +182,16 @@ export const vtAreaDistractors: DistractorRule[] = [
 
 export const newtonSecondDistractors: DistractorRule[] = [
   {
-    label: "выбрал обратное действие",
+    label: "умножил вместо деления или разделил данные в неверном порядке",
     compute: newtonWrongOperation,
   },
   {
-    label: "лишний раз разделил или сложил величины",
-    compute: newtonExtraDivision,
+    label: "перевернул отношение величин",
+    compute: newtonInvertedRatio,
   },
   {
-    label: "подставил g вместо заданного ускорения",
-    compute: newtonUsesGravity,
+    label: "сложил данные вместо применения второго закона Ньютона",
+    compute: newtonAddsGivenValues,
   },
 ];
 

@@ -28,7 +28,10 @@ interface QuizSessionProps {
   generatedTemplate?: string;
   generatedTopic?: string;
   generatedTitle?: string;
+  pedagogyMode?: PedagogyMode;
 }
+
+export type PedagogyMode = "learn" | "practice" | "exam";
 
 const defaultQuizData = kinematicsData as QuizData;
 const emptyTasks: QuizData["tasks"] = [];
@@ -39,6 +42,7 @@ export function QuizSession({
   generatedTemplate = "free-fall",
   generatedTopic = "Кинематика",
   generatedTitle = "Тренировка ЦТ",
+  pedagogyMode = "practice",
 }: QuizSessionProps) {
   const session = useStore($quizSession);
   const [generatedData, setGeneratedData] = useState<QuizData | null>(null);
@@ -185,6 +189,7 @@ export function QuizSession({
   function handleNext() {
     if (!currentTask || session.phase !== "answered") return;
 
+    hideCoach();
     const nextIndex = session.currentIndex + 1;
     const moved = moveToNextTask();
     if (!moved) return;
@@ -242,7 +247,7 @@ export function QuizSession({
     return (
       <section className="relative mx-auto flex max-w-[580px] flex-col gap-4 pb-32 sm:pb-8">
         <Card className="flex flex-col gap-3">
-          <Badge tone="cyan">Тренировка ЦТ</Badge>
+          <Badge tone="cyan">{generatedTitle}</Badge>
           <p className="text-[14px] font-normal leading-[1.7] text-white/70">
             Генерирую новый набор задач...
           </p>
@@ -277,9 +282,11 @@ export function QuizSession({
     <section className="relative mx-auto flex max-w-[580px] flex-col gap-4 pb-32 sm:pb-8">
       <div className="flex items-center justify-between gap-3">
         <Badge>{progressLabel}</Badge>
-        <span className="text-[12px] font-normal text-white/50">
-          Серия: {session.streak}
-        </span>
+        {session.streak > 0 ? (
+          <span className="text-[12px] font-semibold text-nova-cyan/80">
+            Серия: {session.streak}
+          </span>
+        ) : null}
       </div>
 
       <QuestionCard
@@ -288,6 +295,7 @@ export function QuizSession({
         text={currentTask.text}
         formula={currentTask.formula}
         graph={currentTask.graph}
+        showSolutionContent={session.phase === "answered"}
       />
 
       <OptionList
@@ -303,6 +311,8 @@ export function QuizSession({
             explanation={currentTask.explanation}
             explanationLatex={currentTask.explanation_latex}
             trap={currentTask.trap}
+            pedagogyMode={pedagogyMode}
+            isCorrect={session.answers.at(-1)?.isCorrect ?? false}
           />
 
           <Button type="button" size="lg" onClick={handleNext}>

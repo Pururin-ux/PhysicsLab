@@ -1,18 +1,17 @@
-import { generateTasks } from "../../../../tools/generator/generate.ts";
+import {
+  generateTasks,
+  getTemplateIdsByGroup,
+  isTemplateId,
+  templateRegistry,
+  type TemplateId,
+} from "../../../../tools/generator/generate.ts";
 import type { GeneratedTask } from "../../../../tools/generator/types.ts";
 
 export const dynamic = "force-dynamic";
 
-const kinematicsTemplates = ["free-fall", "vt-slope", "vt-area"] as const;
-const dynamicsTemplates = [
-  "newton-second",
-  "friction-force",
-  "incline-force",
-  "resultant-force",
-  "weight-lift",
-] as const;
-const supportedTemplates = [...kinematicsTemplates, ...dynamicsTemplates] as const;
-type SupportedTemplate = (typeof supportedTemplates)[number];
+const kinematicsTemplates = getTemplateIdsByGroup("kinematics");
+const dynamicsTemplates = getTemplateIdsByGroup("dynamics");
+const supportedTemplates = templateRegistry.map((entry) => entry.id);
 
 function normalizeCount(value: string | null) {
   const parsed = Number.parseInt(value ?? "10", 10);
@@ -60,7 +59,7 @@ function toQuizTask(task: GeneratedTask) {
       value: option.value,
       correct: option.id === task.answer,
     })),
-    explanation: task.coach_lines.correct,
+    explanation: task.explanation ?? task.coach_lines.correct,
     explanation_latex: `${task.formula},\\quad ${task.answerValue}\\text{ ${unit}}`,
     coach_lines: {
       correct: task.coach_lines.correct,
@@ -70,20 +69,25 @@ function toQuizTask(task: GeneratedTask) {
   };
 }
 
-function generateRandomizedTasks(template: SupportedTemplate, count: number, batch: number, index = 0) {
-  const offset = hashSeed(`${template}:${batch}:${index}`) % 60;
-  return generateTasks(template, count + offset).slice(offset, offset + count);
+function generateRandomizedTasks(template: TemplateId, count: number, batch: number) {
+  const baseOffset = hashSeed(`direct:${template}`) % 97;
+  const offset = baseOffset + batch * count;
+
+  return generateTasks(template, count, { offset });
 }
 
 function generateMixedTasks(
-  templates: readonly SupportedTemplate[],
+  templates: readonly TemplateId[],
   groupId: string,
   count: number,
   batch: number,
 ) {
   return Array.from({ length: count }, (_, index) => {
     const template = templates[index % templates.length];
-    const task = generateRandomizedTasks(template, index + 1, batch, index).at(-1);
+    const occurrence = Math.floor(index / templates.length);
+    const baseOffset = hashSeed(`${groupId}:${template}`) % 97;
+    const offset = baseOffset + batch * count + occurrence;
+    const task = generateTasks(template, 1, { offset })[0];
 
     if (!task) {
       throw new Error(`Template "${template}" produced no task.`);
@@ -108,8 +112,8 @@ export async function GET(req: Request) {
         ? generateMixedTasks(kinematicsTemplates, "mixed", count, batch)
         : template === "dynamics-mixed"
           ? generateMixedTasks(dynamicsTemplates, "dynamics-mixed", count, batch)
-        : supportedTemplates.includes(template as SupportedTemplate)
-          ? generateRandomizedTasks(template as SupportedTemplate, count, batch)
+        : isTemplateId(template)
+          ? generateRandomizedTasks(template, count, batch)
           : null;
 
     if (!generatedTasks) {

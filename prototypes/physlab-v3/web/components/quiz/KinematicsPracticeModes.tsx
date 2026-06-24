@@ -40,6 +40,7 @@ export function KinematicsPracticeModes() {
       <QuizSession
         key={mode}
         mode={mode}
+        pedagogyMode={mode === "static" ? "learn" : "exam"}
         generatedTemplate={mode === "generated" ? "mixed" : undefined}
       />
     </div>

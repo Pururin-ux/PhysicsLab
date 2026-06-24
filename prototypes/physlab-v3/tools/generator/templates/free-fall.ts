@@ -30,16 +30,20 @@ export const freeFallBlueprint: TaskBlueprint = {
   id: "free-fall",
   skill: "Свободное падение из состояния покоя",
   topic: "Кинематика",
+  group: "kinematics",
   difficulty: 1,
   params: {
     t: { min: 1, max: 6, step: 1, unit: "с" },
   },
   formula: "h=\\frac{gt^2}{2}",
   answerUnit: "м",
+  answerKind: "positive",
   solver: freeFallDistance,
   distractors: freeFallDistractors,
   textTemplate: (p) =>
     `${contextFor(p)}. Сопротивлением воздуха пренебречь, g = 10 м/с². Какой путь пройдет тело за ${p.t} с?`,
+  explanationTemplate: (p, answer) =>
+    `Тело падает из покоя, поэтому h = gt²/2 = 10 · ${p.t}² / 2 = ${answer} м. Ловушка — забыть квадрат времени или множитель 1/2.`,
   trap: "Путает зависимость h от t² или забывает множитель 1/2.",
   coachLines: {
     correct: (p) => `Верно: при свободном падении из покоя путь растет как t², здесь t = ${p.t} с.`,

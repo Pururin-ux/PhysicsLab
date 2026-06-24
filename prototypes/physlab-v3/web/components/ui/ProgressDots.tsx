@@ -21,7 +21,9 @@ export function ProgressDots({
     return (
       <span
         key={step}
+        role="listitem"
         aria-label={`Задача ${step}`}
+        title={`Задача ${step}`}
         className={cn(
           "h-2.5 w-2.5 rounded-full border transition-colors",
           isCompleted
@@ -40,6 +42,7 @@ export function ProgressDots({
       className={cn("flex items-center gap-2", className)}
       role="list"
       aria-label={`Прогресс: ${completed} из ${total}`}
+      title={`Прогресс задач: ${completed} из ${total}`}
     >
       {dots}
     </div>

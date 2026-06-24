@@ -63,6 +63,7 @@ export function DynamicsPracticeModes() {
       <QuizSession
         key={mode}
         mode="generated"
+        pedagogyMode={mode === "foundation" ? "learn" : "exam"}
         generatedTemplate={activeMode.template}
         generatedTopic="Динамика"
         generatedTitle={activeMode.title}

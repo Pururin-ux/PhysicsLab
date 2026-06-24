@@ -19,14 +19,22 @@ export function FormulaDisplay({
 }: FormulaDisplayProps) {
   return (
     <div className={cn("flex flex-col gap-3", className)}>
-      <FormulaBox formula={formula} caption={caption} />
-      <Card variant="elevated" className="flex flex-col gap-3">
+      <FormulaBox
+        formula={formula}
+        caption={caption}
+        label="Ключевое уравнение"
+      />
+      <Card
+        className="flex flex-col gap-3 border-white/[.07] bg-space-950/40 p-4 shadow-none md:p-5"
+      >
         <p className="text-[11px] font-bold uppercase tracking-[.14em] text-white/50">
-          Обозначения
+          Справочник
         </p>
-        <ul className="space-y-2 text-[13px] font-normal leading-[1.6] text-white/75">
+        <ul className="divide-y divide-white/[.06] text-[13px] font-normal leading-[1.6] text-white/72">
           {symbols.map((symbol) => (
-            <li key={symbol}>{symbol}</li>
+            <li key={symbol} className="py-2 first:pt-0 last:pb-0">
+              {symbol}
+            </li>
           ))}
         </ul>
         <p className="border-t border-white/[.08] pt-3 text-[12px] font-normal leading-[1.6] text-white/50">

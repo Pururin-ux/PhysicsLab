@@ -2,7 +2,13 @@ import assert from "node:assert/strict";
 import { performance } from "node:perf_hooks";
 import test from "node:test";
 import { GET } from "../../web/app/api/tasks/route.ts";
-import { generateTasks, getBlueprint } from "./generate.ts";
+import {
+  generateTasks,
+  getBlueprint,
+  getTemplateIdsByGroup,
+  templateRegistry,
+} from "./generate.ts";
+import type { GeneratedTask, TaskBlueprint } from "./types.ts";
 import { validateGeneratedTask } from "./validator.ts";
 
 const kinematicsTemplateIds = ["free-fall", "vt-slope", "vt-area"] as const;
@@ -15,10 +21,15 @@ const dynamicsTemplateIds = [
 ] as const;
 
 type ApiTask = {
+  id: string;
   answer: string;
   answerUnit: string;
   blueprint: string;
+  coach_lines: { correct: string; wrong: string; hint: string };
+  explanation: string;
   options: { correct?: boolean; text: string }[];
+  params: Record<string, number>;
+  text: string;
   graph?: { type: string } | null;
 };
 
@@ -56,8 +67,78 @@ for (const templateId of kinematicsTemplateIds) {
 }
 
 test("newton-second: uses units for all three target quantities", () => {
-  const units = new Set(generateTasks("newton-second", 200).map((task) => task.answerUnit));
+  const tasks = generateTasks("newton-second", 200);
+  const units = new Set(tasks.map((task) => task.answerUnit));
   assert.deepEqual(units, new Set(["Н", "кг", "м/с²"]));
+
+  for (const unit of units) {
+    const targetTasks = tasks.filter((task) => task.answerUnit === unit);
+    assert.ok(targetTasks.length > 0, `newton-second should generate target unit ${unit}`);
+    targetTasks.forEach((task) => {
+      assert.equal(new Set(task.options.map((option) => option.value)).size, 4);
+      assert.equal(task.options.some((option) => option.value === task.answerValue), true);
+    });
+  }
+});
+
+test("registry groups every template exactly once", () => {
+  assert.equal(new Set(templateRegistry.map((entry) => entry.id)).size, templateRegistry.length);
+  assert.deepEqual(new Set(getTemplateIdsByGroup("kinematics")), new Set(kinematicsTemplateIds));
+  assert.deepEqual(new Set(getTemplateIdsByGroup("dynamics")), new Set(dynamicsTemplateIds));
+});
+
+test("validator allows signed answers without weakening current templates", () => {
+  const signedBlueprint: TaskBlueprint = {
+    id: "signed-mock",
+    skill: "Signed mock",
+    topic: "Test",
+    group: "kinematics",
+    difficulty: 1,
+    params: {
+      x: { min: -2, max: -2, step: 1, unit: "м" },
+    },
+    formula: "x=-2",
+    answerUnit: "м",
+    answerKind: "signed",
+    solver: () => -2,
+    distractors: [
+      { label: "minus one", compute: () => -1 },
+      { label: "zero", compute: () => 0 },
+      { label: "plus one", compute: () => 1 },
+    ],
+    textTemplate: () => "Найдите проекцию координаты.",
+    trap: "Игнорирует знак.",
+    coachLines: {
+      correct: () => "Верно.",
+      wrong: () => "Проверь знак.",
+    },
+  };
+  const signedTask: GeneratedTask = {
+    id: "signed-mock-0001",
+    blueprint: signedBlueprint.id,
+    skill: signedBlueprint.skill,
+    topic: signedBlueprint.topic,
+    difficulty: signedBlueprint.difficulty,
+    params: { x: -2 },
+    text: "Найдите проекцию координаты.",
+    formula: signedBlueprint.formula,
+    answerUnit: "м",
+    options: [
+      { id: "a", text: "-2", value: -2 },
+      { id: "b", text: "-1", value: -1 },
+      { id: "c", text: "0", value: 0 },
+      { id: "d", text: "1", value: 1 },
+    ],
+    answer: "a",
+    answerValue: -2,
+    trap: signedBlueprint.trap,
+    coach_lines: {
+      correct: "Верно.",
+      wrong: "Проверь знак.",
+    },
+  };
+
+  assert.deepEqual(validateGeneratedTask(signedTask, signedBlueprint).issues, []);
 });
 
 for (const templateId of dynamicsTemplateIds) {
@@ -74,6 +155,8 @@ for (const templateId of dynamicsTemplateIds) {
       const validation = validateGeneratedTask(task, blueprint);
       assert.deepEqual(validation.issues, []);
       assert.equal(validation.valid, true);
+      assert.ok(task.explanation);
+      assert.notEqual(task.explanation, task.coach_lines.correct);
     }
 
     const answerDistribution = new Set(tasks.map((task) => task.answerValue));
@@ -122,6 +205,8 @@ test("API route возвращает все шаблоны динамики с �
     data.tasks.forEach((task) => {
       assert.equal(task.blueprint, template);
       assert.ok(task.answerUnit);
+      assert.ok(task.explanation);
+      assert.notEqual(task.explanation, task.coach_lines.correct);
       assert.equal(task.options.filter((option) => option.correct).length, 1);
       assert.equal(
         task.options.every((option) => option.text.endsWith(` ${task.answerUnit}`)),
@@ -129,6 +214,38 @@ test("API route возвращает все шаблоны динамики с �
       );
     });
   }
+});
+
+test("API route делает batch детерминированным и меняет набор", async () => {
+  const batchZeroUrl =
+    "http://localhost/api/tasks?template=newton-second&count=10&batch=0";
+  const batchOneUrl =
+    "http://localhost/api/tasks?template=newton-second&count=10&batch=1";
+  const firstResponse = await GET(new Request(batchZeroUrl));
+  const repeatResponse = await GET(new Request(batchZeroUrl));
+  const nextResponse = await GET(new Request(batchOneUrl));
+  const first = (await firstResponse.json()) as ApiTaskResponse;
+  const repeat = (await repeatResponse.json()) as ApiTaskResponse;
+  const next = (await nextResponse.json()) as ApiTaskResponse;
+
+  assert.deepEqual(first.tasks, repeat.tasks);
+  assert.equal(first.tasks.length, 10);
+  assert.equal(next.tasks.length, 10);
+  assert.equal(
+    first.tasks.some((task, index) => task.id !== next.tasks[index]?.id),
+    true,
+  );
+  assert.equal(
+    first.tasks.some(
+      (task, index) =>
+        JSON.stringify(task.params) !== JSON.stringify(next.tasks[index]?.params),
+    ),
+    true,
+  );
+  assert.equal(
+    first.tasks.filter((task) => next.tasks.some((nextTask) => nextTask.id === task.id)).length,
+    0,
+  );
 });
 
 test("API route dynamics-mixed покрывает пять навыков", async () => {

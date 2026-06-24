@@ -6,6 +6,7 @@ interface TheoryBlockProps {
   title: string;
   description: string;
   children: ReactNode;
+  layout?: "grid" | "stack";
   className?: string;
 }
 
@@ -14,6 +15,7 @@ export function TheoryBlock({
   title,
   description,
   children,
+  layout = "grid",
   className,
 }: TheoryBlockProps) {
   return (
@@ -32,7 +34,15 @@ export function TheoryBlock({
         </div>
       </div>
 
-      <div className="grid gap-5 lg:grid-cols-2">{children}</div>
+      <div
+        className={cn(
+          layout === "stack"
+            ? "mx-auto flex w-full max-w-[820px] flex-col gap-6 md:gap-8"
+            : "grid gap-5 lg:grid-cols-2",
+        )}
+      >
+        {children}
+      </div>
     </section>
   );
 }

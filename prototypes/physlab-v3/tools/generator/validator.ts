@@ -1,5 +1,6 @@
 import katex from "katex";
 import type {
+  AnswerKind,
   GeneratedTask,
   Params,
   TaskBlueprint,
@@ -29,6 +30,23 @@ export function formatAnswerValue(value: number): string {
   }
 
   return String(normalized).replace(".", ",");
+}
+
+export function isAnswerValueAllowed(
+  answerKind: AnswerKind = "positive",
+  value: number,
+): boolean {
+  if (!Number.isFinite(value)) {
+    return false;
+  }
+
+  if (answerKind === "signed") {
+    return true;
+  }
+
+  // Current magnitude tasks deliberately exclude zero until a zero-result
+  // blueprint defines meaningful distractors for that case.
+  return value > 0;
 }
 
 function numbersEqual(left: number, right: number): boolean {
@@ -106,10 +124,13 @@ export function validateGeneratedTask(
 
   if (!Number.isFinite(answer)) {
     issues.push(issue("answer_finite", "Правильный ответ должен быть конечным числом."));
-  }
-
-  if (answer <= 0) {
-    issues.push(issue("answer_positive", `Правильный ответ должен быть > 0, получено ${answer}.`));
+  } else if (!isAnswerValueAllowed(blueprint.answerKind, answer)) {
+    issues.push(
+      issue(
+        "answer_kind",
+        `Ответ ${answer} не соответствует типу ${blueprint.answerKind ?? "positive"}.`,
+      ),
+    );
   }
 
   for (const distractor of distractors) {
