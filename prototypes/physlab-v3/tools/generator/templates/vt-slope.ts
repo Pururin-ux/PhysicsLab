@@ -45,5 +45,18 @@ export const vtSlopeBlueprint: TaskBlueprint = {
     wrong: (_p, selected, correct) =>
       `Здесь нужен наклон, а не v/t: a = Δv/Δt. По двум точкам получается ${correct} м/с², выбранный ответ ${selected} м/с².`,
   },
-  constraints: [(p) => p.v2 > p.v1, (p) => p.t2 > p.t1],
+  constraints: [
+    (p) => p.v2 > p.v1,
+    (p) => p.t2 > p.t1,
+    (p) => {
+      const acceleration = vtSlopeAcceleration(p);
+
+      return (
+        Number.isFinite(acceleration) &&
+        acceleration > 0 &&
+        acceleration <= 20 &&
+        Math.abs(acceleration * 2 - Math.round(acceleration * 2)) < 1e-9
+      );
+    },
+  ],
 };

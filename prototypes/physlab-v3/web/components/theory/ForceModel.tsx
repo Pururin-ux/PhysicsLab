@@ -22,13 +22,13 @@ export function ForceModel({ variant, title, caption }: ForceModelProps) {
           </span>
         </figcaption>
 
-        <div className="rounded-option border border-white/[.07] bg-space-950/60 p-2">
+        <div className="rounded-option border border-white/[.07] bg-space-950/60 p-2 md:flex md:max-h-[360px] md:items-center md:justify-center">
           <svg
             viewBox="0 0 420 230"
             preserveAspectRatio="xMidYMid meet"
             role="img"
             aria-label={`${title}. ${caption}`}
-            className="h-auto w-full"
+            className="h-auto w-full md:max-h-[340px] md:w-auto md:max-w-full"
           >
             <defs>
               <marker

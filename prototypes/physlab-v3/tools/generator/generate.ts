@@ -130,6 +130,18 @@ function answerUnitFor(blueprint: TaskBlueprint, params: Params): string {
     : blueprint.answerUnit;
 }
 
+function explanationFor(blueprint: TaskBlueprint, params: Params, answer: number): string {
+  const generatedExplanation = blueprint.explanationTemplate?.(params, answer).trim();
+
+  if (generatedExplanation) {
+    return generatedExplanation;
+  }
+
+  const trapExplanation = blueprint.trap.trim();
+
+  return trapExplanation || `Используйте формулу: ${blueprint.formula}`;
+}
+
 function seededShuffle<T>(items: T[], seed: number): T[] {
   const shuffled = [...items];
   let state = seed >>> 0;
@@ -192,7 +204,7 @@ function createTask(blueprint: TaskBlueprint, params: Params, index: number): Ge
     text: blueprint.textTemplate(params, answerValue),
     formula: blueprint.formula,
     answerUnit: answerUnitFor(blueprint, params),
-    explanation: blueprint.explanationTemplate?.(params, answerValue),
+    explanation: explanationFor(blueprint, params, answerValue),
     graph: graphFor(blueprint, params),
     options,
     answer: answerOption.id,

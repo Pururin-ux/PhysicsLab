@@ -66,6 +66,47 @@ for (const templateId of kinematicsTemplateIds) {
   });
 }
 
+test("vt-slope answers use whole or half-step acceleration values", () => {
+  const tasks = generateTasks("vt-slope", 200);
+
+  tasks.forEach((task) => {
+    assert.equal(
+      Math.abs(task.answerValue * 2 - Math.round(task.answerValue * 2)) < 1e-9,
+      true,
+      `Got ugly vt-slope answer: ${task.answerValue}`,
+    );
+    assert.equal(task.answerValue > 0, true, `Answer must be positive: ${task.answerValue}`);
+    assert.equal(task.answerValue <= 20, true, `Answer too large: ${task.answerValue}`);
+  });
+
+  assert.equal(
+    new Set(tasks.map((task) => task.text)).size,
+    200,
+    "vt-slope should keep at least 200 unique tasks after constraints",
+  );
+});
+
+test("production templates keep enough variants and explanations", () => {
+  for (const { id } of templateRegistry) {
+    const tasks = generateTasks(id, 200);
+    const blueprint = getBlueprint(id);
+
+    assert.equal(tasks.length, 200, `${id} should generate 200 tasks`);
+    assert.equal(
+      new Set(tasks.map((task) => task.text)).size >= 50,
+      true,
+      `${id} should keep at least 50 unique texts in the first 200 tasks`,
+    );
+
+    tasks.forEach((task) => {
+      assert.ok(task.explanation?.trim(), `${id} should provide a non-empty explanation`);
+      if (blueprint.explanationTemplate) {
+        assert.notEqual(task.explanation, task.coach_lines.correct);
+      }
+    });
+  }
+});
+
 test("newton-second: uses units for all three target quantities", () => {
   const tasks = generateTasks("newton-second", 200);
   const units = new Set(tasks.map((task) => task.answerUnit));
@@ -179,6 +220,7 @@ test("API route возвращает валидные задачи", async () =>
   assert.equal(data.tasks.length, 5);
   data.tasks.forEach((task) => {
     assert.ok(task.answer);
+    assert.ok(task.explanation.trim());
     assert.equal(task.options.length, 4);
     assert.equal(task.options.filter((option) => option.correct).length, 1);
   });

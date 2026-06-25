@@ -19,7 +19,7 @@ const stateClasses: Record<OptionState, string> = {
     "border-nova-cyan/55 bg-nova-cyan-10 text-white shadow-[inset_3px_0_0_#00E0FF]",
   wrong:
     "border-nova-gold/45 bg-nova-gold/[.07] text-white shadow-[inset_3px_0_0_#D4AF37]",
-  dimmed: "border-white/[.06] bg-white/[.015] text-white/45 opacity-50",
+  dimmed: "border-white/[.06] bg-white/[.015] text-white/55",
 };
 
 export function OptionItem({
