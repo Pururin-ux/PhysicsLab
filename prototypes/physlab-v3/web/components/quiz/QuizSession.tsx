@@ -307,6 +307,8 @@ export function QuizSession({
 
       {session.phase === "answered" ? (
         <>
+          <CoachBubble {...bubble} placement="inline" />
+
           <ExplanationSection
             explanation={currentTask.explanation}
             explanationLatex={currentTask.explanation_latex}
@@ -321,7 +323,9 @@ export function QuizSession({
         </>
       ) : null}
 
-      <CoachBubble {...bubble} />
+      {session.phase !== "answered" ? (
+        <CoachBubble {...bubble} placement="floating" />
+      ) : null}
     </section>
   );
 }

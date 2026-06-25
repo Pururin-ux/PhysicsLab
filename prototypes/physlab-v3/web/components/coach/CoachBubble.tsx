@@ -9,6 +9,7 @@ interface CoachBubbleProps {
   state: CoachState;
   text: string;
   visible: boolean;
+  placement?: "floating" | "inline";
 }
 
 const iconByState: Record<CoachState, string> = {
@@ -49,16 +50,24 @@ const bubbleMotion = {
   },
 } as const;
 
-export function CoachBubble({ state, text, visible }: CoachBubbleProps) {
+export function CoachBubble({
+  state,
+  text,
+  visible,
+  placement = "floating",
+}: CoachBubbleProps) {
   return (
     <AnimatePresence>
       {visible && text ? (
         <motion.aside
           role="status"
           aria-live="polite"
+          data-placement={placement}
           className={cn(
-            "pointer-events-none fixed bottom-4 left-3 right-3 z-50 max-w-[calc(100vw-24px)] rounded-card border p-3 shadow-card backdrop-blur-md",
-            "sm:bottom-6 sm:left-6 sm:right-auto sm:w-[360px] sm:max-w-none",
+            "pointer-events-none rounded-card border p-3 shadow-card backdrop-blur-md",
+            placement === "floating"
+              ? "fixed bottom-4 left-3 right-3 z-50 max-w-[calc(100vw-24px)] sm:bottom-6 sm:left-6 sm:right-auto sm:w-[360px] sm:max-w-none"
+              : "w-full",
             shellByState[state],
           )}
           initial="hidden"
