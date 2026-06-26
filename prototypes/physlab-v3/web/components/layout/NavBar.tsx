@@ -1,6 +1,7 @@
 "use client";
 
 import { useStore } from "@nanostores/react";
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { $quizSession } from "../quiz/quiz-session-store";
 import { ProgressDots } from "../ui/ProgressDots";
@@ -9,7 +10,12 @@ import { XPBadge } from "./XPBadge";
 export function NavBar() {
   const session = useStore($quizSession);
   const pathname = usePathname();
-  const topic = pathname.startsWith("/practice/dynamics") ? "Динамика" : "Кинематика";
+  const topic = pathname.startsWith("/practice/dynamics")
+    ? "Динамика"
+    : pathname.startsWith("/practice/kinematics")
+      ? "Кинематика"
+      : "Темы";
+  const showProgress = pathname.startsWith("/practice/");
   const total = Math.max(session.total, 1);
   const currentStep =
     session.phase === "completed"
@@ -28,32 +34,38 @@ export function NavBar() {
         className="mx-auto flex max-w-[960px] items-center justify-between gap-3 px-4 py-3 md:px-8 md:py-4"
         aria-label="Main navigation"
       >
-        <div className="flex min-w-0 shrink-0 flex-col">
+        <Link
+          href="/topics"
+          className="flex min-w-0 shrink-0 flex-col rounded-option focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/50 focus-visible:ring-offset-2 focus-visible:ring-offset-space-950"
+          aria-label="PhysicsLab topics"
+        >
           <span className="text-[15px] font-[800] leading-none tracking-tight text-white">
             Physics<span className="text-nova-cyan">Lab</span>
           </span>
           <span className="mt-1 text-[10px] font-bold uppercase tracking-[.14em] text-white/50 md:text-[11px]">
             {topic}
           </span>
-        </div>
+        </Link>
 
-        <div className="flex min-w-0 items-center justify-center md:gap-3">
-          <span
-            className="whitespace-nowrap text-[12px] font-semibold text-white/55 md:hidden"
-            aria-label={`Прогресс задач: ${currentStep} из ${total}`}
-          >
-            {currentStep} / {total}
-          </span>
-          <span className="hidden text-[10px] font-bold uppercase tracking-[.12em] text-white/40 md:inline">
-            Прогресс
-          </span>
-          <ProgressDots
-            className="hidden md:flex"
-            total={total}
-            currentStep={currentStep}
-            completed={completed}
-          />
-        </div>
+        {showProgress ? (
+          <div className="flex min-w-0 items-center justify-center md:gap-3">
+            <span
+              className="whitespace-nowrap text-[12px] font-semibold text-white/55 md:hidden"
+              aria-label={`Прогресс задач: ${currentStep} из ${total}`}
+            >
+              {currentStep} / {total}
+            </span>
+            <span className="hidden text-[10px] font-bold uppercase tracking-[.12em] text-white/40 md:inline">
+              Прогресс
+            </span>
+            <ProgressDots
+              className="hidden md:flex"
+              total={total}
+              currentStep={currentStep}
+              completed={completed}
+            />
+          </div>
+        ) : null}
 
         <XPBadge />
       </nav>
