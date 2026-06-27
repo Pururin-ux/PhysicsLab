@@ -13,7 +13,15 @@ export const $xpAward = atom<XPAward | null>(null);
 let xpAwardId = 0;
 
 function canUseStorage() {
-  return typeof window !== "undefined" && typeof window.localStorage !== "undefined";
+  if (typeof window === "undefined") {
+    return false;
+  }
+
+  try {
+    return typeof window.localStorage !== "undefined";
+  } catch {
+    return false;
+  }
 }
 
 function saveXP(value: number) {
@@ -33,16 +41,20 @@ export function hydrateXPFromStorage() {
     return;
   }
 
-  const raw = window.localStorage.getItem(XP_STORAGE_KEY);
-  const parsed = raw === null ? 0 : Number(raw);
+  try {
+    const raw = window.localStorage.getItem(XP_STORAGE_KEY);
+    const parsed = raw === null ? 0 : Number(raw);
 
-  if (!Number.isFinite(parsed) || parsed < 0) {
-    window.localStorage.removeItem(XP_STORAGE_KEY);
-    $xp.set(0);
-    return;
+    if (!Number.isFinite(parsed) || parsed < 0) {
+      window.localStorage.removeItem(XP_STORAGE_KEY);
+      $xp.set(0);
+      return;
+    }
+
+    $xp.set(Math.floor(parsed));
+  } catch {
+    // localStorage can be unavailable in private or constrained browser modes.
   }
-
-  $xp.set(Math.floor(parsed));
 }
 
 export function addXP(amount: number) {
