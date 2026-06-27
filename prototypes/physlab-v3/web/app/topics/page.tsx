@@ -52,12 +52,15 @@ export default function TopicsPage() {
         {topics.map((topic) => {
           const accent = topicAccentClass[topic.id];
           const isDynamics = topic.id === "dynamics";
+          const depthClass = isDynamics
+            ? "ring-1 ring-white/[.045] !shadow-[0_18px_60px_rgba(0,0,0,0.50),0_0_34px_rgba(212,175,55,0.08),inset_0_1px_0_rgba(255,255,255,0.06)]"
+            : "ring-1 ring-white/[.045] !shadow-[0_18px_60px_rgba(0,0,0,0.50),0_0_34px_rgba(0,224,255,0.09),inset_0_1px_0_rgba(255,255,255,0.06)]";
 
           return (
             <Card
               key={topic.id}
               variant="elevated"
-              className={`flex min-h-[270px] flex-col gap-5 border-l-2 ${accent.border}`}
+              className={`flex min-h-[270px] flex-col gap-5 border-l-2 ${accent.border} ${depthClass}`}
             >
               <div className="flex items-center justify-between gap-3">
                 <Badge tone={isDynamics ? "gold" : "cyan"}>Доступно</Badge>
