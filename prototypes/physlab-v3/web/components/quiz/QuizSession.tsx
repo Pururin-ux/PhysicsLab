@@ -19,6 +19,10 @@ import {
 import { Badge } from "../ui/Badge";
 import { Button } from "../ui/Button";
 import { Card } from "../ui/Card";
+import {
+  recordCompletedSession,
+  type TopicId,
+} from "../../lib/stores/progress-store";
 import { addXP, resetSessionProgress } from "../../lib/stores/session-store";
 import kinematicsData from "../../content/tasks/kinematics-10.json";
 
@@ -29,6 +33,7 @@ interface QuizSessionProps {
   generatedTopic?: string;
   generatedTitle?: string;
   pedagogyMode?: PedagogyMode;
+  topicId?: TopicId;
 }
 
 export type PedagogyMode = "learn" | "practice" | "exam";
@@ -43,6 +48,7 @@ export function QuizSession({
   generatedTopic = "Кинематика",
   generatedTitle = "Тренировка ЦТ",
   pedagogyMode = "practice",
+  topicId,
 }: QuizSessionProps) {
   const session = useStore($quizSession);
   const [generatedData, setGeneratedData] = useState<QuizData | null>(null);
@@ -61,6 +67,7 @@ export function QuizSession({
   const sessionStartTimerRef = useRef<ReturnType<typeof setTimeout> | null>(
     null,
   );
+  const sessionRecordedRef = useRef(false);
   const activeData = mode === "generated" ? generatedData : data;
   const tasks = activeData?.tasks ?? emptyTasks;
   const currentTask = tasks[session.currentIndex];
@@ -70,7 +77,7 @@ export function QuizSession({
   const weakTraps = useMemo(
     () =>
       session.answers
-        .filter((answer) => !answer.isCorrect)
+        .filter((answer) => !answer.isCorrect && answer.trap)
         .map((answer) => answer.trap),
     [session.answers],
   );
@@ -133,6 +140,7 @@ export function QuizSession({
 
     resetSessionProgress();
     resetQuizSession(tasks.length);
+    sessionRecordedRef.current = false;
 
     if (sessionStartTimerRef.current) {
       clearTimeout(sessionStartTimerRef.current);
@@ -190,6 +198,17 @@ export function QuizSession({
     if (!currentTask || session.phase !== "answered") return;
 
     hideCoach();
+
+    if (isLastTask && topicId && !sessionRecordedRef.current) {
+      sessionRecordedRef.current = true;
+      recordCompletedSession({
+        topicId,
+        score: session.score,
+        total: session.total,
+        answers: session.answers,
+      });
+    }
+
     const nextIndex = session.currentIndex + 1;
     const moved = moveToNextTask();
     if (!moved) return;
@@ -211,6 +230,8 @@ export function QuizSession({
   }
 
   function handleRestart() {
+    sessionRecordedRef.current = false;
+
     if (mode === "generated") {
       resetSessionProgress();
       hideCoach();

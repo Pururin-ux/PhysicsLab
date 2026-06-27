@@ -1,37 +1,8 @@
-import Link from "next/link";
-import { Badge } from "../../components/ui/Badge";
-import { Button } from "../../components/ui/Button";
-import { Card } from "../../components/ui/Card";
-import { topics } from "../../lib/topics";
+import { TopicCards } from "../../components/topics/TopicCards";
 
 export const metadata = {
   title: "Темы | PhysicsLab V3",
 };
-
-const topicAccentClass = {
-  kinematics: {
-    border: "border-nova-cyan/30",
-    text: "text-nova-cyan",
-    bg: "bg-nova-cyan/[.06]",
-  },
-  dynamics: {
-    border: "border-nova-gold/30",
-    text: "text-nova-gold",
-    bg: "bg-nova-gold/[.06]",
-  },
-} as const;
-
-function skillsLabel(count: number) {
-  if (count === 1) {
-    return "1 навык";
-  }
-
-  if (count > 1 && count < 5) {
-    return `${count} навыка`;
-  }
-
-  return `${count} навыков`;
-}
 
 export default function TopicsPage() {
   return (
@@ -45,59 +16,7 @@ export default function TopicsPage() {
         </p>
       </section>
 
-      <section
-        className="grid gap-4 md:grid-cols-2"
-        aria-label="Доступные темы"
-      >
-        {topics.map((topic) => {
-          const accent = topicAccentClass[topic.id];
-          const isDynamics = topic.id === "dynamics";
-          const depthClass = isDynamics
-            ? "ring-1 ring-white/[.045] !shadow-[0_18px_60px_rgba(0,0,0,0.50),0_0_34px_rgba(212,175,55,0.08),inset_0_1px_0_rgba(255,255,255,0.06)]"
-            : "ring-1 ring-white/[.045] !shadow-[0_18px_60px_rgba(0,0,0,0.50),0_0_34px_rgba(0,224,255,0.09),inset_0_1px_0_rgba(255,255,255,0.06)]";
-
-          return (
-            <Card
-              key={topic.id}
-              variant="elevated"
-              className={`flex min-h-[270px] flex-col gap-5 border-l-2 ${accent.border} ${depthClass}`}
-            >
-              <div className="flex items-center justify-between gap-3">
-                <Badge tone={isDynamics ? "gold" : "cyan"}>Доступно</Badge>
-                <span
-                  className={`rounded-badge border px-2.5 py-1 text-[12px] font-semibold ${accent.border} ${accent.bg} ${accent.text}`}
-                >
-                  {isDynamics ? "ΣF" : "v(t)"}
-                </span>
-              </div>
-
-              <div className="flex flex-1 flex-col gap-3">
-                <h2 className="text-2xl font-[800] leading-tight text-white">
-                  {topic.title}
-                </h2>
-                <p className="text-[14px] leading-[1.7] text-white/70">
-                  {topic.description}
-                </p>
-                <p className="text-[13px] font-semibold leading-[1.6] text-white/55">
-                  {skillsLabel(topic.skillsCount)} · {topic.modeLabel}
-                </p>
-              </div>
-
-              <Button
-                asChild
-                size="lg"
-                className={
-                  isDynamics
-                    ? "mt-auto border-nova-gold bg-nova-gold shadow-gold-glow focus-visible:ring-nova-gold/50"
-                    : "mt-auto"
-                }
-              >
-                <Link href={topic.href}>Открыть тему</Link>
-              </Button>
-            </Card>
-          );
-        })}
-      </section>
+      <TopicCards />
     </div>
   );
 }

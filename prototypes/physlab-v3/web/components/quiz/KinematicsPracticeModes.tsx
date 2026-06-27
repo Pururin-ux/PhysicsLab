@@ -42,6 +42,7 @@ export function KinematicsPracticeModes() {
         mode={mode}
         pedagogyMode={mode === "static" ? "learn" : "exam"}
         generatedTemplate={mode === "generated" ? "mixed" : undefined}
+        topicId="kinematics"
       />
     </div>
   );

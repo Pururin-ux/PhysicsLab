@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { NavBar } from "../components/layout/NavBar";
 import { OrbitDeco } from "../components/layout/OrbitDeco";
+import { PersistenceHydrator } from "../components/layout/PersistenceHydrator";
 import { StarField } from "../components/layout/StarField";
 import "../styles/globals.css";
 
@@ -25,6 +26,7 @@ export default function RootLayout({
   return (
     <html lang="ru">
       <body className={`${inter.variable} font-sans`}>
+        <PersistenceHydrator />
         <StarField />
         <OrbitDeco />
         <NavBar />

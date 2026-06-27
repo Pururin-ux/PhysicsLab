@@ -67,6 +67,7 @@ export function DynamicsPracticeModes() {
         generatedTemplate={activeMode.template}
         generatedTopic="Динамика"
         generatedTitle={activeMode.title}
+        topicId="dynamics"
       />
     </div>
   );
