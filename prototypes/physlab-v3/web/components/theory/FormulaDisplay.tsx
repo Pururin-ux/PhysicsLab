@@ -22,13 +22,13 @@ export function FormulaDisplay({
       <FormulaBox
         formula={formula}
         caption={caption}
-        label="Ключевое уравнение"
+        label="Формула"
       />
       <Card
         className="flex flex-col gap-3 border-white/[.07] bg-space-950/40 p-4 shadow-none md:p-5"
       >
         <p className="text-[11px] font-bold uppercase tracking-[.14em] text-white/50">
-          Справочник
+          Обозначения
         </p>
         <ul className="divide-y divide-white/[.06] text-[13px] font-normal leading-[1.6] text-white/72">
           {symbols.map((symbol) => (

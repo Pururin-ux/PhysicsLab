@@ -1,7 +1,6 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { CoachAvatar } from "./CoachAvatar";
 import type { CoachState } from "../../lib/coach-engine";
 import { cn } from "../../lib/utils";
 
@@ -75,27 +74,24 @@ export function CoachBubble({
           exit="exit"
           variants={bubbleMotion}
         >
-          <div className="flex items-start gap-2 sm:gap-3">
-            <CoachAvatar state={state} />
-            <div className="min-w-0 flex-1">
-              <div className="mb-1 flex items-center gap-2">
-                <span
-                  aria-hidden="true"
-                  className={cn(
-                    "grid h-6 w-6 place-items-center rounded-badge border text-[13px] font-bold leading-none",
-                    iconByTone[state],
-                  )}
-                >
-                  {iconByState[state]}
-                </span>
-                <span className="text-[11px] font-bold uppercase tracking-[.14em] text-white/50">
-                  Nova
-                </span>
-              </div>
-              <p className="text-[13px] font-normal leading-[1.7] text-white/80 sm:text-[14px]">
-                {text}
-              </p>
+          <div className="min-w-0">
+            <div className="mb-1 flex items-center gap-2">
+              <span
+                aria-hidden="true"
+                className={cn(
+                  "grid h-6 w-6 place-items-center rounded-badge border text-[13px] font-bold leading-none",
+                  iconByTone[state],
+                )}
+              >
+                {iconByState[state]}
+              </span>
+              <span className="text-[11px] font-bold uppercase tracking-[.14em] text-white/50">
+                Nova
+              </span>
             </div>
+            <p className="text-[13px] font-normal leading-[1.7] text-white/80 sm:text-[14px]">
+              {text}
+            </p>
           </div>
         </motion.aside>
       ) : null}

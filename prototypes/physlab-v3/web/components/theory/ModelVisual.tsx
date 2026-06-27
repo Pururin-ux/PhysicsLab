@@ -84,7 +84,7 @@ export function ModelVisual({
     >
         <figcaption className="flex flex-col gap-1">
           <span className="text-[11px] font-bold uppercase tracking-[.14em] text-white/50">
-            Модель движения
+            График
           </span>
           <span className={compact ? "text-[15px] font-bold text-white" : "text-xl font-bold text-white"}>
             {title}

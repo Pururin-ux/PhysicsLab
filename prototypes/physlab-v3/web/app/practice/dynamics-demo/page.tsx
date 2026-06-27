@@ -13,8 +13,8 @@ export default function DynamicsDemoPage() {
     <div className="mx-auto flex max-w-[960px] flex-col gap-10 px-4 py-8 sm:gap-12 sm:px-6 sm:py-12 md:px-8 md:py-16">
       <TheoryBlock
         eyebrow="Динамика"
-        title="Сначала силы, затем уравнение"
-        description="До подстановки чисел отметь каждую силу, выбери положительное направление и только потом запиши второй закон Ньютона в проекциях."
+        title="Силы и движение"
+        description="Перед вычислениями проверь, какие силы действуют и куда направлено ускорение."
         layout="stack"
       >
         <a
@@ -37,14 +37,14 @@ export default function DynamicsDemoPage() {
             className="flex flex-col gap-3 border-l-2 border-l-nova-blue/55"
           >
             <p className="text-[11px] font-bold uppercase tracking-[.14em] text-white/50">
-              Смысл
+              Главное
             </p>
             <p className="text-[14px] font-normal leading-[1.7] text-white/80">
               Ускорение создаёт не отдельная сила, а векторная сумма всех сил. Знак проекции
               показывает направление, а не «плохой» отрицательный ответ.
             </p>
             <div className="rounded-option border border-white/[.09] border-l-2 border-l-nova-gold/70 bg-nova-gold/[.04] px-4 py-3 text-[13px] leading-[1.6] text-white/75">
-              Ловушка ЦТ: складывать модули сил, не проверив их направления.
+              Частая ошибка: складывать силы, не проверив их направления.
             </div>
           </Card>
 
@@ -80,14 +80,14 @@ export default function DynamicsDemoPage() {
             className="flex flex-col gap-3 border-l-2 border-l-nova-blue/55"
           >
             <p className="text-[11px] font-bold uppercase tracking-[.14em] text-white/50">
-              Смысл
+              Главное
             </p>
             <p className="text-[14px] font-normal leading-[1.7] text-white/80">
               При ускорении вверх опора действует сильнее: N больше mg. При ускорении вниз
               кажущийся вес уменьшается, хотя масса тела не меняется.
             </p>
             <div className="rounded-option border border-white/[.09] border-l-2 border-l-nova-gold/70 bg-nova-gold/[.04] px-4 py-3 text-[13px] leading-[1.6] text-white/75">
-              Ловушка ЦТ: выбирать знак по направлению скорости лифта вместо направления ускорения.
+              Частая ошибка: выбирать знак по скорости лифта, а не по ускорению.
             </div>
           </Card>
 
@@ -108,7 +108,7 @@ export default function DynamicsDemoPage() {
       <section id="practice" className="scroll-mt-24 flex flex-col gap-5">
         <div className="mx-auto flex w-full max-w-[580px] flex-col gap-2">
           <p className="text-[11px] font-bold uppercase tracking-[.14em] text-white/50">
-            Практика
+            Задачи
           </p>
           <h2 className="text-xl font-bold text-white">10 задач по динамике</h2>
         </div>

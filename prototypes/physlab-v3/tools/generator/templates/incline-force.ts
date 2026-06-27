@@ -35,7 +35,7 @@ export const inclineForceBlueprint: TaskBlueprint = {
   trap: "Путает составляющие mg sin α и mg cos α.",
   coachLines: {
     correct: (p) =>
-      `Верно: вдоль наклонной плоскости действует составляющая mg sin α, здесь α = ${p.angle}°.`,
+      `Да. Вдоль наклонной плоскости действует составляющая mg sin α, здесь α = ${p.angle}°.`,
     wrong: (p, selected, correct) =>
       `Вдоль плоскости нужна проекция mg sin ${p.angle}°, а mg cos α направлена перпендикулярно плоскости. Ответ ${correct} Н, а не ${selected} Н.`,
   },

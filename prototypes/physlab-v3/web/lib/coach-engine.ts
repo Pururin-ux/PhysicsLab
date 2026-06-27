@@ -27,7 +27,7 @@ export function getCoachResponse(
     case "session_start":
       return {
         state: "calm",
-        text: "Разберём 10 задач в формате ЦТ. Начнём.",
+        text: "Начнём. Реши 10 задач в своём темпе.",
         duration: 3500,
         priority: 1,
       };
@@ -35,7 +35,7 @@ export function getCoachResponse(
       if (event.streak >= 3) {
         return {
           state: "surprised",
-          text: "Три подряд — отличный темп!",
+          text: "Три подряд. Хорошо идёшь.",
           duration: 3000,
           priority: 3,
         };
@@ -65,7 +65,7 @@ export function getCoachResponse(
       if (event.seconds >= 20) {
         return {
           state: "thinking",
-          text: "Какой закон здесь главный?",
+          text: "Не спеши. Что здесь нужно найти?",
           duration: 4000,
           priority: 1,
         };
@@ -78,8 +78,8 @@ export function getCoachResponse(
           pct >= 0.8 ? "surprised" : pct >= 0.5 ? "encouraging" : "warning",
         text:
           pct >= 0.8
-            ? `${event.score} из ${event.total}! Отличная подготовка.`
-            : `${event.score} из ${event.total}. Повтори слабые темы — они выделены.`,
+            ? `${event.score} из ${event.total}. Отличный результат.`
+            : `${event.score} из ${event.total}. Посмотри ошибки в разборе.`,
         duration: 0,
         priority: 3,
       };

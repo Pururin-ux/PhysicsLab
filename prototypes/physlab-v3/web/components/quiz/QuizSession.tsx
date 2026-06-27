@@ -46,7 +46,7 @@ export function QuizSession({
   mode = "static",
   generatedTemplate = "free-fall",
   generatedTopic = "Кинематика",
-  generatedTitle = "Тренировка ЦТ",
+  generatedTitle = "Задачи",
   pedagogyMode = "practice",
   topicId,
 }: QuizSessionProps) {

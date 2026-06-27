@@ -29,7 +29,7 @@ const coachLines = {
 test("session_start returns calm intro", () => {
   assert.deepEqual(getCoachResponse({ type: "session_start" }, coachLines), {
     state: "calm",
-    text: "Разберём 10 задач в формате ЦТ. Начнём.",
+    text: "Начнём. Реши 10 задач в своём темпе.",
     duration: 3500,
     priority: 1,
   });
@@ -58,7 +58,7 @@ test("streak >= 3 overrides regular correct response", () => {
     ),
     {
       state: "surprised",
-      text: "Три подряд — отличный темп!",
+      text: "Три подряд. Хорошо идёшь.",
       duration: 3000,
       priority: 3,
     },
@@ -89,7 +89,7 @@ test("pause only returns thinking response after 20 seconds", () => {
   );
   assert.deepEqual(getCoachResponse({ type: "pause", seconds: 20 }, coachLines), {
     state: "thinking",
-    text: "Какой закон здесь главный?",
+    text: "Не спеши. Что здесь нужно найти?",
     duration: 4000,
     priority: 1,
   });

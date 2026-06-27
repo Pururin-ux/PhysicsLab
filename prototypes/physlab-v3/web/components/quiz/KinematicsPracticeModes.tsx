@@ -8,8 +8,8 @@ import { QuizSession } from "./QuizSession";
 type PracticeMode = "static" | "generated";
 
 const modes: { id: PracticeMode; label: string }[] = [
-  { id: "static", label: "Разобрать тему" },
-  { id: "generated", label: "Тренировка ЦТ" },
+  { id: "static", label: "Разбор" },
+  { id: "generated", label: "Задачи" },
 ];
 
 export function KinematicsPracticeModes() {

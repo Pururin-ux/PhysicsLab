@@ -13,27 +13,11 @@ import { Card } from "../ui/Card";
 const topicAccentClass = {
   kinematics: {
     border: "border-nova-cyan/30",
-    text: "text-nova-cyan",
-    bg: "bg-nova-cyan/[.06]",
   },
   dynamics: {
     border: "border-nova-gold/30",
-    text: "text-nova-gold",
-    bg: "bg-nova-gold/[.06]",
   },
 } as const;
-
-function skillsLabel(count: number) {
-  if (count === 1) {
-    return "1 навык";
-  }
-
-  if (count > 1 && count < 5) {
-    return `${count} навыка`;
-  }
-
-  return `${count} навыков`;
-}
 
 export function TopicCards() {
   const progress = useStore($appProgress);
@@ -75,15 +59,10 @@ export function TopicCards() {
             variant="elevated"
             className={`flex min-h-[270px] flex-col gap-5 border-l-2 ${accent.border} ${depthClass}`}
           >
-            <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center">
               <Badge tone={isDynamics ? "gold" : "cyan"}>
-                {hasProgress ? "В процессе" : "Не начата"}
+                {hasProgress ? "В процессе" : "Не начато"}
               </Badge>
-              <span
-                className={`rounded-badge border px-2.5 py-1 text-[12px] font-semibold ${accent.border} ${accent.bg} ${accent.text}`}
-              >
-                {isDynamics ? "ΣF" : "v(t)"}
-              </span>
             </div>
 
             <div className="flex flex-1 flex-col gap-3">
@@ -93,16 +72,13 @@ export function TopicCards() {
               <p className="text-[14px] leading-[1.7] text-white/70">
                 {topic.description}
               </p>
-              <p className="text-[13px] font-semibold leading-[1.6] text-white/55">
-                {skillsLabel(topic.skillsCount)} · {topic.modeLabel}
-              </p>
 
               {hasProgress && topicProgress ? (
                 <div className="mt-1 flex flex-col gap-1 rounded-option border border-white/[.06] bg-white/[.025] px-3 py-2 text-[12px] font-semibold leading-[1.5] text-white/55">
                   <span>
                     Решено: {topicProgress.solved} · Верно: {topicProgress.correct}
                   </span>
-                  <span>Сессий: {topicProgress.completedSessions}</span>
+                  <span>Тренировок: {topicProgress.completedSessions}</span>
                   {weakTrapCount > 0 && topWeaknessLabels.length > 0 ? (
                     <span className="text-[12px] text-white/55">
                       Чаще всего: {topWeaknessLabels.join(", ")}
@@ -121,7 +97,7 @@ export function TopicCards() {
                   : "mt-auto"
               }
             >
-              <Link href={topic.href}>Открыть тему</Link>
+              <Link href={topic.href}>{hasProgress ? "Продолжить" : "Начать"}</Link>
             </Button>
           </Card>
         );

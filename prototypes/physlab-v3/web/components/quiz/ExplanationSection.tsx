@@ -22,13 +22,15 @@ export function ExplanationSection({
   const formulaHtml = explanationLatex
     ? renderFormulaToHtml(explanationLatex, { displayMode: false })
     : null;
-  const heading = pedagogyMode === "learn" ? "Разберём шаг" : "Разбор ответа";
+  const heading = "Разбор";
   const lead =
     pedagogyMode === "learn" && !isCorrect
-      ? "Ошибка показывает, какой шаг стоит проверить. Сначала восстанови физическую модель, затем сверь вычисление."
+      ? "Посмотри, где сбился. Обычно ошибка в первом шаге."
       : pedagogyMode === "exam"
-        ? "Сверь выбранную модель с коротким экзаменационным решением."
-        : "Проверь физический смысл и вычисление.";
+        ? "Сравни с коротким решением."
+        : isCorrect
+          ? "Проверь решение и запомни короткий ход."
+          : "Проверь первый шаг и вычисление.";
 
   return (
     <motion.div
@@ -58,7 +60,7 @@ export function ExplanationSection({
 
         <div className="rounded-option border border-white/[.09] border-l-2 border-l-nova-gold/70 bg-nova-gold/[.04] px-4 py-3 text-[13px] font-normal leading-[1.6] text-white/75">
           <span className="mr-2 text-[11px] font-bold uppercase tracking-[.12em] text-nova-gold">
-            {pedagogyMode === "learn" && !isCorrect ? "Что проверить" : "Типичная ловушка"}
+            {isCorrect ? "Частая ошибка" : "Проверь вот это"}
           </span>
           <span>{trap}</span>
         </div>

@@ -14,7 +14,7 @@ export function ForceModel({ variant, title, caption }: ForceModelProps) {
       <figure className="flex flex-col gap-3 p-4 md:p-5">
         <figcaption className="flex flex-col gap-1">
           <span className="text-[11px] font-bold uppercase tracking-[.14em] text-white/50">
-            Модель сил
+            Силы на рисунке
           </span>
           <span className="text-xl font-bold text-white">{title}</span>
           <span className="text-[13px] font-normal leading-[1.6] text-white/60">

@@ -34,9 +34,9 @@ export function ConceptReveal({
   const [step, setStep] = useState(0);
   const cta =
     step === 0
-      ? "Понял, дальше"
+      ? "Дальше"
       : step === 1
-        ? "Связать с формулой"
+        ? "Показать формулу"
         : null;
 
   return (
@@ -54,7 +54,7 @@ export function ConceptReveal({
           >
             <Card variant="elevated" className="flex flex-col gap-3">
               <p className="text-[11px] font-bold uppercase tracking-[.14em] text-white/50">
-                Смысл
+                Главное
               </p>
               <p className="text-[14px] font-normal leading-[1.7] text-white/80">
                 {meaningText}

@@ -29,11 +29,11 @@ function questionFor(p: Params): string {
 function correctCoachLine(p: Params): string {
   switch (targetFor(p)) {
     case "mass":
-      return `Верно: из F = ma получаем m = F/a = ${forceFor(p)}/${p.a}.`;
+      return `Да. Из F = ma получаем m = F/a = ${forceFor(p)}/${p.a}.`;
     case "acceleration":
-      return `Верно: из F = ma получаем a = F/m = ${forceFor(p)}/${p.m}.`;
+      return `Да. Из F = ma получаем a = F/m = ${forceFor(p)}/${p.m}.`;
     default:
-      return `Верно: по второму закону Ньютона F = ma = ${p.m} · ${p.a}.`;
+      return `Да. По второму закону Ньютона F = ma = ${p.m} · ${p.a}.`;
   }
 }
 
@@ -41,7 +41,7 @@ function wrongCoachLine(p: Params, selected: number, correct: number): string {
   const target = targetFor(p);
   const relation =
     target === "mass" ? "m = F/a" : target === "acceleration" ? "a = F/m" : "F = ma";
-  return `Сначала выразите искомую величину из F = ma: ${relation}. Правильный результат ${correct}, а не ${selected}.`;
+  return `Сначала реши, что ищем: силу, массу или ускорение. Здесь нужно ${relation}. Получается ${correct}, а не ${selected}.`;
 }
 
 function explanationFor(p: Params, answer: number): string {
@@ -49,7 +49,7 @@ function explanationFor(p: Params, answer: number): string {
 
   switch (targetFor(p)) {
     case "mass":
-      return `Выражаем массу из F = ma: m = F/a = ${force}/${p.a} = ${answer} кг. Вариант F · a — ловушка неверной перестановки формулы.`;
+      return `Выражаем массу из F = ma: m = F/a = ${force}/${p.a} = ${answer} кг. Умножать F на a здесь не нужно.`;
     case "acceleration":
       return `Выражаем ускорение: a = F/m = ${force}/${p.m} = ${answer} м/с². Вариант F · m получается при неверном выборе действия.`;
     default:
@@ -83,7 +83,7 @@ export const newtonSecondBlueprint: TaskBlueprint = {
   distractors: newtonSecondDistractors,
   textTemplate: questionFor,
   explanationTemplate: explanationFor,
-  trap: "Не выражает искомую величину из F = ma и выбирает обратное арифметическое действие.",
+  trap: "Не выражает нужную величину из F = ma.",
   coachLines: {
     correct: correctCoachLine,
     wrong: wrongCoachLine,
