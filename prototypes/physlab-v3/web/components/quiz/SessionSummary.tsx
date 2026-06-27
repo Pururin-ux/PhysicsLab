@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { formatWeakness } from "../../lib/learning/weakness-labels";
 import { Badge } from "../ui/Badge";
 import { Button } from "../ui/Button";
 import { Card } from "../ui/Card";
@@ -66,6 +67,56 @@ function getResultCopy(score: number, total: number, topic?: string) {
   };
 }
 
+type SummaryWeakness = {
+  key: string;
+  title: string;
+  hint: string;
+};
+
+function formatSummaryWeakness(value: string): SummaryWeakness | null {
+  const trimmed = value.trim();
+
+  if (!trimmed || trimmed.toLowerCase() === "undefined") {
+    return null;
+  }
+
+  if (trimmed.includes(":")) {
+    const formatted = formatWeakness(trimmed, 1);
+
+    if (formatted) {
+      return {
+        key: formatted.key,
+        title: formatted.title,
+        hint: formatted.hint,
+      };
+    }
+  }
+
+  return {
+    key: trimmed,
+    title: "Типовая ошибка",
+    hint: trimmed,
+  };
+}
+
+function getUniqueSummaryWeaknesses(weakTraps: string[]) {
+  const seen = new Set<string>();
+  const weaknesses: SummaryWeakness[] = [];
+
+  for (const trap of weakTraps) {
+    const weakness = formatSummaryWeakness(trap);
+
+    if (!weakness || seen.has(weakness.key)) {
+      continue;
+    }
+
+    seen.add(weakness.key);
+    weaknesses.push(weakness);
+  }
+
+  return weaknesses;
+}
+
 export function SessionSummary({
   score,
   total,
@@ -76,7 +127,7 @@ export function SessionSummary({
   topic,
 }: SessionSummaryProps) {
   const copy = getResultCopy(score, total, topic);
-  const uniqueWeakTraps = Array.from(new Set(weakTraps));
+  const summaryWeaknesses = getUniqueSummaryWeaknesses(weakTraps);
   const ratio = total === 0 ? 0 : score / total;
 
   return (
@@ -109,19 +160,26 @@ export function SessionSummary({
           </div>
         </div>
 
-        {uniqueWeakTraps.length > 0 ? (
+        {summaryWeaknesses.length > 0 ? (
           <div className="w-full rounded-card border border-white/[.08] bg-space-900 p-6 text-left">
             <p className="mb-4 text-[11px] font-bold uppercase tracking-[.14em] text-white/50">
               Слабые места
             </p>
-            <ul className="space-y-2 text-[13px] font-normal leading-[1.6] text-white/75">
-              {uniqueWeakTraps.map((trap) => (
-                <li key={trap} className="flex items-start gap-3">
-                  <span className="mt-0.5 shrink-0 text-nova-gold">•</span>
-                  <span>{trap}</span>
+            <ol className="space-y-3 text-[13px] font-normal leading-[1.6] text-white/75">
+              {summaryWeaknesses.map((weakness, index) => (
+                <li key={weakness.key} className="grid grid-cols-[auto_1fr] gap-3">
+                  <span className="mt-0.5 shrink-0 text-nova-gold">
+                    {index + 1}.
+                  </span>
+                  <span className="flex min-w-0 flex-col gap-1">
+                    <span className="font-semibold text-white/85">
+                      {weakness.title}
+                    </span>
+                    <span>{weakness.hint}</span>
+                  </span>
                 </li>
               ))}
-            </ul>
+            </ol>
           </div>
         ) : null}
 

@@ -3,6 +3,7 @@
 import { useStore } from "@nanostores/react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { getTopWeaknessesForTopic } from "../../lib/learning/weakness-labels";
 import { topics } from "../../lib/topics";
 import { $appProgress } from "../../lib/stores/progress-store";
 import { Badge } from "../ui/Badge";
@@ -61,6 +62,12 @@ export function TopicCards() {
         const weakTrapCount = topicProgress
           ? Object.keys(topicProgress.weakTraps).length
           : 0;
+        const topWeaknesses = topicProgress
+          ? getTopWeaknessesForTopic(topicProgress.weakTraps, topic.id, 2)
+          : [];
+        const topWeaknessLabels = Array.from(
+          new Set(topWeaknesses.map((weakness) => weakness.skillTitle)),
+        );
 
         return (
           <Card
@@ -96,8 +103,10 @@ export function TopicCards() {
                     Решено: {topicProgress.solved} · Верно: {topicProgress.correct}
                   </span>
                   <span>Сессий: {topicProgress.completedSessions}</span>
-                  {weakTrapCount > 0 ? (
-                    <span>Слабые места: {weakTrapCount}</span>
+                  {weakTrapCount > 0 && topWeaknessLabels.length > 0 ? (
+                    <span className="text-[12px] text-white/55">
+                      Чаще всего: {topWeaknessLabels.join(", ")}
+                    </span>
                   ) : null}
                 </div>
               ) : null}
