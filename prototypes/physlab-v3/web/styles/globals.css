@@ -4,6 +4,9 @@
 
 :root {
   --bg: #0B0F17;
+  --font-physics-ui: var(--font-inter), system-ui, sans-serif;
+  --font-physics-math: "STIX Two Math", "Cambria Math", "Latin Modern Math", "Times New Roman", serif;
+  --font-physics-numeric: "JetBrains Mono", "Roboto Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
 body {
@@ -13,8 +16,44 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-.formula-cyan .katex { color: #00E0FF !important; }
-.formula-white .katex { color: rgba(255,255,255,0.9) !important; }
+.physics-math {
+  font-family: var(--font-physics-math);
+  font-style: italic;
+}
+
+.physics-unit {
+  font-family: var(--font-physics-ui);
+  font-style: normal;
+}
+
+.physics-number {
+  font-family: var(--font-physics-numeric);
+  font-style: normal;
+  font-variant-numeric: tabular-nums;
+}
+
+.formula-cyan .katex {
+  color: rgba(159, 234, 242, 0.94) !important;
+  font-family: var(--font-physics-math);
+  font-weight: 500;
+  letter-spacing: 0;
+}
+
+.formula-white .katex {
+  color: rgba(244, 247, 250, 0.9) !important;
+  font-family: var(--font-physics-math);
+  font-weight: 500;
+  letter-spacing: 0;
+}
+
+.formula-cyan .katex .mtext,
+.formula-cyan .katex .text,
+.formula-white .katex .mtext,
+.formula-white .katex .text {
+  font-family: var(--font-physics-ui) !important;
+  font-style: normal;
+}
+
 .katex-display { margin: 0 !important; }
 
 @media (prefers-reduced-motion: reduce) {

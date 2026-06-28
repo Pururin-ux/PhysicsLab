@@ -26,16 +26,16 @@ export function FormulaBox({
     <Card
       variant="formula"
       className={cn(
-        "formula-cyan flex w-full max-w-full flex-col items-center justify-center gap-4 overflow-x-auto border-nova-cyan/30 bg-nova-cyan/[.065] px-5 py-6 text-center shadow-[inset_0_1px_0_rgba(255,255,255,.025)] md:px-8 md:py-8",
+        "formula-white flex w-full max-w-full flex-col items-center justify-center gap-3 overflow-x-auto border-white/[.09] bg-white/[.035] px-5 py-5 text-center shadow-[inset_0_1px_0_rgba(255,255,255,.03)] md:px-7 md:py-6",
         className,
       )}
     >
       {label ? (
-        <p className="text-[10px] font-bold uppercase tracking-[.16em] text-nova-cyan/65">
+        <p className="text-[10px] font-bold uppercase tracking-[.16em] text-white/52">
           {label}
         </p>
       ) : null}
-      <div className="max-w-full text-[20px] font-semibold leading-none md:text-[25px]">
+      <div className="max-w-full text-[19px] font-medium leading-none md:text-[23px]">
         {html ? (
           <div dangerouslySetInnerHTML={{ __html: html }} />
         ) : (
@@ -43,7 +43,7 @@ export function FormulaBox({
         )}
       </div>
       {caption ? (
-        <p className="max-w-[520px] text-[12px] font-normal leading-[1.6] text-white/55">
+        <p className="max-w-[520px] text-[12px] font-normal leading-[1.6] text-white/58">
           {caption}
         </p>
       ) : null}
