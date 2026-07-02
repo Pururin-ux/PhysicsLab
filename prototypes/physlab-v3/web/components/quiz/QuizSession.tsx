@@ -47,7 +47,6 @@ export function QuizSession({
   generatedTemplate = "free-fall",
   generatedTopic = "Кинематика",
   generatedTitle = "Задачи",
-  pedagogyMode = "practice",
   topicId,
 }: QuizSessionProps) {
   const session = useStore($quizSession);
@@ -170,27 +169,12 @@ export function QuizSession({
     if (!result) return;
 
     clearPauseTimer();
+    hideCoach();
 
     if (result.isCorrect) {
       addXP(10);
-      emitCoachEvent(
-        {
-          type: "correct_answer",
-          streak: result.streak,
-          taskId: currentTask.id,
-        },
-        currentTask.coach_lines,
-      );
     } else {
       addXP(0);
-      emitCoachEvent(
-        {
-          type: "wrong_answer",
-          attempt: result.attempt,
-          taskId: currentTask.id,
-        },
-        currentTask.coach_lines,
-      );
     }
   }
 
@@ -328,13 +312,10 @@ export function QuizSession({
 
       {session.phase === "answered" ? (
         <>
-          <CoachBubble {...bubble} placement="inline" />
-
           <ExplanationSection
             explanation={currentTask.explanation}
             explanationLatex={currentTask.explanation_latex}
             trap={currentTask.trap}
-            pedagogyMode={pedagogyMode}
             isCorrect={session.answers.at(-1)?.isCorrect ?? false}
           />
 

@@ -21,6 +21,7 @@ export function ExplanationSection({
     ? renderFormulaToHtml(explanationLatex, { displayMode: false })
     : null;
   const statusLabel = isCorrect ? "Верно" : "Не совсем";
+  const trapLabel = isCorrect ? "На что обратить внимание" : "Частая ошибка";
   const trapText = trap.trim();
 
   return (
@@ -29,17 +30,14 @@ export function ExplanationSection({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, ease: "easeOut" }}
     >
-      <Card variant="elevated" className="flex flex-col gap-4">
-        <div className="flex items-center justify-between gap-3">
+      <Card variant="elevated" className="flex flex-col gap-3.5">
+        <div className="flex items-center gap-3">
           <p
             className={`text-[14px] font-semibold leading-none ${
               isCorrect ? "text-nova-cyan" : "text-nova-gold"
             }`}
           >
             {statusLabel}
-          </p>
-          <p className="text-[12px] font-normal leading-none text-white/45">
-            Разбор
           </p>
         </div>
 
@@ -56,9 +54,13 @@ export function ExplanationSection({
         ) : null}
 
         {trapText ? (
-          <div className="rounded-option border border-white/[.07] border-l-2 border-l-nova-gold/55 bg-white/[.03] px-4 py-3 text-[13px] font-normal leading-[1.65] text-white/72">
-            <p className="mb-1 text-[12px] font-semibold leading-none text-nova-gold/90">
-              Частая ошибка
+          <div className="border-t border-white/[.08] pt-3 text-[13px] font-normal leading-[1.65] text-white/72">
+            <p
+              className={`mb-1 text-[12px] font-semibold leading-none ${
+                isCorrect ? "text-white/58" : "text-nova-gold/85"
+              }`}
+            >
+              {trapLabel}
             </p>
             <p>{trapText}</p>
           </div>

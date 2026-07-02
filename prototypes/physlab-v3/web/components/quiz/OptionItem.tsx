@@ -59,12 +59,12 @@ export function OptionItem({
         {text}
       </span>
       {state === "correct" ? (
-        <span className="shrink-0 text-[16px] font-bold text-nova-cyan" aria-hidden="true">
-          ✓
+        <span className="shrink-0 rounded-badge border border-nova-cyan/25 bg-nova-cyan/[.08] px-2 py-1 text-[11px] font-semibold leading-none text-nova-cyan">
+          верно
         </span>
       ) : state === "wrong" ? (
-        <span className="shrink-0 text-[17px] font-bold text-nova-gold" aria-hidden="true">
-          ×
+        <span className="shrink-0 rounded-badge border border-nova-gold/25 bg-nova-gold/[.08] px-2 py-1 text-[11px] font-semibold leading-none text-nova-gold">
+          выбрано
         </span>
       ) : null}
     </button>
