@@ -22,15 +22,24 @@ const dynamicsTemplateIds = [
   "friction-force",
   "incline-force",
   "resultant-force",
+  "resultant-force-2d",
   "weight-lift",
   "density-volume-ratio",
   "impulse-momentum",
 ] as const;
 const electrodynamicsTemplateIds = [
   "ohm-law",
+  "resistor-network",
   "source-internal-resistance",
   "charge-sharing",
 ] as const;
+
+// Шаблоны на пифагоровых тройках имеют естественно малый пул параметров:
+// пар с целым ответом немного, тексты множатся только сюжетами.
+const uniqueTextPoolBySkill: Record<string, number> = {
+  "relative-velocity-vectors": 36,
+  "resultant-force-2d": 24,
+};
 const thermodynamicsTemplateIds = ["ideal-gas-state", "heat-amount"] as const;
 
 type ApiTask = {
@@ -77,7 +86,7 @@ for (const templateId of kinematicsTemplateIds) {
 
     // Пул relative-velocity-vectors ограничен пифагоровыми тройками:
     // 12 пар × 3 сюжета = 36 уникальных текстов, дальше цикл повторяется.
-    const uniqueBatchSize = templateId === "relative-velocity-vectors" ? 36 : 50;
+    const uniqueBatchSize = Math.min(uniqueTextPoolBySkill[templateId] ?? 50, 50);
     const firstBatchTexts = tasks.slice(0, uniqueBatchSize).map((task) => task.text);
     assert.equal(
       new Set(firstBatchTexts).size,
@@ -113,7 +122,7 @@ test("production templates keep enough variants and explanations", () => {
     const blueprint = getBlueprint(id);
 
     assert.equal(tasks.length, 200, `${id} should generate 200 tasks`);
-    const minUniqueTexts = id === "relative-velocity-vectors" ? 30 : 50;
+    const minUniqueTexts = uniqueTextPoolBySkill[id] ?? 50;
     assert.equal(
       new Set(tasks.map((task) => task.text)).size >= minUniqueTexts,
       true,
@@ -265,8 +274,13 @@ for (const templateId of [
       `${templateId} should produce at least 4 different answers`,
     );
 
-    const firstBatchTexts = tasks.slice(0, 50).map((task) => task.text);
-    assert.equal(new Set(firstBatchTexts).size, 50, `${templateId} duplicated a text in batch 50`);
+    const batchSize = Math.min(uniqueTextPoolBySkill[templateId] ?? 50, 50);
+    const firstBatchTexts = tasks.slice(0, batchSize).map((task) => task.text);
+    assert.equal(
+      new Set(firstBatchTexts).size,
+      batchSize,
+      `${templateId} duplicated a text in batch ${batchSize}`,
+    );
   });
 }
 
@@ -356,7 +370,7 @@ test("API route делает batch детерминированным и мен�
   );
 });
 
-test("API route dynamics-mixed покрывает семь навыков", async () => {
+test("API route dynamics-mixed покрывает восемь навыков", async () => {
   const response = await GET(
     new Request("http://localhost/api/tasks?template=dynamics-mixed&count=14&batch=7"),
   );
@@ -370,7 +384,7 @@ test("API route dynamics-mixed покрывает семь навыков", asyn
   );
 });
 
-test("API route electro-mixed покрывает три навыка", async () => {
+test("API route electro-mixed покрывает четыре навыка", async () => {
   const response = await GET(
     new Request("http://localhost/api/tasks?template=electro-mixed&count=10&batch=7"),
   );
@@ -398,46 +412,60 @@ test("API route thermo-mixed покрывает два навыка", async () =
   );
 });
 
-test("API route exam смешивает кинематику и динамику детерминированно", async () => {
-  const totalMechanicsTemplates = kinematicsTemplateIds.length + dynamicsTemplateIds.length;
-  const url = `http://localhost/api/tasks?template=exam&count=${totalMechanicsTemplates}&batch=3`;
+test("API route exam собирает вариант по пропорциям спецификации", async () => {
+  const url = "http://localhost/api/tasks?template=exam&count=10&batch=3";
   const firstResponse = await GET(new Request(url));
   const repeatResponse = await GET(new Request(url));
   const first = (await firstResponse.json()) as ApiTaskResponse;
   const repeat = (await repeatResponse.json()) as ApiTaskResponse;
 
   assert.equal(firstResponse.status, 200);
-  assert.equal(first.tasks.length, totalMechanicsTemplates);
+  assert.equal(first.tasks.length, 10);
   assert.deepEqual(first.tasks, repeat.tasks);
 
-  const blueprintsUsed = new Set(first.tasks.map((task) => task.blueprint));
-  assert.equal(
-    blueprintsUsed.size,
-    totalMechanicsTemplates,
-    "exam должен покрывать все навыки механики",
-  );
-  assert.equal(
-    kinematicsTemplateIds.some((id) => blueprintsUsed.has(id)),
-    true,
-  );
-  assert.equal(
-    dynamicsTemplateIds.some((id) => blueprintsUsed.has(id)),
-    true,
-  );
+  // Квоты на 10 задач: 4 механики (2 кинематика + 2 динамика),
+  // 3 электродинамики, 3 термодинамики — как в route.ts.
+  const groupOf = (blueprint: string) =>
+    (kinematicsTemplateIds as readonly string[]).includes(blueprint)
+      ? "kinematics"
+      : (dynamicsTemplateIds as readonly string[]).includes(blueprint)
+        ? "dynamics"
+        : (electrodynamicsTemplateIds as readonly string[]).includes(blueprint)
+          ? "electrodynamics"
+          : "thermodynamics";
 
-  // Порядок не должен идти блоками "вся кинематика, потом вся динамика".
-  const groupSequence = first.tasks.map((task) =>
-    (kinematicsTemplateIds as readonly string[]).includes(task.blueprint)
-      ? "k"
-      : "d",
-  );
-  assert.notEqual(
-    groupSequence.join(""),
-    "k".repeat(kinematicsTemplateIds.length) + "d".repeat(dynamicsTemplateIds.length),
-  );
+  const counts: Record<string, number> = {};
+  for (const task of first.tasks) {
+    const group = groupOf(task.blueprint);
+    counts[group] = (counts[group] ?? 0) + 1;
+  }
+
+  assert.equal(counts.kinematics, 2, "в exam должно быть 2 задачи кинематики");
+  assert.equal(counts.dynamics, 2, "в exam должно быть 2 задачи динамики");
+  assert.equal(counts.electrodynamics, 3, "в exam должно быть 3 задачи электродинамики");
+  assert.equal(counts.thermodynamics, 3, "в exam должно быть 3 задачи термодинамики");
+
+  // Порядок перемешан: первые пять задач не могут быть одной группы.
+  const firstFiveGroups = new Set(first.tasks.slice(0, 5).map((task) => groupOf(task.blueprint)));
+  assert.equal(firstFiveGroups.size > 1, true, "exam не должен идти блоками по темам");
 
   const ids = new Set(first.tasks.map((task) => task.id));
   assert.equal(ids.size, first.tasks.length, "id задач в exam должны быть уникальны");
+
+  // Термо-квота (3) больше числа термо-шаблонов (2): один шаблон входит
+  // дважды и обязан дать две разные задачи, а не одну и ту же.
+  const texts = new Set(first.tasks.map((task) => task.text));
+  assert.equal(texts.size, first.tasks.length, "в exam не должно быть одинаковых задач");
+
+  // Другой batch должен давать другой набор задач.
+  const nextResponse = await GET(
+    new Request("http://localhost/api/tasks?template=exam&count=10&batch=4"),
+  );
+  const next = (await nextResponse.json()) as ApiTaskResponse;
+  assert.equal(
+    first.tasks.some((task, index) => task.id !== next.tasks[index]?.id),
+    true,
+  );
 });
 
 test("relative-velocity-vectors несёт векторную диаграмму с ответом-гипотенузой", () => {
@@ -476,6 +504,50 @@ test("source-internal-resistance несёт схему цепи и целый т
     assert.equal(Number.isInteger(task.answerValue), true);
     assert.equal(task.params.R > task.params.r, true);
   }
+});
+
+test("resultant-force-2d несёт concurrent-диаграмму с ответом-гипотенузой", () => {
+  const tasks = generateTasks("resultant-force-2d", 20);
+
+  for (const task of tasks) {
+    assert.equal(task.diagram?.kind, "vector");
+    if (task.diagram?.kind !== "vector") {
+      continue;
+    }
+    assert.equal(task.diagram.spec.layout, "concurrent");
+    assert.equal(task.diagram.spec.showResultant, true);
+    assert.equal(task.answerValue, Math.hypot(task.params.f1, task.params.f2));
+    assert.equal(Number.isInteger(task.answerValue), true);
+    assert.equal(task.params.f1 % 5, 0, "силы кратны 5 Н");
+  }
+});
+
+test("resistor-network: обе топологии со схемой и чистым ответом", () => {
+  const tasks = generateTasks("resistor-network", 200);
+  const topologies = new Set<string>();
+
+  for (const task of tasks) {
+    assert.equal(task.diagram?.kind, "circuit");
+    if (task.diagram?.kind !== "circuit") {
+      continue;
+    }
+    topologies.add(task.diagram.spec.topology);
+
+    if (task.diagram.spec.topology === "parallel") {
+      const expected = (task.params.r1 * task.params.r2) / (task.params.r1 + task.params.r2);
+      assert.equal(task.answerValue, expected);
+      assert.equal(Number.isInteger(task.answerValue), true, "параллельный ответ целый");
+      assert.equal(
+        task.answerValue < Math.min(task.params.r1, task.params.r2),
+        true,
+        "параллельное сопротивление меньше меньшего",
+      );
+    } else {
+      assert.equal(task.answerValue, task.params.r1 + task.params.r2);
+    }
+  }
+
+  assert.deepEqual(topologies, new Set(["series", "parallel"]));
 });
 
 test("API route пробрасывает diagram в задачи", async () => {

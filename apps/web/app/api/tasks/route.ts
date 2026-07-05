@@ -14,8 +14,39 @@ const kinematicsTemplates = getTemplateIdsByGroup("kinematics");
 const dynamicsTemplates = getTemplateIdsByGroup("dynamics");
 const electrodynamicsTemplates = getTemplateIdsByGroup("electrodynamics");
 const thermodynamicsTemplates = getTemplateIdsByGroup("thermodynamics");
-// Пробный вариант: сначала кинематика, потом динамика — затем порядок перемешивается.
-const examTemplates = [...kinematicsTemplates, ...dynamicsTemplates];
+// Пробный вариант собирается по пропорциям спецификации ЦТ-2026,
+// нормированным на открытые разделы: механика ~33%, МКТ/термодинамика ~23%,
+// электродинамика ~30% (оптика/квант/ядро пока не открыты). На 10 задач:
+// 4 механики (2 кинематика + 2 динамика), 3 электродинамики, 3 термодинамики.
+const examQuotas: { templates: readonly TemplateId[]; share: number }[] = [
+  { templates: kinematicsTemplates, share: 0.2 },
+  { templates: dynamicsTemplates, share: 0.2 },
+  { templates: electrodynamicsTemplates, share: 0.3 },
+  { templates: thermodynamicsTemplates, share: 0.3 },
+];
+
+// Разные batch смещают выбор внутри группы, чтобы новые варианты
+// тренировали разные навыки, а не одну и ту же четвёрку шаблонов.
+function buildExamMix(count: number, batch: number): TemplateId[] {
+  const mix: TemplateId[] = [];
+
+  for (const quota of examQuotas) {
+    const slots = Math.round(count * quota.share);
+    for (let slot = 0; slot < slots && mix.length < count; slot += 1) {
+      mix.push(quota.templates[(batch + slot) % quota.templates.length]);
+    }
+  }
+
+  // Округление долей может недодать задач — добираем по кругу групп.
+  let groupIndex = 0;
+  while (mix.length < count) {
+    const templates = examQuotas[groupIndex % examQuotas.length].templates;
+    mix.push(templates[(batch + mix.length) % templates.length]);
+    groupIndex += 1;
+  }
+
+  return mix;
+}
 const supportedTemplates = templateRegistry.map((entry) => entry.id);
 
 function normalizeCount(value: string | null) {
@@ -97,7 +128,7 @@ function seededShuffle<T>(items: T[], seed: number): T[] {
 }
 
 function generateExamTasks(count: number, batch: number) {
-  const tasks = generateMixedTasks(examTemplates, "exam", count, batch);
+  const tasks = generateMixedTasks(buildExamMix(count, batch), "exam", count, batch);
 
   // На экзамене навыки не идут блоками по темам — порядок задач перемешан,
   // но детерминирован для одного и того же batch.
@@ -110,9 +141,15 @@ function generateMixedTasks(
   count: number,
   batch: number,
 ) {
+  // Счётчик вхождений вместо floor(index/length): exam-микс может содержать
+  // один шаблон дважды, и повторное вхождение обязано получить другой offset,
+  // иначе в вариант попадут две одинаковые задачи.
+  const occurrences = new Map<TemplateId, number>();
+
   return Array.from({ length: count }, (_, index) => {
     const template = templates[index % templates.length];
-    const occurrence = Math.floor(index / templates.length);
+    const occurrence = occurrences.get(template) ?? 0;
+    occurrences.set(template, occurrence + 1);
     const baseOffset = hashSeed(`${groupId}:${template}`) % 97;
     const offset = baseOffset + batch * count + occurrence;
     const task = generateTasks(template, 1, { offset })[0];

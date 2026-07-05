@@ -21,10 +21,12 @@ export type SkillId =
   | "friction-force"
   | "incline-force"
   | "resultant-force"
+  | "resultant-force-2d"
   | "weight-lift"
   | "density-volume-ratio"
   | "impulse-momentum"
   | "ohm-law"
+  | "resistor-network"
   | "source-internal-resistance"
   | "charge-sharing"
   | "ideal-gas-state"
@@ -104,6 +106,14 @@ export const skillMetadata: Record<SkillId, SkillMetadata> = {
     shortTitle: "Равнодействующая",
     description: "Сумма сил с учетом направления выбранной оси.",
   },
+  "resultant-force-2d": {
+    id: "resultant-force-2d",
+    topicId: "dynamics",
+    sectionId: "mechanics",
+    title: "Равнодействующая перпендикулярных сил",
+    shortTitle: "Силы под углом 90°",
+    description: "Равнодействующая двух взаимно перпендикулярных сил по теореме Пифагора.",
+  },
   "weight-lift": {
     id: "weight-lift",
     topicId: "dynamics",
@@ -135,6 +145,14 @@ export const skillMetadata: Record<SkillId, SkillMetadata> = {
     title: "Закон Ома для участка цепи",
     shortTitle: "Закон Ома",
     description: "Связь силы тока, напряжения и сопротивления участка цепи.",
+  },
+  "resistor-network": {
+    id: "resistor-network",
+    topicId: "electrodynamics",
+    sectionId: "electrodynamics",
+    title: "Соединения резисторов",
+    shortTitle: "Соединения резисторов",
+    description: "Эквивалентное сопротивление при последовательном и параллельном соединении.",
   },
   "source-internal-resistance": {
     id: "source-internal-resistance",

@@ -52,9 +52,9 @@ export default function Home() {
             ,<br className="hidden sm:block" /> а не зубрить
           </h1>
           <p className="max-w-[560px] text-[16px] leading-[1.7] text-white/70">
-            Кинематика, динамика и закон Ома уже открыты: короткие тренировки
-            по 10 задач, разбор каждой ошибки и прогресс, которому можно
-            верить.
+            Механика, электродинамика и молекулярная физика уже открыты:
+            короткие тренировки по 10 задач, разбор каждой ошибки и прогресс,
+            которому можно верить.
           </p>
           <div className="flex flex-wrap items-center gap-3 pt-1">
             <Button asChild className="px-8">
@@ -123,11 +123,13 @@ export default function Home() {
             className="flex flex-col items-center gap-4 border-nova-cyan/25 !p-8 text-center"
           >
             <h2 className="text-xl font-[800] text-white sm:text-2xl">
-              Три темы открыты: кинематика, динамика и закон Ома
+              Четыре темы открыты: кинематика, динамика, электродинамика
+              и термодинамика
             </h2>
             <p className="max-w-[480px] text-[14px] leading-[1.7] text-white/65">
-              Остальные разделы появятся позже. Начни с того, что уже работает,
-              или сразу проверь себя на пробном варианте по механике.
+              Оптика и квантовая физика появятся позже. Начни с того, что уже
+              работает, или проверь себя на пробном варианте из всех открытых
+              разделов.
             </p>
             <div className="flex flex-wrap items-center justify-center gap-3">
               <Button asChild className="px-10">

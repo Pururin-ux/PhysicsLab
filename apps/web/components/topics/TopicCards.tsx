@@ -218,12 +218,12 @@ export function TopicCards() {
           <div className="flex items-center gap-2.5">
             <Badge tone="gold">Пробный вариант</Badge>
             <span className="text-[11px] font-bold uppercase tracking-[.12em] text-white/40">
-              механика
+              все открытые разделы
             </span>
           </div>
           <p className="text-[14px] leading-[1.65] text-white/70">
-            10 задач из обеих тем вперемешку — проверь, как навыки держатся
-            вместе.
+            10 задач: механика, электродинамика и термодинамика вперемешку —
+            в пропорциях, близких к реальному тесту.
           </p>
           {bestExam ? (
             <p className="text-[12px] font-semibold text-white/50">

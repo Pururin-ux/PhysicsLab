@@ -10,7 +10,9 @@ import { inclineForceBlueprint } from "./templates/incline-force.ts";
 import { newtonSecondBlueprint } from "./templates/newton-second.ts";
 import { ohmLawBlueprint } from "./templates/ohm-law.ts";
 import { relativeVelocityVectorsBlueprint } from "./templates/relative-velocity-vectors.ts";
+import { resistorNetworkBlueprint } from "./templates/resistor-network.ts";
 import { resultantForceBlueprint } from "./templates/resultant-force.ts";
+import { resultantForce2dBlueprint } from "./templates/resultant-force-2d.ts";
 import { sourceInternalResistanceBlueprint } from "./templates/source-internal-resistance.ts";
 import { vtAreaBlueprint } from "./templates/vt-area.ts";
 import { vtSlopeBlueprint } from "./templates/vt-slope.ts";
@@ -44,8 +46,10 @@ export const blueprints = {
   "friction-force": frictionForceBlueprint,
   "incline-force": inclineForceBlueprint,
   "resultant-force": resultantForceBlueprint,
+  "resultant-force-2d": resultantForce2dBlueprint,
   "weight-lift": weightLiftBlueprint,
   "ohm-law": ohmLawBlueprint,
+  "resistor-network": resistorNetworkBlueprint,
   "source-internal-resistance": sourceInternalResistanceBlueprint,
   "density-volume-ratio": densityVolumeRatioBlueprint,
   "impulse-momentum": impulseMomentumBlueprint,

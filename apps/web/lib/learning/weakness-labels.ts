@@ -44,6 +44,10 @@ export const weaknessCopyBySkill: Partial<Record<SkillId, {
     title: "Наклонная плоскость",
     hint: "Вдоль плоскости работает составляющая $mg\\sin\\alpha$.",
   },
+  "resultant-force-2d": {
+    title: "Силы под углом 90°",
+    hint: "Перпендикулярные силы складывай ==векторно==: $F = \\sqrt{F_1^2 + F_2^2}$.",
+  },
   "resultant-force": {
     title: "Равнодействующая",
     hint: "Выбери **положительное направление** и учитывай знаки сил.",
@@ -55,6 +59,10 @@ export const weaknessCopyBySkill: Partial<Record<SkillId, {
   "relative-velocity-vectors": {
     title: "Сложение скоростей",
     hint: "Перпендикулярные скорости складывай ==векторно==: $v = \\sqrt{v_1^2 + v_2^2}$.",
+  },
+  "resistor-network": {
+    title: "Соединения резисторов",
+    hint: "Параллельно общее сопротивление ==меньше меньшего==; последовательно — просто сумма.",
   },
   "ohm-law": {
     title: "Закон Ома",

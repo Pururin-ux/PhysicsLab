@@ -299,7 +299,7 @@ export function ProfileOverview() {
           label="Пробный вариант"
           value={bestExam ? `${bestExam.score}/${bestExam.total}` : "—"}
           hint={
-            examLog.length > 0 ? `попыток: ${examLog.length}` : "механика · 10"
+            examLog.length > 0 ? `попыток: ${examLog.length}` : "все разделы · 10"
           }
         />
         <StatCard
