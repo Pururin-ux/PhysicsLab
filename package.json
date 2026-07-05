@@ -8,24 +8,17 @@
     "npm": ">=9.6.5"
   },
   "scripts": {
-    "dev": "astro dev",
-    "build": "astro build",
-    "preview": "astro preview",
-    "check": "astro check",
-    "test:physics": "node tests/physics/kinematics.test.mjs",
-    "test:e2e": "playwright test",
-    "screenshots": "playwright test tests/screenshots",
-    "design:lint": "design.md lint DESIGN.md"
+    "dev": "npm --prefix apps/web run dev --",
+    "build": "npm --prefix apps/web run build",
+    "preview": "npm --prefix apps/web run start --",
+    "check": "npm --prefix apps/web run check",
+    "test": "npm --prefix apps/web run test",
+    "test:physics": "npm --prefix apps/web run test:physics",
+    "test:e2e": "npm --prefix apps/web run test:e2e",
+    "screenshots": "npm --prefix apps/web run screenshots"
   },
   "devDependencies": {
-    "@astrojs/check": "0.9.9",
-    "@google/design.md": "^0.1.1",
     "@playwright/test": "^1.60.0",
-    "@types/node": "^25.8.0",
-    "astro": "6.3.3",
-    "typescript": "6.0.3"
-  },
-  "dependencies": {
-    "katex": "^0.16.47"
+    "typescript": "^5.9.3"
   }
 }

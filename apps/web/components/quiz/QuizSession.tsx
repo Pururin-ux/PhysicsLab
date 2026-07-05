@@ -1,0 +1,375 @@
+"use client";
+
+import { useStore } from "@nanostores/react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { CoachBubble } from "../coach/CoachBubble";
+import { useCoach } from "../coach/useCoach";
+import { ExplanationSection } from "./ExplanationSection";
+import { OptionList } from "./OptionList";
+import { QuestionCard } from "./QuestionCard";
+import { SessionSummary } from "./SessionSummary";
+import { useGeneratedQuizData } from "./useGeneratedQuizData";
+import {
+  $quizSession,
+  answerCurrentTask,
+  moveToNextTask,
+  resetQuizSession,
+  restartQuizSession,
+  type QuizData,
+} from "./quiz-session-store";
+import { Badge } from "../ui/Badge";
+import { Button } from "../ui/Button";
+import { Card } from "../ui/Card";
+import { getTaskFocus } from "../../lib/learning/task-focus";
+import { recordExamAttempt } from "../../lib/stores/exam-log-store";
+import {
+  recordCompletedSession,
+  recordExamSession,
+  type TopicId,
+} from "../../lib/stores/progress-store";
+import { addXP, resetSessionProgress } from "../../lib/stores/session-store";
+import kinematicsData from "../../content/tasks/kinematics-10.json";
+
+interface QuizSessionProps {
+  data?: QuizData;
+  mode?: "static" | "generated";
+  generatedTemplate?: string;
+  generatedTopic?: string;
+  generatedTitle?: string;
+  topicId?: TopicId;
+  // "exam" пишет результат в журнал пробных вариантов и слабые места тем,
+  // не увеличивая счётчик тренировок темы.
+  sessionKind?: "practice" | "exam";
+}
+
+const nextStepByTopic: Record<string, { href: string; label: string }> = {
+  kinematics: { href: "/practice/dynamics-demo", label: "Дальше: Динамика" },
+  dynamics: { href: "/practice/exam-demo", label: "Дальше: Пробный вариант" },
+  electrodynamics: { href: "/practice/thermo-demo", label: "Дальше: Термодинамика" },
+  thermodynamics: { href: "/topics", label: "К темам" },
+};
+
+const defaultQuizData = kinematicsData as QuizData;
+const emptyTasks: QuizData["tasks"] = [];
+
+export function QuizSession({
+  data = defaultQuizData,
+  mode = "static",
+  generatedTemplate = "free-fall",
+  generatedTopic = "Кинематика",
+  generatedTitle = "Задачи",
+  topicId,
+  sessionKind = "practice",
+}: QuizSessionProps) {
+  const session = useStore($quizSession);
+  const [generatedBatch, setGeneratedBatch] = useState(0);
+  const {
+    data: generatedData,
+    error: generatedError,
+    status: generatedStatus,
+  } = useGeneratedQuizData({
+    enabled: mode === "generated",
+    template: generatedTemplate,
+    topic: generatedTopic,
+    title: generatedTitle,
+    batch: generatedBatch,
+  });
+  const {
+    bubble,
+    emitCoachEvent,
+    startPauseTimer,
+    clearPauseTimer,
+    hideCoach,
+  } = useCoach();
+  const sessionStartTimerRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
+  const sessionRecordedRef = useRef(false);
+  const reactionRef = useRef<HTMLDivElement>(null);
+  const activeData = mode === "generated" ? generatedData : data;
+  const tasks = activeData?.tasks ?? emptyTasks;
+  const currentTask = tasks[session.currentIndex];
+  const isLastTask = session.currentIndex >= session.total - 1;
+  const progressLabel = `${Math.min(session.currentIndex + 1, session.total)} / ${session.total}`;
+
+  const weakTraps = useMemo(
+    () =>
+      session.answers
+        .filter((answer) => !answer.isCorrect)
+        .map((answer) => answer.selectedMisconception || answer.taskTrap)
+        .filter((trap) => trap.length > 0),
+    [session.answers],
+  );
+
+  useEffect(() => {
+    if (tasks.length === 0) {
+      return;
+    }
+
+    resetSessionProgress();
+    resetQuizSession(tasks.length);
+    sessionRecordedRef.current = false;
+
+    if (sessionStartTimerRef.current) {
+      clearTimeout(sessionStartTimerRef.current);
+    }
+
+    sessionStartTimerRef.current = setTimeout(() => {
+      emitCoachEvent({ type: "session_start" });
+    }, 1200);
+
+    if (tasks[0]) {
+      startPauseTimer(tasks[0].coach_lines);
+    }
+
+    return () => {
+      if (sessionStartTimerRef.current) {
+        clearTimeout(sessionStartTimerRef.current);
+        sessionStartTimerRef.current = null;
+      }
+      clearPauseTimer();
+    };
+  }, [clearPauseTimer, emitCoachEvent, startPauseTimer, tasks]);
+
+  // Как только ученик ответил — плавно подводим реплику Nova в центр экрана,
+  // чтобы она сразу оказалась в поле зрения и её не пришлось искать прокруткой.
+  useEffect(() => {
+    if (session.phase !== "answered") {
+      return;
+    }
+
+    const frame = requestAnimationFrame(() => {
+      reactionRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    });
+
+    return () => cancelAnimationFrame(frame);
+  }, [session.phase, session.currentIndex]);
+
+  function handleAnswer(optionId: string) {
+    if (!currentTask || session.phase !== "active") return;
+
+    const result = answerCurrentTask(currentTask, optionId);
+    if (!result) return;
+
+    clearPauseTimer();
+    hideCoach();
+
+    if (result.isCorrect) {
+      addXP(10);
+      emitCoachEvent(
+        {
+          type: "correct_answer",
+          streak: result.streak,
+          taskId: currentTask.id,
+        },
+        currentTask.coach_lines,
+      );
+    } else {
+      const selectedOption = currentTask.options.find(
+        (option) => option.id === optionId,
+      );
+      const taskFocus = getTaskFocus(currentTask);
+      const selectedMisconception = selectedOption?.misconception?.trim();
+
+      addXP(0);
+      emitCoachEvent(
+        {
+          type: "wrong_answer",
+          attempt: result.attempt,
+          taskId: currentTask.id,
+        },
+        {
+          ...currentTask.coach_lines,
+          wrong: selectedMisconception
+            ? `Похоже, сработал ход: ${selectedMisconception}. ${taskFocus.diagnosticPrompt}`
+            : currentTask.coach_lines.wrong,
+          hint: taskFocus.selfCheck,
+        },
+      );
+    }
+  }
+
+  function handleNext() {
+    if (!currentTask || session.phase !== "answered") return;
+
+    hideCoach();
+
+    if (isLastTask && !sessionRecordedRef.current) {
+      if (sessionKind === "exam") {
+        sessionRecordedRef.current = true;
+        recordExamSession(session.answers);
+        recordExamAttempt(session.score, session.total);
+      } else if (topicId) {
+        sessionRecordedRef.current = true;
+        recordCompletedSession({
+          topicId,
+          score: session.score,
+          total: session.total,
+          answers: session.answers,
+        });
+      }
+    }
+
+    const nextIndex = session.currentIndex + 1;
+    const moved = moveToNextTask();
+    if (!moved) return;
+
+    if (isLastTask) {
+      clearPauseTimer();
+      emitCoachEvent({
+        type: "session_end",
+        score: $quizSession.get().score,
+        total: session.total,
+      });
+      return;
+    }
+
+    const nextTask = tasks[nextIndex];
+    if (nextTask) {
+      startPauseTimer(nextTask.coach_lines);
+    }
+  }
+
+  function handleRestart() {
+    sessionRecordedRef.current = false;
+
+    if (mode === "generated") {
+      resetSessionProgress();
+      hideCoach();
+      setGeneratedBatch((current) => current + 1);
+      return;
+    }
+
+    resetSessionProgress();
+    restartQuizSession();
+    hideCoach();
+    if (tasks[0]) {
+      startPauseTimer(tasks[0].coach_lines);
+    }
+  }
+
+  if (session.phase === "completed") {
+    const nextStep =
+      sessionKind === "exam"
+        ? { href: "/topics", label: "К темам" }
+        : topicId
+          ? nextStepByTopic[topicId]
+          : undefined;
+
+    return (
+      <SessionSummary
+        score={session.score}
+        total={session.total}
+        weakTraps={weakTraps}
+        onRestart={handleRestart}
+        restartLabel={
+          sessionKind === "exam"
+            ? "Новый вариант"
+            : mode === "generated"
+              ? "Ещё 10 задач"
+              : undefined
+        }
+        topic={activeData?.topic}
+        nextHref={nextStep?.href}
+        nextLabel={nextStep?.label}
+      />
+    );
+  }
+
+  if (mode === "generated" && generatedStatus === "loading") {
+    return (
+      <section className="relative mx-auto flex max-w-[580px] flex-col gap-4 pb-8">
+        <Card className="flex flex-col gap-3">
+          <Badge tone="cyan">{generatedTitle}</Badge>
+          <p className="text-[14px] font-normal leading-[1.7] text-white/70">
+            Готовлю новый набор задач…
+          </p>
+        </Card>
+      </section>
+    );
+  }
+
+  if (mode === "generated" && generatedStatus === "error") {
+    return (
+      <section className="relative mx-auto flex max-w-[580px] flex-col gap-4 pb-8">
+        <Card className="flex flex-col gap-4">
+          <Badge tone="gold">Не удалось загрузить задачи</Badge>
+          <p className="text-[14px] font-normal leading-[1.7] text-white/70">
+            {generatedError}
+          </p>
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={() => setGeneratedBatch((current) => current + 1)}
+          >
+            Попробовать ещё раз
+          </Button>
+        </Card>
+      </section>
+    );
+  }
+
+  if (!currentTask) return null;
+
+  const taskFocus = getTaskFocus(currentTask);
+  const latestAnswer = session.phase === "answered" ? session.answers.at(-1) : null;
+  const selectedMisconception =
+    latestAnswer && !latestAnswer.isCorrect
+      ? latestAnswer.selectedMisconception ?? latestAnswer.taskTrap
+      : undefined;
+
+  return (
+    <section className="relative mx-auto flex max-w-[580px] flex-col gap-4 pb-8">
+      <div className="flex items-center justify-between gap-3">
+        <Badge>{progressLabel}</Badge>
+        {session.streak > 0 ? (
+          <span className="text-[12px] font-semibold text-nova-cyan/80">
+            Серия: {session.streak}
+          </span>
+        ) : null}
+      </div>
+
+      <QuestionCard
+        type={currentTask.type}
+        difficulty={currentTask.difficulty}
+        text={currentTask.text}
+        formula={currentTask.formula}
+        graph={currentTask.graph}
+        diagram={currentTask.diagram}
+        focus={taskFocus}
+        showSolutionContent={session.phase === "answered"}
+      />
+
+      <OptionList
+        task={currentTask}
+        options={currentTask.options}
+        session={session}
+        onSelect={handleAnswer}
+      />
+
+      {/* Реплика Nova — сразу под вариантами ответа, там же, куда только что
+          смотрел ученик. Компактная и остаётся до нажатия «Дальше». */}
+      <div ref={reactionRef} className="scroll-mt-6">
+        <CoachBubble state={bubble.state} text={bubble.text} visible={bubble.visible} />
+      </div>
+
+      {session.phase === "answered" ? (
+        <>
+          <ExplanationSection
+            explanation={currentTask.explanation}
+            explanationLatex={currentTask.explanation_latex}
+            trap={currentTask.trap}
+            isCorrect={session.answers.at(-1)?.isCorrect ?? false}
+            tutorial={taskFocus}
+            selectedMisconception={selectedMisconception}
+            diagnosticPrompt={taskFocus.diagnosticPrompt}
+          />
+
+          <Button type="button" size="lg" onClick={handleNext}>
+            {isLastTask ? "Показать итог" : "Следующая задача"}
+          </Button>
+        </>
+      ) : null}
+    </section>
+  );
+}

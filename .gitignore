@@ -1,22 +1,31 @@
 node_modules/
 dist/
 .astro/
+.claude/
 .agents/
 artifacts/
-artifacts/screenshots/
-artifacts/playwright-results/
-artifacts/physics-tests/
+output/
 playwright-report/
 test-results/
+**/tsconfig.tsbuildinfo
+.next/
 .env
 .env.*
 !.env.example
-PhysLabProt-main/.emergent/
-PhysLabProt-main/backend/*.log
-PhysLabProt-main/frontend/*.log
-PhysLabProt-main/test_reports/
 **/__pycache__/
 **/.pytest_cache/
 *.tmp
 *.cache
 *.log
+*.pyc
+
+# Остатки старой структуры на диске (исходники переехали в legacy/ и apps/)
+prototypes/
+
+# legacy/ хранится в git выборочно: исходники и дизайн-референсы — да,
+# артефакты сборки, отчёты и тяжёлые сканы экзаменов — нет.
+legacy/**/node_modules/
+legacy/**/.emergent/
+legacy/PhysLabProt-main/frontend/build/
+legacy/PhysLabProt-main/test_reports/
+legacy/**/*.pdf
