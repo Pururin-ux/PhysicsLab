@@ -8,6 +8,12 @@ export type { TopicId } from "../learning/taxonomy.ts";
 
 export const PROGRESS_STORAGE_KEY = "physicslab-v3-progress-v1";
 
+// Контракт версионирования: любое изменение формы TopicProgress/AppProgress —
+// это bump PROGRESS_VERSION плюс ветка в migrateStoredProgress. Ключ
+// хранилища не меняем, чтобы прогресс учеников переживал обновления.
+// v1 → v2: добавлено поле weakTrapLastSeenAt (даты последней встречи ловушки).
+export const PROGRESS_VERSION = 2;
+
 export type TopicProgress = {
   solved: number;
   correct: number;
@@ -18,7 +24,7 @@ export type TopicProgress = {
 };
 
 export type AppProgress = {
-  version: 1;
+  version: typeof PROGRESS_VERSION;
   topics: Record<TopicId, TopicProgress>;
 };
 
@@ -42,7 +48,7 @@ function createEmptyTopicProgress(): TopicProgress {
 
 function createDefaultProgress(): AppProgress {
   return {
-    version: 1,
+    version: PROGRESS_VERSION,
     topics: Object.fromEntries(
       topics.map((topic) => [topic.id, createEmptyTopicProgress()]),
     ) as Record<TopicId, TopicProgress>,
@@ -112,8 +118,16 @@ function normalizeTopicProgress(value: unknown): TopicProgress {
   };
 }
 
-function normalizeProgress(value: unknown): AppProgress | null {
-  if (!isRecord(value) || value.version !== 1 || !isRecord(value.topics)) {
+// Понимает текущую и все прошлые версии; незнакомая версия -> null (сброс).
+// Экспортирована ради тестов миграции — в UI используйте hydrateProgressFromStorage.
+export function migrateStoredProgress(value: unknown): AppProgress | null {
+  if (!isRecord(value) || !isRecord(value.topics)) {
+    return null;
+  }
+
+  // v1: не было weakTrapLastSeenAt — normalizeTopicProgress дополняет его
+  // пустым словарём, других отличий от v2 нет.
+  if (value.version !== 1 && value.version !== PROGRESS_VERSION) {
     return null;
   }
 
@@ -151,13 +165,15 @@ export function hydrateProgressFromStorage() {
       return;
     }
 
-    const progress = normalizeProgress(JSON.parse(raw));
+    const progress = migrateStoredProgress(JSON.parse(raw));
     if (!progress) {
       window.localStorage.removeItem(PROGRESS_STORAGE_KEY);
       return;
     }
 
     $appProgress.set(progress);
+    // Смигрированное состояние сразу пишем обратно уже в текущей версии.
+    saveProgress(progress);
   } catch {
     window.localStorage.removeItem(PROGRESS_STORAGE_KEY);
   }
@@ -188,7 +204,7 @@ export function recordCompletedSession({
   }
 
   const nextProgress: AppProgress = {
-    version: 1,
+    version: PROGRESS_VERSION,
     topics: {
       ...current.topics,
       [topicId]: {
@@ -253,7 +269,7 @@ export function recordExamSession(answers: AnswerRecord[]) {
     };
   }
 
-  const nextProgress: AppProgress = { version: 1, topics: nextTopics };
+  const nextProgress: AppProgress = { version: PROGRESS_VERSION, topics: nextTopics };
 
   $appProgress.set(nextProgress);
   saveProgress(nextProgress);

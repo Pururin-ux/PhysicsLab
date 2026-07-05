@@ -1,4 +1,4 @@
-import { skillMetadata, type SkillId } from "./taxonomy";
+import { skillMetadata, type SkillId } from "./taxonomy.ts";
 
 export type TaskFocus = {
   title: string;
@@ -130,7 +130,9 @@ const focusByBlueprint: Record<string, TaskFocus> = {
   }),
 };
 
-const checkBySkill: Partial<Record<SkillId, string>> = {
+// Экспорт — только для consistency.test.ts: тест обязывает заводить копию
+// для каждого нового навыка, чтобы ученик не видел generic-fallback.
+export const checkBySkill: Partial<Record<SkillId, string>> = {
   "vt-slope": "Смотри на наклон: нужно изменение скорости за выбранный промежуток времени.",
   "vt-area": "Считай площадь под графиком скорости за весь интервал, а не одно значение скорости.",
   "free-fall": "Для падения из покоя путь растёт как $t^2$: используй $h=\\frac{gt^2}{2}$.",

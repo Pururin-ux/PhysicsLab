@@ -22,18 +22,29 @@ jobs:
         with:
           node-version-file: .nvmrc
           cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            apps/web/package-lock.json
 
-      - name: Install dependencies
+      # Корневой package.json — только оркестрация (playwright + tsc);
+      # рабочие зависимости приложения живут в apps/web и ставятся отдельно.
+      - name: Install root dependencies
         run: npm ci
+
+      - name: Install web dependencies
+        run: npm ci --prefix apps/web
 
       - name: Install Playwright browser
         run: npx playwright install --with-deps chromium
 
-      - name: Check Astro
+      - name: Type check
         run: npm run check
 
       - name: Test physics
         run: npm run test:physics
+
+      - name: Test all units
+        run: npm test
 
       - name: Build
         run: npm run build

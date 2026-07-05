@@ -15,7 +15,8 @@ export type WeaknessDisplay = {
 
 const fallbackHint = "Повтори разбор задачи.";
 
-const weaknessCopyBySkill: Partial<Record<SkillId, {
+// Экспорт — только для consistency.test.ts (см. комментарий в task-focus.ts).
+export const weaknessCopyBySkill: Partial<Record<SkillId, {
   title: string;
   hint: string;
 }>> = {

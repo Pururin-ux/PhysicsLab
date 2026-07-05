@@ -21,13 +21,9 @@ import { Badge } from "../ui/Badge";
 import { Button } from "../ui/Button";
 import { Card } from "../ui/Card";
 import { getTaskFocus } from "../../lib/learning/task-focus";
-import { recordExamAttempt } from "../../lib/stores/exam-log-store";
-import {
-  recordCompletedSession,
-  recordExamSession,
-  type TopicId,
-} from "../../lib/stores/progress-store";
+import type { TopicId } from "../../lib/stores/progress-store";
 import { addXP, resetSessionProgress } from "../../lib/stores/session-store";
+import { useSessionRecording } from "./useSessionRecording";
 import kinematicsData from "../../content/tasks/kinematics-10.json";
 
 interface QuizSessionProps {
@@ -84,7 +80,10 @@ export function QuizSession({
   const sessionStartTimerRef = useRef<ReturnType<typeof setTimeout> | null>(
     null,
   );
-  const sessionRecordedRef = useRef(false);
+  const { recordSessionResult, resetRecording } = useSessionRecording({
+    sessionKind,
+    topicId,
+  });
   const reactionRef = useRef<HTMLDivElement>(null);
   const activeData = mode === "generated" ? generatedData : data;
   const tasks = activeData?.tasks ?? emptyTasks;
@@ -108,7 +107,7 @@ export function QuizSession({
 
     resetSessionProgress();
     resetQuizSession(tasks.length);
-    sessionRecordedRef.current = false;
+    resetRecording();
 
     if (sessionStartTimerRef.current) {
       clearTimeout(sessionStartTimerRef.current);
@@ -129,7 +128,7 @@ export function QuizSession({
       }
       clearPauseTimer();
     };
-  }, [clearPauseTimer, emitCoachEvent, startPauseTimer, tasks]);
+  }, [clearPauseTimer, emitCoachEvent, resetRecording, startPauseTimer, tasks]);
 
   // Как только ученик ответил — плавно подводим реплику Nova в центр экрана,
   // чтобы она сразу оказалась в поле зрения и её не пришлось искать прокруткой.
@@ -194,20 +193,8 @@ export function QuizSession({
 
     hideCoach();
 
-    if (isLastTask && !sessionRecordedRef.current) {
-      if (sessionKind === "exam") {
-        sessionRecordedRef.current = true;
-        recordExamSession(session.answers);
-        recordExamAttempt(session.score, session.total);
-      } else if (topicId) {
-        sessionRecordedRef.current = true;
-        recordCompletedSession({
-          topicId,
-          score: session.score,
-          total: session.total,
-          answers: session.answers,
-        });
-      }
+    if (isLastTask) {
+      recordSessionResult(session);
     }
 
     const nextIndex = session.currentIndex + 1;
@@ -231,7 +218,7 @@ export function QuizSession({
   }
 
   function handleRestart() {
-    sessionRecordedRef.current = false;
+    resetRecording();
 
     if (mode === "generated") {
       resetSessionProgress();

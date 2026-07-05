@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { buildReviewPlan, countDueReviews } from "./review-plan.ts";
-import type { AppProgress } from "../stores/progress-store.ts";
+import { PROGRESS_VERSION, type AppProgress } from "../stores/progress-store.ts";
 
 function progressWithWeaknesses(
   weakTraps: Record<string, number>,
@@ -11,7 +11,7 @@ function progressWithWeaknesses(
   ),
 ): AppProgress {
   return {
-    version: 1,
+    version: PROGRESS_VERSION,
     topics: {
       kinematics: {
         solved: 10,
