@@ -1,6 +1,8 @@
 import { atom } from "nanostores";
+import { skillMetadata } from "../learning/taxonomy.ts";
 import { topics } from "../topics.ts";
 import type { AnswerRecord } from "../../components/quiz/quiz-session-store.ts";
+import { logPracticeDay } from "./practice-log-store.ts";
 
 export const PROGRESS_STORAGE_KEY = "physicslab-v3-progress-v1";
 
@@ -177,6 +179,68 @@ export function recordCompletedSession({
 
   $appProgress.set(nextProgress);
   saveProgress(nextProgress);
+  logPracticeDay();
+}
+
+function topicIdForBlueprint(blueprint: string): TopicId | null {
+  const skill =
+    blueprint in skillMetadata
+      ? skillMetadata[blueprint as keyof typeof skillMetadata]
+      : null;
+
+  return skill && skill.topicId in $appProgress.get().topics
+    ? skill.topicId
+    : null;
+}
+
+// Пробный вариант пополняет статистику решённых задач и слабые места тем,
+// но не считается отдельной "тренировкой" темы (completedSessions не растёт).
+export function recordExamSession(answers: AnswerRecord[]) {
+  const current = $appProgress.get();
+  const nextTopics = { ...current.topics };
+  const practicedAt = new Date().toISOString();
+
+  for (const answer of answers) {
+    const topicId = topicIdForBlueprint(answer.blueprint);
+    if (!topicId) {
+      continue;
+    }
+
+    const existing = nextTopics[topicId] ?? createEmptyTopicProgress();
+    const weakTraps = { ...existing.weakTraps };
+
+    if (!answer.isCorrect && answer.blueprint && answer.trap) {
+      const trapKey = `${answer.blueprint}:${answer.trap}`;
+      weakTraps[trapKey] = (weakTraps[trapKey] || 0) + 1;
+    }
+
+    nextTopics[topicId] = {
+      ...existing,
+      solved: existing.solved + 1,
+      correct: existing.correct + (answer.isCorrect ? 1 : 0),
+      weakTraps,
+      lastPracticedAt: practicedAt,
+    };
+  }
+
+  const nextProgress: AppProgress = { version: 1, topics: nextTopics };
+
+  $appProgress.set(nextProgress);
+  saveProgress(nextProgress);
+  logPracticeDay();
+}
+
+export function combineWeakTraps(progress: AppProgress): Record<string, number> {
+  const combined: Record<string, number> = {};
+
+  for (const topic of topics) {
+    const weakTraps = progress.topics[topic.id]?.weakTraps ?? {};
+    for (const [key, count] of Object.entries(weakTraps)) {
+      combined[key] = (combined[key] ?? 0) + count;
+    }
+  }
+
+  return combined;
 }
 
 export function resetProgress() {

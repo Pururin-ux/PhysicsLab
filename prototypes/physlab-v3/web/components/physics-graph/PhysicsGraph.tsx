@@ -275,6 +275,7 @@ export function PhysicsGraph({ spec, className, compact = false, ariaLabel }: Ph
                 key={annotationKey(annotation, index)}
                 d={path}
                 fill={areaFillColor}
+                className="graph-fade-in"
               />
             ) : null;
           }
@@ -283,7 +284,7 @@ export function PhysicsGraph({ spec, className, compact = false, ariaLabel }: Ph
             const path = buildShadedPolygonPath(annotation.points, scale);
 
             return path ? (
-              <g key={annotationKey(annotation, index)}>
+              <g key={annotationKey(annotation, index)} className="graph-fade-in">
                 <path d={path} fill={areaFillColor} />
                 <path d={path} fill={`url(#${areaPatternId})`} opacity="0.75" />
               </g>
@@ -397,13 +398,18 @@ export function PhysicsGraph({ spec, className, compact = false, ariaLabel }: Ph
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
+                pathLength={1}
+                className="graph-path-draw"
               />
               {series.points.map((point, pointIndex) => {
                 const mapped = scale.mapPoint(point);
+                const popDelay = `${0.75 + pointIndex * 0.08}s`;
 
                 return (
                   <g
                     key={`${series.id ?? index}-${point.x}-${point.y}-${pointIndex}`}
+                    className="graph-point-pop"
+                    style={{ animationDelay: popDelay }}
                   >
                     <circle
                       cx={mapped.x}
@@ -476,8 +482,11 @@ export function PhysicsGraph({ spec, className, compact = false, ariaLabel }: Ph
                 y={labelY}
                 textAnchor={textAnchor}
                 fill={graphColors.text}
-                className="text-[11px] font-semibold"
-                style={{ fontFamily: "var(--font-physics-ui)" }}
+                className="graph-point-pop text-[11px] font-semibold"
+                style={{
+                  fontFamily: "var(--font-physics-ui)",
+                  animationDelay: `${0.8 + index * 0.08}s`,
+                }}
               >
                 {point.label}
               </text>

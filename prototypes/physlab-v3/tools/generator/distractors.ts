@@ -1,5 +1,5 @@
 import type { DistractorRule, Params } from "./types.ts";
-import { GRAVITY } from "./solver.ts";
+import { GAS_CONSTANT, GRAVITY, WATER_SPECIFIC_HEAT_KJ, variantIndex } from "./solver.ts";
 
 function freeFallGtInsteadOfHalfSquare(p: Params): number {
   return GRAVITY * p.t;
@@ -35,10 +35,6 @@ function vtAreaFinalVelocityTimesTotalTime(p: Params): number {
 
 function vtAreaTriangleOnly(p: Params): number {
   return (p.dv * p.t2) / 2;
-}
-
-function variantIndex(p: Params, count: number): number {
-  return Math.abs(Math.trunc(p.__variant ?? 0)) % count;
 }
 
 function newtonWrongOperation(p: Params): number {
@@ -240,6 +236,58 @@ export const resultantForceDistractors: DistractorRule[] = [
   },
 ];
 
+function ohmWrongOperation(p: Params): number {
+  const voltage = p.i * p.r;
+
+  switch (variantIndex(p, 3)) {
+    case 1:
+      return p.i / p.r;
+    case 2:
+      return voltage * p.i;
+    default:
+      return voltage * p.r;
+  }
+}
+
+function ohmInvertedRatio(p: Params): number {
+  switch (variantIndex(p, 3)) {
+    case 1:
+      return p.r / p.i;
+    case 2:
+      return 1 / p.r;
+    default:
+      return 1 / p.i;
+  }
+}
+
+function ohmAddsGivenValues(p: Params): number {
+  const voltage = p.i * p.r;
+
+  switch (variantIndex(p, 3)) {
+    case 1:
+      return p.i + p.r;
+    case 2:
+      return voltage + p.i;
+    default:
+      return voltage + p.r;
+  }
+}
+
+export const ohmLawDistractors: DistractorRule[] = [
+  {
+    label: "умножил вместо деления или наоборот",
+    compute: ohmWrongOperation,
+  },
+  {
+    label: "перевернул отношение величин",
+    compute: ohmInvertedRatio,
+  },
+  {
+    label: "сложил данные вместо закона Ома",
+    compute: ohmAddsGivenValues,
+  },
+];
+
 export const weightLiftDistractors: DistractorRule[] = [
   {
     label: "перепутал знак ускорения лифта",
@@ -252,5 +300,140 @@ export const weightLiftDistractors: DistractorRule[] = [
   {
     label: "дважды учел ускорение лифта",
     compute: weightDoublesAcceleration,
+  },
+];
+
+function densityRatioEdgeInsteadOfVolume(p: Params): number {
+  return (p.rho1 * p.a1) / (p.rho2 * p.a2);
+}
+
+function densityRatioSquaredEdge(p: Params): number {
+  return (p.rho1 * p.a1 ** 2) / (p.rho2 * p.a2 ** 2);
+}
+
+function densityRatioInverted(p: Params): number {
+  return (p.rho2 * p.a2 ** 3) / (p.rho1 * p.a1 ** 3);
+}
+
+export const densityVolumeRatioDistractors: DistractorRule[] = [
+  {
+    label: "сравнил рёбра вместо объёмов",
+    compute: densityRatioEdgeInsteadOfVolume,
+  },
+  {
+    label: "возвёл ребро в квадрат вместо куба",
+    compute: densityRatioSquaredEdge,
+  },
+  {
+    label: "перепутал, что через что делить",
+    compute: densityRatioInverted,
+  },
+];
+
+function impulseUsesDecoyMassMultiplied(p: Params): number {
+  return p.F * p.dt * p.m;
+}
+
+function impulseUsesDecoyMassDivided(p: Params): number {
+  return (p.F * p.dt) / p.m;
+}
+
+function impulseWrongOperation(p: Params): number {
+  return p.F / p.dt;
+}
+
+export const impulseFromForceTimeDistractors: DistractorRule[] = [
+  {
+    label: "умножил на лишнюю массу",
+    compute: impulseUsesDecoyMassMultiplied,
+  },
+  {
+    label: "разделил на лишнюю массу",
+    compute: impulseUsesDecoyMassDivided,
+  },
+  {
+    label: "разделил силу на время вместо умножения",
+    compute: impulseWrongOperation,
+  },
+];
+
+function chargeUsesSumInsteadOfAverage(p: Params): number {
+  return p.q1 + p.q2;
+}
+
+function chargeKeepsLargerUnchanged(p: Params): number {
+  return Math.abs(p.q1) >= Math.abs(p.q2) ? p.q1 : p.q2;
+}
+
+function chargeSubtractsInsteadOfAdds(p: Params): number {
+  return (p.q1 - p.q2) / 2;
+}
+
+export const chargeSharingDistractors: DistractorRule[] = [
+  {
+    label: "не поделил заряд пополам",
+    compute: chargeUsesSumInsteadOfAverage,
+  },
+  {
+    label: "решил, что заряд не меняется",
+    compute: chargeKeepsLargerUnchanged,
+  },
+  {
+    label: "вычел вместо сложения",
+    compute: chargeSubtractsInsteadOfAdds,
+  },
+];
+
+function idealGasUsesCelsiusDirectly(p: Params): number {
+  return (p.n * GAS_CONSTANT * p.tCelsius) / p.V;
+}
+
+function idealGasForgotMoles(p: Params): number {
+  return (GAS_CONSTANT * (p.tCelsius + 273)) / p.V;
+}
+
+function idealGasMultipliesByVolume(p: Params): number {
+  return p.n * GAS_CONSTANT * (p.tCelsius + 273) * p.V;
+}
+
+export const idealGasPressureDistractors: DistractorRule[] = [
+  {
+    label: "использовал температуру в °C вместо кельвинов",
+    compute: idealGasUsesCelsiusDirectly,
+  },
+  {
+    label: "забыл количество вещества",
+    compute: idealGasForgotMoles,
+  },
+  {
+    label: "умножил на объём вместо деления",
+    compute: idealGasMultipliesByVolume,
+  },
+];
+
+function heatForgotMass(p: Params): number {
+  return WATER_SPECIFIC_HEAT_KJ * p.dT;
+}
+
+function heatForgotDeltaT(p: Params): number {
+  return WATER_SPECIFIC_HEAT_KJ * p.m;
+}
+
+function heatForgotSpecificHeat(p: Params): number {
+  return p.m * p.dT;
+}
+
+export const heatAmountDistractors: DistractorRule[] = [
+  {
+    label: "забыл массу",
+    compute: heatForgotMass,
+  },
+  {
+    label: "забыл изменение температуры",
+    compute: heatForgotDeltaT,
+  },
+  {
+    label: "забыл удельную теплоёмкость",
+    compute: heatForgotSpecificHeat,
   },
 ];

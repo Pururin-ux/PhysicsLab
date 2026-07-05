@@ -32,6 +32,12 @@ export function formatAnswerValue(value: number): string {
   return String(normalized).replace(".", ",");
 }
 
+// Для чисел внутри $...$: KaTeX ставит пробел после запятой-пунктуации,
+// поэтому десятичную запятую нужно экранировать как {,}.
+export function formatMathValue(value: number): string {
+  return formatAnswerValue(value).replace(",", "{,}");
+}
+
 export function isAnswerValueAllowed(
   answerKind: AnswerKind = "positive",
   value: number,

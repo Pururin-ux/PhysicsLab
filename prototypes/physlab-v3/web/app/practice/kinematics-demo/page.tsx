@@ -1,6 +1,7 @@
 import { ConceptReveal } from "../../../components/theory/ConceptReveal";
 import { TheoryBlock } from "../../../components/theory/TheoryBlock";
 import { KinematicsPracticeModes } from "../../../components/quiz/KinematicsPracticeModes";
+import { TopicAmbientGlow } from "../../../components/layout/TopicAmbientGlow";
 import {
   ACCELERATED_MOTION_XT,
   UNIFORM_MOTION_VT,
@@ -8,12 +9,14 @@ import {
 import { FORMULAS } from "../../../lib/physics/formulas";
 
 export const metadata = {
-  title: "Кинематика | PhysicsLab V3",
+  title: "Кинематика | PhysicsLab",
 };
 
 export default function KinematicsDemoPage() {
   return (
-    <div className="mx-auto flex max-w-[960px] flex-col gap-10 px-4 py-8 sm:gap-12 sm:px-6 sm:py-12 md:px-8 md:py-16">
+    <div className="relative flex min-w-0 flex-col gap-10 sm:gap-12">
+      <TopicAmbientGlow accent="cyan" />
+
       <TheoryBlock
         eyebrow="Кинематика"
         title="Движение и графики"
@@ -22,8 +25,8 @@ export default function KinematicsDemoPage() {
         <ConceptReveal
           graph={UNIFORM_MOTION_VT}
           title="Равномерное движение"
-          modelText="Горизонтальная линия скорости говорит: за равные промежутки времени тело проходит равные отрезки пути."
-          meaningText="Скорость сохраняется. Если направление не меняется, перемещение растёт линейно, а площадь под графиком v(t) равна перемещению."
+          modelText="Горизонтальная линия скорости говорит: за ==равные промежутки времени== тело проходит ==равные отрезки пути==."
+          meaningText="Скорость **сохраняется**. Если направление не меняется, перемещение растёт линейно, а ==площадь под графиком v(t)== равна перемещению."
           trap="Частая ошибка: брать одно значение скорости вместо площади под графиком за весь интервал."
           formula={FORMULAS.uniform_motion}
           formulaCaption="путь при постоянной скорости вдоль одной прямой"
@@ -38,8 +41,8 @@ export default function KinematicsDemoPage() {
         <ConceptReveal
           graph={ACCELERATED_MOTION_XT}
           title="Равноускоренное движение"
-          modelText="Парабола координаты показывает: чем дольше движется тело, тем быстрее растёт пройденное расстояние."
-          meaningText="Скорость меняется равномерно: за каждую секунду добавляется одинаковая прибавка. Координата растёт не одинаковыми шагами."
+          modelText="Парабола координаты показывает: чем дольше движется тело, тем **быстрее** растёт пройденное расстояние."
+          meaningText="Скорость меняется ==равномерно==: за каждую секунду добавляется одинаковая прибавка. Координата растёт **не одинаковыми шагами**."
           trap="Частая ошибка: перемещение за n-ю секунду путают с перемещением за n секунд."
           formula={FORMULAS.accelerated_motion}
           formulaCaption="координата при постоянном ускорении"

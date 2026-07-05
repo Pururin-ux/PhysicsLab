@@ -6,7 +6,11 @@ export type PhysicsSectionId =
   | "quantum"
   | "atomic";
 
-export type TopicId = "kinematics" | "dynamics";
+export type TopicId =
+  | "kinematics"
+  | "dynamics"
+  | "electrodynamics"
+  | "thermodynamics";
 
 export type SkillId =
   | "vt-slope"
@@ -16,7 +20,13 @@ export type SkillId =
   | "friction-force"
   | "incline-force"
   | "resultant-force"
-  | "weight-lift";
+  | "weight-lift"
+  | "density-volume-ratio"
+  | "impulse-momentum"
+  | "ohm-law"
+  | "charge-sharing"
+  | "ideal-gas-state"
+  | "heat-amount";
 
 export type SkillMetadata = {
   id: SkillId;
@@ -91,5 +101,53 @@ export const skillMetadata: Record<SkillId, SkillMetadata> = {
     title: "Вес тела в лифте",
     shortTitle: "Вес в лифте",
     description: "Кажущийся вес при ускорении лифта вверх или вниз.",
+  },
+  "density-volume-ratio": {
+    id: "density-volume-ratio",
+    topicId: "dynamics",
+    sectionId: "mechanics",
+    title: "Плотность и объём",
+    shortTitle: "Плотность и объём",
+    description: "Масса пропорциональна произведению плотности на объём, а не ребру фигуры.",
+  },
+  "impulse-momentum": {
+    id: "impulse-momentum",
+    topicId: "dynamics",
+    sectionId: "mechanics",
+    title: "Импульс силы",
+    shortTitle: "Импульс силы",
+    description: "Изменение импульса тела как произведение силы на время её действия.",
+  },
+  "ohm-law": {
+    id: "ohm-law",
+    topicId: "electrodynamics",
+    sectionId: "electrodynamics",
+    title: "Закон Ома для участка цепи",
+    shortTitle: "Закон Ома",
+    description: "Связь силы тока, напряжения и сопротивления участка цепи.",
+  },
+  "charge-sharing": {
+    id: "charge-sharing",
+    topicId: "electrodynamics",
+    sectionId: "electrodynamics",
+    title: "Деление заряда при контакте",
+    shortTitle: "Деление заряда",
+    description: "Заряд одинаковых проводников после контакта усредняется.",
+  },
+  "ideal-gas-state": {
+    id: "ideal-gas-state",
+    topicId: "thermodynamics",
+    sectionId: "molecular",
+    title: "Уравнение состояния идеального газа",
+    shortTitle: "Уравнение состояния газа",
+    description: "Связь давления, объёма и температуры газа; температура — строго в кельвинах.",
+  },
+  "heat-amount": {
+    id: "heat-amount",
+    topicId: "thermodynamics",
+    sectionId: "molecular",
+    title: "Количество теплоты при нагревании",
+    shortTitle: "Количество теплоты",
+    description: "Теплота нагрева как произведение теплоёмкости, массы и изменения температуры.",
   },
 };

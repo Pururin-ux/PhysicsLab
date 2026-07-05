@@ -1,8 +1,10 @@
 import { Badge } from "../ui/Badge";
 import { Card } from "../ui/Card";
 import { FormulaBox } from "../ui/FormulaBox";
+import { MathText } from "../ui/MathText";
 import { ModelVisual } from "../theory/ModelVisual";
 import { cn } from "../../lib/utils";
+import type { TaskFocus } from "../../lib/learning/task-focus";
 import type { QuizGraph } from "./quiz-session-store";
 
 interface QuestionCardProps {
@@ -11,6 +13,7 @@ interface QuestionCardProps {
   text: string;
   formula?: string;
   graph?: QuizGraph | null;
+  focus?: TaskFocus;
   showSolutionContent?: boolean;
   className?: string;
 }
@@ -31,6 +34,7 @@ export function QuestionCard({
   text,
   formula,
   graph,
+  focus,
   showSolutionContent = false,
   className,
 }: QuestionCardProps) {
@@ -57,6 +61,20 @@ export function QuestionCard({
         <Badge>{typeLabels[type] ?? type}</Badge>
         <Badge tone="blue">{difficultyLabels[difficulty]}</Badge>
       </div>
+
+      {focus ? (
+        <div className="rounded-option border border-nova-cyan/[.16] bg-nova-cyan/[.045] px-3 py-2.5 shadow-[inset_0_1px_0_rgba(255,255,255,.035)]">
+          <p className="text-[11px] font-bold uppercase tracking-[.13em] text-nova-cyan/80">
+            Сейчас тренируем
+          </p>
+          <p className="mt-1 text-[14px] font-[800] leading-tight text-white">
+            {focus.title}
+          </p>
+          <p className="mt-1 text-[12px] leading-[1.55] text-white/62">
+            <MathText text={focus.check} />
+          </p>
+        </div>
+      ) : null}
 
       <p className="text-[14px] font-normal leading-[1.8] text-white/80 md:text-[15px]">
         {text}

@@ -1,6 +1,10 @@
 export type Difficulty = 1 | 2 | 3;
 export type AnswerKind = "positive" | "magnitude" | "signed";
-export type TemplateGroup = "kinematics" | "dynamics";
+export type TemplateGroup =
+  | "kinematics"
+  | "dynamics"
+  | "electrodynamics"
+  | "thermodynamics";
 
 export type Params = Record<string, number>;
 

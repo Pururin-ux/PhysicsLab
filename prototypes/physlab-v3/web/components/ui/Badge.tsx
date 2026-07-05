@@ -1,7 +1,7 @@
 import type { HTMLAttributes, ReactNode } from "react";
 import { cn } from "../../lib/utils";
 
-type BadgeTone = "neutral" | "cyan" | "gold" | "blue";
+type BadgeTone = "neutral" | "cyan" | "gold" | "blue" | "ember";
 
 interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
   tone?: BadgeTone;
@@ -13,6 +13,7 @@ const toneClasses: Record<BadgeTone, string> = {
   cyan: "border-nova-cyan/40 bg-nova-cyan-10 text-white",
   gold: "border-nova-gold/35 bg-nova-gold-10 text-white",
   blue: "border-nova-blue/30 bg-white/[.025] text-white/80",
+  ember: "border-nova-ember/35 bg-nova-ember-10 text-white",
 };
 
 export function Badge({

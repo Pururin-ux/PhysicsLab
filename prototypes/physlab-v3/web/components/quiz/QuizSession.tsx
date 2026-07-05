@@ -19,8 +19,11 @@ import {
 import { Badge } from "../ui/Badge";
 import { Button } from "../ui/Button";
 import { Card } from "../ui/Card";
+import { getTaskFocus } from "../../lib/learning/task-focus";
+import { recordExamAttempt } from "../../lib/stores/exam-log-store";
 import {
   recordCompletedSession,
+  recordExamSession,
   type TopicId,
 } from "../../lib/stores/progress-store";
 import { addXP, resetSessionProgress } from "../../lib/stores/session-store";
@@ -34,9 +37,19 @@ interface QuizSessionProps {
   generatedTitle?: string;
   pedagogyMode?: PedagogyMode;
   topicId?: TopicId;
+  // "exam" пишет результат в журнал пробных вариантов и слабые места тем,
+  // не увеличивая счётчик тренировок темы.
+  sessionKind?: "practice" | "exam";
 }
 
 export type PedagogyMode = "learn" | "practice" | "exam";
+
+const nextStepByTopic: Record<string, { href: string; label: string }> = {
+  kinematics: { href: "/practice/dynamics-demo", label: "Дальше: Динамика" },
+  dynamics: { href: "/practice/exam-demo", label: "Дальше: Пробный вариант" },
+  electrodynamics: { href: "/practice/thermo-demo", label: "Дальше: Термодинамика" },
+  thermodynamics: { href: "/topics", label: "К темам" },
+};
 
 const defaultQuizData = kinematicsData as QuizData;
 const emptyTasks: QuizData["tasks"] = [];
@@ -48,6 +61,7 @@ export function QuizSession({
   generatedTopic = "Кинематика",
   generatedTitle = "Задачи",
   topicId,
+  sessionKind = "practice",
 }: QuizSessionProps) {
   const session = useStore($quizSession);
   const [generatedData, setGeneratedData] = useState<QuizData | null>(null);
@@ -67,6 +81,7 @@ export function QuizSession({
     null,
   );
   const sessionRecordedRef = useRef(false);
+  const reactionRef = useRef<HTMLDivElement>(null);
   const activeData = mode === "generated" ? generatedData : data;
   const tasks = activeData?.tasks ?? emptyTasks;
   const currentTask = tasks[session.currentIndex];
@@ -105,7 +120,7 @@ export function QuizSession({
         const payload = await response.json();
 
         if (!response.ok) {
-          throw new Error(payload.error ?? "Не удалось сгенерировать задачи.");
+          throw new Error("Не удалось загрузить задачи.");
         }
 
         setGeneratedData({
@@ -121,7 +136,7 @@ export function QuizSession({
         }
 
         setGeneratedStatus("error");
-        setGeneratedError(error instanceof Error ? error.message : "Не удалось сгенерировать задачи.");
+        setGeneratedError(error instanceof Error ? error.message : "Не удалось загрузить задачи.");
       }
     }
 
@@ -162,6 +177,20 @@ export function QuizSession({
     };
   }, [clearPauseTimer, emitCoachEvent, startPauseTimer, tasks]);
 
+  // Как только ученик ответил — плавно подводим реплику Nova в центр экрана,
+  // чтобы она сразу оказалась в поле зрения и её не пришлось искать прокруткой.
+  useEffect(() => {
+    if (session.phase !== "answered") {
+      return;
+    }
+
+    const frame = requestAnimationFrame(() => {
+      reactionRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    });
+
+    return () => cancelAnimationFrame(frame);
+  }, [session.phase, session.currentIndex]);
+
   function handleAnswer(optionId: string) {
     if (!currentTask || session.phase !== "active") return;
 
@@ -173,8 +202,24 @@ export function QuizSession({
 
     if (result.isCorrect) {
       addXP(10);
+      emitCoachEvent(
+        {
+          type: "correct_answer",
+          streak: result.streak,
+          taskId: currentTask.id,
+        },
+        currentTask.coach_lines,
+      );
     } else {
       addXP(0);
+      emitCoachEvent(
+        {
+          type: "wrong_answer",
+          attempt: result.attempt,
+          taskId: currentTask.id,
+        },
+        currentTask.coach_lines,
+      );
     }
   }
 
@@ -183,14 +228,20 @@ export function QuizSession({
 
     hideCoach();
 
-    if (isLastTask && topicId && !sessionRecordedRef.current) {
-      sessionRecordedRef.current = true;
-      recordCompletedSession({
-        topicId,
-        score: session.score,
-        total: session.total,
-        answers: session.answers,
-      });
+    if (isLastTask && !sessionRecordedRef.current) {
+      if (sessionKind === "exam") {
+        sessionRecordedRef.current = true;
+        recordExamSession(session.answers);
+        recordExamAttempt(session.score, session.total);
+      } else if (topicId) {
+        sessionRecordedRef.current = true;
+        recordCompletedSession({
+          topicId,
+          score: session.score,
+          total: session.total,
+          answers: session.answers,
+        });
+      }
     }
 
     const nextIndex = session.currentIndex + 1;
@@ -233,28 +284,40 @@ export function QuizSession({
   }
 
   if (session.phase === "completed") {
+    const nextStep =
+      sessionKind === "exam"
+        ? { href: "/topics", label: "К темам" }
+        : topicId
+          ? nextStepByTopic[topicId]
+          : undefined;
+
     return (
-      <>
-        <SessionSummary
-          score={session.score}
-          total={session.total}
-          weakTraps={weakTraps}
-          onRestart={handleRestart}
-          restartLabel={mode === "generated" ? "Ещё 10 задач" : undefined}
-          topic={activeData?.topic}
-        />
-        <CoachBubble {...bubble} />
-      </>
+      <SessionSummary
+        score={session.score}
+        total={session.total}
+        weakTraps={weakTraps}
+        onRestart={handleRestart}
+        restartLabel={
+          sessionKind === "exam"
+            ? "Новый вариант"
+            : mode === "generated"
+              ? "Ещё 10 задач"
+              : undefined
+        }
+        topic={activeData?.topic}
+        nextHref={nextStep?.href}
+        nextLabel={nextStep?.label}
+      />
     );
   }
 
   if (mode === "generated" && generatedStatus === "loading") {
     return (
-      <section className="relative mx-auto flex max-w-[580px] flex-col gap-4 pb-32 sm:pb-8">
+      <section className="relative mx-auto flex max-w-[580px] flex-col gap-4 pb-8">
         <Card className="flex flex-col gap-3">
           <Badge tone="cyan">{generatedTitle}</Badge>
           <p className="text-[14px] font-normal leading-[1.7] text-white/70">
-            Генерирую новый набор задач...
+            Готовлю новый набор задач…
           </p>
         </Card>
       </section>
@@ -263,9 +326,9 @@ export function QuizSession({
 
   if (mode === "generated" && generatedStatus === "error") {
     return (
-      <section className="relative mx-auto flex max-w-[580px] flex-col gap-4 pb-32 sm:pb-8">
+      <section className="relative mx-auto flex max-w-[580px] flex-col gap-4 pb-8">
         <Card className="flex flex-col gap-4">
-          <Badge tone="gold">Ошибка генерации</Badge>
+          <Badge tone="gold">Не удалось загрузить задачи</Badge>
           <p className="text-[14px] font-normal leading-[1.7] text-white/70">
             {generatedError}
           </p>
@@ -274,7 +337,7 @@ export function QuizSession({
             variant="ghost"
             onClick={() => setGeneratedBatch((current) => current + 1)}
           >
-            Повторить запрос
+            Попробовать ещё раз
           </Button>
         </Card>
       </section>
@@ -283,8 +346,10 @@ export function QuizSession({
 
   if (!currentTask) return null;
 
+  const taskFocus = getTaskFocus(currentTask);
+
   return (
-    <section className="relative mx-auto flex max-w-[580px] flex-col gap-4 pb-32 sm:pb-8">
+    <section className="relative mx-auto flex max-w-[580px] flex-col gap-4 pb-8">
       <div className="flex items-center justify-between gap-3">
         <Badge>{progressLabel}</Badge>
         {session.streak > 0 ? (
@@ -300,6 +365,7 @@ export function QuizSession({
         text={currentTask.text}
         formula={currentTask.formula}
         graph={currentTask.graph}
+        focus={taskFocus}
         showSolutionContent={session.phase === "answered"}
       />
 
@@ -310,6 +376,12 @@ export function QuizSession({
         onSelect={handleAnswer}
       />
 
+      {/* Реплика Nova — сразу под вариантами ответа, там же, куда только что
+          смотрел ученик. Компактная и остаётся до нажатия «Дальше». */}
+      <div ref={reactionRef} className="scroll-mt-6">
+        <CoachBubble state={bubble.state} text={bubble.text} visible={bubble.visible} />
+      </div>
+
       {session.phase === "answered" ? (
         <>
           <ExplanationSection
@@ -317,16 +389,13 @@ export function QuizSession({
             explanationLatex={currentTask.explanation_latex}
             trap={currentTask.trap}
             isCorrect={session.answers.at(-1)?.isCorrect ?? false}
+            correctionHint={taskFocus.check}
           />
 
           <Button type="button" size="lg" onClick={handleNext}>
             {isLastTask ? "Показать итог" : "Следующая задача"}
           </Button>
         </>
-      ) : null}
-
-      {session.phase !== "answered" ? (
-        <CoachBubble {...bubble} placement="floating" />
       ) : null}
     </section>
   );

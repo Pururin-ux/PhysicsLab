@@ -36,14 +36,16 @@ export function getCoachResponse(
         return {
           state: "surprised",
           text: "Три подряд. Хорошо идёшь.",
-          duration: 3000,
+          // Держим реплику до нажатия «Дальше»: раньше она гасла через 3 с,
+          // и ученик не успевал её прочитать.
+          duration: 0,
           priority: 3,
         };
       }
       return {
         state: "encouraging",
         text: coachLines.correct,
-        duration: 3500,
+        duration: 0,
         priority: 2,
       };
     case "wrong_answer":

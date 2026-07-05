@@ -37,7 +37,7 @@ export function OptionItem({
       aria-pressed={state === "correct" || state === "wrong"}
       onClick={onClick}
       className={cn(
-        "flex min-h-14 w-full items-center gap-3 rounded-option border px-3.5 py-3 text-left transition-[border-color,background-color,box-shadow,transform] md:px-[18px] md:py-[15px]",
+        "quiz-option flex min-h-14 w-full items-center gap-3 rounded-option border px-3.5 py-3 text-left transition-[border-color,background-color,box-shadow,transform] md:px-[18px] md:py-[15px]",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/60 focus-visible:ring-offset-2 focus-visible:ring-offset-space-950",
         "disabled:cursor-default",
         stateClasses[state],

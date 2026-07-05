@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import { NavBar } from "../components/layout/NavBar";
+import { ConditionalAppShell } from "../components/layout/ConditionalAppShell";
 import { OrbitDeco } from "../components/layout/OrbitDeco";
 import { PersistenceHydrator } from "../components/layout/PersistenceHydrator";
 import { StarField } from "../components/layout/StarField";
@@ -14,8 +14,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "PhysicsLab V3",
-  description: "PhysicsLab V3 prototype",
+  title: "PhysicsLab",
+  description: "Тренажёр по физике с задачами и разбором.",
 };
 
 export default function RootLayout({
@@ -29,8 +29,7 @@ export default function RootLayout({
         <PersistenceHydrator />
         <StarField />
         <OrbitDeco />
-        <NavBar />
-        <main className="relative z-10 min-h-screen">{children}</main>
+        <ConditionalAppShell>{children}</ConditionalAppShell>
       </body>
     </html>
   );

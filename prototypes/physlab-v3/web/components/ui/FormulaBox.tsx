@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { Card } from "./Card";
 import { cn } from "../../lib/utils";
 import { renderFormulaToHtml } from "../../lib/formula-rendering";
+import { MathText } from "./MathText";
 
 interface FormulaBoxProps {
   children?: ReactNode;
@@ -44,7 +45,7 @@ export function FormulaBox({
       </div>
       {caption ? (
         <p className="max-w-[520px] text-[12px] font-normal leading-[1.6] text-white/58">
-          {caption}
+          <MathText text={caption} />
         </p>
       ) : null}
     </Card>

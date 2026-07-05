@@ -1,4 +1,5 @@
 import { Card } from "../ui/Card";
+import { MathText } from "../ui/MathText";
 
 interface ForceModelProps {
   variant: "resultant" | "lift";
@@ -18,7 +19,7 @@ export function ForceModel({ variant, title, caption }: ForceModelProps) {
           </span>
           <span className="text-xl font-bold text-white">{title}</span>
           <span className="text-[13px] font-normal leading-[1.6] text-white/60">
-            {caption}
+            <MathText text={caption} />
           </span>
         </figcaption>
 

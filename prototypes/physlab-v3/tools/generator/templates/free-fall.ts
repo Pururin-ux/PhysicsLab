@@ -1,5 +1,5 @@
 import { freeFallDistractors } from "../distractors.ts";
-import { freeFallDistance } from "../solver.ts";
+import { GRAVITY, GRAVITY_TEXT, freeFallDistance } from "../solver.ts";
 import type { Params, TaskBlueprint } from "../types.ts";
 
 const fallContexts = [
@@ -41,14 +41,14 @@ export const freeFallBlueprint: TaskBlueprint = {
   solver: freeFallDistance,
   distractors: freeFallDistractors,
   textTemplate: (p) =>
-    `${contextFor(p)}. Сопротивлением воздуха пренебречь, g = 10 м/с². Какой путь пройдет тело за ${p.t} с?`,
+    `${contextFor(p)}. Сопротивлением воздуха пренебречь, ${GRAVITY_TEXT}. Какой путь пройдёт тело за ${p.t} с?`,
   explanationTemplate: (p, answer) =>
-    `Тело падает из покоя, поэтому h = gt²/2 = 10 · ${p.t}² / 2 = ${answer} м. Частая ошибка: забыть квадрат времени или деление на 2.`,
+    `Тело падает из покоя, поэтому $h = \\frac{gt^2}{2} = \\frac{${GRAVITY} \\cdot ${p.t}^2}{2} = ${answer}$ м. Частая ошибка: забыть квадрат времени или деление на 2.`,
   trap: "Забывает квадрат времени или деление на 2.",
   coachLines: {
-    correct: (p) => `Да. При падении из покоя путь растет как t², здесь t = ${p.t} с.`,
+    correct: (p) => `Да. При падении из покоя путь растет как $t^2$, здесь t = ${p.t} с.`,
     wrong: (p, selected, correct) =>
-      `Проверь время в формуле: нужно h = gt²/2. Для t = ${p.t} с получается ${correct} м, а не ${selected} м.`,
+      `Проверь время в формуле: нужно $h = \\frac{gt^2}{2}$. Для t = ${p.t} с получается ${correct} м, а не ${selected} м.`,
   },
   variantCount: fallContexts.length,
 };

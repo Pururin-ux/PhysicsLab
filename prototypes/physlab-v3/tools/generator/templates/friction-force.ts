@@ -1,6 +1,7 @@
 import { frictionForceDistractors } from "../distractors.ts";
-import { frictionForce } from "../solver.ts";
+import { GRAVITY, GRAVITY_TEXT, frictionForce } from "../solver.ts";
 import type { TaskBlueprint } from "../types.ts";
+import { formatAnswerValue } from "../validator.ts";
 
 export const frictionForceBlueprint: TaskBlueprint = {
   id: "friction-force",
@@ -18,14 +19,14 @@ export const frictionForceBlueprint: TaskBlueprint = {
   solver: frictionForce,
   distractors: frictionForceDistractors,
   textTemplate: (p) =>
-    `Брусок массой ${p.m} кг скользит по горизонтальной поверхности. Коэффициент трения равен ${p.mu}, g = 10 м/с². Найдите модуль силы трения.`,
+    `Брусок массой ${p.m} кг скользит по горизонтальной поверхности. Коэффициент трения равен ${formatAnswerValue(p.mu)}, ${GRAVITY_TEXT}. Найдите модуль силы трения.`,
   explanationTemplate: (p, answer) =>
-    `На горизонтальной поверхности N = mg, поэтому Fтр = μN = ${p.mu} · ${p.m} · 10 = ${answer} Н. Не забудь коэффициент μ.`,
+    `На горизонтальной поверхности N = mg, поэтому Fтр = μN = ${formatAnswerValue(p.mu)} · ${p.m} · ${GRAVITY} = ${formatAnswerValue(answer)} Н. Не забудь коэффициент μ.`,
   trap: "Забывает коэффициент трения или путает N и Fтр.",
   coachLines: {
     correct: (p) =>
-      `Да. На горизонтальной поверхности N = mg, поэтому Fтр = μmg = ${p.mu} · ${p.m} · 10.`,
+      `Да. На горизонтальной поверхности N = mg, поэтому Fтр = μmg = ${formatAnswerValue(p.mu)} · ${p.m} · ${GRAVITY}.`,
     wrong: (_p, selected, correct) =>
-      `Для горизонтальной поверхности N = mg, а сила трения равна μN. Получается ${correct} Н, а не ${selected} Н.`,
+      `Для горизонтальной поверхности N = mg, а сила трения равна μN. Получается ${formatAnswerValue(correct)} Н, а не ${formatAnswerValue(selected)} Н.`,
   },
 };

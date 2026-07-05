@@ -1,8 +1,14 @@
 import { pathToFileURL } from "node:url";
+import { chargeSharingBlueprint } from "./templates/charge-sharing.ts";
+import { densityVolumeRatioBlueprint } from "./templates/density-volume-ratio.ts";
 import { frictionForceBlueprint } from "./templates/friction-force.ts";
 import { freeFallBlueprint } from "./templates/free-fall.ts";
+import { heatAmountBlueprint } from "./templates/heat-amount.ts";
+import { idealGasStateBlueprint } from "./templates/ideal-gas-state.ts";
+import { impulseMomentumBlueprint } from "./templates/impulse-momentum.ts";
 import { inclineForceBlueprint } from "./templates/incline-force.ts";
 import { newtonSecondBlueprint } from "./templates/newton-second.ts";
+import { ohmLawBlueprint } from "./templates/ohm-law.ts";
 import { resultantForceBlueprint } from "./templates/resultant-force.ts";
 import { vtAreaBlueprint } from "./templates/vt-area.ts";
 import { vtSlopeBlueprint } from "./templates/vt-slope.ts";
@@ -35,6 +41,12 @@ export const blueprints = {
   "incline-force": inclineForceBlueprint,
   "resultant-force": resultantForceBlueprint,
   "weight-lift": weightLiftBlueprint,
+  "ohm-law": ohmLawBlueprint,
+  "density-volume-ratio": densityVolumeRatioBlueprint,
+  "impulse-momentum": impulseMomentumBlueprint,
+  "charge-sharing": chargeSharingBlueprint,
+  "ideal-gas-state": idealGasStateBlueprint,
+  "heat-amount": heatAmountBlueprint,
 };
 
 export type TemplateId = keyof typeof blueprints;

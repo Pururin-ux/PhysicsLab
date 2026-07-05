@@ -1,18 +1,18 @@
 import { TopicCards } from "../../components/topics/TopicCards";
 
 export const metadata = {
-  title: "Темы | PhysicsLab V3",
+  title: "Темы | PhysicsLab",
 };
 
 export default function TopicsPage() {
   return (
-    <div className="mx-auto flex max-w-[960px] flex-col gap-8 px-4 py-8 sm:gap-10 sm:px-6 sm:py-12 md:px-8 md:py-16">
-      <section className="flex max-w-[640px] flex-col gap-3">
-        <h1 className="text-3xl font-[800] leading-tight tracking-tight text-white">
-          Что хочешь повторить?
+    <div className="flex min-w-0 flex-col gap-7">
+      <section className="flex max-w-[680px] flex-col gap-2">
+        <h1 className="text-[34px] font-[800] leading-tight tracking-tight text-white sm:text-[42px]">
+          Темы
         </h1>
-        <p className="text-[14px] leading-[1.7] text-white/70">
-          Выбери тему. Прогресс сохранится, а ошибки появятся в разборе.
+        <p className="text-[15px] leading-[1.7] text-white/68">
+          Выбери, что хочешь повторить.
         </p>
       </section>
 

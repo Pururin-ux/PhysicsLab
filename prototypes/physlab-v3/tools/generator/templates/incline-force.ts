@@ -1,11 +1,12 @@
 import { inclineForceDistractors } from "../distractors.ts";
-import { inclineForce } from "../solver.ts";
+import { GRAVITY, GRAVITY_TEXT, inclineForce } from "../solver.ts";
 import type { Params, TaskBlueprint } from "../types.ts";
+import { formatAnswerValue } from "../validator.ts";
 
 const contexts = [
-  "Брусок покоится на гладкой наклонной плоскости",
+  "Брусок лежит на наклонной плоскости; трением пренебречь",
   "Небольшое тело находится на наклонной направляющей без трения",
-  "Груз расположен на гладкой наклонной плоскости",
+  "Груз расположен на наклонной плоскости; трением пренебречь",
 ];
 
 function contextFor(p: Params): string {
@@ -29,15 +30,15 @@ export const inclineForceBlueprint: TaskBlueprint = {
   solver: inclineForce,
   distractors: inclineForceDistractors,
   textTemplate: (p) =>
-    `${contextFor(p)} под углом ${p.angle}° к горизонту. Масса тела ${p.m} кг, g = 10 м/с². Найдите модуль составляющей силы тяжести вдоль плоскости.`,
+    `${contextFor(p)}. Угол плоскости к горизонту ${p.angle}°. Масса тела ${p.m} кг, ${GRAVITY_TEXT}. Найдите модуль составляющей силы тяжести вдоль плоскости.`,
   explanationTemplate: (p, answer) =>
-    `Вдоль плоскости направлена составляющая mg sin α: ${p.m} · 10 · sin ${p.angle}° = ${answer} Н. Выражение mg cos α даёт перпендикулярную составляющую.`,
+    `Вдоль плоскости направлена составляющая mg sin α: ${p.m} · ${GRAVITY} · sin ${p.angle}° = ${formatAnswerValue(answer)} Н. Выражение mg cos α даёт перпендикулярную составляющую.`,
   trap: "Путает составляющие mg sin α и mg cos α.",
   coachLines: {
     correct: (p) =>
       `Да. Вдоль наклонной плоскости действует составляющая mg sin α, здесь α = ${p.angle}°.`,
     wrong: (p, selected, correct) =>
-      `Вдоль плоскости нужна проекция mg sin ${p.angle}°, а mg cos α направлена перпендикулярно плоскости. Ответ ${correct} Н, а не ${selected} Н.`,
+      `Вдоль плоскости нужна проекция mg sin ${p.angle}°, а mg cos α направлена перпендикулярно плоскости. Ответ ${formatAnswerValue(correct)} Н, а не ${formatAnswerValue(selected)} Н.`,
   },
   variantCount: contexts.length,
 };

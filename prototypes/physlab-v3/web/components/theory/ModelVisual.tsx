@@ -1,4 +1,5 @@
 import { Card } from "../ui/Card";
+import { MathText } from "../ui/MathText";
 import { cn } from "../../lib/utils";
 import { PhysicsGraph } from "../physics-graph/PhysicsGraph";
 import { graphConfigToPhysicsGraphSpec } from "../../lib/physics/physics-graph-adapter";
@@ -44,7 +45,7 @@ export function ModelVisual({
           </span>
           {caption ? (
             <span className="text-[13px] font-normal leading-[1.6] text-white/60">
-              {caption}
+              <MathText text={caption} />
             </span>
           ) : null}
         </figcaption>

@@ -71,7 +71,7 @@ test("formatWeakness does not return raw undefined", () => {
 test("unknown blueprint gets fallback display", () => {
   const weakness = formatWeakness("future-skill:не та формула", 2);
 
-  assert.equal(weakness?.skillTitle, "Неизвестный навык");
+  assert.equal(weakness?.skillTitle, "Новая тема");
   assert.equal(weakness?.title, "Типовая ошибка");
   assert.equal(weakness?.hint, "не та формула");
   assert.equal(weakness?.count, 2);

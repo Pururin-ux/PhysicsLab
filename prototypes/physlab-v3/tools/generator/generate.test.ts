@@ -18,7 +18,11 @@ const dynamicsTemplateIds = [
   "incline-force",
   "resultant-force",
   "weight-lift",
+  "density-volume-ratio",
+  "impulse-momentum",
 ] as const;
+const electrodynamicsTemplateIds = ["ohm-law", "charge-sharing"] as const;
+const thermodynamicsTemplateIds = ["ideal-gas-state", "heat-amount"] as const;
 
 type ApiTask = {
   id: string;
@@ -126,6 +130,29 @@ test("registry groups every template exactly once", () => {
   assert.equal(new Set(templateRegistry.map((entry) => entry.id)).size, templateRegistry.length);
   assert.deepEqual(new Set(getTemplateIdsByGroup("kinematics")), new Set(kinematicsTemplateIds));
   assert.deepEqual(new Set(getTemplateIdsByGroup("dynamics")), new Set(dynamicsTemplateIds));
+  assert.deepEqual(
+    new Set(getTemplateIdsByGroup("electrodynamics")),
+    new Set(electrodynamicsTemplateIds),
+  );
+  assert.deepEqual(
+    new Set(getTemplateIdsByGroup("thermodynamics")),
+    new Set(thermodynamicsTemplateIds),
+  );
+});
+
+test("ohm-law: покрывает все три искомые величины с единицами", () => {
+  const tasks = generateTasks("ohm-law", 200);
+  const units = new Set(tasks.map((task) => task.answerUnit));
+
+  assert.deepEqual(units, new Set(["А", "В", "Ом"]));
+
+  for (const task of tasks) {
+    assert.equal(new Set(task.options.map((option) => option.value)).size, 4);
+    assert.equal(
+      task.options.some((option) => option.value === task.answerValue),
+      true,
+    );
+  }
 });
 
 test("validator allows signed answers without weakening current templates", () => {
@@ -182,7 +209,15 @@ test("validator allows signed answers without weakening current templates", () =
   assert.deepEqual(validateGeneratedTask(signedTask, signedBlueprint).issues, []);
 });
 
-for (const templateId of dynamicsTemplateIds) {
+for (const templateId of [
+  ...dynamicsTemplateIds,
+  ...electrodynamicsTemplateIds,
+  ...thermodynamicsTemplateIds,
+]) {
+  if (templateId === "ohm-law") {
+    continue; // отдельный тест ниже: покрывает три целевые величины.
+  }
+
   test(`${templateId}: generates 200 deterministic valid variants`, () => {
     const startedAt = performance.now();
     const tasks = generateTasks(templateId, 200);
@@ -290,9 +325,23 @@ test("API route делает batch детерминированным и мен�
   );
 });
 
-test("API route dynamics-mixed покрывает пять навыков", async () => {
+test("API route dynamics-mixed покрывает семь навыков", async () => {
   const response = await GET(
-    new Request("http://localhost/api/tasks?template=dynamics-mixed&count=10&batch=7"),
+    new Request("http://localhost/api/tasks?template=dynamics-mixed&count=14&batch=7"),
+  );
+  const data = (await response.json()) as ApiTaskResponse;
+
+  assert.equal(response.status, 200);
+  assert.equal(data.tasks.length, 14);
+  assert.deepEqual(
+    new Set(data.tasks.map((task) => task.blueprint)),
+    new Set(dynamicsTemplateIds),
+  );
+});
+
+test("API route electro-mixed покрывает два навыка", async () => {
+  const response = await GET(
+    new Request("http://localhost/api/tasks?template=electro-mixed&count=10&batch=7"),
   );
   const data = (await response.json()) as ApiTaskResponse;
 
@@ -300,8 +349,64 @@ test("API route dynamics-mixed покрывает пять навыков", asyn
   assert.equal(data.tasks.length, 10);
   assert.deepEqual(
     new Set(data.tasks.map((task) => task.blueprint)),
-    new Set(dynamicsTemplateIds),
+    new Set(electrodynamicsTemplateIds),
   );
+});
+
+test("API route thermo-mixed покрывает два навыка", async () => {
+  const response = await GET(
+    new Request("http://localhost/api/tasks?template=thermo-mixed&count=10&batch=7"),
+  );
+  const data = (await response.json()) as ApiTaskResponse;
+
+  assert.equal(response.status, 200);
+  assert.equal(data.tasks.length, 10);
+  assert.deepEqual(
+    new Set(data.tasks.map((task) => task.blueprint)),
+    new Set(thermodynamicsTemplateIds),
+  );
+});
+
+test("API route exam смешивает кинематику и динамику детерминированно", async () => {
+  const totalMechanicsTemplates = kinematicsTemplateIds.length + dynamicsTemplateIds.length;
+  const url = `http://localhost/api/tasks?template=exam&count=${totalMechanicsTemplates}&batch=3`;
+  const firstResponse = await GET(new Request(url));
+  const repeatResponse = await GET(new Request(url));
+  const first = (await firstResponse.json()) as ApiTaskResponse;
+  const repeat = (await repeatResponse.json()) as ApiTaskResponse;
+
+  assert.equal(firstResponse.status, 200);
+  assert.equal(first.tasks.length, totalMechanicsTemplates);
+  assert.deepEqual(first.tasks, repeat.tasks);
+
+  const blueprintsUsed = new Set(first.tasks.map((task) => task.blueprint));
+  assert.equal(
+    blueprintsUsed.size,
+    totalMechanicsTemplates,
+    "exam должен покрывать все навыки механики",
+  );
+  assert.equal(
+    kinematicsTemplateIds.some((id) => blueprintsUsed.has(id)),
+    true,
+  );
+  assert.equal(
+    dynamicsTemplateIds.some((id) => blueprintsUsed.has(id)),
+    true,
+  );
+
+  // Порядок не должен идти блоками "вся кинематика, потом вся динамика".
+  const groupSequence = first.tasks.map((task) =>
+    (kinematicsTemplateIds as readonly string[]).includes(task.blueprint)
+      ? "k"
+      : "d",
+  );
+  assert.notEqual(
+    groupSequence.join(""),
+    "k".repeat(kinematicsTemplateIds.length) + "d".repeat(dynamicsTemplateIds.length),
+  );
+
+  const ids = new Set(first.tasks.map((task) => task.id));
+  assert.equal(ids.size, first.tasks.length, "id задач в exam должны быть уникальны");
 });
 
 test("API route обрезает count до 20", async () => {

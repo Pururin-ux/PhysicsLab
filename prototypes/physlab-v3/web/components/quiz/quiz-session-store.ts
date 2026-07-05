@@ -22,6 +22,7 @@ export type QuizTask = {
   id: string;
   type: "single_choice";
   blueprint: string;
+  skill?: string;
   difficulty: 1 | 2 | 3;
   text: string;
   formula?: string;

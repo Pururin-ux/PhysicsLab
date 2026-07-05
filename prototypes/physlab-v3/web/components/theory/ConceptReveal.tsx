@@ -6,6 +6,8 @@ import { ModelVisual } from "./ModelVisual";
 import { FormulaDisplay } from "./FormulaDisplay";
 import { Button } from "../ui/Button";
 import { Card } from "../ui/Card";
+import { MathText } from "../ui/MathText";
+import { cn } from "../../lib/utils";
 import type { GraphConfig } from "../../lib/physics/graph-data";
 
 interface ConceptRevealProps {
@@ -18,6 +20,9 @@ interface ConceptRevealProps {
   formulaCaption: string;
   symbols: string[];
   limitation: string;
+  // Левая полоса карточки "Главное" — совпадает с акцентным цветом главы,
+  // чтобы темы визуально не сливались друг с другом.
+  accentClass?: string;
 }
 
 export function ConceptReveal({
@@ -30,6 +35,7 @@ export function ConceptReveal({
   formulaCaption,
   symbols,
   limitation,
+  accentClass = "border-l-nova-cyan/55",
 }: ConceptRevealProps) {
   const [step, setStep] = useState(0);
   const cta =
@@ -52,15 +58,18 @@ export function ConceptReveal({
             exit={{ opacity: 0, y: 8 }}
             transition={{ duration: 0.24 }}
           >
-            <Card variant="elevated" className="flex flex-col gap-3">
+            <Card variant="elevated" className={cn("flex flex-col gap-3 border-l-2", accentClass)}>
               <p className="text-[11px] font-bold uppercase tracking-[.14em] text-white/50">
                 Главное
               </p>
               <p className="text-[14px] font-normal leading-[1.7] text-white/80">
-                {meaningText}
+                <MathText text={meaningText} />
               </p>
               <div className="rounded-option border border-nova-gold/25 bg-nova-gold-10 px-4 py-3 text-[13px] font-normal leading-[1.6] text-white/75">
-                {trap}
+                <span className="mr-1.5 text-nova-gold" aria-hidden="true">
+                  ⚠
+                </span>
+                <MathText text={trap} />
               </div>
             </Card>
           </motion.div>

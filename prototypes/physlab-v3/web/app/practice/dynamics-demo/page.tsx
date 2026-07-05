@@ -2,15 +2,19 @@ import { DynamicsPracticeModes } from "../../../components/quiz/DynamicsPractice
 import { ForceModel } from "../../../components/theory/ForceModel";
 import { FormulaDisplay } from "../../../components/theory/FormulaDisplay";
 import { TheoryBlock } from "../../../components/theory/TheoryBlock";
+import { TopicAmbientGlow } from "../../../components/layout/TopicAmbientGlow";
 import { Card } from "../../../components/ui/Card";
+import { MathText } from "../../../components/ui/MathText";
 
 export const metadata = {
-  title: "Динамика | PhysicsLab V3",
+  title: "Динамика | PhysicsLab",
 };
 
 export default function DynamicsDemoPage() {
   return (
-    <div className="mx-auto flex max-w-[960px] flex-col gap-10 px-4 py-8 sm:gap-12 sm:px-6 sm:py-12 md:px-8 md:py-16">
+    <div className="relative flex min-w-0 flex-col gap-10 sm:gap-12">
+      <TopicAmbientGlow accent="gold" />
+
       <TheoryBlock
         eyebrow="Динамика"
         title="Силы и движение"
@@ -19,7 +23,7 @@ export default function DynamicsDemoPage() {
       >
         <a
           href="#practice"
-          className="mx-auto inline-flex min-h-11 items-center justify-center gap-2 rounded-option border border-nova-cyan/25 bg-nova-cyan/[.06] px-4 text-[13px] font-semibold text-nova-cyan transition-colors hover:border-nova-cyan/45 hover:bg-nova-cyan-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/60 sm:hidden"
+          className="mx-auto inline-flex min-h-11 items-center justify-center gap-2 rounded-option border border-nova-gold/25 bg-nova-gold/[.06] px-4 text-[13px] font-semibold text-nova-gold transition-colors hover:border-nova-gold/45 hover:bg-nova-gold-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-gold/60 sm:hidden"
         >
           Сразу к практике
           <span aria-hidden="true">↓</span>
@@ -29,22 +33,24 @@ export default function DynamicsDemoPage() {
           <ForceModel
             variant="resultant"
             title="Равнодействующая задаёт ускорение"
-            caption="Сонаправленные силы складываются, встречные — вычитаются с учётом выбранной оси."
+            caption="Силы в одну сторону складываются, встречные — вычитаются с учётом выбранной оси."
           />
 
           <Card
             variant="elevated"
-            className="flex flex-col gap-3 border-l-2 border-l-nova-blue/55"
+            className="flex flex-col gap-3 border-l-2 border-l-nova-gold/55"
           >
             <p className="text-[11px] font-bold uppercase tracking-[.14em] text-white/50">
               Главное
             </p>
             <p className="text-[14px] font-normal leading-[1.7] text-white/80">
-              Ускорение создаёт не отдельная сила, а векторная сумма всех сил. Знак проекции
-              показывает направление, а не «плохой» отрицательный ответ.
+              <MathText text="Ускорение создаёт не отдельная сила, а ==векторная сумма всех сил==. Знак проекции показывает направление и **сам по себе не делает ответ ошибочным**." />
             </p>
-            <div className="rounded-option border border-white/[.09] border-l-2 border-l-nova-gold/70 bg-nova-gold/[.04] px-4 py-3 text-[13px] leading-[1.6] text-white/75">
-              Частая ошибка: складывать силы, не проверив их направления.
+            <div className="flex gap-2 rounded-option border border-white/[.09] border-l-2 border-l-nova-gold/70 bg-nova-gold/[.04] px-4 py-3 text-[13px] leading-[1.6] text-white/75">
+              <span className="shrink-0 text-nova-gold" aria-hidden="true">
+                ⚠
+              </span>
+              <p>Частая ошибка: складывать силы, не проверив их направления.</p>
             </div>
           </Card>
 
@@ -77,17 +83,19 @@ export default function DynamicsDemoPage() {
 
           <Card
             variant="elevated"
-            className="flex flex-col gap-3 border-l-2 border-l-nova-blue/55"
+            className="flex flex-col gap-3 border-l-2 border-l-nova-gold/55"
           >
             <p className="text-[11px] font-bold uppercase tracking-[.14em] text-white/50">
               Главное
             </p>
             <p className="text-[14px] font-normal leading-[1.7] text-white/80">
-              При ускорении вверх опора действует сильнее: N больше mg. При ускорении вниз
-              кажущийся вес уменьшается, хотя масса тела не меняется.
+              <MathText text="При ускорении вверх опора действует сильнее: ==N больше mg==. При ускорении вниз кажущийся вес **уменьшается**, хотя масса тела не меняется." />
             </p>
-            <div className="rounded-option border border-white/[.09] border-l-2 border-l-nova-gold/70 bg-nova-gold/[.04] px-4 py-3 text-[13px] leading-[1.6] text-white/75">
-              Частая ошибка: выбирать знак по скорости лифта, а не по ускорению.
+            <div className="flex gap-2 rounded-option border border-white/[.09] border-l-2 border-l-nova-gold/70 bg-nova-gold/[.04] px-4 py-3 text-[13px] leading-[1.6] text-white/75">
+              <span className="shrink-0 text-nova-gold" aria-hidden="true">
+                ⚠
+              </span>
+              <p>Частая ошибка: выбирать знак по скорости лифта, а не по ускорению.</p>
             </div>
           </Card>
 

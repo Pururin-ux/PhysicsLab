@@ -44,7 +44,7 @@ test("correct answer uses task coach line before streak threshold", () => {
     {
       state: "encouraging",
       text: coachLines.correct,
-      duration: 3500,
+      duration: 0,
       priority: 2,
     },
   );
@@ -59,7 +59,7 @@ test("streak >= 3 overrides regular correct response", () => {
     {
       state: "surprised",
       text: "Три подряд. Хорошо идёшь.",
-      duration: 3000,
+      duration: 0,
       priority: 3,
     },
   );

@@ -6,11 +6,16 @@ import {
   type TemplateId,
 } from "../../../../tools/generator/generate.ts";
 import type { GeneratedTask } from "../../../../tools/generator/types.ts";
+import { formatMathValue } from "../../../../tools/generator/validator.ts";
 
 export const dynamic = "force-dynamic";
 
 const kinematicsTemplates = getTemplateIdsByGroup("kinematics");
 const dynamicsTemplates = getTemplateIdsByGroup("dynamics");
+const electrodynamicsTemplates = getTemplateIdsByGroup("electrodynamics");
+const thermodynamicsTemplates = getTemplateIdsByGroup("thermodynamics");
+// Пробный вариант: сначала кинематика, потом динамика — затем порядок перемешивается.
+const examTemplates = [...kinematicsTemplates, ...dynamicsTemplates];
 const supportedTemplates = templateRegistry.map((entry) => entry.id);
 
 function normalizeCount(value: string | null) {
@@ -60,7 +65,7 @@ function toQuizTask(task: GeneratedTask) {
       correct: option.id === task.answer,
     })),
     explanation: task.explanation ?? task.coach_lines.correct,
-    explanation_latex: `${task.formula},\\quad ${task.answerValue}\\text{ ${unit}}`,
+    explanation_latex: `${task.formula},\\quad ${formatMathValue(task.answerValue)}\\text{ ${unit}}`,
     coach_lines: {
       correct: task.coach_lines.correct,
       wrong: task.coach_lines.wrong,
@@ -74,6 +79,27 @@ function generateRandomizedTasks(template: TemplateId, count: number, batch: num
   const offset = baseOffset + batch * count;
 
   return generateTasks(template, count, { offset });
+}
+
+function seededShuffle<T>(items: T[], seed: number): T[] {
+  const shuffled = [...items];
+  let state = seed >>> 0;
+
+  for (let index = shuffled.length - 1; index > 0; index -= 1) {
+    state = (1664525 * state + 1013904223) >>> 0;
+    const swapIndex = state % (index + 1);
+    [shuffled[index], shuffled[swapIndex]] = [shuffled[swapIndex], shuffled[index]];
+  }
+
+  return shuffled;
+}
+
+function generateExamTasks(count: number, batch: number) {
+  const tasks = generateMixedTasks(examTemplates, "exam", count, batch);
+
+  // На экзамене навыки не идут блоками по темам — порядок задач перемешан,
+  // но детерминирован для одного и того же batch.
+  return seededShuffle(tasks, hashSeed(`exam-order:${batch}`));
 }
 
 function generateMixedTasks(
@@ -112,6 +138,12 @@ export async function GET(req: Request) {
         ? generateMixedTasks(kinematicsTemplates, "mixed", count, batch)
         : template === "dynamics-mixed"
           ? generateMixedTasks(dynamicsTemplates, "dynamics-mixed", count, batch)
+        : template === "electro-mixed"
+          ? generateMixedTasks(electrodynamicsTemplates, "electro-mixed", count, batch)
+        : template === "thermo-mixed"
+          ? generateMixedTasks(thermodynamicsTemplates, "thermo-mixed", count, batch)
+        : template === "exam"
+          ? generateExamTasks(count, batch)
         : isTemplateId(template)
           ? generateRandomizedTasks(template, count, batch)
           : null;
@@ -123,6 +155,9 @@ export async function GET(req: Request) {
             ...supportedTemplates,
             "mixed",
             "dynamics-mixed",
+            "electro-mixed",
+            "thermo-mixed",
+            "exam",
           ].join(", ")}.`,
         },
         { status: 400 },

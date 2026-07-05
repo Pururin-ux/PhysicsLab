@@ -1,6 +1,7 @@
 import { vtSlopeDistractors } from "../distractors.ts";
 import { vtSlopeAcceleration } from "../solver.ts";
 import type { GraphSpec, Params, TaskBlueprint } from "../types.ts";
+import { formatAnswerValue, formatMathValue } from "../validator.ts";
 
 function graphFor(p: Params): GraphSpec {
   return {
@@ -37,13 +38,13 @@ export const vtSlopeBlueprint: TaskBlueprint = {
   textTemplate: (p) =>
     `На графике v(t) прямая проходит через точки (${p.t1} с; ${p.v1} м/с) и (${p.t2} с; ${p.v2} м/с). Найдите ускорение тела.`,
   explanationTemplate: (p, answer) =>
-    `Ускорение равно наклону v(t): a = (${p.v2} − ${p.v1}) / (${p.t2} − ${p.t1}) = ${answer} м/с². Просто v/t брать нельзя: важно изменение скорости.`,
-  trap: "Берет v/t вместо изменения скорости за промежуток времени.",
+    `Ускорение равно наклону v(t): $a = \\frac{${p.v2} - ${p.v1}}{${p.t2} - ${p.t1}} = ${formatMathValue(answer)}$ м/с². Просто $\\frac{v}{t}$ брать нельзя: важно изменение скорости.`,
+  trap: "Берёт $\\frac{v}{t}$ вместо изменения скорости за промежуток времени.",
   coachLines: {
     correct: (p) =>
-      `Да. Ускорение - это наклон графика: (${p.v2} - ${p.v1}) / (${p.t2} - ${p.t1}).`,
+      `Да. Ускорение — это наклон графика: $\\frac{${p.v2} - ${p.v1}}{${p.t2} - ${p.t1}}$.`,
     wrong: (_p, selected, correct) =>
-      `Нужно изменение скорости: Δv/Δt. По двум точкам получается ${correct} м/с², выбранный ответ ${selected} м/с².`,
+      `Нужно изменение скорости: $\\frac{\\Delta v}{\\Delta t}$. По двум точкам получается ${formatAnswerValue(correct)} м/с², выбранный ответ ${formatAnswerValue(selected)} м/с².`,
   },
   constraints: [
     (p) => p.v2 > p.v1,

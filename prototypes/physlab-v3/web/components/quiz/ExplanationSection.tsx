@@ -3,12 +3,14 @@
 import { motion } from "framer-motion";
 import { renderFormulaToHtml } from "../../lib/formula-rendering";
 import { Card } from "../ui/Card";
+import { MathText } from "../ui/MathText";
 
 interface ExplanationSectionProps {
   explanation: string;
   explanationLatex?: string;
   trap: string;
   isCorrect: boolean;
+  correctionHint?: string;
 }
 
 export function ExplanationSection({
@@ -16,6 +18,7 @@ export function ExplanationSection({
   explanationLatex,
   trap,
   isCorrect,
+  correctionHint,
 }: ExplanationSectionProps) {
   const formulaHtml = explanationLatex
     ? renderFormulaToHtml(explanationLatex, { displayMode: false })
@@ -30,7 +33,12 @@ export function ExplanationSection({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, ease: "easeOut" }}
     >
-      <Card variant="elevated" className="flex flex-col gap-3.5">
+      <Card
+        variant="elevated"
+        className={`flex flex-col gap-3.5 border-l-2 ${
+          isCorrect ? "border-l-nova-cyan/60" : "border-l-nova-gold/60"
+        }`}
+      >
         <div className="flex items-center gap-3">
           <p
             className={`text-[14px] font-semibold leading-none ${
@@ -42,7 +50,7 @@ export function ExplanationSection({
         </div>
 
         <p className="text-[14px] font-normal leading-[1.75] text-white/80">
-          {explanation}
+          <MathText text={explanation} />
         </p>
 
         {formulaHtml ? (
@@ -62,7 +70,24 @@ export function ExplanationSection({
             >
               {trapLabel}
             </p>
-            <p>{trapText}</p>
+            <p>
+              <MathText text={trapText} />
+            </p>
+          </div>
+        ) : null}
+
+        {!isCorrect && correctionHint ? (
+          <div className="rounded-option border border-nova-gold/20 bg-nova-gold/[.055] px-4 py-3 text-[13px] leading-[1.65] text-white/72">
+            <p className="mb-2 text-[12px] font-semibold leading-none text-nova-gold/90">
+              Как исправить в следующей задаче
+            </p>
+            <ol className="grid gap-1.5 pl-4">
+              <li>Назови, какую величину спрашивают.</li>
+              <li>
+                <MathText text={correctionHint} />
+              </li>
+              <li>Сравни первый шаг решения с формулой в разборе.</li>
+            </ol>
           </div>
         ) : null}
       </Card>
