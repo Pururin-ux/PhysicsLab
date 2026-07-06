@@ -46,8 +46,8 @@ export function getLearningNextStep(
           : `Открой тему: ${firstUnstartedTopic.title}`,
       body:
         firstUnstartedTopic.id === "kinematics"
-          ? "Кинематика даст основу: скорость, ускорение, перемещение и чтение графиков. После неё легче решать динамику."
-          : `${firstUnstartedTopic.description} Пройди короткую тренировку, чтобы увидеть, где появляются ошибки.`,
+          ? "Скорость, ускорение и графики — основа для всего остального. Начни отсюда."
+          : `${firstUnstartedTopic.description} Одна короткая тренировка — и видно, где слабые места.`,
       href: firstUnstartedTopic.href,
       cta: "Начать",
       tone: "cyan",
@@ -58,7 +58,7 @@ export function getLearningNextStep(
     return {
       label: "Пора смешать темы",
       title: "Попробуй пробный вариант",
-      body: "После отдельных тренировок важно проверить перенос: механика, электричество и тепло идут вперемешку, как в реальном тесте.",
+      body: "10 задач из всех тем вперемешку — как на реальном тесте.",
       href: "/practice/exam-demo",
       cta: "Начать вариант",
       tone: "gold",
@@ -68,7 +68,7 @@ export function getLearningNextStep(
   return {
     label: "Поддержи форму",
     title: "Вернись к смешанным задачам",
-    body: "Когда отдельные темы уже пройдены, лучше чередовать задачи: так быстрее видно, какую идею применять в новом условии.",
+    body: "Темы пройдены — держи форму на смешанных задачах.",
     href: "/practice/exam-demo",
     cta: "Ещё вариант",
     tone: "cyan",

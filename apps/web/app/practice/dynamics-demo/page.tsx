@@ -44,13 +44,13 @@ export default function DynamicsDemoPage() {
               Главное
             </p>
             <p className="text-[14px] font-normal leading-[1.7] text-white/80">
-              <MathText text="Ускорение создаёт не отдельная сила, а ==векторная сумма всех сил==. Знак проекции показывает направление и **сам по себе не делает ответ ошибочным**." />
+              <MathText text="Ускорение создаёт ==сумма всех сил==, а не одна из них. Знак проекции — это направление, а не ошибка." />
             </p>
             <div className="flex gap-2 rounded-option border border-white/[.09] border-l-2 border-l-nova-gold/70 bg-nova-gold/[.04] px-4 py-3 text-[13px] leading-[1.6] text-white/75">
               <span className="shrink-0 text-nova-gold" aria-hidden="true">
                 ⚠
               </span>
-              <p>Частая ошибка: складывать силы, не проверив их направления.</p>
+              <p>Ошибка: складывать силы, не проверив направления.</p>
             </div>
           </Card>
 
@@ -62,7 +62,7 @@ export default function DynamicsDemoPage() {
               "m — масса тела, кг",
               "aₓ — проекция ускорения, м/с²",
             ]}
-            limitation="Сначала задайте положительное направление оси и только затем расставляйте знаки проекций."
+            limitation="Сначала выбери положительное направление оси, потом знаки проекций."
           />
         </article>
 
@@ -78,7 +78,7 @@ export default function DynamicsDemoPage() {
           <ForceModel
             variant="lift"
             title="Вес в ускоряющемся лифте"
-            caption="Вес равен силе реакции опоры N и меняется, когда ускорение направлено вверх или вниз."
+            caption="Вес — это сила реакции опоры N; ускорение вверх или вниз его меняет."
           />
 
           <Card
@@ -89,13 +89,13 @@ export default function DynamicsDemoPage() {
               Главное
             </p>
             <p className="text-[14px] font-normal leading-[1.7] text-white/80">
-              <MathText text="При ускорении вверх опора действует сильнее: ==N больше mg==. При ускорении вниз кажущийся вес **уменьшается**, хотя масса тела не меняется." />
+              <MathText text="Ускорение вверх — опора давит сильнее (==N больше mg==), вниз — вес **меньше**. Масса при этом не меняется." />
             </p>
             <div className="flex gap-2 rounded-option border border-white/[.09] border-l-2 border-l-nova-gold/70 bg-nova-gold/[.04] px-4 py-3 text-[13px] leading-[1.6] text-white/75">
               <span className="shrink-0 text-nova-gold" aria-hidden="true">
                 ⚠
               </span>
-              <p>Частая ошибка: выбирать знак по скорости лифта, а не по ускорению.</p>
+              <p>Ошибка: выбирать знак по скорости лифта, а не по ускорению.</p>
             </div>
           </Card>
 
