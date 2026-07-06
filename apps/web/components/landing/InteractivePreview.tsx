@@ -58,7 +58,7 @@ export function InteractivePreview() {
     >
       <div className="flex items-center justify-between gap-3">
         <Badge tone="cyan">Кинематика</Badge>
-        <span className="text-[11px] font-bold uppercase tracking-[.14em] text-white/40">
+        <span className="text-[11px] font-bold uppercase tracking-[.14em] text-white/60">
           попробуй прямо здесь
         </span>
       </div>

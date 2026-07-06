@@ -72,6 +72,15 @@ jobs:
       - name: E2E and screenshots
         run: npm run test:e2e
 
+      - name: Accessibility (axe)
+        run: npm run test:a11y
+
+      # На linux гоняется layout-слой visual-тестов; пиксельные снапшоты
+      # включаются переменной VISUAL_SNAPSHOTS=1 там, где для платформы
+      # есть базлайны (сейчас в репо — win32).
+      - name: Visual layout assertions
+        run: npm run test:visual
+
   prod:
     name: Build, manifest assert, prod smoke
     runs-on: ubuntu-latest

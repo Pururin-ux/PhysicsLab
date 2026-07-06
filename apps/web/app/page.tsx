@@ -94,7 +94,7 @@ export default function Home() {
               <h2 className="text-[16px] font-[800] leading-snug text-white">
                 {principle.title}
               </h2>
-              <p className="text-[13px] leading-[1.7] text-white/62">
+              <p className="text-[13px] leading-[1.7] text-white/70">
                 {principle.text}
               </p>
             </Card>

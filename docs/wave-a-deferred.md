@@ -1,46 +1,41 @@
-# Wave A: отложенные пункты (RFC-ready)
+# Wave A: статус доп. слоёв (a11y / visual)
 
-Ядро Wave A реализовано: prod-smoke CI, манифест-ассерт, envelope-хранилище,
-экспорт/импорт, root-playwright cleanup. Два пункта отложены сознательно —
-ниже всё, что нужно для их запуска без повторного проектирования.
+Оба слоя РЕАЛИЗОВАНЫ (см. `apps/web/tests/a11y.spec.ts` и `visual.spec.ts`,
+CI job `e2e-dev`). Этот файл описывает границы покрытия и единственный
+оставшийся шаг.
 
-## A11y baseline (W6 из RFC)
+## A11y — реализовано
 
-1. `npm i -D @axe-core/playwright` (в apps/web).
-2. Создать `apps/web/tests/a11y.spec.ts`:
+- `npm run test:a11y`: axe на 6 маршрутах (`/`, `/topics`, `/profile`,
+  `/formulas`, `/practice/kinematics-demo`, `/practice/exam-demo`)
+  во всех 4 viewport-проектах (24 проверки). Порог: ноль serious/critical.
+- Единственное исключение: `.exclude("canvas")` — декоративный звёздный
+  фон с aria-hidden, ложные срабатывания контраста на наложении.
+- Исправлено по итогам первого прогона: контраст eyebrow-подписей
+  (`/40`,`/45` → `/60`), текст принципов лендинга (`/62` → `/70`),
+  `role="listitem"` в OptionList, `tablist` → `group` в переключателях
+  режимов практики (кнопки — toggle, не табы).
 
-```ts
-import AxeBuilder from "@axe-core/playwright";
-import { expect, test } from "@playwright/test";
+## Visual — реализовано в два слоя
 
-const routes = ["/", "/topics", "/practice/kinematics-demo", "/mistakes", "/profile", "/formulas"];
+- Слой 1 (кроссплатформенный, гоняется и в CI): layout-assertions —
+  нет горизонтального скролла, main в пределах viewport, мобильная
+  навигация прижата к низу. 6 маршрутов × 4 viewport.
+- Слой 2 (пиксельный): `VISUAL_SNAPSHOTS=1 npm run test:visual` сравнивает
+  скриншоты main-региона (канвас замаскирован) с базлайнами в
+  `tests/visual.spec.ts-snapshots/`. В репо — win32-базлайны
+  (desktop + mobile-390, 12 снимков, ~0.8 МБ).
 
-for (const route of routes) {
-  test(`a11y: ${route}`, async ({ page }) => {
-    await page.goto(route, { waitUntil: "networkidle" });
-    const results = await new AxeBuilder({ page })
-      .disableRules(["color-contrast"]) // включить после токен-миграции
-      .analyze();
-    const serious = results.violations.filter((v) =>
-      ["serious", "critical"].includes(v.impact ?? ""),
-    );
-    expect(serious).toEqual([]);
-  });
-}
-```
+## Оставшийся шаг: linux-базлайны для пиксельного слоя в CI
 
-3. Контраст чинить токенами, не точечно (роли из RFC): ink `/92`,
-   ink-secondary `/72`, ink-muted `/60` (минимум для содержательного текста),
-   ink-faint `/45` (только декоративное). Кандидаты: `grep -rn "text-white/[345]" components app`.
-4. После миграции токенов убрать `disableRules(["color-contrast"])`.
+Рендеринг шрифтов платформозависим, поэтому пиксельный слой в CI
+сейчас не активен (идёт только layout-слой). Включение:
 
-## Visual regression (W7 из RFC)
+1. Разово прогнать в GitHub Actions:
+   `VISUAL_SNAPSHOTS=1 npx playwright test --grep @visual --update-snapshots`
+   (workflow_dispatch), выгрузить снапшоты артефактом.
+2. Закоммитить `*-linux.png` рядом с win32.
+3. В шаг «Visual layout assertions» добавить `VISUAL_SNAPSHOTS: "1"`.
 
-- Экраны: `/`, `/topics`, карточка вопроса kinematics (batch=0 детерминирован), `/formulas`.
-- Viewports: 1440×960 и 390×844 → 8 базлайнов.
-- Анти-flake: `animations: "disabled"`, маска `canvas` (StarField),
-  `await page.evaluate(() => document.fonts.ready)`.
-- Снапшоты платформозависимы: генерить ТОЛЬКО в CI (linux), локально skip
-  через `test.skip(!process.env.CI, "базлайны только linux")`.
-- Обновление базлайнов: workflow_dispatch job c `--update-snapshots`,
-  артефакт скачать и закоммитить отдельным коммитом с причиной изменения.
+Обновление любых базлайнов — только отдельным коммитом с причиной
+(«намеренное визуальное изменение: <что>»), не как побочный эффект.

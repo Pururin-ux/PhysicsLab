@@ -196,7 +196,7 @@ export function TopicCards() {
                 ) : null}
               </div>
             ) : (
-              <p className="text-[12px] font-semibold leading-[1.5] text-white/45">
+              <p className="text-[12px] font-semibold leading-[1.5] text-white/60">
                 Короткая тренировка из 10 задач.
               </p>
             )}
@@ -217,7 +217,7 @@ export function TopicCards() {
         <div className="flex min-w-0 flex-col gap-2">
           <div className="flex items-center gap-2.5">
             <Badge tone="gold">Пробный вариант</Badge>
-            <span className="text-[11px] font-bold uppercase tracking-[.12em] text-white/40">
+            <span className="text-[11px] font-bold uppercase tracking-[.12em] text-white/60">
               все открытые разделы
             </span>
           </div>

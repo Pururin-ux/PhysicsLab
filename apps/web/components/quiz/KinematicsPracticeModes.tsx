@@ -19,7 +19,7 @@ export function KinematicsPracticeModes() {
     <div className="flex flex-col gap-5">
       <div
         className="mx-auto grid w-full max-w-[580px] grid-cols-2 gap-2 rounded-card border border-white/[.08] bg-white/[.025] p-1"
-        role="tablist"
+        role="group"
         aria-label="Режим практики"
       >
         {modes.map((item) => (

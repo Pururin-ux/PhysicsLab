@@ -71,7 +71,7 @@ export function ExamDemo() {
     >
       <div className="flex items-center gap-2.5">
         <Badge tone="gold">Все открытые разделы</Badge>
-        <span className="text-[11px] font-bold uppercase tracking-[.14em] text-white/40">
+        <span className="text-[11px] font-bold uppercase tracking-[.14em] text-white/60">
           10 задач
         </span>
       </div>
