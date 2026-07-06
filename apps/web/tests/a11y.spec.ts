@@ -16,6 +16,13 @@ const routes = [
   "/practice/exam-demo",
 ] as const;
 
+async function scanForBlockingViolations(page: import("@playwright/test").Page) {
+  const results = await new AxeBuilder({ page }).exclude("canvas").analyze();
+  return results.violations.filter((violation) =>
+    ["serious", "critical"].includes(violation.impact ?? ""),
+  );
+}
+
 for (const route of routes) {
   test(`@a11y ${route}: без serious/critical нарушений`, async ({ page }) => {
     // Скан посреди анимации появления видит полупрозрачный текст и даёт
@@ -56,15 +63,7 @@ for (const route of routes) {
         // axe упадёт с конкретикой, а не молча.
       });
 
-    const results = await new AxeBuilder({ page })
-      // Канвас звёздного фона — декорация с aria-hidden; axe иногда
-      // спотыкается о его наложение на текст при вычислении контраста.
-      .exclude("canvas")
-      .analyze();
-
-    const blocking = results.violations.filter((violation) =>
-      ["serious", "critical"].includes(violation.impact ?? ""),
-    );
+    const blocking = await scanForBlockingViolations(page);
 
     expect(
       blocking.map((violation) => ({
@@ -75,3 +74,28 @@ for (const route of routes) {
     ).toEqual([]);
   });
 }
+
+// Карточка разбора после ответа — новая поверхность и отдельный класс
+// контраста (Nova-заголовок, свёрнутый разбор). Сканируем её обе ветки.
+test("@a11y карточка разбора после ошибки — без serious/critical", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/practice/kinematics-demo", { waitUntil: "domcontentloaded" });
+
+  const options = page.getByRole("list", { name: "Варианты ответа" });
+  await expect(options).toBeVisible();
+  // Задача 1 статического набора: верный ответ 37 м, поэтому 31 м — ошибка.
+  await options.getByRole("button").filter({ hasText: "31" }).first().click();
+  await expect(page.getByText("Разбор шаг за шагом")).toBeVisible();
+
+  // Развернуть разбор, чтобы axe увидел и его содержимое.
+  await page.getByRole("button", { name: "Разбор шаг за шагом" }).click();
+  await expect(page.getByText("Как решать похожую")).toBeVisible();
+
+  const blocking = await scanForBlockingViolations(page);
+  expect(
+    blocking.map((violation) => ({
+      id: violation.id,
+      nodes: violation.nodes.slice(0, 5).map((node) => node.html.slice(0, 120)),
+    })),
+  ).toEqual([]);
+});

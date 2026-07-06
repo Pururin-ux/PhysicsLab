@@ -4,7 +4,7 @@ import { useStore } from "@nanostores/react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { CoachBubble } from "../coach/CoachBubble";
 import { useCoach } from "../coach/useCoach";
-import { ExplanationSection } from "./ExplanationSection";
+import { AnswerFeedback } from "./AnswerFeedback";
 import { OptionList } from "./OptionList";
 import { QuestionCard } from "./QuestionCard";
 import { SessionSummary } from "./SessionSummary";
@@ -179,8 +179,11 @@ export function QuizSession({
         },
         {
           ...currentTask.coach_lines,
+          // Только реакция на ход-ошибку; диагностический вопрос
+          // AnswerFeedback показывает отдельной строкой, чтобы реплика
+          // Nova не превращалась в два предложения сразу.
           wrong: selectedMisconception
-            ? `Похоже, сработал ход: ${selectedMisconception}. ${taskFocus.diagnosticPrompt}`
+            ? `Похоже, сработал ход: ${selectedMisconception}.`
             : currentTask.coach_lines.wrong,
           hint: taskFocus.selfCheck,
         },
@@ -299,11 +302,6 @@ export function QuizSession({
   if (!currentTask) return null;
 
   const taskFocus = getTaskFocus(currentTask);
-  const latestAnswer = session.phase === "answered" ? session.answers.at(-1) : null;
-  const selectedMisconception =
-    latestAnswer && !latestAnswer.isCorrect
-      ? latestAnswer.selectedMisconception ?? latestAnswer.taskTrap
-      : undefined;
 
   return (
     <section className="relative mx-auto flex max-w-[580px] flex-col gap-4 pb-8">
@@ -323,7 +321,9 @@ export function QuizSession({
         formula={currentTask.formula}
         graph={currentTask.graph}
         diagram={currentTask.diagram}
-        focus={taskFocus}
+        // «Сейчас тренируем» — приминг перед ответом; после ответа его
+        // работа сделана, и он лишь конкурирует с разбором за внимание.
+        focus={session.phase === "answered" ? undefined : taskFocus}
         showSolutionContent={session.phase === "answered"}
       />
 
@@ -334,28 +334,29 @@ export function QuizSession({
         onSelect={handleAnswer}
       />
 
-      {/* Реплика Nova — сразу под вариантами ответа, там же, куда только что
-          смотрел ученик. Компактная и остаётся до нажатия «Дальше». */}
-      <div ref={reactionRef} className="scroll-mt-6">
+      {/* Пока ученик решает — Nova подсказывает плавающим баблом. После
+          ответа её голос переезжает в карточку разбора (один голос, одна
+          фокусная точка), поэтому здесь бабл скрываем. */}
+      {session.phase !== "answered" ? (
         <CoachBubble state={bubble.state} text={bubble.text} visible={bubble.visible} />
-      </div>
+      ) : null}
 
       {session.phase === "answered" ? (
-        <>
-          <ExplanationSection
+        <div ref={reactionRef} className="flex flex-col gap-4 scroll-mt-6">
+          <AnswerFeedback
+            isCorrect={session.answers.at(-1)?.isCorrect ?? false}
+            novaState={bubble.state}
+            novaText={bubble.text}
             explanation={currentTask.explanation}
             explanationLatex={currentTask.explanation_latex}
-            trap={currentTask.trap}
-            isCorrect={session.answers.at(-1)?.isCorrect ?? false}
             tutorial={taskFocus}
-            selectedMisconception={selectedMisconception}
             diagnosticPrompt={taskFocus.diagnosticPrompt}
           />
 
           <Button type="button" size="lg" onClick={handleNext}>
             {isLastTask ? "Показать итог" : "Следующая задача"}
           </Button>
-        </>
+        </div>
       ) : null}
     </section>
   );
