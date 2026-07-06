@@ -4,7 +4,6 @@ import { motion } from "framer-motion";
 import { useId, useState } from "react";
 import { renderFormulaToHtml } from "../../lib/formula-rendering";
 import type { CoachState } from "../../lib/coach-engine";
-import type { TaskFocus } from "../../lib/learning/task-focus";
 import { CoachAvatar } from "../coach/CoachAvatar";
 import { useTypewriter } from "../coach/useTypewriter";
 import { Card } from "../ui/Card";
@@ -13,33 +12,25 @@ import { cn } from "../../lib/utils";
 
 interface AnswerFeedbackProps {
   isCorrect: boolean;
-  // Один голос: реплика Nova становится заголовком карточки, а не
-  // отдельным плавающим баблом, конкурирующим за внимание.
+  // Один голос: реплика Nova — заголовок карточки, а не отдельный бабл.
   novaState: CoachState;
   novaText: string;
   explanation: string;
   explanationLatex?: string;
-  tutorial?: TaskFocus;
-  diagnosticPrompt?: string;
 }
 
-// После ответа — одна поверхность с жёсткой иерархией:
+// После ответа — одна поверхность, без мета-советов и рефлексивной воды:
 // 1) якорь: статус + реплика Nova (единственная фокусная точка);
-// 2) для ошибки — одна короткая строка «что сбило»;
-// 3) всё тяжёлое (полный разбор, формула, метод) — под свёрнутым
-//    «Разбором», раскрывается по желанию. Цель — снять перегрузку и
-//    конфликт фокусов, но не потерять педагогику: прицельная реплика об
-//    ошибке видна сразу, даже если ученик не откроет разбор.
+// 2) разбор — это сама подстановка в формулу, ничего лишнего. На ошибке
+//    открыт сразу (он короткий), на верном ответе свёрнут.
 export function AnswerFeedback({
   isCorrect,
   novaState,
   novaText,
   explanation,
   explanationLatex,
-  tutorial,
-  diagnosticPrompt,
 }: AnswerFeedbackProps) {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(!isCorrect);
   const panelId = useId();
   const { output, done } = useTypewriter(novaText);
 
@@ -50,17 +41,6 @@ export function AnswerFeedback({
   const statusLabel = isCorrect ? "Верно" : "Не совсем";
   const accentText = isCorrect ? "text-nova-cyan" : "text-nova-gold";
   const accentBorder = isCorrect ? "border-l-nova-cyan/60" : "border-l-nova-gold/60";
-
-  const keyObservation =
-    tutorial?.keyObservation ??
-    "Сначала распознай тип ситуации, а уже потом подставляй числа.";
-  const method = tutorial?.check;
-  const selfCheck = tutorial?.selfCheck;
-  const diagnosticQuestion = diagnosticPrompt ?? tutorial?.diagnosticPrompt;
-
-  // Реплика Nova уже несёт сам ход-ошибку; здесь — один рефлексивный
-  // вопрос, который стоит обдумать до открытия полного разбора.
-  const reflection = !isCorrect ? diagnosticQuestion : "";
 
   return (
     <motion.div
@@ -85,14 +65,6 @@ export function AnswerFeedback({
           </div>
         </div>
 
-        {reflection ? (
-          <p className="text-[13px] leading-[1.6] text-white/68">
-            <span className="font-semibold text-nova-gold/85">Проверь себя: </span>
-            <MathText text={reflection} />
-          </p>
-        ) : null}
-
-        {/* Всё тяжёлое — за одним раскрытием, один столбец, один акцент */}
         <div className="border-t border-white/[.08] pt-0.5">
           <button
             type="button"
@@ -102,7 +74,7 @@ export function AnswerFeedback({
             className="flex w-full items-center justify-between gap-3 py-2 text-left transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/50"
           >
             <span className="text-[13px] font-semibold text-white/78">
-              {open ? "Свернуть разбор" : "Разбор шаг за шагом"}
+              {open ? "Свернуть решение" : "Показать решение"}
             </span>
             <svg
               aria-hidden="true"
@@ -123,7 +95,7 @@ export function AnswerFeedback({
 
           {open ? (
             <div id={panelId} className="flex flex-col gap-3 pb-1 pt-1">
-              <p className="text-[14px] leading-[1.75] text-white/80">
+              <p className="text-[14px] leading-[1.75] text-white/82">
                 <MathText text={explanation} />
               </p>
 
@@ -134,31 +106,6 @@ export function AnswerFeedback({
                   dangerouslySetInnerHTML={{ __html: formulaHtml }}
                 />
               ) : null}
-
-              {method ? (
-                <div className="rounded-option border border-nova-cyan/[.12] bg-nova-cyan/[.035] px-4 py-3 text-[13px] leading-[1.6] text-white/74">
-                  <p className="mb-2 text-[12px] font-semibold leading-none text-nova-cyan/85">
-                    Как решать похожую
-                  </p>
-                  <div className="grid gap-2">
-                    <p>
-                      <span className="font-semibold text-white/82">Заметь: </span>
-                      <MathText text={keyObservation} />
-                    </p>
-                    <p>
-                      <span className="font-semibold text-white/82">Делай: </span>
-                      <MathText text={method} />
-                    </p>
-                    {selfCheck ? (
-                      <p>
-                        <span className="font-semibold text-white/82">Проверь: </span>
-                        <MathText text={selfCheck} />
-                      </p>
-                    ) : null}
-                  </div>
-                </div>
-              ) : null}
-
             </div>
           ) : null}
         </div>

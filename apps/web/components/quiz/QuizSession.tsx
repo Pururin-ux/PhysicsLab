@@ -179,13 +179,13 @@ export function QuizSession({
         },
         {
           ...currentTask.coach_lines,
-          // Только реакция на ход-ошибку; диагностический вопрос
-          // AnswerFeedback показывает отдельной строкой, чтобы реплика
-          // Nova не превращалась в два предложения сразу.
+          // Называем конкретную ошибку выбранного варианта прямой речью;
+          // без варианта-приманки берём авторскую реплику задачи (она уже
+          // конкретна и с числами).
           wrong: selectedMisconception
-            ? `Похоже, сработал ход: ${selectedMisconception}.`
+            ? `Похоже, ты ${selectedMisconception}.`
             : currentTask.coach_lines.wrong,
-          hint: taskFocus.selfCheck,
+          hint: taskFocus.check,
         },
       );
     }
@@ -349,8 +349,6 @@ export function QuizSession({
             novaText={bubble.text}
             explanation={currentTask.explanation}
             explanationLatex={currentTask.explanation_latex}
-            tutorial={taskFocus}
-            diagnosticPrompt={taskFocus.diagnosticPrompt}
           />
 
           <Button type="button" size="lg" onClick={handleNext}>

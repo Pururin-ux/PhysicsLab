@@ -63,7 +63,7 @@ export function NavBar() {
             >
               {currentStep} / {total}
             </span>
-            <span className="hidden text-[10px] font-bold uppercase tracking-[.12em] text-white/40 md:inline">
+            <span className="hidden text-[10px] font-bold uppercase tracking-[.12em] text-white/60 md:inline">
               Прогресс
             </span>
             <ProgressDots

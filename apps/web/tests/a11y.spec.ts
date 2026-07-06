@@ -85,11 +85,9 @@ test("@a11y карточка разбора после ошибки — без s
   await expect(options).toBeVisible();
   // Задача 1 статического набора: верный ответ 37 м, поэтому 31 м — ошибка.
   await options.getByRole("button").filter({ hasText: "31" }).first().click();
-  await expect(page.getByText("Разбор шаг за шагом")).toBeVisible();
-
-  // Развернуть разбор, чтобы axe увидел и его содержимое.
-  await page.getByRole("button", { name: "Разбор шаг за шагом" }).click();
-  await expect(page.getByText("Как решать похожую")).toBeVisible();
+  // На ошибке решение раскрыто по умолчанию — axe сразу видит его содержимое.
+  await expect(page.getByRole("button", { name: "Свернуть решение" })).toBeVisible();
+  await expect(page.getByTestId("solution-formula")).toBeVisible();
 
   const blocking = await scanForBlockingViolations(page);
   expect(
