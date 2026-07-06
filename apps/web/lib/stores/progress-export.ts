@@ -90,28 +90,44 @@ export type ExportSummary = {
 };
 
 type DecodedImport = {
+  valid: boolean;
   progress: AppProgress | null;
   examLog: ExamAttempt[] | null;
   practiceLog: string[] | null;
   xp: number | null;
 };
 
-function decodeStore<T>(file: ProgressExportFile, codec: StoreCodec<T>): T | null {
-  const envelope = file.stores[codec.key];
-  if (!envelope) {
-    return null;
+type DecodedStore<T> =
+  | { ok: true; value: T | null }
+  | { ok: false };
+
+function decodeStore<T>(file: ProgressExportFile, codec: StoreCodec<T>): DecodedStore<T> {
+  if (!Object.prototype.hasOwnProperty.call(file.stores, codec.key)) {
+    return { ok: true, value: null };
   }
 
-  const result = decodeStoredValue(codec, JSON.stringify(envelope));
-  return result.ok ? result.value : null;
+  const raw = JSON.stringify(file.stores[codec.key]);
+  if (typeof raw !== "string") {
+    return { ok: false };
+  }
+
+  const result = decodeStoredValue(codec, raw);
+  return result.ok ? { ok: true, value: result.value } : { ok: false };
 }
 
 function decodeImport(file: ProgressExportFile): DecodedImport {
+  const progress = decodeStore(file, progressCodec);
+  const examLog = decodeStore(file, examLogCodec);
+  const practiceLog = decodeStore(file, practiceLogCodec);
+  const xp = decodeStore(file, xpCodec);
+  const valid = progress.ok && examLog.ok && practiceLog.ok && xp.ok;
+
   return {
-    progress: decodeStore(file, progressCodec),
-    examLog: decodeStore(file, examLogCodec),
-    practiceLog: decodeStore(file, practiceLogCodec),
-    xp: decodeStore(file, xpCodec),
+    valid,
+    progress: progress.ok ? progress.value : null,
+    examLog: examLog.ok ? examLog.value : null,
+    practiceLog: practiceLog.ok ? practiceLog.value : null,
+    xp: xp.ok ? xp.value : null,
   };
 }
 
@@ -119,7 +135,7 @@ function decodeImport(file: ProgressExportFile): DecodedImport {
 // сторы допускаем отсутствующими (старый экспорт, частичный файл).
 export function summarizeExport(file: ProgressExportFile): ExportSummary | null {
   const decoded = decodeImport(file);
-  if (!decoded.progress) {
+  if (!decoded.valid || !decoded.progress) {
     return null;
   }
 
@@ -142,7 +158,7 @@ export function summarizeExport(file: ProgressExportFile): ExportSummary | null 
 // без перезагрузки страницы.
 export function applyImport(file: ProgressExportFile): boolean {
   const decoded = decodeImport(file);
-  if (!decoded.progress) {
+  if (!decoded.valid || !decoded.progress) {
     return false;
   }
 
