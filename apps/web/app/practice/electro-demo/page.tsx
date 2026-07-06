@@ -1,7 +1,8 @@
 import { CircuitVisual } from "../../../components/theory/CircuitVisual";
 import { TextConceptReveal } from "../../../components/theory/TextConceptReveal";
-import { TheoryBlock } from "../../../components/theory/TheoryBlock";
+import { TopicTheoryDrawer } from "../../../components/theory/TopicTheoryDrawer";
 import { TopicAmbientGlow } from "../../../components/layout/TopicAmbientGlow";
+import { TopicPageHeader } from "../../../components/layout/TopicPageHeader";
 import { QuizSession } from "../../../components/quiz/QuizSession";
 
 export const metadata = {
@@ -10,23 +11,45 @@ export const metadata = {
 
 export default function ElectroDemoPage() {
   return (
-    <div className="relative flex min-w-0 flex-col gap-10 sm:gap-12">
+    <div className="relative flex min-w-0 flex-col gap-8 sm:gap-10">
       <TopicAmbientGlow accent="blue" />
 
-      <TheoryBlock
+      <TopicPageHeader
         eyebrow="Электродинамика"
         title="Ток, напряжение и сопротивление"
-        description="Сначала посмотри, что происходит в цепи. Формула появится в конце."
-        layout="stack"
-      >
-        <a
-          href="#practice"
-          className="mx-auto inline-flex min-h-11 items-center justify-center gap-2 rounded-option border border-nova-blue/25 bg-nova-blue/[.06] px-4 text-[13px] font-semibold text-nova-blue transition-colors hover:border-nova-blue/45 hover:bg-nova-blue/[.10] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-blue/60 sm:hidden"
-        >
-          Сразу к практике
-          <span aria-hidden="true">↓</span>
-        </a>
+        description="Начни с задач по цепям. Если закон Ома путается, разбор лежит ниже."
+        accent="blue"
+      />
 
+      <section id="practice" className="scroll-mt-24 flex flex-col gap-5">
+        <div className="mx-auto flex w-full max-w-[580px] flex-col gap-2">
+          <p className="text-[11px] font-bold uppercase tracking-[.14em] text-white/50">
+            Тренировка
+          </p>
+          <h2 className="text-xl font-bold text-white">
+            10 задач по электродинамике
+          </h2>
+          <p className="text-[13px] leading-[1.6] text-white/55">
+            Закон Ома для участка и полной цепи, деление заряда между
+            проводниками — вперемешку.
+          </p>
+        </div>
+        <QuizSession
+          mode="generated"
+          generatedTemplate="electro-mixed"
+          generatedTopic="Электродинамика"
+          generatedTitle="Задачи по электродинамике"
+          topicId="electrodynamics"
+        />
+      </section>
+
+      <TopicTheoryDrawer
+        eyebrow="Короткий разбор"
+        title="Как думать о цепи"
+        description="Что означает ток, напряжение и сопротивление до подстановки в формулу."
+        layout="stack"
+        accent="blue"
+      >
         <TextConceptReveal
           accentClass="border-l-nova-blue/55"
           visual={
@@ -46,29 +69,7 @@ export default function ElectroDemoPage() {
           ]}
           limitation="Для участка цепи без источника внутри; сопротивление считаем постоянным."
         />
-      </TheoryBlock>
-
-      <section id="practice" className="scroll-mt-24 flex flex-col gap-5">
-        <div className="mx-auto flex w-full max-w-[580px] flex-col gap-2">
-          <p className="text-[11px] font-bold uppercase tracking-[.14em] text-white/50">
-            Задачи
-          </p>
-          <h2 className="text-xl font-bold text-white">
-            10 задач по электродинамике
-          </h2>
-          <p className="text-[13px] leading-[1.6] text-white/55">
-            Закон Ома для участка и полной цепи, деление заряда между
-            проводниками — вперемешку.
-          </p>
-        </div>
-        <QuizSession
-          mode="generated"
-          generatedTemplate="electro-mixed"
-          generatedTopic="Электродинамика"
-          generatedTitle="Задачи по электродинамике"
-          topicId="electrodynamics"
-        />
-      </section>
+      </TopicTheoryDrawer>
     </div>
   );
 }

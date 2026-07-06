@@ -1,8 +1,9 @@
 import { DynamicsPracticeModes } from "../../../components/quiz/DynamicsPracticeModes";
 import { ForceModel } from "../../../components/theory/ForceModel";
 import { FormulaDisplay } from "../../../components/theory/FormulaDisplay";
-import { TheoryBlock } from "../../../components/theory/TheoryBlock";
+import { TopicTheoryDrawer } from "../../../components/theory/TopicTheoryDrawer";
 import { TopicAmbientGlow } from "../../../components/layout/TopicAmbientGlow";
+import { TopicPageHeader } from "../../../components/layout/TopicPageHeader";
 import { Card } from "../../../components/ui/Card";
 import { MathText } from "../../../components/ui/MathText";
 
@@ -12,23 +13,33 @@ export const metadata = {
 
 export default function DynamicsDemoPage() {
   return (
-    <div className="relative flex min-w-0 flex-col gap-10 sm:gap-12">
+    <div className="relative flex min-w-0 flex-col gap-8 sm:gap-10">
       <TopicAmbientGlow accent="gold" />
 
-      <TheoryBlock
+      <TopicPageHeader
         eyebrow="Динамика"
         title="Силы и движение"
-        description="Перед вычислениями проверь, какие силы действуют и куда направлено ускорение."
-        layout="stack"
-      >
-        <a
-          href="#practice"
-          className="mx-auto inline-flex min-h-11 items-center justify-center gap-2 rounded-option border border-nova-gold/25 bg-nova-gold/[.06] px-4 text-[13px] font-semibold text-nova-gold transition-colors hover:border-nova-gold/45 hover:bg-nova-gold-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-gold/60 sm:hidden"
-        >
-          Сразу к практике
-          <span aria-hidden="true">↓</span>
-        </a>
+        description="Решай сразу. Если путаются силы, знаки или вес, открой разбор после тренировки."
+        accent="gold"
+      />
 
+      <section id="practice" className="scroll-mt-24 flex flex-col gap-5">
+        <div className="mx-auto flex w-full max-w-[580px] flex-col gap-2">
+          <p className="text-[11px] font-bold uppercase tracking-[.14em] text-white/50">
+            Тренировка
+          </p>
+          <h2 className="text-xl font-bold text-white">10 задач по динамике</h2>
+        </div>
+        <DynamicsPracticeModes />
+      </section>
+
+      <TopicTheoryDrawer
+        eyebrow="Короткий разбор"
+        title="Силы, оси и вес"
+        description="Минимум перед повторением: сумма сил, выбранная ось и вес в лифте."
+        layout="stack"
+        accent="gold"
+      >
         <article className="flex min-w-0 flex-col gap-4">
           <ForceModel
             variant="resultant"
@@ -111,17 +122,7 @@ export default function DynamicsDemoPage() {
             limitation="Знак «плюс» соответствует ускорению вверх, знак «минус» — ускорению вниз."
           />
         </article>
-      </TheoryBlock>
-
-      <section id="practice" className="scroll-mt-24 flex flex-col gap-5">
-        <div className="mx-auto flex w-full max-w-[580px] flex-col gap-2">
-          <p className="text-[11px] font-bold uppercase tracking-[.14em] text-white/50">
-            Задачи
-          </p>
-          <h2 className="text-xl font-bold text-white">10 задач по динамике</h2>
-        </div>
-        <DynamicsPracticeModes />
-      </section>
+      </TopicTheoryDrawer>
     </div>
   );
 }

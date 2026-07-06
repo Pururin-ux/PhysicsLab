@@ -1,7 +1,8 @@
 import { GasVesselVisual } from "../../../components/theory/GasVesselVisual";
 import { TextConceptReveal } from "../../../components/theory/TextConceptReveal";
-import { TheoryBlock } from "../../../components/theory/TheoryBlock";
+import { TopicTheoryDrawer } from "../../../components/theory/TopicTheoryDrawer";
 import { TopicAmbientGlow } from "../../../components/layout/TopicAmbientGlow";
+import { TopicPageHeader } from "../../../components/layout/TopicPageHeader";
 import { QuizSession } from "../../../components/quiz/QuizSession";
 
 export const metadata = {
@@ -10,23 +11,45 @@ export const metadata = {
 
 export default function ThermoDemoPage() {
   return (
-    <div className="relative flex min-w-0 flex-col gap-10 sm:gap-12">
+    <div className="relative flex min-w-0 flex-col gap-8 sm:gap-10">
       <TopicAmbientGlow accent="ember" />
 
-      <TheoryBlock
+      <TopicPageHeader
         eyebrow="Термодинамика"
         title="Газ, давление и температура"
-        description="Сначала посмотри на молекулы газа. Формула появится в конце."
-        layout="stack"
-      >
-        <a
-          href="#practice"
-          className="mx-auto inline-flex min-h-11 items-center justify-center gap-2 rounded-option border border-nova-ember/25 bg-nova-ember/[.06] px-4 text-[13px] font-semibold text-nova-ember transition-colors hover:border-nova-ember/45 hover:bg-nova-ember-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-ember/60 sm:hidden"
-        >
-          Сразу к практике
-          <span aria-hidden="true">↓</span>
-        </a>
+        description="Сначала решай. Если путаются кельвины, давление или тепло, открой разбор ниже."
+        accent="ember"
+      />
 
+      <section id="practice" className="scroll-mt-24 flex flex-col gap-5">
+        <div className="mx-auto flex w-full max-w-[580px] flex-col gap-2">
+          <p className="text-[11px] font-bold uppercase tracking-[.14em] text-white/50">
+            Тренировка
+          </p>
+          <h2 className="text-xl font-bold text-white">
+            10 задач по термодинамике
+          </h2>
+          <p className="text-[13px] leading-[1.6] text-white/55">
+            Уравнение состояния газа и количество теплоты при нагревании
+            вперемешку.
+          </p>
+        </div>
+        <QuizSession
+          mode="generated"
+          generatedTemplate="thermo-mixed"
+          generatedTopic="Термодинамика"
+          generatedTitle="Задачи по термодинамике"
+          topicId="thermodynamics"
+        />
+      </section>
+
+      <TopicTheoryDrawer
+        eyebrow="Короткий разбор"
+        title="Что держать в голове"
+        description="Идеальный газ, температура в кельвинах и главная ловушка с единицами."
+        layout="stack"
+        accent="ember"
+      >
         <TextConceptReveal
           accentClass="border-l-nova-ember/55"
           visual={
@@ -48,29 +71,7 @@ export default function ThermoDemoPage() {
           ]}
           limitation="Температура обязательно в кельвинах: T = t°C + 273."
         />
-      </TheoryBlock>
-
-      <section id="practice" className="scroll-mt-24 flex flex-col gap-5">
-        <div className="mx-auto flex w-full max-w-[580px] flex-col gap-2">
-          <p className="text-[11px] font-bold uppercase tracking-[.14em] text-white/50">
-            Задачи
-          </p>
-          <h2 className="text-xl font-bold text-white">
-            10 задач по термодинамике
-          </h2>
-          <p className="text-[13px] leading-[1.6] text-white/55">
-            Уравнение состояния газа и количество теплоты при нагревании
-            вперемешку.
-          </p>
-        </div>
-        <QuizSession
-          mode="generated"
-          generatedTemplate="thermo-mixed"
-          generatedTopic="Термодинамика"
-          generatedTitle="Задачи по термодинамике"
-          topicId="thermodynamics"
-        />
-      </section>
+      </TopicTheoryDrawer>
     </div>
   );
 }

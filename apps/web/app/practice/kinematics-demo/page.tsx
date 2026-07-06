@@ -1,7 +1,8 @@
 import { ConceptReveal } from "../../../components/theory/ConceptReveal";
-import { TheoryBlock } from "../../../components/theory/TheoryBlock";
+import { TopicTheoryDrawer } from "../../../components/theory/TopicTheoryDrawer";
 import { KinematicsPracticeModes } from "../../../components/quiz/KinematicsPracticeModes";
 import { TopicAmbientGlow } from "../../../components/layout/TopicAmbientGlow";
+import { TopicPageHeader } from "../../../components/layout/TopicPageHeader";
 import {
   ACCELERATED_MOTION_XT,
   UNIFORM_MOTION_VT,
@@ -14,22 +15,32 @@ export const metadata = {
 
 export default function KinematicsDemoPage() {
   return (
-    <div className="relative flex min-w-0 flex-col gap-10 sm:gap-12">
+    <div className="relative flex min-w-0 flex-col gap-8 sm:gap-10">
       <TopicAmbientGlow accent="cyan" />
 
-      <TheoryBlock
+      <TopicPageHeader
         eyebrow="Кинематика"
         title="Движение и графики"
-        description="Сначала посмотри, как меняется движение. Потом переходи к задачам."
-      >
-        <a
-          href="#practice"
-          className="mx-auto inline-flex min-h-11 items-center justify-center gap-2 rounded-option border border-nova-cyan/25 bg-nova-cyan/[.06] px-4 text-[13px] font-semibold text-nova-cyan transition-colors hover:border-nova-cyan/45 hover:bg-nova-cyan-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/60 sm:hidden"
-        >
-          Сразу к практике
-          <span aria-hidden="true">↓</span>
-        </a>
+        description="Начни с задач. Если график или формула стопорят, открой короткий разбор ниже."
+        accent="cyan"
+      />
 
+      <section id="practice" className="scroll-mt-24 flex flex-col gap-5">
+        <div className="mx-auto flex max-w-[580px] flex-col gap-2">
+          <p className="text-[11px] font-bold uppercase tracking-[.14em] text-white/50">
+            Тренировка
+          </p>
+          <h2 className="text-xl font-bold text-white">10 задач по кинематике</h2>
+        </div>
+        <KinematicsPracticeModes />
+      </section>
+
+      <TopicTheoryDrawer
+        eyebrow="Короткий разбор"
+        title="Как читать движение"
+        description="Две опоры для задач: что показывает график и когда работает формула."
+        accent="cyan"
+      >
         <ConceptReveal
           graph={UNIFORM_MOTION_VT}
           title="Равномерное движение"
@@ -63,17 +74,7 @@ export default function KinematicsDemoPage() {
           ]}
           limitation="Пока движение прямолинейное с постоянным ускорением."
         />
-      </TheoryBlock>
-
-      <section id="practice" className="scroll-mt-24 flex flex-col gap-5">
-        <div className="mx-auto flex max-w-[580px] flex-col gap-2">
-          <p className="text-[11px] font-bold uppercase tracking-[.14em] text-white/50">
-            Задачи
-          </p>
-          <h2 className="text-xl font-bold text-white">10 задач по кинематике</h2>
-        </div>
-        <KinematicsPracticeModes />
-      </section>
+      </TopicTheoryDrawer>
     </div>
   );
 }
