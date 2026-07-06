@@ -1,4 +1,10 @@
 import { atom } from "nanostores";
+import {
+  clearStore,
+  readStore,
+  writeStore,
+  type StoreCodec,
+} from "./storage-envelope.ts";
 import { skillMetadata, type TopicId } from "../learning/taxonomy.ts";
 import { topics } from "../topics.ts";
 import type { AnswerRecord } from "../../components/quiz/quiz-session-store.ts";
@@ -53,10 +59,6 @@ function createDefaultProgress(): AppProgress {
       topics.map((topic) => [topic.id, createEmptyTopicProgress()]),
     ) as Record<TopicId, TopicProgress>,
   };
-}
-
-function canUseStorage() {
-  return typeof window !== "undefined" && typeof window.localStorage !== "undefined";
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -140,42 +142,35 @@ export function migrateStoredProgress(value: unknown): AppProgress | null {
   return progress;
 }
 
-function saveProgress(progress: AppProgress) {
-  if (!canUseStorage()) {
-    return;
-  }
+// Конверт хранит AppProgress целиком: его внутренний version дублирует
+// version конверта — это цена нулевой переделки migrateStoredProgress,
+// который обязан продолжать понимать и старый inline-формат.
+export const progressCodec: StoreCodec<AppProgress> = {
+  key: PROGRESS_STORAGE_KEY,
+  currentVersion: PROGRESS_VERSION,
+  sniffLegacy: (_raw, parsed) =>
+    isRecord(parsed) && isRecord(parsed.topics)
+      ? { version: typeof parsed.version === "number" ? parsed.version : 0, data: parsed }
+      : null,
+  migrate: (data) => migrateStoredProgress(data),
+};
 
-  try {
-    window.localStorage.setItem(PROGRESS_STORAGE_KEY, JSON.stringify(progress));
-  } catch {
-    // localStorage can be unavailable in private or constrained browser modes.
-  }
+function saveProgress(progress: AppProgress) {
+  writeStore(progressCodec, progress);
 }
 
 export const $appProgress = atom<AppProgress>(createDefaultProgress());
 
 export function hydrateProgressFromStorage() {
-  if (!canUseStorage()) {
+  const result = readStore(progressCodec);
+  if (!result.ok) {
     return;
   }
 
-  try {
-    const raw = window.localStorage.getItem(PROGRESS_STORAGE_KEY);
-    if (!raw) {
-      return;
-    }
-
-    const progress = migrateStoredProgress(JSON.parse(raw));
-    if (!progress) {
-      window.localStorage.removeItem(PROGRESS_STORAGE_KEY);
-      return;
-    }
-
-    $appProgress.set(progress);
-    // Смигрированное состояние сразу пишем обратно уже в текущей версии.
-    saveProgress(progress);
-  } catch {
-    window.localStorage.removeItem(PROGRESS_STORAGE_KEY);
+  $appProgress.set(result.value);
+  if (result.migrated) {
+    // Смигрированное состояние сразу пишем обратно уже в текущем формате.
+    saveProgress(result.value);
   }
 }
 
@@ -302,12 +297,7 @@ export function combineWeakTrapLastSeenAt(progress: AppProgress): Record<string,
 export function resetProgress() {
   const progress = createDefaultProgress();
   $appProgress.set(progress);
-
-  if (!canUseStorage()) {
-    return;
-  }
-
-  window.localStorage.removeItem(PROGRESS_STORAGE_KEY);
+  clearStore(progressCodec);
 }
 
 export function getTopicProgress(topicId: TopicId) {

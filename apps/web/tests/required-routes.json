@@ -1,0 +1,17 @@
+{
+  "comment": "Единственный источник списка маршрутов: его читают prod-smoke.spec.ts и scripts/assert-routes-manifest.mjs. Новая продуктовая страница обязана попасть в required.",
+  "required": [
+    "/",
+    "/topics",
+    "/mistakes",
+    "/profile",
+    "/formulas",
+    "/practice/kinematics-demo",
+    "/practice/dynamics-demo",
+    "/practice/electro-demo",
+    "/practice/thermo-demo",
+    "/practice/exam-demo",
+    "/api/tasks"
+  ],
+  "devOnly": ["/dev/graphs", "/dev/diagrams"]
+}

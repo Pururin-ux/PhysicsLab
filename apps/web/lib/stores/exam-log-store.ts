@@ -1,4 +1,10 @@
 import { atom } from "nanostores";
+import {
+  clearStore,
+  readStore,
+  writeStore,
+  type StoreCodec,
+} from "./storage-envelope.ts";
 
 export const EXAM_LOG_STORAGE_KEY = "physicslab-v3-exam-log-v1";
 
@@ -48,36 +54,28 @@ function normalizeLog(value: unknown): ExamAttempt[] {
     .slice(-MAX_LOGGED_ATTEMPTS);
 }
 
-function canUseStorage() {
-  return typeof window !== "undefined" && typeof window.localStorage !== "undefined";
-}
+// v1 — голый массив попыток (до конверта). Конверт v1 хранит тот же массив.
+export const examLogCodec: StoreCodec<ExamAttempt[]> = {
+  key: EXAM_LOG_STORAGE_KEY,
+  currentVersion: 1,
+  sniffLegacy: (_raw, parsed) =>
+    Array.isArray(parsed) ? { version: 1, data: parsed } : null,
+  migrate: (data) => (Array.isArray(data) ? normalizeLog(data) : null),
+};
 
 function saveLog(log: ExamAttempt[]) {
-  if (!canUseStorage()) {
-    return;
-  }
-
-  try {
-    window.localStorage.setItem(EXAM_LOG_STORAGE_KEY, JSON.stringify(log));
-  } catch {
-    // localStorage can be unavailable in private or constrained browser modes.
-  }
+  writeStore(examLogCodec, log);
 }
 
 export function hydrateExamLogFromStorage() {
-  if (!canUseStorage()) {
+  const result = readStore(examLogCodec);
+  if (!result.ok) {
     return;
   }
 
-  try {
-    const raw = window.localStorage.getItem(EXAM_LOG_STORAGE_KEY);
-    if (!raw) {
-      return;
-    }
-
-    $examLog.set(normalizeLog(JSON.parse(raw)));
-  } catch {
-    window.localStorage.removeItem(EXAM_LOG_STORAGE_KEY);
+  $examLog.set(result.value);
+  if (result.migrated) {
+    writeStore(examLogCodec, result.value);
   }
 }
 
@@ -99,12 +97,7 @@ export function recordExamAttempt(score: number, total: number) {
 
 export function resetExamLog() {
   $examLog.set([]);
-
-  if (!canUseStorage()) {
-    return;
-  }
-
-  window.localStorage.removeItem(EXAM_LOG_STORAGE_KEY);
+  clearStore(examLogCodec);
 }
 
 export function getBestAttempt(log: ExamAttempt[]): ExamAttempt | null {

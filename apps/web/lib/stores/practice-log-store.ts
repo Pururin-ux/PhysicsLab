@@ -1,4 +1,10 @@
 import { atom } from "nanostores";
+import {
+  clearStore,
+  readStore,
+  writeStore,
+  type StoreCodec,
+} from "./storage-envelope.ts";
 
 export const PRACTICE_LOG_STORAGE_KEY = "physicslab-v3-practice-log-v1";
 
@@ -31,36 +37,28 @@ function normalizeLog(value: unknown): string[] {
     .slice(-MAX_LOGGED_DAYS);
 }
 
-function canUseStorage() {
-  return typeof window !== "undefined" && typeof window.localStorage !== "undefined";
-}
+// v1 — голый массив "YYYY-MM-DD" (до конверта). Конверт v1 — тот же массив.
+export const practiceLogCodec: StoreCodec<string[]> = {
+  key: PRACTICE_LOG_STORAGE_KEY,
+  currentVersion: 1,
+  sniffLegacy: (_raw, parsed) =>
+    Array.isArray(parsed) ? { version: 1, data: parsed } : null,
+  migrate: (data) => (Array.isArray(data) ? normalizeLog(data) : null),
+};
 
 function saveLog(log: string[]) {
-  if (!canUseStorage()) {
-    return;
-  }
-
-  try {
-    window.localStorage.setItem(PRACTICE_LOG_STORAGE_KEY, JSON.stringify(log));
-  } catch {
-    // localStorage can be unavailable in private or constrained browser modes.
-  }
+  writeStore(practiceLogCodec, log);
 }
 
 export function hydratePracticeLogFromStorage() {
-  if (!canUseStorage()) {
+  const result = readStore(practiceLogCodec);
+  if (!result.ok) {
     return;
   }
 
-  try {
-    const raw = window.localStorage.getItem(PRACTICE_LOG_STORAGE_KEY);
-    if (!raw) {
-      return;
-    }
-
-    $practiceLog.set(normalizeLog(JSON.parse(raw)));
-  } catch {
-    window.localStorage.removeItem(PRACTICE_LOG_STORAGE_KEY);
+  $practiceLog.set(result.value);
+  if (result.migrated) {
+    writeStore(practiceLogCodec, result.value);
   }
 }
 
@@ -79,12 +77,7 @@ export function logPracticeDay(date: Date = new Date()) {
 
 export function resetPracticeLog() {
   $practiceLog.set([]);
-
-  if (!canUseStorage()) {
-    return;
-  }
-
-  window.localStorage.removeItem(PRACTICE_LOG_STORAGE_KEY);
+  clearStore(practiceLogCodec);
 }
 
 function previousDayKey(key: string): string {

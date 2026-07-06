@@ -58,7 +58,7 @@ export function ExamDemo() {
         mode="generated"
         generatedTemplate="exam"
         generatedTopic="Пробный вариант"
-        generatedTitle="Пробный вариант · механика"
+        generatedTitle="Пробный вариант · все открытые разделы"
         sessionKind="exam"
       />
     );
@@ -70,7 +70,7 @@ export function ExamDemo() {
       className="mx-auto flex w-full max-w-[580px] flex-col gap-5 border-nova-gold/25 !p-6 md:!p-7"
     >
       <div className="flex items-center gap-2.5">
-        <Badge tone="gold">Механика</Badge>
+        <Badge tone="gold">Все открытые разделы</Badge>
         <span className="text-[11px] font-bold uppercase tracking-[.14em] text-white/40">
           10 задач
         </span>
@@ -79,7 +79,7 @@ export function ExamDemo() {
       <ul className="flex flex-col gap-2.5 text-[14px] leading-[1.65] text-white/72">
         <li className="grid grid-cols-[auto_1fr] gap-2.5">
           <span className="text-nova-gold">—</span>
-          Все восемь навыков кинематики и динамики вперемешку, как на экзамене.
+          Кинематика, динамика, электродинамика и термодинамика вперемешку.
         </li>
         <li className="grid grid-cols-[auto_1fr] gap-2.5">
           <span className="text-nova-gold">—</span>

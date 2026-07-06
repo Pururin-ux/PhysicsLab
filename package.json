@@ -15,10 +15,11 @@
     "test": "npm --prefix apps/web run test",
     "test:physics": "npm --prefix apps/web run test:physics",
     "test:e2e": "npm --prefix apps/web run test:e2e",
-    "screenshots": "npm --prefix apps/web run screenshots"
+    "screenshots": "npm --prefix apps/web run screenshots",
+    "assert:routes": "npm --prefix apps/web run assert:routes",
+    "smoke": "npm --prefix apps/web run smoke"
   },
   "devDependencies": {
-    "@playwright/test": "^1.60.0",
     "typescript": "^5.9.3"
   }
 }

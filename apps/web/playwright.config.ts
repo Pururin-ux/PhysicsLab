@@ -2,6 +2,9 @@ import { defineConfig } from "@playwright/test";
 
 export default defineConfig({
   testDir: "./tests",
+  // Прод-смок гоняется отдельным конфигом против next start (см.
+  // playwright.prod.config.ts) — в dev-прогоне он давал бы ложную зелень.
+  testIgnore: "prod-smoke.spec.ts",
   fullyParallel: false,
   timeout: 60000,
   workers: 1,

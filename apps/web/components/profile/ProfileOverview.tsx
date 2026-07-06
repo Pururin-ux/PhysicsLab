@@ -27,6 +27,7 @@ import { Badge } from "../ui/Badge";
 import { Button } from "../ui/Button";
 import { Card } from "../ui/Card";
 import { MathText } from "../ui/MathText";
+import { DataTransfer } from "./DataTransfer";
 
 type Readiness = {
   label: string;
@@ -418,15 +419,19 @@ export function ProfileOverview() {
       </section>
 
       <section
-        className="flex items-center justify-between gap-4 rounded-card border border-white/[.06] bg-space-900/50 px-5 py-4"
+        className="flex flex-col gap-3 rounded-card border border-white/[.06] bg-space-900/50 px-5 py-4"
         aria-label="Управление данными"
       >
-        <p className="text-[12px] leading-[1.6] text-white/45">
-          Все данные хранятся только в этом браузере.
-        </p>
-        <Button size="sm" variant="ghost" onClick={handleReset}>
-          Сбросить прогресс
-        </Button>
+        <div className="flex items-center justify-between gap-4">
+          <p className="text-[12px] leading-[1.6] text-white/45">
+            Все данные хранятся только в этом браузере. Скачай файл прогресса,
+            чтобы не потерять его при очистке или сменить устройство.
+          </p>
+          <Button size="sm" variant="ghost" onClick={handleReset}>
+            Сбросить прогресс
+          </Button>
+        </div>
+        <DataTransfer />
       </section>
     </div>
   );

@@ -5,13 +5,15 @@
   "type": "module",
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "next build --turbopack",
+    "build": "next build",
     "start": "next start",
     "check": "tsc --noEmit",
     "test": "node --test",
     "test:physics": "node --test \"lib/physics/*.test.ts\" \"components/physics-graph/*.test.ts\" \"components/diagrams/*.test.mjs\" \"lib/server/task-generator/*.test.ts\"",
     "test:e2e": "playwright test",
-    "screenshots": "playwright test tests/screenshots"
+    "screenshots": "playwright test tests/screenshots",
+    "assert:routes": "node scripts/assert-routes-manifest.mjs",
+    "smoke": "playwright test --config=playwright.prod.config.ts"
   },
   "dependencies": {
     "@nanostores/react": "^1.1.0",
