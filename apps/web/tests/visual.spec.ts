@@ -17,6 +17,7 @@ const routes = [
   { name: "home", path: "/" },
   { name: "topics", path: "/topics" },
   { name: "profile", path: "/profile" },
+  { name: "mistakes", path: "/mistakes" },
   { name: "formulas", path: "/formulas" },
   { name: "practice-kinematics", path: "/practice/kinematics-demo" },
   { name: "practice-exam", path: "/practice/exam-demo" },
@@ -33,6 +34,9 @@ for (const route of routes) {
     await expect(page.getByRole("main")).toBeVisible();
     await page.waitForLoadState("networkidle");
     await page.evaluate(() => document.fonts.ready);
+    await page.addStyleTag({
+      content: "canvas { visibility: hidden !important; }",
+    });
 
     const viewport = page.viewportSize();
     if (!viewport) {
@@ -68,9 +72,6 @@ for (const route of routes) {
     if (withSnapshots && SNAPSHOT_PROJECTS.includes(testInfo.project.name)) {
       await expect(main).toHaveScreenshot(`${route.name}.png`, {
         animations: "disabled",
-        // Канвас звёзд рандомен по построению; маскируем и его, и
-        // фоновое свечение темы.
-        mask: [page.locator("canvas")],
         maxDiffPixelRatio: 0.02,
       });
     }
