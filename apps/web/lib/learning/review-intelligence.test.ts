@@ -9,7 +9,7 @@ import {
   type AppProgress,
   type TopicProgress,
 } from "../stores/progress-store.ts";
-import type { TopicId } from "./taxonomy.ts";
+import { skillMetadata, type TopicId } from "./taxonomy.ts";
 
 function emptyTopicProgress(): TopicProgress {
   return {
@@ -101,9 +101,12 @@ test("buildReviewDashboard aggregates urgency, attempts and topic focus", () => 
   assert.deepEqual(kinematics.topSkillTitles.length, 2);
 
   const electrodynamics = topicById(dashboard, "electrodynamics");
+  const electrodynamicsSkillCount = Object.values(skillMetadata).filter(
+    (skill) => skill.topicId === "electrodynamics",
+  ).length;
   assert.equal(electrodynamics.tone, "cyan");
   assert.equal(electrodynamics.nextSession, 1);
-  assert.equal(electrodynamics.skillCoverageLabel, "1/4");
+  assert.equal(electrodynamics.skillCoverageLabel, `1/${electrodynamicsSkillCount}`);
 });
 
 test("buildReviewDashboard keeps an empty review state neutral", () => {

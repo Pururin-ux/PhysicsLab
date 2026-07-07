@@ -1,5 +1,12 @@
 import type { DistractorRule, Params } from "./types.ts";
-import { GAS_CONSTANT, GRAVITY, WATER_SPECIFIC_HEAT_KJ, variantIndex } from "./solver.ts";
+import {
+  GAS_CONSTANT,
+  GRAVITY,
+  ICE_FUSION_HEAT_KJ,
+  ICE_SPECIFIC_HEAT_KJ,
+  WATER_SPECIFIC_HEAT_KJ,
+  variantIndex,
+} from "./solver.ts";
 
 function freeFallGtInsteadOfHalfSquare(p: Params): number {
   return GRAVITY * p.t;
@@ -545,5 +552,113 @@ export const heatAmountDistractors: DistractorRule[] = [
   {
     label: "забыл удельную теплоёмкость",
     compute: heatForgotSpecificHeat,
+  },
+];
+
+function collisionAveragesSpeeds(p: Params): number {
+  return (p.v1 + p.v2) / 2;
+}
+
+function collisionForgetsTotalMass(p: Params): number {
+  return p.m1 * p.v1 + p.m2 * p.v2;
+}
+
+function collisionIgnoresSecondCartMomentum(p: Params): number {
+  return (p.m1 * p.v1) / (p.m1 + p.m2);
+}
+
+export const inelasticCollisionSpeedDistractors: DistractorRule[] = [
+  {
+    label: "усреднил скорости без учёта масс",
+    compute: collisionAveragesSpeeds,
+  },
+  {
+    label: "нашёл суммарный импульс, но не поделил на общую массу",
+    compute: collisionForgetsTotalMass,
+  },
+  {
+    label: "учёл импульс только первой тележки",
+    compute: collisionIgnoresSecondCartMomentum,
+  },
+];
+
+function kineticEnergyForgetsHalf(p: Params): number {
+  return p.m * p.v * p.v;
+}
+
+function kineticEnergyUsesMomentum(p: Params): number {
+  return p.m * p.v;
+}
+
+function kineticEnergyForgetsSquare(p: Params): number {
+  return (p.m * p.v) / 2;
+}
+
+export const kineticEnergyDistractors: DistractorRule[] = [
+  {
+    label: "забыл коэффициент 1/2",
+    compute: kineticEnergyForgetsHalf,
+  },
+  {
+    label: "нашёл импульс вместо энергии",
+    compute: kineticEnergyUsesMomentum,
+  },
+  {
+    label: "не возвёл скорость в квадрат",
+    compute: kineticEnergyForgetsSquare,
+  },
+];
+
+function capacitorEnergyForgetsHalf(p: Params): number {
+  return (p.C * p.U * p.U) / 1000;
+}
+
+function capacitorEnergyForgetsVoltageSquare(p: Params): number {
+  return (p.C * p.U) / 2000;
+}
+
+function capacitorEnergyTreatsMicrofaradsAsFarads(p: Params): number {
+  return (p.C * p.U * p.U) / 2;
+}
+
+export const capacitorEnergyDistractors: DistractorRule[] = [
+  {
+    label: "забыл коэффициент 1/2",
+    compute: capacitorEnergyForgetsHalf,
+  },
+  {
+    label: "подставил U вместо U²",
+    compute: capacitorEnergyForgetsVoltageSquare,
+  },
+  {
+    label: "не учёл, что ёмкость дана в микрофарадах",
+    compute: capacitorEnergyTreatsMicrofaradsAsFarads,
+  },
+];
+
+function phaseHeatMeltingOnly(p: Params): number {
+  return p.m * ICE_FUSION_HEAT_KJ;
+}
+
+function phaseHeatWarmingOnly(p: Params): number {
+  return p.m * ICE_SPECIFIC_HEAT_KJ * Math.abs(p.temp0);
+}
+
+function phaseHeatForgetsMass(p: Params): number {
+  return ICE_SPECIFIC_HEAT_KJ * Math.abs(p.temp0) + ICE_FUSION_HEAT_KJ;
+}
+
+export const phaseChangeHeatDistractors: DistractorRule[] = [
+  {
+    label: "учёл только плавление",
+    compute: phaseHeatMeltingOnly,
+  },
+  {
+    label: "учёл только нагрев льда до 0 °C",
+    compute: phaseHeatWarmingOnly,
+  },
+  {
+    label: "забыл умножить обе стадии на массу",
+    compute: phaseHeatForgetsMass,
   },
 ];

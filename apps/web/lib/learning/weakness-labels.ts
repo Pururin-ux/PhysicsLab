@@ -80,9 +80,21 @@ export const weaknessCopyBySkill: Partial<Record<SkillId, {
     title: "Импульс силы",
     hint: "$\\Delta p = F\\Delta t$ — проверь, все ли данные из условия вообще нужны формуле.",
   },
+  "inelastic-collision-speed": {
+    title: "Неупругое столкновение",
+    hint: "После сцепления дели ==суммарный импульс== на общую массу системы.",
+  },
+  "kinetic-energy": {
+    title: "Кинетическая энергия",
+    hint: "В $E_k=\\frac{mv^2}{2}$ скорость стоит ==в квадрате==, а не первой степенью.",
+  },
   "charge-sharing": {
     title: "Деление заряда",
     hint: "После контакта одинаковых шариков заряд не складывается, а ==делится поровну==.",
+  },
+  "capacitor-energy": {
+    title: "Энергия конденсатора",
+    hint: "Не пропускай $U^2$, коэффициент $\\frac12$ и перевод микрофарад.",
   },
   "ideal-gas-state": {
     title: "Уравнение состояния газа",
@@ -91,6 +103,10 @@ export const weaknessCopyBySkill: Partial<Record<SkillId, {
   "heat-amount": {
     title: "Количество теплоты",
     hint: "В формуле $Q=cm\\Delta T$ важны ==все три== множителя: ни один нельзя пропускать.",
+  },
+  "phase-change-heat": {
+    title: "Нагревание и плавление",
+    hint: "Сложи две стадии: нагрев до 0 °C и плавление $\\lambda m$.",
   },
 };
 

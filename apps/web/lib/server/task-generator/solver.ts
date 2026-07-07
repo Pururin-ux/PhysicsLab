@@ -117,3 +117,27 @@ export const WATER_SPECIFIC_HEAT_KJ = 4.2;
 export function heatAmount(p: Params): number {
   return WATER_SPECIFIC_HEAT_KJ * p.m * p.dT;
 }
+
+// Полностью неупругое столкновение тележек, движущихся в одном направлении:
+// m1v1 + m2v2 = (m1 + m2)v.
+export function inelasticCollisionSpeed(p: Params): number {
+  return (p.m1 * p.v1 + p.m2 * p.v2) / (p.m1 + p.m2);
+}
+
+// Кинетическая энергия в джоулях.
+export function kineticEnergy(p: Params): number {
+  return (p.m * p.v * p.v) / 2;
+}
+
+// Энергия конденсатора в мДж, если C задана в мкФ: W = CU²/2.
+export function capacitorEnergyMilliJoules(p: Params): number {
+  return (p.C * p.U * p.U) / 2000;
+}
+
+export const ICE_SPECIFIC_HEAT_KJ = 2.1;
+export const ICE_FUSION_HEAT_KJ = 334;
+
+// Нагреть лёд до 0 °C и полностью расплавить: Q = cmΔT + λm.
+export function phaseChangeHeat(p: Params): number {
+  return p.m * (ICE_SPECIFIC_HEAT_KJ * Math.abs(p.temp0) + ICE_FUSION_HEAT_KJ);
+}

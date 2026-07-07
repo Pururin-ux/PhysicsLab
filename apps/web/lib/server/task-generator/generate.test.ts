@@ -26,12 +26,15 @@ const dynamicsTemplateIds = [
   "weight-lift",
   "density-volume-ratio",
   "impulse-momentum",
+  "inelastic-collision-speed",
+  "kinetic-energy",
 ] as const;
 const electrodynamicsTemplateIds = [
   "ohm-law",
   "resistor-network",
   "source-internal-resistance",
   "charge-sharing",
+  "capacitor-energy",
 ] as const;
 
 // Шаблоны на пифагоровых тройках имеют естественно малый пул параметров:
@@ -40,7 +43,7 @@ const uniqueTextPoolBySkill: Record<string, number> = {
   "relative-velocity-vectors": 36,
   "resultant-force-2d": 24,
 };
-const thermodynamicsTemplateIds = ["ideal-gas-state", "heat-amount"] as const;
+const thermodynamicsTemplateIds = ["ideal-gas-state", "heat-amount", "phase-change-heat"] as const;
 
 type ApiTask = {
   id: string;
@@ -370,7 +373,7 @@ test("API route делает batch детерминированным и мен�
   );
 });
 
-test("API route dynamics-mixed покрывает восемь навыков", async () => {
+test("API route dynamics-mixed покрывает все навыки динамики", async () => {
   const response = await GET(
     new Request("http://localhost/api/tasks?template=dynamics-mixed&count=14&batch=7"),
   );
@@ -384,7 +387,7 @@ test("API route dynamics-mixed покрывает восемь навыков", 
   );
 });
 
-test("API route electro-mixed покрывает четыре навыка", async () => {
+test("API route electro-mixed покрывает все навыки электродинамики", async () => {
   const response = await GET(
     new Request("http://localhost/api/tasks?template=electro-mixed&count=10&batch=7"),
   );
@@ -398,7 +401,7 @@ test("API route electro-mixed покрывает четыре навыка", asy
   );
 });
 
-test("API route thermo-mixed покрывает два навыка", async () => {
+test("API route thermo-mixed покрывает все навыки термодинамики", async () => {
   const response = await GET(
     new Request("http://localhost/api/tasks?template=thermo-mixed&count=10&batch=7"),
   );

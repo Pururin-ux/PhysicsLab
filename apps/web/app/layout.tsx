@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { ConditionalAppShell } from "../components/layout/ConditionalAppShell";
-import { OrbitDeco } from "../components/layout/OrbitDeco";
 import { PersistenceHydrator } from "../components/layout/PersistenceHydrator";
 import { StarField } from "../components/layout/StarField";
 import "../styles/globals.css";
@@ -28,7 +27,6 @@ export default function RootLayout({
       <body className={`${inter.variable} font-sans`}>
         <PersistenceHydrator />
         <StarField />
-        <OrbitDeco />
         <ConditionalAppShell>{children}</ConditionalAppShell>
       </body>
     </html>

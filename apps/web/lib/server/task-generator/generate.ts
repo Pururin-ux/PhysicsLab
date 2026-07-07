@@ -1,4 +1,5 @@
 import { pathToFileURL } from "node:url";
+import { capacitorEnergyBlueprint } from "./templates/capacitor-energy.ts";
 import { chargeSharingBlueprint } from "./templates/charge-sharing.ts";
 import { densityVolumeRatioBlueprint } from "./templates/density-volume-ratio.ts";
 import { frictionForceBlueprint } from "./templates/friction-force.ts";
@@ -7,8 +8,11 @@ import { heatAmountBlueprint } from "./templates/heat-amount.ts";
 import { idealGasStateBlueprint } from "./templates/ideal-gas-state.ts";
 import { impulseMomentumBlueprint } from "./templates/impulse-momentum.ts";
 import { inclineForceBlueprint } from "./templates/incline-force.ts";
+import { inelasticCollisionSpeedBlueprint } from "./templates/inelastic-collision-speed.ts";
+import { kineticEnergyBlueprint } from "./templates/kinetic-energy.ts";
 import { newtonSecondBlueprint } from "./templates/newton-second.ts";
 import { ohmLawBlueprint } from "./templates/ohm-law.ts";
+import { phaseChangeHeatBlueprint } from "./templates/phase-change-heat.ts";
 import { relativeVelocityVectorsBlueprint } from "./templates/relative-velocity-vectors.ts";
 import { resistorNetworkBlueprint } from "./templates/resistor-network.ts";
 import { resultantForceBlueprint } from "./templates/resultant-force.ts";
@@ -48,14 +52,18 @@ export const blueprints = {
   "resultant-force": resultantForceBlueprint,
   "resultant-force-2d": resultantForce2dBlueprint,
   "weight-lift": weightLiftBlueprint,
+  "inelastic-collision-speed": inelasticCollisionSpeedBlueprint,
+  "kinetic-energy": kineticEnergyBlueprint,
   "ohm-law": ohmLawBlueprint,
   "resistor-network": resistorNetworkBlueprint,
   "source-internal-resistance": sourceInternalResistanceBlueprint,
+  "capacitor-energy": capacitorEnergyBlueprint,
   "density-volume-ratio": densityVolumeRatioBlueprint,
   "impulse-momentum": impulseMomentumBlueprint,
   "charge-sharing": chargeSharingBlueprint,
   "ideal-gas-state": idealGasStateBlueprint,
   "heat-amount": heatAmountBlueprint,
+  "phase-change-heat": phaseChangeHeatBlueprint,
 };
 
 export type TemplateId = keyof typeof blueprints;

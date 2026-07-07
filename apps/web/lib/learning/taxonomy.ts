@@ -25,12 +25,16 @@ export type SkillId =
   | "weight-lift"
   | "density-volume-ratio"
   | "impulse-momentum"
+  | "inelastic-collision-speed"
+  | "kinetic-energy"
   | "ohm-law"
   | "resistor-network"
   | "source-internal-resistance"
+  | "capacitor-energy"
   | "charge-sharing"
   | "ideal-gas-state"
-  | "heat-amount";
+  | "heat-amount"
+  | "phase-change-heat";
 
 export type SkillMetadata = {
   id: SkillId;
@@ -138,6 +142,22 @@ export const skillMetadata: Record<SkillId, SkillMetadata> = {
     shortTitle: "Импульс силы",
     description: "Изменение импульса тела как произведение силы на время её действия.",
   },
+  "inelastic-collision-speed": {
+    id: "inelastic-collision-speed",
+    topicId: "dynamics",
+    sectionId: "mechanics",
+    title: "Неупругое столкновение",
+    shortTitle: "Сцепление тележек",
+    description: "Скорость сцепившихся тел через сохранение импульса системы.",
+  },
+  "kinetic-energy": {
+    id: "kinetic-energy",
+    topicId: "dynamics",
+    sectionId: "mechanics",
+    title: "Кинетическая энергия",
+    shortTitle: "Кинетическая энергия",
+    description: "Энергия движения как половина произведения массы на квадрат скорости.",
+  },
   "ohm-law": {
     id: "ohm-law",
     topicId: "electrodynamics",
@@ -170,6 +190,14 @@ export const skillMetadata: Record<SkillId, SkillMetadata> = {
     shortTitle: "Деление заряда",
     description: "Заряд одинаковых проводников после контакта усредняется.",
   },
+  "capacitor-energy": {
+    id: "capacitor-energy",
+    topicId: "electrodynamics",
+    sectionId: "electrodynamics",
+    title: "Энергия конденсатора",
+    shortTitle: "Энергия конденсатора",
+    description: "Энергия электрического поля конденсатора пропорциональна квадрату напряжения.",
+  },
   "ideal-gas-state": {
     id: "ideal-gas-state",
     topicId: "thermodynamics",
@@ -185,5 +213,13 @@ export const skillMetadata: Record<SkillId, SkillMetadata> = {
     title: "Количество теплоты при нагревании",
     shortTitle: "Количество теплоты",
     description: "Теплота нагрева как произведение теплоёмкости, массы и изменения температуры.",
+  },
+  "phase-change-heat": {
+    id: "phase-change-heat",
+    topicId: "thermodynamics",
+    sectionId: "molecular",
+    title: "Нагревание и плавление",
+    shortTitle: "Плавление",
+    description: "Полная теплота при переходе через 0 °C складывается из нагрева и плавления.",
   },
 };

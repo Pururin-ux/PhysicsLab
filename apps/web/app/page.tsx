@@ -12,24 +12,6 @@ export const metadata = {
     "Тренажёр по физике для ЦЭ/ЦТ: короткие тренировки, разбор типичных ошибок и честный прогресс.",
 };
 
-const principles = [
-  {
-    id: "model-first",
-    title: "Модель → смысл → формула",
-    text: "Сначала — что происходит с телом, потом почему. Формула появляется последней.",
-  },
-  {
-    id: "mistakes",
-    title: "Учимся на ошибках",
-    text: "Каждая ошибка — конкретная ловушка, а не минус балл. Тренажёр даёт потренировать именно её.",
-  },
-  {
-    id: "honest-progress",
-    title: "Честный прогресс",
-    text: "Без таймеров и выдуманных процентов готовности — только решённые задачи, точность и слабые места.",
-  },
-] as const;
-
 export default function Home() {
   return (
     <div className="flex min-w-0 flex-col gap-12 sm:gap-16">
@@ -78,27 +60,6 @@ export default function Home() {
           </p>
         </div>
       </section>
-
-      <Reveal>
-        <section
-          className="grid gap-4 md:grid-cols-3"
-          aria-label="Принципы PhysicsLab"
-        >
-          {principles.map((principle) => (
-            <Card
-              key={principle.id}
-              className="card-lift flex flex-col gap-3 border-white/[.08] !p-5 hover:border-nova-cyan/20"
-            >
-              <h2 className="text-[16px] font-[800] leading-snug text-white">
-                {principle.title}
-              </h2>
-              <p className="text-[13px] leading-[1.7] text-white/70">
-                {principle.text}
-              </p>
-            </Card>
-          ))}
-        </section>
-      </Reveal>
 
       <Reveal>
         <section className="flex flex-col gap-4">

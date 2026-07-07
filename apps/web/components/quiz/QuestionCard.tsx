@@ -71,20 +71,6 @@ export function QuestionCard({
         <Badge tone="blue">{difficultyLabels[difficulty]}</Badge>
       </div>
 
-      {focus && !showSolutionContent ? (
-        <div className="rounded-option border border-nova-cyan/[.16] bg-nova-cyan/[.045] px-3 py-2.5 shadow-[inset_0_1px_0_rgba(255,255,255,.035)]">
-          <p className="text-[11px] font-bold uppercase tracking-[.13em] text-nova-cyan/80">
-            Сейчас тренируем
-          </p>
-          <p className="mt-1 text-[14px] font-[800] leading-tight text-white">
-            {focus.title}
-          </p>
-          <p className="mt-1 text-[12px] leading-[1.55] text-white/62">
-            <MathText text={focus.check} />
-          </p>
-        </div>
-      ) : null}
-
       <p className="text-[14px] font-normal leading-[1.8] text-white/80 md:text-[15px]">
         {text}
       </p>

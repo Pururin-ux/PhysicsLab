@@ -335,10 +335,10 @@ function MobileSidebarNav() {
 
 function AppSidebar() {
   return (
-    <aside className="sticky top-6 hidden h-[calc(100vh-48px)] min-h-[650px] flex-col rounded-card border border-white/[.08] bg-space-900/82 p-4 shadow-card backdrop-blur-md lg:flex">
+    <aside className="sticky top-6 hidden h-[calc(100vh-48px)] flex-col rounded-card border border-white/[.08] bg-space-900/82 p-4 shadow-card backdrop-blur-md lg:flex">
       <Link
         href="/"
-        className="mb-6 rounded-option focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/55 focus-visible:ring-offset-2 focus-visible:ring-offset-space-950"
+        className="mb-5 shrink-0 rounded-option focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/55 focus-visible:ring-offset-2 focus-visible:ring-offset-space-950"
         aria-label="PhysicsLab — на главную"
       >
         <span className="block text-[18px] font-black leading-none tracking-tight text-white">
@@ -349,9 +349,14 @@ function AppSidebar() {
         </span>
       </Link>
 
-      <SidebarNav />
+      {/* Список разделов прокручивается сам, если не влезает в высоту экрана;
+          логотип сверху и XP снизу закреплены. Отрицательный отступ прячет
+          дорожку скролла, чтобы контент не обрезался у края. */}
+      <div className="-mr-2 min-h-0 flex-1 overflow-y-auto pr-2">
+        <SidebarNav />
+      </div>
 
-      <div className="mt-auto flex items-center justify-between gap-2 rounded-option border border-white/[.07] bg-white/[.025] px-3 py-3">
+      <div className="mt-4 flex shrink-0 items-center justify-between gap-2 rounded-option border border-white/[.07] bg-white/[.025] px-3 py-3">
         <span className="text-[10px] font-bold uppercase tracking-[.14em] text-white/48">
           Опыт
         </span>

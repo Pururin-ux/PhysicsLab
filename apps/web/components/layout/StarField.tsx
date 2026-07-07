@@ -9,6 +9,14 @@ export function StarField() {
     if (!cv) return
     const cx = cv.getContext('2d')!
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    // Keep pointer effects to desktop cursors and respect reduced motion.
+    const interactive =
+      !reducedMotion &&
+      window.matchMedia('(pointer: fine)').matches &&
+      window.innerWidth >= 1024
+    // Cursor link radius and current pointer state.
+    const LINK_RADIUS = 150
+    const pointer = { x: 0, y: 0, active: false }
     let raf: number
     let frame = 0
 
@@ -61,10 +69,30 @@ export function StarField() {
         cx.lineWidth = 0.6
         cx.stroke()
       })
+      // Lightly connect nearby stars to the cursor.
+      if (interactive && pointer.active) {
+        for (const s of stars) {
+          const x = s.x * W, y = s.y * H
+          const d = Math.hypot(x - pointer.x, y - pointer.y)
+          if (d < LINK_RADIUS) {
+            const k = 1 - d / LINK_RADIUS
+            cx.beginPath()
+            cx.moveTo(pointer.x, pointer.y)
+            cx.lineTo(x, y)
+            cx.strokeStyle = `rgba(0,224,255,${(0.16 * k * k).toFixed(3)})`
+            cx.lineWidth = 0.7
+            cx.stroke()
+          }
+        }
+      }
       // stars
       stars.forEach(s => {
-        const al = s.base * (0.6 + 0.4 * Math.sin(frame * s.spd + s.phi))
+        let al = s.base * (0.6 + 0.4 * Math.sin(frame * s.spd + s.phi))
         const x = s.x * W, y = s.y * H
+        if (interactive && pointer.active) {
+          const d = Math.hypot(x - pointer.x, y - pointer.y)
+          if (d < LINK_RADIUS) al += (1 - d / LINK_RADIUS) * 0.4
+        }
         if (s.teal && s.r > 0.7) {
           const g = cx.createRadialGradient(x, y, 0, x, y, s.r * 5)
           g.addColorStop(0, `rgba(0,224,255,${al * 0.5})`)
@@ -95,14 +123,30 @@ export function StarField() {
 
     const rebuild = () => { build(); if (reducedMotion) drawStatic() }
 
+    const onPointerMove = (e: PointerEvent) => {
+      pointer.x = e.clientX
+      pointer.y = e.clientY
+      pointer.active = true
+    }
+    const onPointerLeave = () => { pointer.active = false }
+
     build()
     window.addEventListener('resize', rebuild)
+    if (interactive) {
+      window.addEventListener('pointermove', onPointerMove, { passive: true })
+      document.addEventListener('pointerleave', onPointerLeave)
+    }
     if (reducedMotion) {
       drawStatic()
     } else {
       draw()
     }
-    return () => { cancelAnimationFrame(raf); window.removeEventListener('resize', rebuild) }
+    return () => {
+      cancelAnimationFrame(raf)
+      window.removeEventListener('resize', rebuild)
+      window.removeEventListener('pointermove', onPointerMove)
+      document.removeEventListener('pointerleave', onPointerLeave)
+    }
   }, [])
 
   return (
