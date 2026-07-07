@@ -34,7 +34,6 @@ export default function DynamicsDemoPage() {
       </section>
 
       <TopicTheoryDrawer
-        eyebrow="Короткий разбор"
         title="Силы, оси и вес"
         description="Минимум перед повторением: сумма сил, выбранная ось и вес в лифте."
         layout="stack"

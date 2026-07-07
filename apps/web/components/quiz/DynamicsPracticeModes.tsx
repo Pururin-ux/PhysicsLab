@@ -16,7 +16,7 @@ const modes: {
 }[] = [
   {
     id: "foundation",
-    label: "Разбор",
+    label: "Один навык",
     description: "Потренируй одну идею: найти силу, массу или ускорение.",
     template: "newton-second",
     title: "Второй закон Ньютона",

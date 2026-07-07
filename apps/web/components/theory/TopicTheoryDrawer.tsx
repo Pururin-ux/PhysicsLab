@@ -2,7 +2,6 @@ import type { ReactNode } from "react";
 import { cn } from "../../lib/utils";
 
 interface TopicTheoryDrawerProps {
-  eyebrow: string;
   title: string;
   description: string;
   children: ReactNode;
@@ -19,7 +18,6 @@ const accentClasses: Record<NonNullable<TopicTheoryDrawerProps["accent"]>, strin
 };
 
 export function TopicTheoryDrawer({
-  eyebrow,
   title,
   description,
   children,
@@ -31,18 +29,13 @@ export function TopicTheoryDrawer({
     <section id="theory" className={cn("scroll-mt-24", className)}>
       <details className="group rounded-card border border-white/[.09] bg-space-900/72 shadow-card backdrop-blur-sm">
         <summary className="flex cursor-pointer list-none flex-col gap-4 rounded-card p-4 marker:hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/55 focus-visible:ring-offset-2 focus-visible:ring-offset-space-950 sm:flex-row sm:items-center sm:justify-between sm:p-5 [&::-webkit-details-marker]:hidden">
-          <div className="flex min-w-0 flex-col gap-2">
-            <p className="text-[11px] font-bold uppercase tracking-[.14em] text-white/45">
-              {eyebrow}
+          <div className="flex min-w-0 flex-col gap-1.5">
+            <h2 className="text-[22px] font-[800] leading-tight text-white sm:text-[26px]">
+              {title}
+            </h2>
+            <p className="max-w-[680px] text-[13px] leading-[1.65] text-white/62">
+              {description}
             </p>
-            <div className="flex flex-col gap-1.5">
-              <h2 className="text-[22px] font-[800] leading-tight text-white sm:text-[26px]">
-                {title}
-              </h2>
-              <p className="max-w-[680px] text-[13px] leading-[1.65] text-white/62">
-                {description}
-              </p>
-            </div>
           </div>
 
           <span

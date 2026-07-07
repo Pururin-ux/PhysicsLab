@@ -44,7 +44,6 @@ export default function ElectroDemoPage() {
       </section>
 
       <TopicTheoryDrawer
-        eyebrow="Короткий разбор"
         title="Как думать о цепи"
         description="Что означает ток, напряжение и сопротивление до подстановки в формулу."
         layout="stack"

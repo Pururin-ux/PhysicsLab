@@ -21,7 +21,7 @@ export default function KinematicsDemoPage() {
       <TopicPageHeader
         eyebrow="Кинематика"
         title="Движение и графики"
-        description="Начни с задач. Если график или формула стопорят, открой короткий разбор ниже."
+        description="Начни с задач. Если график или формула стопорят, открой разбор ниже."
         accent="cyan"
       />
 
@@ -36,9 +36,8 @@ export default function KinematicsDemoPage() {
       </section>
 
       <TopicTheoryDrawer
-        eyebrow="Короткий разбор"
         title="Как читать движение"
-        description="Две опоры для задач: что показывает график и когда работает формула."
+        description="Что показывает график и когда работает формула."
         accent="cyan"
       >
         <ConceptReveal

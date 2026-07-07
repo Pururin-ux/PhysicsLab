@@ -44,7 +44,6 @@ export default function ThermoDemoPage() {
       </section>
 
       <TopicTheoryDrawer
-        eyebrow="Короткий разбор"
         title="Что держать в голове"
         description="Идеальный газ, температура в кельвинах и главная ловушка с единицами."
         layout="stack"

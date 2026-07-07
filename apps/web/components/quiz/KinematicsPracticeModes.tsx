@@ -7,9 +7,12 @@ import { QuizSession } from "./QuizSession";
 
 type PracticeMode = "static" | "generated";
 
+// «Примеры» — фиксированная подборка с разбором, «Ещё задачи» —
+// бесконечный генератор. Не называем режим «Разбор», чтобы не путать
+// с блоком «Разбор темы» (теория ниже на странице).
 const modes: { id: PracticeMode; label: string }[] = [
-  { id: "static", label: "Разбор" },
-  { id: "generated", label: "Задачи" },
+  { id: "static", label: "Примеры" },
+  { id: "generated", label: "Ещё задачи" },
 ];
 
 export function KinematicsPracticeModes() {

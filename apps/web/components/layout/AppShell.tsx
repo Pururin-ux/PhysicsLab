@@ -408,8 +408,11 @@ function ShellTopBar() {
     <div className="mb-5 flex min-w-0 items-center justify-between gap-3">
       <BackButton fallbackHref={fallbackHref} />
 
+      {/* Быстрые ссылки нужны только на планшете (md–lg), где боковая
+          панель скрыта. На desktop (lg+) их дублирует sidebar, поэтому
+          прячем — иначе одни и те же разделы висят дважды на экране. */}
       <nav
-        className="hidden min-w-0 items-center gap-1 rounded-card border border-white/[.08] bg-space-900/62 p-1 shadow-[inset_0_1px_0_rgba(255,255,255,.035)] backdrop-blur-md md:flex"
+        className="hidden min-w-0 items-center gap-1 rounded-card border border-white/[.08] bg-space-900/62 p-1 shadow-[inset_0_1px_0_rgba(255,255,255,.035)] backdrop-blur-md md:flex lg:hidden"
         aria-label="Быстрые разделы"
       >
         {quickActions.map((item) => {

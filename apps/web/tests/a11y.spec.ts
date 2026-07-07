@@ -81,12 +81,21 @@ test("@a11y карточка разбора после ошибки — без s
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/practice/kinematics-demo", { waitUntil: "domcontentloaded" });
 
+  // Тяжёлый desktop-shell гидратируется дольше: клик сразу после появления
+  // вариантов может опередить навешивание обработчика. Ждём готовности и
+  // ретраим ответ, пока не появится карточка разбора.
+  await page.waitForLoadState("networkidle");
   const options = page.getByRole("list", { name: "Варианты ответа" });
   await expect(options).toBeVisible();
   // Задача 1 статического набора: верный ответ 37 м, поэтому 31 м — ошибка.
-  await options.getByRole("button").filter({ hasText: "31" }).first().click();
-  // На ошибке решение раскрыто по умолчанию — axe сразу видит его содержимое.
-  await expect(page.getByRole("button", { name: "Свернуть решение" })).toBeVisible();
+  const wrongOption = options.getByRole("button").filter({ hasText: "31" }).first();
+  await expect(async () => {
+    await wrongOption.click();
+    // На ошибке решение раскрыто по умолчанию — axe сразу видит его содержимое.
+    await expect(page.getByRole("button", { name: "Свернуть решение" })).toBeVisible({
+      timeout: 2000,
+    });
+  }).toPass({ timeout: 15000 });
   await expect(page.getByTestId("solution-formula")).toBeVisible();
 
   const blocking = await scanForBlockingViolations(page);

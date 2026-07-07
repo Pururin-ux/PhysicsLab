@@ -35,21 +35,29 @@ export function TopicPageHeader({
         </p>
       </div>
 
+      {/* Задачи идут сразу под шапкой — отдельная кнопка «к задачам» не
+          нужна. Оставляем один якорь к разбору, который теперь ниже. */}
       <div className="flex flex-wrap items-center gap-2">
         <Link
-          href="#practice"
+          href="#theory"
           className={cn(
-            "inline-flex min-h-10 items-center justify-center rounded-option border px-4 text-[13px] font-bold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/55 focus-visible:ring-offset-2 focus-visible:ring-offset-space-950",
+            "inline-flex min-h-10 items-center justify-center gap-2 rounded-option border px-4 text-[13px] font-bold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/55 focus-visible:ring-offset-2 focus-visible:ring-offset-space-950",
             accentClasses[accent],
           )}
         >
-          К задачам
-        </Link>
-        <Link
-          href="#theory"
-          className="inline-flex min-h-10 items-center justify-center rounded-option border border-white/[.10] bg-white/[.025] px-4 text-[13px] font-semibold text-white/68 transition-colors hover:border-white/[.18] hover:bg-white/[.045] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/55 focus-visible:ring-offset-2 focus-visible:ring-offset-space-950"
-        >
           Разбор темы
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={1.9}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="h-4 w-4"
+            aria-hidden="true"
+          >
+            <path d="m6 9 6 6 6-6" />
+          </svg>
         </Link>
       </div>
     </section>
