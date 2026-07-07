@@ -3,6 +3,7 @@ import { TextConceptReveal } from "../../../components/theory/TextConceptReveal"
 import { TopicTheoryDrawer } from "../../../components/theory/TopicTheoryDrawer";
 import { TopicAmbientGlow } from "../../../components/layout/TopicAmbientGlow";
 import { TopicPageHeader } from "../../../components/layout/TopicPageHeader";
+import { PracticeQuickBar } from "../../../components/quiz/PracticeQuickBar";
 import { QuizSession } from "../../../components/quiz/QuizSession";
 
 export const metadata = {
@@ -15,32 +16,23 @@ export default function ThermoDemoPage() {
       <TopicAmbientGlow accent="ember" />
 
       <TopicPageHeader
-        eyebrow="Термодинамика"
-        title="Газ, давление и температура"
-        description="Сначала решай. Если путаются кельвины, давление или тепло, открой разбор ниже."
+        eyebrow="Тренировка"
+        title="Термодинамика"
+        description="10 задач: газ, температура, давление и теплота. Теорию можно открыть отдельно."
         accent="ember"
       />
 
-      <section id="practice" className="scroll-mt-24 flex flex-col gap-5">
-        <div className="mx-auto flex w-full max-w-[580px] flex-col gap-2">
-          <p className="text-[11px] font-bold uppercase tracking-[.14em] text-white/50">
-            Тренировка
-          </p>
-          <h2 className="text-xl font-bold text-white">
-            10 задач по термодинамике
-          </h2>
-          <p className="text-[13px] leading-[1.6] text-white/55">
-            Уравнение состояния газа и количество теплоты при нагревании
-            вперемешку.
-          </p>
+      <section id="practice" className="scroll-mt-24">
+        <div className="flex flex-col gap-5">
+          <PracticeQuickBar />
+          <QuizSession
+            mode="generated"
+            generatedTemplate="thermo-mixed"
+            generatedTopic="Термодинамика"
+            generatedTitle="Задачи по термодинамике"
+            topicId="thermodynamics"
+          />
         </div>
-        <QuizSession
-          mode="generated"
-          generatedTemplate="thermo-mixed"
-          generatedTopic="Термодинамика"
-          generatedTitle="Задачи по термодинамике"
-          topicId="thermodynamics"
-        />
       </section>
 
       <TopicTheoryDrawer
@@ -48,6 +40,12 @@ export default function ThermoDemoPage() {
         description="Идеальный газ, температура в кельвинах и главная ловушка с единицами."
         layout="stack"
         accent="ember"
+        subtopics={[
+          "Идеальный газ",
+          "Уравнение состояния",
+          "Количество теплоты",
+          "Плавление / нагревание",
+        ]}
       >
         <TextConceptReveal
           accentClass="border-l-nova-ember/55"

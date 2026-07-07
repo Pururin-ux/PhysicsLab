@@ -239,7 +239,7 @@ export function TopicCards() {
           className="shrink-0 border-nova-gold bg-nova-gold shadow-gold-glow focus-visible:ring-nova-gold/50"
         >
           <Link href="/practice/exam-demo">
-            {bestExam ? "Ещё вариант" : "Попробовать"}
+            {bestExam ? "Ещё вариант" : "Начать вариант"}
           </Link>
         </Button>
       </Card>

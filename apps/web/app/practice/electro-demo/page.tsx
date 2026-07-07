@@ -3,6 +3,7 @@ import { TextConceptReveal } from "../../../components/theory/TextConceptReveal"
 import { TopicTheoryDrawer } from "../../../components/theory/TopicTheoryDrawer";
 import { TopicAmbientGlow } from "../../../components/layout/TopicAmbientGlow";
 import { TopicPageHeader } from "../../../components/layout/TopicPageHeader";
+import { PracticeQuickBar } from "../../../components/quiz/PracticeQuickBar";
 import { QuizSession } from "../../../components/quiz/QuizSession";
 
 export const metadata = {
@@ -15,32 +16,23 @@ export default function ElectroDemoPage() {
       <TopicAmbientGlow accent="blue" />
 
       <TopicPageHeader
-        eyebrow="Электродинамика"
-        title="Ток, напряжение и сопротивление"
-        description="Начни с задач по цепям. Если закон Ома путается, разбор лежит ниже."
+        eyebrow="Тренировка"
+        title="Электродинамика"
+        description="10 задач: ток, напряжение, сопротивление и заряд. Справка не мешает решению."
         accent="blue"
       />
 
-      <section id="practice" className="scroll-mt-24 flex flex-col gap-5">
-        <div className="mx-auto flex w-full max-w-[580px] flex-col gap-2">
-          <p className="text-[11px] font-bold uppercase tracking-[.14em] text-white/50">
-            Тренировка
-          </p>
-          <h2 className="text-xl font-bold text-white">
-            10 задач по электродинамике
-          </h2>
-          <p className="text-[13px] leading-[1.6] text-white/55">
-            Закон Ома для участка и полной цепи, деление заряда между
-            проводниками — вперемешку.
-          </p>
+      <section id="practice" className="scroll-mt-24">
+        <div className="flex flex-col gap-5">
+          <PracticeQuickBar />
+          <QuizSession
+            mode="generated"
+            generatedTemplate="electro-mixed"
+            generatedTopic="Электродинамика"
+            generatedTitle="Задачи по электродинамике"
+            topicId="electrodynamics"
+          />
         </div>
-        <QuizSession
-          mode="generated"
-          generatedTemplate="electro-mixed"
-          generatedTopic="Электродинамика"
-          generatedTitle="Задачи по электродинамике"
-          topicId="electrodynamics"
-        />
       </section>
 
       <TopicTheoryDrawer
@@ -48,6 +40,12 @@ export default function ElectroDemoPage() {
         description="Что означает ток, напряжение и сопротивление до подстановки в формулу."
         layout="stack"
         accent="blue"
+        subtopics={[
+          "Закон Ома",
+          "Полная цепь",
+          "Деление заряда",
+          "Конденсатор",
+        ]}
       >
         <TextConceptReveal
           accentClass="border-l-nova-blue/55"

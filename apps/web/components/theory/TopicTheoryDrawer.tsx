@@ -8,6 +8,7 @@ interface TopicTheoryDrawerProps {
   layout?: "grid" | "stack";
   accent?: "cyan" | "gold" | "blue" | "ember";
   className?: string;
+  subtopics?: string[];
 }
 
 const accentClasses: Record<NonNullable<TopicTheoryDrawerProps["accent"]>, string> = {
@@ -24,6 +25,7 @@ export function TopicTheoryDrawer({
   layout = "grid",
   accent = "cyan",
   className,
+  subtopics = [],
 }: TopicTheoryDrawerProps) {
   return (
     <section id="theory" className={cn("scroll-mt-24", className)}>
@@ -36,6 +38,18 @@ export function TopicTheoryDrawer({
             <p className="max-w-[680px] text-[13px] leading-[1.65] text-white/62">
               {description}
             </p>
+            {subtopics.length > 0 ? (
+              <ul className="mt-2 flex flex-wrap gap-1.5" aria-label="Подтемы разбора">
+                {subtopics.map((subtopic) => (
+                  <li
+                    key={subtopic}
+                    className="rounded-badge border border-white/[.08] bg-white/[.035] px-2 py-1 text-[11px] font-semibold leading-none text-white/58"
+                  >
+                    {subtopic}
+                  </li>
+                ))}
+              </ul>
+            ) : null}
           </div>
 
           <span
@@ -44,7 +58,7 @@ export function TopicTheoryDrawer({
               accentClasses[accent],
             )}
           >
-            Разбор темы
+            Справка по теме
             <svg
               viewBox="0 0 24 24"
               fill="none"

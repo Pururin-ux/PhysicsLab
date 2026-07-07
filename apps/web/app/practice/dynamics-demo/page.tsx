@@ -17,19 +17,13 @@ export default function DynamicsDemoPage() {
       <TopicAmbientGlow accent="gold" />
 
       <TopicPageHeader
-        eyebrow="Динамика"
-        title="Силы и движение"
-        description="Решай сразу. Если путаются силы, знаки или вес, открой разбор после тренировки."
+        eyebrow="Тренировка"
+        title="Динамика"
+        description="10 задач: силы, ускорение и второй закон Ньютона. Разбор темы доступен рядом."
         accent="gold"
       />
 
-      <section id="practice" className="scroll-mt-24 flex flex-col gap-5">
-        <div className="mx-auto flex w-full max-w-[580px] flex-col gap-2">
-          <p className="text-[11px] font-bold uppercase tracking-[.14em] text-white/50">
-            Тренировка
-          </p>
-          <h2 className="text-xl font-bold text-white">10 задач по динамике</h2>
-        </div>
+      <section id="practice" className="scroll-mt-24">
         <DynamicsPracticeModes />
       </section>
 
@@ -38,6 +32,14 @@ export default function DynamicsDemoPage() {
         description="Минимум перед повторением: сумма сил, выбранная ось и вес в лифте."
         layout="stack"
         accent="gold"
+        subtopics={[
+          "Второй закон Ньютона",
+          "Равнодействующая",
+          "Трение",
+          "Наклонная плоскость",
+          "Вес тела / лифт",
+          "Импульс",
+        ]}
       >
         <article className="flex min-w-0 flex-col gap-4">
           <ForceModel

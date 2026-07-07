@@ -1,6 +1,5 @@
 import { Badge } from "../ui/Badge";
 import { Card } from "../ui/Card";
-import { FormulaBox } from "../ui/FormulaBox";
 import { MathText } from "../ui/MathText";
 import { ModelVisual } from "../theory/ModelVisual";
 import { VectorDiagram } from "../diagrams/VectorDiagram";
@@ -13,7 +12,6 @@ interface QuestionCardProps {
   type: string;
   difficulty: 1 | 2 | 3;
   text: string;
-  formula?: string;
   graph?: QuizGraph | null;
   diagram?: QuizDiagram | null;
   focus?: TaskFocus;
@@ -35,7 +33,6 @@ export function QuestionCard({
   type,
   difficulty,
   text,
-  formula,
   graph,
   diagram,
   focus,
@@ -105,11 +102,6 @@ export function QuestionCard({
         </div>
       ) : null}
 
-      {formula && showSolutionContent ? (
-        <div data-testid="question-formula">
-          <FormulaBox formula={formula} />
-        </div>
-      ) : null}
     </Card>
   );
 }

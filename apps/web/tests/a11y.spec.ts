@@ -91,11 +91,14 @@ test("@a11y карточка разбора после ошибки — без s
   const wrongOption = options.getByRole("button").filter({ hasText: "31" }).first();
   await expect(async () => {
     await wrongOption.click();
-    // На ошибке решение раскрыто по умолчанию — axe сразу видит его содержимое.
-    await expect(page.getByRole("button", { name: "Свернуть решение" })).toBeVisible({
+    // Compact-first: на ошибке полное решение закрыто, пока ученик его не попросит.
+    await expect(page.getByRole("button", { name: "Показать решение" })).toBeVisible({
       timeout: 2000,
     });
   }).toPass({ timeout: 15000 });
+  await expect(page.getByTestId("solution-formula")).toHaveCount(0);
+
+  await page.getByRole("button", { name: "Показать решение" }).click();
   await expect(page.getByTestId("solution-formula")).toBeVisible();
 
   const blocking = await scanForBlockingViolations(page);

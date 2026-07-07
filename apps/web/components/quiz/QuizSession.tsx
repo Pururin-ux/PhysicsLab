@@ -130,15 +130,27 @@ export function QuizSession({
     };
   }, [clearPauseTimer, emitCoachEvent, resetRecording, startPauseTimer, tasks]);
 
-  // Как только ученик ответил — плавно подводим реплику Nova в центр экрана,
-  // чтобы она сразу оказалась в поле зрения и её не пришлось искать прокруткой.
+  // После ответа не двигаем страницу без необходимости: на desktop контекст
+  // выбранного варианта важнее автоскролла, на mobile мягко подводим feedback
+  // только если он оказался ниже видимой области.
   useEffect(() => {
     if (session.phase !== "answered") {
       return;
     }
 
     const frame = requestAnimationFrame(() => {
-      reactionRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+      const reaction = reactionRef.current;
+      if (!reaction) return;
+
+      const rect = reaction.getBoundingClientRect();
+      const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+      const isVisible = rect.top >= 0 && rect.bottom <= viewportHeight;
+      if (isVisible) return;
+
+      const isMobile = window.matchMedia("(max-width: 767px)").matches;
+      if (isMobile && rect.top > viewportHeight) {
+        reaction.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      }
     });
 
     return () => cancelAnimationFrame(frame);
@@ -268,7 +280,7 @@ export function QuizSession({
 
   if (mode === "generated" && generatedStatus === "loading") {
     return (
-      <section className="relative mx-auto flex max-w-[580px] flex-col gap-4 pb-8">
+      <section className="relative mx-auto flex max-w-[580px] flex-col gap-4 pb-16 sm:pb-8">
         <Card className="flex flex-col gap-3">
           <Badge tone="cyan">{generatedTitle}</Badge>
           <p className="text-[14px] font-normal leading-[1.7] text-white/70">
@@ -281,7 +293,7 @@ export function QuizSession({
 
   if (mode === "generated" && generatedStatus === "error") {
     return (
-      <section className="relative mx-auto flex max-w-[580px] flex-col gap-4 pb-8">
+      <section className="relative mx-auto flex max-w-[580px] flex-col gap-4 pb-16 sm:pb-8">
         <Card className="flex flex-col gap-4">
           <Badge tone="gold">Не удалось загрузить задачи</Badge>
           <p className="text-[14px] font-normal leading-[1.7] text-white/70">
@@ -304,7 +316,7 @@ export function QuizSession({
   const taskFocus = getTaskFocus(currentTask);
 
   return (
-    <section className="relative mx-auto flex max-w-[580px] flex-col gap-4 pb-8">
+    <section className="relative mx-auto flex max-w-[580px] flex-col gap-4 pb-16 sm:pb-8">
       <div className="flex items-center justify-between gap-3">
         <Badge>{progressLabel}</Badge>
         {session.streak > 0 ? (
@@ -318,7 +330,6 @@ export function QuizSession({
         type={currentTask.type}
         difficulty={currentTask.difficulty}
         text={currentTask.text}
-        formula={currentTask.formula}
         graph={currentTask.graph}
         diagram={currentTask.diagram}
         // «Сейчас тренируем» — приминг перед ответом; после ответа его

@@ -19,19 +19,13 @@ export default function KinematicsDemoPage() {
       <TopicAmbientGlow accent="cyan" />
 
       <TopicPageHeader
-        eyebrow="Кинематика"
-        title="Движение и графики"
-        description="Начни с задач. Если график или формула стопорят, открой разбор ниже."
+        eyebrow="Тренировка"
+        title="Кинематика"
+        description="10 задач: движение, графики и формулы. Если застрянешь — открой разбор темы."
         accent="cyan"
       />
 
-      <section id="practice" className="scroll-mt-24 flex flex-col gap-5">
-        <div className="mx-auto flex max-w-[580px] flex-col gap-2">
-          <p className="text-[11px] font-bold uppercase tracking-[.14em] text-white/50">
-            Тренировка
-          </p>
-          <h2 className="text-xl font-bold text-white">10 задач по кинематике</h2>
-        </div>
+      <section id="practice" className="scroll-mt-24">
         <KinematicsPracticeModes />
       </section>
 
@@ -39,6 +33,13 @@ export default function KinematicsDemoPage() {
         title="Как читать движение"
         description="Что показывает график и когда работает формула."
         accent="cyan"
+        subtopics={[
+          "Равномерное движение",
+          "Равноускоренное движение",
+          "Графики v(t) и x(t)",
+          "Средняя скорость",
+          "Векторы и относительное движение",
+        ]}
       >
         <ConceptReveal
           graph={UNIFORM_MOTION_VT}

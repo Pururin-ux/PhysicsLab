@@ -19,10 +19,9 @@ interface AnswerFeedbackProps {
   explanationLatex?: string;
 }
 
-// После ответа — одна поверхность, без мета-советов и рефлексивной воды:
-// 1) якорь: статус + реплика Nova (единственная фокусная точка);
-// 2) разбор — это сама подстановка в формулу, ничего лишнего. На ошибке
-//    открыт сразу (он короткий), на верном ответе свёрнут.
+// После ответа — compact-first поверхность:
+// 1) статус + короткая реплика Nova остаются видимыми сразу;
+// 2) полный разбор и формула открываются только по запросу.
 export function AnswerFeedback({
   isCorrect,
   novaState,
@@ -30,7 +29,7 @@ export function AnswerFeedback({
   explanation,
   explanationLatex,
 }: AnswerFeedbackProps) {
-  const [open, setOpen] = useState(!isCorrect);
+  const [open, setOpen] = useState(false);
   const panelId = useId();
   const { output, done } = useTypewriter(novaText);
 
@@ -68,6 +67,7 @@ export function AnswerFeedback({
         <div className="border-t border-white/[.08] pt-0.5">
           <button
             type="button"
+            data-testid="solution-toggle"
             aria-expanded={open}
             aria-controls={panelId}
             onClick={() => setOpen((current) => !current)}
