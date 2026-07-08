@@ -9,6 +9,7 @@ interface CompactHelpCardProps {
   formula?: string;
   trap?: string;
   accent?: "cyan" | "gold" | "blue" | "ember";
+  sectionId?: string;
 }
 
 const accentClasses: Record<NonNullable<CompactHelpCardProps["accent"]>, string> = {
@@ -24,6 +25,7 @@ export function CompactHelpCard({
   formula,
   trap,
   accent = "cyan",
+  sectionId,
 }: CompactHelpCardProps) {
   const formulaHtml = formula
     ? renderFormulaToHtml(formula, { displayMode: false })
@@ -31,6 +33,9 @@ export function CompactHelpCard({
 
   return (
     <Card
+      data-testid="compact-help-card"
+      data-help-card-section={sectionId}
+      data-help-card-title={title}
       variant="elevated"
       className={cn("flex flex-col gap-3 border-l-2", accentClasses[accent])}
     >
@@ -43,6 +48,8 @@ export function CompactHelpCard({
       </p>
       {formulaHtml ? (
         <div
+          data-testid="compact-help-formula"
+          data-help-card-formula={formula}
           className="formula-white rounded-option border border-white/[.09] bg-white/[.035] px-4 py-3 text-center text-[15px] font-medium leading-[1.7]"
           dangerouslySetInnerHTML={{ __html: formulaHtml }}
         />

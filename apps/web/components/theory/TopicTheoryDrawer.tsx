@@ -11,6 +11,7 @@ import {
 } from "react";
 import { cn } from "../../lib/utils";
 import type { HelpReason, HelpSectionId, TopicHelpSection } from "../../lib/learning/topic-help";
+import { CompactHelpCard } from "./CompactHelpCard";
 
 export type TopicTheorySubtopic = TopicHelpSection | string;
 
@@ -103,12 +104,17 @@ export function TopicTheoryDrawer({
   const activeSubtopic = normalizedSubtopics.find(
     (subtopic) => subtopic.id === effectiveSectionId,
   );
+  const hasCompactActiveContent = Boolean(
+    activeSubtopic?.formula || activeSubtopic?.mistake,
+  );
   const childList = Children.toArray(children);
   const hasSectionedChildren = childList.some(
     (child) => getChildSectionIds(child).length > 0,
   );
   const visibleChildren =
-    hasSectionedChildren && effectiveSectionId
+    hasCompactActiveContent
+      ? []
+      : hasSectionedChildren && effectiveSectionId
       ? childList.filter((child) => getChildSectionIds(child).includes(effectiveSectionId))
       : childList;
   const isControlled = typeof open === "boolean";
@@ -195,7 +201,7 @@ export function TopicTheoryDrawer({
                 ))}
               </div>
 
-              {activeSubtopic ? (
+              {activeSubtopic && !hasCompactActiveContent ? (
                 <p className="text-[13px] leading-[1.6] text-white/62">
                   {reasonLabel ? (
                     <span
@@ -215,14 +221,23 @@ export function TopicTheoryDrawer({
 
           <div
             className={cn(
-              hasSectionedChildren
+              hasCompactActiveContent || hasSectionedChildren
                 ? "mx-auto flex w-full max-w-[860px] flex-col gap-5"
                 : layout === "stack"
                   ? "mx-auto flex w-full max-w-[820px] flex-col gap-6 md:gap-8"
                   : "grid gap-5 lg:grid-cols-2",
             )}
           >
-            {visibleChildren.length > 0 ? (
+            {activeSubtopic && hasCompactActiveContent ? (
+              <CompactHelpCard
+                accent={accent}
+                sectionId={activeSubtopic.id}
+                title={activeSubtopic.label}
+                body={activeSubtopic.shortHint}
+                formula={activeSubtopic.formula}
+                trap={activeSubtopic.mistake}
+              />
+            ) : visibleChildren.length > 0 ? (
               visibleChildren
             ) : (
               <div className="rounded-card border border-white/[.08] bg-white/[.035] p-4">

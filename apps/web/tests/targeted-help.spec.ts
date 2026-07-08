@@ -13,6 +13,24 @@ async function answerCurrentTaskAndMoveNext(page: Page) {
   await expect(page.getByTestId("question-card")).toBeVisible();
 }
 
+async function expectActiveHelpCard(
+  page: Page,
+  sectionId: string,
+  title: string,
+  formula: string,
+) {
+  const drawer = page.getByTestId("topic-theory-drawer");
+  await expect(drawer).toHaveAttribute("data-active-section", sectionId);
+
+  const card = drawer.getByTestId("compact-help-card");
+  await expect(card).toHaveAttribute("data-help-card-section", sectionId);
+  await expect(card).toHaveAttribute("data-help-card-title", title);
+  await expect(card.getByTestId("compact-help-formula")).toHaveAttribute(
+    "data-help-card-formula",
+    formula,
+  );
+}
+
 for (const route of topicPracticeRoutes) {
   test(`targeted help ${route.name}: drawer закрыт и открывается из quickbar`, async ({
     page,
@@ -45,7 +63,13 @@ test("kinematics help targets accelerated first task and graph second task", asy
   const drawer = page.getByTestId("topic-theory-drawer");
   await page.getByTestId("practice-open-help").click();
   await expect(drawer).toHaveAttribute("open", "");
-  await expect(drawer).toHaveAttribute("data-active-section", "accelerated-motion");
+  await expectActiveHelpCard(
+    page,
+    "accelerated-motion",
+    "Равноускоренное движение",
+    "x=x_0+v_0t+\\frac{at^2}{2}",
+  );
+  await expect(drawer.getByTestId("compact-help-card")).toContainText("at²/2");
   await expect(page.getByTestId("help-section-button-accelerated-motion")).toHaveAttribute(
     "aria-pressed",
     "true",
@@ -58,7 +82,13 @@ test("kinematics help targets accelerated first task and graph second task", asy
   await page.getByTestId("next-task-button").click();
   await expect(page.getByText("2 / 10").filter({ visible: true }).first()).toBeVisible();
   await expect(page.getByTestId("question-card")).toContainText("графике скорости");
-  await expect(drawer).toHaveAttribute("data-active-section", "motion-graphs");
+  await expectActiveHelpCard(
+    page,
+    "motion-graphs",
+    "Графики v(t), x(t)",
+    "a=\\frac{\\Delta v}{\\Delta t},\\quad s=S_{v(t)}",
+  );
+  await expect(drawer.getByTestId("compact-help-card")).toContainText("площадь под v(t)");
   await expect(page.getByTestId("help-section-button-motion-graphs")).toHaveAttribute(
     "aria-pressed",
     "true",
@@ -73,30 +103,56 @@ test("generated practice help uses template metadata for topic routes", async ({
   await page.goto("/practice/dynamics-demo", { waitUntil: "domcontentloaded" });
   await page.waitForLoadState("networkidle");
   await page.getByTestId("practice-open-help").click();
-  await expect(page.getByTestId("topic-theory-drawer")).toHaveAttribute(
-    "data-active-section",
+  await expectActiveHelpCard(
+    page,
     "newton-second-law",
+    "Второй закон Ньютона",
+    "\\sum F = ma",
   );
 
   await page.goto("/practice/electro-demo", { waitUntil: "domcontentloaded" });
   await page.waitForLoadState("networkidle");
   const electroDrawer = page.getByTestId("topic-theory-drawer");
   await page.getByTestId("practice-open-help").click();
-  await expect(electroDrawer).toHaveAttribute("data-active-section", "ohms-law");
+  await expectActiveHelpCard(page, "ohms-law", "Закон Ома", "I=\\frac{U}{R}");
   for (let index = 0; index < 4; index += 1) {
     await answerCurrentTaskAndMoveNext(page);
   }
-  await expect(electroDrawer).toHaveAttribute("data-active-section", "charge-sharing");
+  await expectActiveHelpCard(
+    page,
+    "charge-sharing",
+    "Деление заряда",
+    "q'=\\frac{q_1+q_2}{2}",
+  );
+  await expect(electroDrawer.getByTestId("compact-help-card")).toContainText(
+    "с учётом знаков",
+  );
 
   await page.goto("/practice/thermo-demo", { waitUntil: "domcontentloaded" });
   await page.waitForLoadState("networkidle");
   const thermoDrawer = page.getByTestId("topic-theory-drawer");
   await page.getByTestId("practice-open-help").click();
-  await expect(thermoDrawer).toHaveAttribute("data-active-section", "gas-equation");
+  await expectActiveHelpCard(
+    page,
+    "gas-equation",
+    "Уравнение состояния",
+    "pV=\\nu RT",
+  );
+  await expect(thermoDrawer.getByTestId("compact-help-card")).toContainText(
+    "кельвинах",
+  );
   for (let index = 0; index < 2; index += 1) {
     await answerCurrentTaskAndMoveNext(page);
   }
-  await expect(thermoDrawer).toHaveAttribute("data-active-section", "heating-melting");
+  await expectActiveHelpCard(
+    page,
+    "heating-melting",
+    "Плавление / нагревание",
+    "Q=cm\\Delta T+\\lambda m",
+  );
+  await expect(thermoDrawer.getByTestId("compact-help-card")).toContainText(
+    "отдельными стадиями",
+  );
 });
 
 test("wrong answer opens contextual help without expanding solution", async ({ page }) => {
@@ -119,7 +175,12 @@ test("wrong answer opens contextual help without expanding solution", async ({ p
   await helpTarget.click();
 
   await expect(drawer).toHaveAttribute("open", "");
-  await expect(drawer).toHaveAttribute("data-active-section", "accelerated-motion");
+  await expectActiveHelpCard(
+    page,
+    "accelerated-motion",
+    "Равноускоренное движение",
+    "x=x_0+v_0t+\\frac{at^2}{2}",
+  );
   await expect(page.locator('[data-testid^="help-chip-"]')).toHaveCount(0);
   await expect(page.locator('[data-testid^="help-section-button-"][aria-pressed="true"]')).toHaveCount(1);
   await expect(page.getByTestId("solution-formula")).toHaveCount(0);
