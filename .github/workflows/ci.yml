@@ -8,11 +8,13 @@ on:
     branches:
       - main
 
+# Три параллельных job. Разделение обязательно: e2e ходит через dev-сервер,
+# а dev и build делят .next — в одном job dev затирал бы прод-сборку,
+# и prod-smoke проверял бы не то, что уедет в релиз.
 jobs:
-  test:
-    name: Check, build, and screenshots
+  quality:
+    name: Types and unit tests
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -22,21 +24,97 @@ jobs:
         with:
           node-version-file: .nvmrc
           cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            apps/web/package-lock.json
 
-      - name: Install dependencies
+      - name: Install root dependencies
         run: npm ci
 
-      - name: Install Playwright browser
-        run: npx playwright install --with-deps chromium
+      - name: Install web dependencies
+        run: npm ci --prefix apps/web
 
-      - name: Check Astro
+      - name: Type check
         run: npm run check
 
       - name: Test physics
         run: npm run test:physics
 
+      - name: Test all units
+        run: npm test
+
+  e2e-dev:
+    name: E2E against dev server
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            apps/web/package-lock.json
+
+      - name: Install root dependencies
+        run: npm ci
+
+      - name: Install web dependencies
+        run: npm ci --prefix apps/web
+
+      - name: Install Playwright browser
+        working-directory: apps/web
+        run: npx playwright install --with-deps chromium
+
+      - name: E2E and screenshots
+        run: npm run test:e2e
+
+      - name: Accessibility (axe)
+        run: npm run test:a11y
+
+      # На linux гоняется layout-слой visual-тестов; пиксельные снапшоты
+      # включаются переменной VISUAL_SNAPSHOTS=1 там, где для платформы
+      # есть базлайны (сейчас в репо — win32).
+      - name: Visual layout assertions
+        run: npm run test:visual
+
+  prod:
+    name: Build, manifest assert, prod smoke
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            apps/web/package-lock.json
+
+      - name: Install root dependencies
+        run: npm ci
+
+      - name: Install web dependencies
+        run: npm ci --prefix apps/web
+
+      - name: Install Playwright browser
+        working-directory: apps/web
+        run: npx playwright install --with-deps chromium
+
       - name: Build
         run: npm run build
 
-      - name: Screenshots
-        run: npm run screenshots
+      # Страж turbopack-класса багов: обязательные маршруты присутствуют
+      # в манифесте прод-сборки, /dev в него не попадает.
+      - name: Assert routes manifest
+        run: npm run assert:routes
+
+      # Playwright сам поднимает next start на :3100 (playwright.prod.config.ts).
+      - name: Production smoke
+        run: npm run smoke

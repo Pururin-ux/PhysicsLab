@@ -1,0 +1,1569 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import AccelerationScene from "../../components/simulations/AccelerationScene.astro";
+import MathFormula from "../../components/math/MathFormula.astro";
+import SurfaceCard from "../../components/ui/SurfaceCard.astro";
+
+const navItems = [
+  { href: "#predict", label: "Сначала" },
+  { href: "#lab", label: "Лаборатория" },
+  { href: "#formula", label: "Формулы" },
+  { href: "#check", label: "Проверка" }
+];
+---
+
+<BaseLayout
+  title="Равноускоренное движение — PhysicsLab"
+  description="Интерактивная глава о равноускоренном движении: проверь, как ускорение меняет скорость, график v(t) и координату x(t)."
+  navItems={navItems}
+  brandHref="/chapters/accelerated-motion/"
+  brandLabel="Глава: Равноускоренное движение"
+>
+  <article
+    class="chapter-page"
+    data-accelerated-motion-chapter
+    data-release-stage="prototype-v0"
+    data-review-status="author-review-required"
+  >
+    <section class="section chapter-intro" aria-labelledby="chapter-title">
+      <div>
+        <h1 id="chapter-title">Равноускоренное движение</h1>
+        <p class="chapter-lead">
+          Сначала запусти движение, потом меняй ускорение a. Смотри не только на точку,
+          но и на график v(t): именно там видно, как скорость меняется.
+        </p>
+      </div>
+      <aside class="chapter-note">
+        <strong>Главная мысль</strong>
+        <p>
+          Ускорение не просто означает “быстрее”. Оно показывает, как меняется скорость:
+          растёт, уменьшается или меняет знак.
+        </p>
+      </aside>
+    </section>
+
+    <section id="predict" class="section chapter-section" aria-labelledby="predict-title">
+      <SurfaceCard>
+        <div class="prediction-panel" data-acceleration-predict>
+          <div>
+            <p class="eyebrow">Сначала подумай</p>
+            <h2 id="predict-title">Как сначала поведёт себя тело?</h2>
+            <p>
+              Ответь без расчёта. Потом проверь ответ в лаборатории.
+            </p>
+          </div>
+
+          <div
+            class="prediction-question"
+            data-feedback-correct="Да. Ускорение влево опускает линию скорости, но пока скорость положительная, тело ещё едет вправо."
+            data-feedback-wrong="Не совсем. Сначала смотри на знак скорости. Пока скорость положительная, тело движется вправо."
+          >
+            <p class="prediction-prompt">Тело сначала едет вправо, а ускорение направлено влево. Что сначала будет происходить?</p>
+            <div class="chapter-answer-row prediction-answer-row" role="group" aria-label="Варианты ответа">
+              <button type="button" data-prediction-answer="correct" aria-pressed="false">
+                Ещё едет вправо, но замедляется
+              </button>
+              <button type="button" data-prediction-answer="instant-back" aria-pressed="false">
+                Сразу едет назад
+              </button>
+              <button type="button" data-prediction-answer="instant-stop" aria-pressed="false">
+                Остановится мгновенно
+              </button>
+              <button type="button" data-prediction-answer="speed-up" aria-pressed="false">
+                Будет ехать вправо всё быстрее
+              </button>
+            </div>
+            <p class="chapter-feedback prediction-feedback" data-prediction-feedback aria-live="polite">
+              Выбери ответ. Потом сравни с графиком скорости.
+            </p>
+            <p class="prediction-next-step" data-prediction-hint hidden>
+              Теперь выставь ускорение влево и смотри, когда линия скорости пересечёт ноль.
+            </p>
+          </div>
+
+          <div class="prediction-grid" aria-label="На что смотреть в лаборатории">
+            <article>
+              <strong>Сначала скорость</strong>
+              <p>Пока скорость положительная, тело едет вправо.</p>
+            </article>
+            <article>
+              <strong>Потом координата</strong>
+              <p>Когда скорость меняется, линия координаты изгибается.</p>
+            </article>
+          </div>
+        </div>
+      </SurfaceCard>
+    </section>
+
+    <section id="lab" class="section chapter-section" aria-labelledby="lab-title">
+      <div class="chapter-section__head">
+        <p class="eyebrow">Лаборатория</p>
+        <h2 id="lab-title">Теперь проверь руками</h2>
+        <p>
+          Нажми «Запустить». Потом подвигай a: сначала в плюс, потом в минус. Следи за v(t),
+          а уже потом за x(t).
+        </p>
+      </div>
+      <AccelerationScene />
+    </section>
+
+    <section id="formula" class="section chapter-section" aria-labelledby="formula-title">
+      <SurfaceCard>
+        <p class="eyebrow">После наблюдения</p>
+        <h2 id="formula-title">От наблюдения к формуле</h2>
+        <p class="formula-intro">
+          Сначала свяжи скорость с графиком v(t). Затем проверь координату, единицы и знак на одной подстановке.
+        </p>
+        <div class="formula-grid">
+          <div class="formula-card">
+            <span class="formula-step">Скорость</span>
+            <div class="formula">
+              <MathFormula tex="v = v_0 + at" display />
+            </div>
+            <p>
+              v₀ — скорость в начале. at — изменение скорости за время t.
+              На графике v(t) это видно как наклон.
+            </p>
+          </div>
+          <div class="formula-card">
+            <span class="formula-step">Координата</span>
+            <div class="formula">
+              <MathFormula tex={"x = x_0 + v_0 t + \\frac{a t^2}{2}"} display />
+            </div>
+            <p>
+              x зависит от скорости. Если скорость меняется, наклон x(t) тоже меняется,
+              и линия становится кривой.
+            </p>
+          </div>
+        </div>
+
+        <div
+          class="formula-live-substitution"
+          data-formula-worked-example
+          data-live-substitution
+          data-current-t="1"
+          data-current-v="1"
+          data-direction="right"
+          style="--live-arrow-direction: 1; --live-arrow-length: 29%; --live-slider-fill: 33.333%; --live-state-color: var(--pl-velocity);"
+        >
+          <div class="formula-live-substitution__header">
+            <span class="formula-step">Живая подстановка</span>
+            <h3>Меняй t и смотри на знак скорости</h3>
+            <p>Ускорение направлено влево, но направление движения задаёт знак v.</p>
+            <p class="live-substitution__route" data-live-route-summary>
+              Потяни t → вектор v сжимается или разворачивается → направление задаёт знак v.
+            </p>
+          </div>
+
+          <div class="formula-live-substitution__instrument">
+            <div class="live-substitution__controls" aria-label="Данные для подстановки">
+              <div class="live-substitution__first-action" data-live-first-action>
+                <span>Сначала сделай</span>
+                <strong>Потяни ползунок t</strong>
+                <small>Начни с 1 с и доведи до 2 с.</small>
+              </div>
+
+              <div class="live-substitution__givens">
+                <span class="live-substitution__chip"><b>v₀</b> = 3 м/с</span>
+                <span class="live-substitution__chip"><b>a</b> = −2 м/с²</span>
+              </div>
+
+              <label class="live-substitution__slider">
+                <span>Время <b>t</b> = <output data-live-time>1</output> с</span>
+                <input
+                  type="range"
+                  min="0"
+                  max="3"
+                  step="0.5"
+                  value="1"
+                  aria-label="Время t"
+                  data-live-time-input
+                />
+                <span class="live-substitution__ticks" aria-hidden="true" data-live-ticks>
+                  <span style="--tick: 0%;">0</span>
+                  <span style="--tick: 33.333%;">1</span>
+                  <span style="--tick: 50%;">1,5</span>
+                  <span style="--tick: 66.667%;">2</span>
+                  <span style="--tick: 100%;">3</span>
+                </span>
+              </label>
+
+              <div class="live-substitution__formula-line">
+                <span>Подставляем</span>
+                <strong data-live-expression>v = 3 + (−2) · 1 = 1</strong>
+              </div>
+            </div>
+
+            <div class="live-substitution__motion" aria-hidden="true">
+              <span class="live-substitution__stage-label">Что изменится: вектор скорости v</span>
+              <div class="live-substitution__axis">
+                <span>назад</span>
+                <span>0</span>
+                <span>вперёд</span>
+              </div>
+              <div class="live-substitution__track">
+                <span class="live-substitution__zero"></span>
+                <span class="live-substitution__body" data-live-body>
+                  <span class="live-substitution__body-core"></span>
+                  <span class="live-substitution__body-label">тело</span>
+                </span>
+                <span class="live-substitution__arrow" data-live-arrow>
+                  <span class="live-substitution__arrow-label">v</span>
+                </span>
+              </div>
+            </div>
+
+            <div class="live-substitution__state" data-live-state-panel>
+              <span class="formula-step">Что понять</span>
+              <strong data-live-result>v = 1 м/с</strong>
+              <p data-live-state>тело движется вправо</p>
+              <p data-live-explanation>Пока v не дошла до 0, тело всё ещё едет вправо. Скорость уменьшается.</p>
+              <p class="live-substitution__stop-coordinate" data-live-stop-coordinate>
+                При t = 1,5 с: v = 0, x = 2,25 м. Это координата остановки на оси, а не весь пройденный путь.
+              </p>
+            </div>
+          </div>
+
+          <details class="live-substitution__details" data-live-details>
+            <summary>Проверка единиц и знака</summary>
+            <div class="live-substitution__meaning" aria-label="Проверка единиц и направления">
+              <span><strong>Единицы:</strong> (м/с²) · с = м/с, поэтому at можно прибавлять к скорости.</span>
+              <span><strong>Знак:</strong> направление задаёт знак v.</span>
+            </div>
+          </details>
+
+          <p class="sr-only" aria-live="polite" aria-atomic="true" data-live-announcement>
+            t = 1 с, v = 1 м/с: тело движется вправо.
+          </p>
+        </div>
+        <div class="formula-meta" aria-label="Справочник по переменным, единицам и условию применимости">
+          <div class="formula-reference">
+            <span class="formula-reference__label">Справочник</span>
+            <h3>Переменные и единицы</h3>
+            <div class="variable-grid">
+              <span class="variable-chip" data-formula-variable="v" data-variable="v" data-var="v"><b>v</b> скорость <em>м/с</em></span>
+              <span class="variable-chip" data-formula-variable="v0" data-variable="v" data-var="v"><b>v₀</b> начальная скорость <em>м/с</em></span>
+              <span class="variable-chip" data-formula-variable="a" data-variable="a" data-var="a"><b>a</b> ускорение <em>м/с²</em></span>
+              <span class="variable-chip" data-formula-variable="t" data-variable="t" data-var="t"><b>t</b> время <em>с</em></span>
+              <span class="variable-chip" data-formula-variable="x" data-variable="x" data-var="x"><b>x</b> координата <em>м</em></span>
+              <span class="variable-chip" data-formula-variable="x0" data-variable="x" data-var="x"><b>x₀</b> начальная координата <em>м</em></span>
+            </div>
+          </div>
+          <div class="formula-condition formula-reference">
+            <span class="formula-reference__label">Можно подсмотреть</span>
+            <h3>Короткие условия</h3>
+            <div class="condition-note-grid" aria-label="Условия применения формул">
+              <article class="condition-note" data-formula-condition-note="axis">
+                <strong>Ось</strong>
+                <p>Вправо считаем положительным направлением. Знаки x, v и a — проекции на эту ось.</p>
+              </article>
+              <article class="condition-note" data-formula-condition-note="direction">
+                <strong>Направление</strong>
+                <p>v &gt; 0 — движение вправо. v &lt; 0 — назад. Ускорение a меняет v.</p>
+              </article>
+              <article class="condition-note" data-formula-condition-note="coordinate">
+                <strong>Координата</strong>
+                <p>x — положение на оси. Δx = x - x₀ — перемещение.</p>
+              </article>
+              <article class="condition-note condition-note--accent" data-formula-condition-note="constant-a">
+                <strong>Условие</strong>
+                <p>Формулы подходят, если ускорение a постоянно. Если a меняется во времени, нужна другая модель.</p>
+              </article>
+              <article class="condition-note" data-formula-condition-note="lab">
+                <strong>В этой лаборатории</strong>
+                <p>x₀ зафиксировано как 0, чтобы фокус был на v₀ и a.</p>
+              </article>
+            </div>
+          </div>
+        </div>
+      </SurfaceCard>
+    </section>
+
+    <section id="check" class="section chapter-section" aria-labelledby="check-title">
+      <SurfaceCard>
+        <div
+          class="chapter-check"
+          data-acceleration-check
+          data-feedback-correct="Да. После пересечения нуля скорость стала отрицательной: точка едет назад, а координата уменьшается."
+          data-feedback-wrong="Не совсем. Направление задаёт знак скорости v. Если v(t) уже ниже нуля, движение идёт назад, даже если старт был вправо."
+        >
+          <div>
+            <p class="eyebrow">Перенос на задачу</p>
+            <h2 id="check-title">v(t) пересекла ноль и стала ниже оси. Что теперь делает тело?</h2>
+          </div>
+          <div class="chapter-answer-row" role="group" aria-label="Варианты ответа">
+            <button type="button" data-check-answer="correct" aria-pressed="false">
+              Едет назад: координата уменьшается
+            </button>
+            <button type="button" data-check-answer="start-wins" aria-pressed="false">
+              Всё ещё вправо, потому что v₀ было положительным
+            </button>
+            <button type="button" data-check-answer="stopped" aria-pressed="false">
+              Остановилось навсегда
+            </button>
+          </div>
+          <p class="chapter-feedback" data-check-feedback aria-live="polite">
+            Выбери вариант и проверь себя по положению линии v(t) относительно нуля.
+          </p>
+        </div>
+      </SurfaceCard>
+    </section>
+  </article>
+</BaseLayout>
+
+<script>
+  setupLiveSubstitution();
+
+  setupChoiceBlock({
+    rootSelector: "[data-acceleration-predict] .prediction-question",
+    buttonSelector: "[data-prediction-answer]",
+    answerAttribute: "data-prediction-answer",
+    feedbackSelector: "[data-prediction-feedback]",
+    hintSelector: "[data-prediction-hint]"
+  });
+
+  setupChoiceBlock({
+    rootSelector: "[data-acceleration-check]",
+    buttonSelector: "[data-check-answer]",
+    answerAttribute: "data-check-answer",
+    feedbackSelector: "[data-check-feedback]"
+  });
+
+  type ChoiceBlockOptions = {
+    rootSelector: string;
+    buttonSelector: string;
+    answerAttribute: string;
+    feedbackSelector: string;
+    hintSelector?: string;
+  };
+
+  type LiveSubstitutionState = "right" | "stop" | "left";
+
+  function setupLiveSubstitution() {
+    document.querySelectorAll<HTMLElement>("[data-live-substitution]").forEach((root) => {
+      const input = root.querySelector<HTMLInputElement>("[data-live-time-input]");
+      const time = root.querySelector<HTMLOutputElement>("[data-live-time]");
+      const expression = root.querySelector<HTMLElement>("[data-live-expression]");
+      const result = root.querySelector<HTMLElement>("[data-live-result]");
+      const state = root.querySelector<HTMLElement>("[data-live-state]");
+      const explanation = root.querySelector<HTMLElement>("[data-live-explanation]");
+      const announcement = root.querySelector<HTMLElement>("[data-live-announcement]");
+
+      if (!input || !time || !expression || !result || !state || !explanation || !announcement) {
+        return;
+      }
+
+      const formatValue = (value: number) => {
+        const rounded = Math.abs(value) < 0.001 ? 0 : value;
+        return Number.isInteger(rounded) ? String(rounded) : String(rounded).replace(".", ",");
+      };
+
+      const update = () => {
+        const t = Number(input.value);
+        const rawVelocity = 3 - 2 * t;
+        const velocity = Math.abs(rawVelocity) < 0.001 ? 0 : rawVelocity;
+        const direction: LiveSubstitutionState = velocity > 0 ? "right" : velocity < 0 ? "left" : "stop";
+        const stateText = direction === "right"
+          ? "тело движется вправо"
+          : direction === "left"
+            ? "тело движется влево/назад"
+            : "мгновенно остановилось";
+        const explanationText = direction === "right"
+          ? "Пока v не дошла до 0, тело всё ещё едет вправо. Скорость уменьшается."
+          : direction === "left"
+            ? "После смены знака v направление меняется: теперь тело едет назад."
+            : "В этот миг v = 0. Следом знак станет отрицательным, и тело поедет назад.";
+        const arrowLength = velocity === 0 ? "0px" : `${18 + Math.abs(velocity) / 3 * 34}%`;
+        const sliderFill = `${t / 3 * 100}%`;
+        const stateColor = direction === "left"
+          ? "var(--pl-position)"
+          : direction === "stop"
+            ? "var(--pl-text-soft)"
+            : "var(--pl-velocity)";
+
+        root.dataset.currentT = String(t);
+        root.dataset.currentV = String(velocity);
+        root.dataset.direction = direction;
+        root.style.setProperty("--live-arrow-direction", direction === "left" ? "-1" : "1");
+        root.style.setProperty("--live-arrow-length", arrowLength);
+        root.style.setProperty("--live-slider-fill", sliderFill);
+        root.style.setProperty("--live-state-color", stateColor);
+        time.value = formatValue(t);
+        expression.textContent = `v = 3 + (−2) · ${formatValue(t)} = ${formatValue(velocity)}`;
+        result.textContent = `v = ${formatValue(velocity)} м/с`;
+        state.textContent = stateText;
+        explanation.textContent = explanationText;
+        announcement.textContent = `t = ${formatValue(t)} с, v = ${formatValue(velocity)} м/с: ${stateText}.`;
+      };
+
+      input.addEventListener("input", update);
+      update();
+    });
+  }
+
+  function setupChoiceBlock(options: ChoiceBlockOptions) {
+    document.querySelectorAll<HTMLElement>(options.rootSelector).forEach((block) => {
+      const buttons = block.querySelectorAll<HTMLButtonElement>(options.buttonSelector);
+      const feedback = block.querySelector<HTMLElement>(options.feedbackSelector);
+      const hint = options.hintSelector
+        ? block.querySelector<HTMLElement>(options.hintSelector)
+        : null;
+      const correctFeedback = block.dataset.feedbackCorrect ?? "";
+      const wrongFeedback = block.dataset.feedbackWrong ?? "";
+
+      buttons.forEach((button) => {
+        button.addEventListener("click", () => {
+          const isCorrect = button.getAttribute(options.answerAttribute) === "correct";
+          buttons.forEach((item) => {
+            item.classList.remove("is-correct", "is-wrong");
+            item.setAttribute("aria-pressed", "false");
+          });
+          button.classList.add(isCorrect ? "is-correct" : "is-wrong");
+          button.setAttribute("aria-pressed", "true");
+
+          if (feedback) {
+            feedback.dataset.state = isCorrect ? "success" : "warning";
+            feedback.textContent = isCorrect ? correctFeedback : wrongFeedback;
+          }
+
+          if (hint) {
+            hint.hidden = false;
+          }
+        });
+      });
+    });
+  }
+
+</script>
+
+<style>
+  .chapter-page {
+    min-width: 0;
+  }
+
+  :global(.topbar) {
+    border-bottom-color: rgba(88, 216, 255, 0.12);
+    background:
+      linear-gradient(90deg, rgba(8, 14, 24, 0.62), rgba(8, 14, 24, 0.28)),
+      transparent;
+    backdrop-filter: blur(14px);
+  }
+
+  :global(.topbar nav a) {
+    background: rgba(8, 14, 24, 0.28);
+  }
+
+  :global(#lab-background-canvas) {
+    width: 100% !important;
+  }
+
+  .chapter-intro {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(250px, 0.38fr);
+    gap: var(--pl-space-5);
+    align-items: end;
+    padding-bottom: var(--pl-space-10);
+  }
+
+  .chapter-page > .section {
+    padding-block: clamp(var(--pl-space-10), 5.2vw, var(--pl-space-16));
+  }
+
+  .chapter-page > .chapter-intro {
+    padding-top: clamp(var(--pl-space-16), 7vw, var(--pl-space-20));
+    padding-bottom: clamp(var(--pl-space-8), 4vw, var(--pl-space-12));
+  }
+
+  .chapter-intro h1 {
+    margin-top: var(--pl-space-4);
+    margin-bottom: var(--pl-space-4);
+    overflow-wrap: anywhere;
+  }
+
+  .chapter-lead {
+    max-width: 780px;
+    margin-bottom: 0;
+    color: var(--pl-text);
+    font-size: clamp(1.08rem, 1.9vw, 1.28rem);
+    line-height: 1.55;
+  }
+
+  .chapter-note {
+    padding: var(--pl-space-4);
+    border: 1px solid rgba(255, 216, 77, 0.18);
+    border-radius: 20px;
+    background:
+      linear-gradient(135deg, rgba(255, 216, 77, 0.08), transparent 58%),
+      rgba(16, 23, 34, 0.78);
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 255, 255, 0.025),
+      inset 0 0 26px rgba(255, 216, 77, 0.025);
+  }
+
+  .chapter-note strong {
+    display: block;
+    margin-bottom: var(--pl-space-2);
+    color: var(--pl-accent);
+  }
+
+  .chapter-note p {
+    margin: 0;
+    font-size: 0.98rem;
+  }
+
+  .chapter-section {
+    display: grid;
+    gap: var(--pl-space-5);
+  }
+
+  .chapter-section__head {
+    max-width: 820px;
+  }
+
+  .chapter-section__head p:last-child {
+    margin-bottom: 0;
+  }
+
+  .chapter-page :global(.surface-card:not(.surface-card--lab)) {
+    border-color: rgba(126, 179, 218, 0.12);
+    border-radius: 22px;
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.032), rgba(255, 255, 255, 0.01)),
+      rgba(7, 15, 28, 0.58);
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 255, 255, 0.022),
+      inset 0 0 24px rgba(88, 216, 255, 0.016),
+      0 16px 42px rgba(0, 0, 0, 0.16);
+  }
+
+  .prediction-panel {
+    display: grid;
+    gap: var(--pl-space-3);
+  }
+
+  .prediction-panel > div:first-child {
+    max-width: 700px;
+  }
+
+  .prediction-panel > div:first-child p {
+    max-width: 620px;
+    margin-bottom: 0;
+    line-height: 1.45;
+  }
+
+  .prediction-panel p:last-child {
+    margin-bottom: 0;
+  }
+
+  .prediction-question {
+    display: grid;
+    gap: var(--pl-space-2);
+    padding: clamp(var(--pl-space-3), 2vw, var(--pl-space-4));
+    border: 1px solid rgba(255, 216, 77, 0.16);
+    border-radius: 18px;
+    background:
+      linear-gradient(135deg, rgba(255, 216, 77, 0.075), rgba(88, 216, 255, 0.032)),
+      rgba(255, 255, 255, 0.02);
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 255, 255, 0.024),
+      inset 0 18px 48px rgba(255, 216, 77, 0.022);
+  }
+
+  .prediction-prompt {
+    margin: 0;
+    color: var(--pl-text);
+    font-size: clamp(1.04rem, 2.1vw, 1.26rem);
+    font-weight: 900;
+    line-height: 1.3;
+  }
+
+  .prediction-answer-row button {
+    flex-basis: 210px;
+  }
+
+  .prediction-next-step {
+    margin: 0;
+    padding: 9px 11px;
+    border: 1px solid rgba(88, 216, 255, 0.14);
+    border-radius: 14px;
+    color: var(--pl-text);
+    background: rgba(88, 216, 255, 0.045);
+    line-height: 1.38;
+  }
+
+  .prediction-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--pl-space-2);
+  }
+
+  .prediction-grid article {
+    min-width: 0;
+    padding: 10px 12px;
+    border: 1px solid rgba(88, 216, 255, 0.1);
+    border-radius: 14px;
+    background:
+      linear-gradient(180deg, rgba(88, 216, 255, 0.045), rgba(255, 255, 255, 0.012)),
+      rgba(255, 255, 255, 0.018);
+  }
+
+  .prediction-grid strong {
+    display: block;
+    margin-bottom: 4px;
+    color: var(--pl-accent);
+    font-size: 0.9rem;
+  }
+
+  .prediction-grid p {
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.38;
+  }
+
+  .formula-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--pl-space-3);
+    margin-top: var(--pl-space-3);
+  }
+
+  .formula-intro {
+    max-width: 760px;
+    margin: var(--pl-space-2) 0 0;
+    color: var(--pl-text-muted);
+    line-height: 1.45;
+  }
+
+  .formula-step {
+    display: block;
+    margin: 0 0 var(--pl-space-2);
+    color: var(--pl-accent);
+    font-size: 0.78rem;
+    font-weight: 900;
+    letter-spacing: 0;
+    text-transform: uppercase;
+  }
+
+  .formula-card {
+    min-width: 0;
+    padding: var(--pl-space-3);
+    border: 1px solid rgba(88, 216, 255, 0.14);
+    border-radius: 16px;
+    background:
+      linear-gradient(180deg, rgba(88, 216, 255, 0.042), rgba(255, 255, 255, 0.012)),
+      rgba(255, 255, 255, 0.022);
+  }
+
+  .formula {
+    max-width: 100%;
+    margin-bottom: var(--pl-space-3);
+    color: var(--pl-text);
+    min-width: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-inline: contain;
+  }
+
+  .formula :global(.math-formula--display) {
+    display: block;
+    width: 100%;
+    padding: 0;
+  }
+
+  .formula :global(.math-formula--display .katex-display) {
+    text-align: left;
+  }
+
+  .formula :global(.math-formula--display .katex) {
+    font-size: clamp(1.35rem, 3.1vw, 2.08rem);
+    line-height: 1.18;
+  }
+
+  .formula-card p:last-child {
+    margin-bottom: 0;
+  }
+
+  .formula-live-substitution {
+    --live-arrow-direction: 1;
+    --live-arrow-length: 29%;
+    --live-body-size: 42px;
+    --live-slider-fill: 33.333%;
+    --live-state-color: var(--pl-velocity);
+    position: relative;
+    display: grid;
+    gap: var(--pl-space-3);
+    margin-top: var(--pl-space-3);
+    padding: var(--pl-space-4);
+    border: 1px solid rgba(88, 216, 255, 0.16);
+    border-radius: 18px;
+    background:
+      radial-gradient(circle at 22% 0%, rgba(110, 231, 168, 0.12), transparent 32%),
+      linear-gradient(135deg, rgba(88, 216, 255, 0.05), rgba(255, 216, 77, 0.022)),
+      rgba(255, 255, 255, 0.018);
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 255, 255, 0.024),
+      0 18px 55px rgba(0, 0, 0, 0.16);
+  }
+
+  .formula-live-substitution .formula-step {
+    color: var(--pl-text-soft);
+    font-size: 0.76rem;
+    letter-spacing: 0;
+    text-transform: none;
+  }
+
+  .formula-live-substitution__header {
+    display: grid;
+    gap: 5px;
+    max-width: 720px;
+    min-width: 0;
+  }
+
+  .formula-live-substitution__header h3 {
+    margin: 0;
+    color: var(--pl-text);
+    font-size: clamp(1.08rem, 2vw, 1.28rem);
+    line-height: 1.18;
+  }
+
+  .formula-live-substitution__header p {
+    margin: 0;
+    color: var(--pl-text-muted);
+    font-size: 0.94rem;
+    line-height: 1.42;
+  }
+
+  .live-substitution__route {
+    display: inline-flex;
+    align-items: center;
+    width: fit-content;
+    max-width: 100%;
+    margin-top: 5px;
+    padding: 7px 10px;
+    border: 1px solid rgba(255, 216, 77, 0.14);
+    border-radius: 12px;
+    color: var(--pl-text);
+    background: rgba(255, 216, 77, 0.055);
+    font-size: 0.9rem;
+    font-weight: 800;
+    line-height: 1.3;
+  }
+
+  .formula-live-substitution__instrument {
+    display: grid;
+    grid-template-columns: minmax(220px, 0.58fr) minmax(360px, 1.52fr) minmax(190px, 0.52fr);
+    gap: var(--pl-space-3);
+    align-items: stretch;
+    min-width: 0;
+  }
+
+  .live-substitution__controls,
+  .live-substitution__motion,
+  .live-substitution__state {
+    min-width: 0;
+    border: 1px solid rgba(88, 216, 255, 0.1);
+    border-radius: 14px;
+    background: rgba(4, 13, 26, 0.32);
+  }
+
+  .live-substitution__controls {
+    display: grid;
+    gap: var(--pl-space-3);
+    padding: var(--pl-space-3);
+  }
+
+  .live-substitution__first-action {
+    display: grid;
+    gap: 3px;
+    padding: 10px 11px;
+    border: 1px solid rgba(255, 216, 77, 0.18);
+    border-radius: 12px;
+    background:
+      linear-gradient(90deg, rgba(255, 216, 77, 0.09), rgba(110, 231, 168, 0.025)),
+      rgba(255, 255, 255, 0.014);
+  }
+
+  .live-substitution__first-action span,
+  .live-substitution__first-action small {
+    color: var(--pl-text-soft);
+    font-size: 0.76rem;
+    font-weight: 800;
+    line-height: 1.25;
+  }
+
+  .live-substitution__first-action strong {
+    color: var(--pl-accent);
+    font-size: 1rem;
+    line-height: 1.2;
+  }
+
+  .live-substitution__givens {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .live-substitution__chip {
+    display: inline-flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 0.38em;
+    min-width: 0;
+    padding: 7px 9px;
+    border: 1px solid rgba(88, 216, 255, 0.12);
+    border-radius: 11px;
+    color: var(--pl-text-muted);
+    background: rgba(8, 14, 24, 0.28);
+    font-family: "Cascadia Mono", "JetBrains Mono", Consolas, monospace;
+    font-size: 0.9rem;
+    line-height: 1.2;
+    white-space: nowrap;
+  }
+
+  .live-substitution__chip b {
+    color: var(--pl-text);
+  }
+
+  .live-substitution__slider {
+    display: grid;
+    gap: 10px;
+    color: var(--pl-text-muted);
+    font-size: 0.92rem;
+    font-weight: 800;
+    line-height: 1.2;
+  }
+
+  .live-substitution__slider output,
+  .live-substitution__slider b {
+    color: var(--pl-time);
+    font-family: "Cascadia Mono", "JetBrains Mono", Consolas, monospace;
+    font-feature-settings: "tnum" 1;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .live-substitution__slider output {
+    display: inline-block;
+    min-width: 2.2ch;
+    text-align: center;
+  }
+
+  .live-substitution__slider input {
+    appearance: none;
+    width: 100%;
+    min-width: 0;
+    height: 34px;
+    margin: 0;
+    padding: 0;
+    background: transparent;
+    cursor: pointer;
+    touch-action: pan-y;
+  }
+
+  .live-substitution__slider input::-webkit-slider-runnable-track {
+    height: 12px;
+    border: 1px solid rgba(110, 231, 168, 0.26);
+    border-radius: 999px;
+    background:
+      linear-gradient(
+        90deg,
+        rgba(110, 231, 168, 0.95) 0 var(--live-slider-fill),
+        rgba(255, 255, 255, 0.18) var(--live-slider-fill) 100%
+      );
+    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.28);
+  }
+
+  .live-substitution__slider input::-webkit-slider-thumb {
+    appearance: none;
+    width: 26px;
+    height: 26px;
+    margin-top: -8px;
+    border: 2px solid rgba(7, 18, 31, 0.96);
+    border-radius: 999px;
+    background:
+      radial-gradient(circle at 35% 30%, #f6fff9 0 18%, var(--pl-time) 19% 100%);
+    box-shadow:
+      0 0 0 4px rgba(110, 231, 168, 0.16),
+      0 8px 18px rgba(0, 0, 0, 0.28);
+  }
+
+  .live-substitution__slider input::-moz-range-track {
+    height: 12px;
+    border: 1px solid rgba(110, 231, 168, 0.26);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.18);
+    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.28);
+  }
+
+  .live-substitution__slider input::-moz-range-progress {
+    height: 12px;
+    border-radius: 999px;
+    background: rgba(110, 231, 168, 0.95);
+  }
+
+  .live-substitution__slider input::-moz-range-thumb {
+    width: 26px;
+    height: 26px;
+    border: 2px solid rgba(7, 18, 31, 0.96);
+    border-radius: 999px;
+    background:
+      radial-gradient(circle at 35% 30%, #f6fff9 0 18%, var(--pl-time) 19% 100%);
+    box-shadow:
+      0 0 0 4px rgba(110, 231, 168, 0.16),
+      0 8px 18px rgba(0, 0, 0, 0.28);
+  }
+
+  .live-substitution__ticks {
+    position: relative;
+    display: block;
+    height: 13px;
+    margin-top: -4px;
+    color: var(--pl-text-soft);
+    font-family: "Cascadia Mono", "JetBrains Mono", Consolas, monospace;
+    font-size: 0.72rem;
+    font-feature-settings: "tnum" 1;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+  }
+
+  .live-substitution__ticks span {
+    position: absolute;
+    left: var(--tick);
+    text-align: center;
+    transform: translateX(-50%);
+  }
+
+  .live-substitution__ticks span:first-child {
+    transform: translateX(0);
+  }
+
+  .live-substitution__ticks span:last-child {
+    transform: translateX(-100%);
+  }
+
+  .live-substitution__slider input:focus-visible {
+    outline: 3px solid var(--pl-accent);
+    outline-offset: 4px;
+  }
+
+  .live-substitution__formula-line {
+    display: grid;
+    gap: 6px;
+    padding-top: var(--pl-space-2);
+    border-top: 1px solid rgba(126, 179, 218, 0.09);
+  }
+
+  .live-substitution__formula-line span {
+    color: var(--pl-accent);
+    font-size: 0.75rem;
+    font-weight: 900;
+  }
+
+  .live-substitution__formula-line strong {
+    color: var(--pl-text);
+    font-family: "Cascadia Mono", "JetBrains Mono", Consolas, monospace;
+    font-size: clamp(1rem, 2vw, 1.28rem);
+    font-feature-settings: "tnum" 1;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.25;
+  }
+
+  .live-substitution__motion {
+    display: grid;
+    grid-template-rows: auto auto minmax(150px, 1fr);
+    gap: var(--pl-space-2);
+    padding: var(--pl-space-3);
+    overflow: hidden;
+    background:
+      linear-gradient(180deg, rgba(88, 216, 255, 0.038), rgba(4, 13, 26, 0.34)),
+      rgba(4, 13, 26, 0.32);
+  }
+
+  .live-substitution__stage-label {
+    color: var(--pl-text);
+    font-size: 0.88rem;
+    font-weight: 900;
+    line-height: 1.25;
+  }
+
+  .live-substitution__axis {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: var(--pl-space-2);
+    color: var(--pl-text-soft);
+    font-size: 0.78rem;
+    font-weight: 800;
+    text-transform: uppercase;
+  }
+
+  .live-substitution__axis span:last-child {
+    text-align: right;
+  }
+
+  .live-substitution__track {
+    position: relative;
+    min-height: 164px;
+    border: 1px solid rgba(126, 179, 218, 0.08);
+    border-radius: 18px;
+    background:
+      radial-gradient(circle at 50% 50%, rgba(110, 231, 168, 0.12), transparent 22%),
+      linear-gradient(90deg, rgba(88, 216, 255, 0.12), transparent 47%, rgba(255, 216, 77, 0.11)),
+      linear-gradient(180deg, rgba(255, 255, 255, 0.038), rgba(255, 255, 255, 0.012));
+    overflow: hidden;
+  }
+
+  .live-substitution__track::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: var(--pl-space-3);
+    left: var(--pl-space-3);
+    height: 2px;
+    border-radius: 999px;
+    background: rgba(149, 165, 183, 0.3);
+    transform: translateY(-50%);
+  }
+
+  .live-substitution__track::after {
+    content: "";
+    position: absolute;
+    right: var(--pl-space-3);
+    bottom: 24px;
+    left: var(--pl-space-3);
+    height: 12px;
+    border-radius: 999px;
+    background:
+      repeating-linear-gradient(
+        90deg,
+        rgba(149, 165, 183, 0.16) 0 1px,
+        transparent 1px 22px
+      );
+    opacity: 0.62;
+  }
+
+  .live-substitution__zero {
+    position: absolute;
+    top: 18px;
+    bottom: 18px;
+    left: 50%;
+    width: 2px;
+    border-radius: 999px;
+    background: rgba(110, 231, 168, 0.42);
+    transform: translateX(-50%);
+    z-index: 1;
+  }
+
+  .live-substitution__arrow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: var(--live-arrow-length);
+    height: 10px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, var(--live-state-color), rgba(255, 255, 255, 0.94));
+    box-shadow: 0 0 24px color-mix(in srgb, var(--live-state-color) 38%, transparent);
+    transform: translateY(-50%) scaleX(var(--live-arrow-direction));
+    transform-origin: left center;
+    z-index: 3;
+    transition:
+      width 180ms ease,
+      opacity 180ms ease,
+      transform 180ms ease,
+      background 180ms ease;
+  }
+
+  .live-substitution__arrow::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: -9px;
+    border-top: 11px solid transparent;
+    border-bottom: 11px solid transparent;
+    border-left: 13px solid rgba(255, 255, 255, 0.94);
+    transform: translateY(-50%);
+  }
+
+  .live-substitution__arrow-label {
+    position: absolute;
+    top: -31px;
+    right: -5px;
+    display: grid;
+    place-items: center;
+    min-width: 24px;
+    height: 24px;
+    border: 1px solid color-mix(in srgb, var(--live-state-color) 45%, transparent);
+    border-radius: 999px;
+    color: var(--live-state-color);
+    background: rgba(4, 13, 26, 0.78);
+    font-family: "Cascadia Mono", "JetBrains Mono", Consolas, monospace;
+    font-size: 0.82rem;
+    font-weight: 900;
+    transform: scaleX(var(--live-arrow-direction));
+  }
+
+  .live-substitution__body {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    display: grid;
+    place-items: center;
+    width: var(--live-body-size);
+    height: var(--live-body-size);
+    border: 2px solid color-mix(in srgb, var(--live-state-color) 55%, rgba(255, 255, 255, 0.2));
+    border-radius: 999px;
+    background:
+      radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.95) 0 10%, color-mix(in srgb, var(--live-state-color) 58%, #07121f) 11% 100%);
+    box-shadow:
+      0 0 0 9px color-mix(in srgb, var(--live-state-color) 11%, transparent),
+      0 14px 30px rgba(0, 0, 0, 0.35);
+    transform: translate(-50%, -50%);
+    transition:
+      border-color 180ms ease,
+      background 180ms ease,
+      box-shadow 180ms ease;
+    z-index: 4;
+  }
+
+  .live-substitution__body-core {
+    width: 10px;
+    height: 10px;
+    border-radius: 999px;
+    background: rgba(4, 13, 26, 0.86);
+    box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.24);
+  }
+
+  .live-substitution__body-label {
+    position: absolute;
+    top: calc(100% + 9px);
+    left: 50%;
+    color: var(--pl-text-muted);
+    font-size: 0.75rem;
+    font-weight: 900;
+    transform: translateX(-50%);
+    white-space: nowrap;
+  }
+
+  .formula-live-substitution[data-direction="stop"] .live-substitution__arrow {
+    opacity: 0;
+  }
+
+  .formula-live-substitution[data-direction="stop"] .live-substitution__arrow::after,
+  .formula-live-substitution[data-direction="stop"] .live-substitution__arrow-label {
+    opacity: 0;
+  }
+
+  .formula-live-substitution[data-direction="stop"] .live-substitution__body {
+    box-shadow:
+      0 0 0 12px rgba(149, 165, 183, 0.11),
+      0 14px 30px rgba(0, 0, 0, 0.35);
+  }
+
+  .live-substitution__state {
+    display: grid;
+    align-content: center;
+    gap: 7px;
+    padding: var(--pl-space-3);
+    border-color: color-mix(in srgb, var(--live-state-color) 24%, rgba(126, 179, 218, 0.08));
+    background:
+      linear-gradient(180deg, color-mix(in srgb, var(--live-state-color) 6%, transparent), rgba(4, 13, 26, 0.22)),
+      rgba(4, 13, 26, 0.26);
+  }
+
+  .live-substitution__state strong {
+    color: var(--live-state-color);
+    font-family: "Cascadia Mono", "JetBrains Mono", Consolas, monospace;
+    font-size: clamp(1.28rem, 3vw, 1.82rem);
+    font-feature-settings: "tnum" 1;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+  }
+
+  .live-substitution__state p {
+    margin: 0;
+    color: var(--pl-text-muted);
+    font-size: 0.94rem;
+    line-height: 1.42;
+  }
+
+  .live-substitution__state p:first-of-type {
+    color: var(--pl-text);
+    font-size: 0.92rem;
+    font-weight: 900;
+    line-height: 1.32;
+  }
+
+  .live-substitution__stop-coordinate {
+    margin-top: 4px;
+    padding: 9px 10px;
+    border: 1px solid rgba(110, 231, 168, 0.12);
+    border-radius: 12px;
+    color: var(--pl-text-muted);
+    background: rgba(110, 231, 168, 0.035);
+    font-size: 0.82rem;
+    font-weight: 800;
+    line-height: 1.35;
+  }
+
+  .live-substitution__details {
+    min-width: 0;
+    border: 1px solid rgba(126, 179, 218, 0.08);
+    border-radius: 14px;
+    background: rgba(4, 13, 26, 0.18);
+  }
+
+  .live-substitution__details summary {
+    cursor: pointer;
+    padding: 10px 12px;
+    color: var(--pl-text-muted);
+    font-size: 0.9rem;
+    font-weight: 900;
+    list-style-position: inside;
+  }
+
+  .live-substitution__details summary:focus-visible {
+    outline: 3px solid var(--pl-accent);
+    outline-offset: 3px;
+  }
+
+  .live-substitution__details[open] summary {
+    color: var(--pl-text);
+  }
+
+  .live-substitution__meaning {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+    gap: var(--pl-space-2);
+    min-width: 0;
+    padding: 0 10px 10px;
+  }
+
+  .live-substitution__meaning span {
+    min-width: 0;
+    padding: 9px 10px;
+    border: 1px solid rgba(110, 231, 168, 0.1);
+    border-radius: 11px;
+    color: var(--pl-text-muted);
+    background: rgba(255, 255, 255, 0.018);
+    font-size: 0.9rem;
+    line-height: 1.36;
+  }
+
+  .live-substitution__meaning strong {
+    color: var(--pl-text);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .formula-live-substitution *,
+    .formula-live-substitution *::before,
+    .formula-live-substitution *::after {
+      transition-duration: 0.001ms !important;
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+    }
+  }
+
+  .formula-meta {
+    display: grid;
+    grid-template-columns: minmax(0, 0.95fr) minmax(320px, 1.05fr);
+    gap: var(--pl-space-3);
+    margin: var(--pl-space-4) 0 0;
+    padding-top: var(--pl-space-3);
+    border-top: 1px solid rgba(126, 179, 218, 0.08);
+  }
+
+  .formula-reference {
+    min-width: 0;
+    padding: var(--pl-space-3);
+    border: 1px solid rgba(126, 179, 218, 0.08);
+    border-radius: 14px;
+    background: rgba(8, 14, 24, 0.14);
+  }
+
+  .formula-reference__label {
+    display: block;
+    margin-bottom: var(--pl-space-2);
+    color: var(--pl-text-soft);
+    font-size: 0.74rem;
+    font-weight: 900;
+    letter-spacing: 0;
+    text-transform: uppercase;
+  }
+
+  .formula-meta h3 {
+    margin: 0 0 var(--pl-space-3);
+    color: var(--pl-text-muted);
+    font-size: 0.94rem;
+  }
+
+  .variable-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--pl-space-2);
+  }
+
+  .variable-chip {
+    display: flex;
+    align-items: center;
+    gap: var(--pl-space-2);
+    min-width: 0;
+    min-height: 40px;
+    padding: 7px 9px;
+    border: 1px solid rgba(88, 216, 255, 0.075);
+    border-radius: 12px;
+    color: var(--pl-text-muted);
+    background: rgba(255, 255, 255, 0.012);
+    line-height: 1.25;
+  }
+
+  .variable-chip b {
+    flex: 0 0 auto;
+    min-width: 2.2em;
+    color: var(--pl-text);
+    font-family: "Cascadia Mono", "JetBrains Mono", Consolas, monospace;
+    font-size: 1.12rem;
+  }
+
+  .variable-chip em {
+    flex: 0 0 auto;
+    margin-left: auto;
+    color: var(--pl-text-soft);
+    font-size: 0.86rem;
+    font-style: normal;
+  }
+
+  .variable-chip[data-var="x"] b {
+    color: var(--pl-position);
+  }
+
+  .variable-chip[data-var="v"] b {
+    color: var(--pl-velocity);
+  }
+
+  .variable-chip[data-var="a"] b {
+    color: var(--pl-acceleration);
+  }
+
+  .variable-chip[data-var="t"] b {
+    color: var(--pl-time);
+  }
+
+  .formula-condition {
+    color: var(--pl-text);
+    line-height: 1.45;
+  }
+
+  .condition-note-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: var(--pl-space-2);
+    align-items: stretch;
+  }
+
+  .condition-note {
+    min-width: 0;
+    padding: 9px 10px;
+    border: 1px solid rgba(255, 216, 77, 0.07);
+    border-radius: 10px;
+    background: rgba(8, 14, 24, 0.16);
+  }
+
+  .condition-note--accent {
+    border-color: rgba(255, 216, 77, 0.13);
+    background: rgba(255, 216, 77, 0.035);
+  }
+
+  .condition-note strong {
+    display: block;
+    margin-bottom: 4px;
+    color: var(--pl-text-soft);
+    font-size: 0.76rem;
+    font-weight: 900;
+    letter-spacing: 0;
+    text-transform: uppercase;
+  }
+
+  .condition-note p {
+    margin: 0;
+    color: var(--pl-text-muted);
+    font-size: 0.88rem;
+    line-height: 1.35;
+  }
+
+  .chapter-check {
+    display: grid;
+    gap: var(--pl-space-4);
+  }
+
+  .chapter-answer-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr));
+    gap: var(--pl-space-3);
+    align-items: stretch;
+  }
+
+  .chapter-answer-row button {
+    display: flex;
+    align-items: center;
+    min-height: 58px;
+    padding: 10px 12px;
+    border: 1px solid rgba(88, 216, 255, 0.12);
+    border-radius: 14px;
+    color: var(--pl-text);
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.012)),
+      rgba(5, 14, 27, 0.66);
+    font-weight: 900;
+    text-align: left;
+  }
+
+  .prediction-answer-row {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 130px), 1fr));
+    gap: var(--pl-space-2);
+  }
+
+  .prediction-answer-row button {
+    min-height: 50px;
+    padding: 8px 10px;
+    font-size: 0.9rem;
+    line-height: 1.2;
+  }
+
+  .chapter-answer-row button:focus-visible {
+    outline: 3px solid var(--pl-accent);
+    outline-offset: 4px;
+  }
+
+  .chapter-answer-row button.is-correct {
+    border-color: rgba(110, 231, 168, 0.72);
+    color: var(--pl-green);
+    background: rgba(110, 231, 168, 0.08);
+  }
+
+  .chapter-answer-row button.is-wrong {
+    border-color: rgba(255, 107, 107, 0.62);
+    color: var(--pl-red);
+    background: rgba(255, 107, 107, 0.08);
+  }
+
+  .chapter-feedback {
+    min-height: 1.6em;
+    margin: 0;
+    padding: var(--pl-space-3);
+    border: 1px solid rgba(88, 216, 255, 0.12);
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.026);
+  }
+
+  .chapter-feedback[data-state="success"] {
+    border-color: rgba(110, 231, 168, 0.5);
+  }
+
+  .chapter-feedback[data-state="warning"] {
+    border-color: rgba(255, 107, 107, 0.45);
+  }
+
+  @media (max-width: 900px) {
+    .chapter-intro,
+    .prediction-grid,
+    .formula-grid,
+    .formula-meta,
+    .variable-grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .chapter-intro > *,
+    .prediction-grid > *,
+    .formula-grid > *,
+    .formula-meta > *,
+    .variable-grid > * {
+      min-width: 0;
+    }
+
+    .formula-live-substitution__instrument,
+    .live-substitution__meaning {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .live-substitution__controls {
+      order: 1;
+    }
+
+    .live-substitution__motion {
+      order: 2;
+    }
+
+    .live-substitution__state {
+      order: 3;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .chapter-page > .section {
+      padding-block: var(--pl-space-10);
+    }
+
+    .formula-live-substitution {
+      --live-body-size: 38px;
+      padding: var(--pl-space-3);
+    }
+
+    .live-substitution__route {
+      width: 100%;
+      font-size: 0.86rem;
+    }
+
+    .live-substitution__motion {
+      grid-template-rows: auto auto minmax(136px, 1fr);
+      padding: 12px;
+    }
+
+    .live-substitution__track {
+      min-height: 146px;
+    }
+
+    .live-substitution__state {
+      align-content: start;
+      box-shadow: 0 14px 32px rgba(0, 0, 0, 0.24);
+    }
+
+    .condition-note-grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .condition-note {
+      padding: 10px;
+    }
+
+    .condition-note p {
+      font-size: 0.9rem;
+      line-height: 1.44;
+    }
+
+    .chapter-intro {
+      padding-top: var(--pl-space-10);
+      padding-bottom: var(--pl-space-6);
+    }
+
+    .chapter-intro h1 {
+      font-size: clamp(1.72rem, 8.4vw, 2.35rem);
+    }
+
+    .chapter-answer-row {
+      display: grid;
+      grid-template-columns: 1fr;
+    }
+
+    .chapter-answer-row button {
+      min-height: 54px;
+    }
+
+    .prediction-answer-row {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .prediction-answer-row button {
+      min-height: 52px;
+      padding: 8px;
+      font-size: 0.84rem;
+    }
+  }
+</style>
