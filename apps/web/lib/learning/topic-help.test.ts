@@ -4,8 +4,12 @@ import {
   getDefaultHelpTarget,
   getHelpTargetForMistake,
   getHelpTargetForTask,
+  topicHelpSections,
   type HelpableQuizTask,
 } from "./topic-help.ts";
+import { templateRegistry } from "../server/task-generator/generate.ts";
+import { taskLearningMetadataByTemplateId } from "./task-metadata.ts";
+import { skillMetadata } from "./taxonomy.ts";
 
 function task(overrides: Partial<HelpableQuizTask>): HelpableQuizTask {
   return {
@@ -14,6 +18,62 @@ function task(overrides: Partial<HelpableQuizTask>): HelpableQuizTask {
     ...overrides,
   };
 }
+
+test("task learning metadata covers every generator template", () => {
+  const templateIds = templateRegistry.map((entry) => entry.id).sort();
+  const metadataIds = Object.keys(taskLearningMetadataByTemplateId).sort();
+
+  assert.deepEqual(
+    templateIds.filter((id) => !taskLearningMetadataByTemplateId[id]),
+    [],
+  );
+  assert.deepEqual(
+    metadataIds.filter((id) => !templateIds.includes(id as (typeof templateIds)[number])),
+    [],
+  );
+});
+
+test("task learning metadata points to valid help sections and skills", () => {
+  for (const metadata of Object.values(taskLearningMetadataByTemplateId)) {
+    assert.equal(metadata.templateId in taskLearningMetadataByTemplateId, true);
+    assert.equal(metadata.skillId in skillMetadata, true, metadata.templateId);
+    assert.equal(
+      topicHelpSections[metadata.topicId].some(
+        (section) => section.id === metadata.helpSectionId,
+      ),
+      true,
+      `${metadata.templateId} -> ${metadata.topicId}/${metadata.helpSectionId}`,
+    );
+  }
+});
+
+test("explicit template metadata wins before regex fallback", () => {
+  const target = getHelpTargetForTask(
+    task({
+      blueprint: "kinetic-energy",
+      text: "На графике v(t) сила меняется, но вопрос про энергию движения.",
+      formula: "E_k = \\frac{mv^2}{2}",
+    }),
+  );
+
+  assert.equal(target.topicId, "dynamics");
+  assert.equal(target.sectionId, "kinetic-energy");
+  assert.equal(target.reason, "task");
+});
+
+test("stable misconception id can override task metadata", () => {
+  const target = getHelpTargetForMistake(
+    task({
+      blueprint: "newton-second",
+      formula: "F = ma",
+    }),
+    "wrong-force-direction",
+  );
+
+  assert.equal(target.topicId, "dynamics");
+  assert.equal(target.sectionId, "resultant-force");
+  assert.equal(target.reason, "mistake");
+});
 
 test("v(t) graph task maps to motion graphs", () => {
   const target = getHelpTargetForTask(

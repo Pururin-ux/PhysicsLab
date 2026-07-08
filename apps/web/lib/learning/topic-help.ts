@@ -1,3 +1,9 @@
+import {
+  getMisconceptionMetadata,
+  getTaskLearningMetadata,
+  taskLearningMetadataByTemplateId,
+  type TaskLearningMetadata,
+} from "./task-metadata.ts";
 import { skillMetadata, type TopicId } from "./taxonomy.ts";
 
 export type HelpSectionId =
@@ -12,6 +18,8 @@ export type HelpSectionId =
   | "incline"
   | "weight-lift"
   | "momentum"
+  | "density-volume"
+  | "kinetic-energy"
   | "ohms-law"
   | "full-circuit"
   | "charge-sharing"
@@ -107,6 +115,16 @@ export const topicHelpSections: Record<TopicId, TopicHelpSection[]> = {
       id: "momentum",
       label: "Импульс",
       shortHint: "Для столкновения смотри импульс всей системы до и после.",
+    },
+    {
+      id: "density-volume",
+      label: "Плотность и объём",
+      shortHint: "Масса зависит от плотности и объёма: m = ρV.",
+    },
+    {
+      id: "kinetic-energy",
+      label: "Кинетическая энергия",
+      shortHint: "Энергия движения равна mv²/2 и зависит от квадрата скорости.",
     },
   ],
   electrodynamics: [
@@ -232,7 +250,27 @@ function createTarget(
   };
 }
 
+function createTargetFromMetadata(
+  metadata: TaskLearningMetadata,
+  reason: HelpReason,
+): HelpTarget {
+  const section = sectionFor(metadata.topicId, metadata.helpSectionId);
+
+  return {
+    topicId: metadata.topicId,
+    sectionId: section.id,
+    reason,
+    label: section.label,
+    shortHint: metadata.shortHint || section.shortHint,
+  };
+}
+
 function topicFromBlueprint(blueprint: string): TopicId | null {
+  const metadata = getTaskLearningMetadata(blueprint);
+  if (metadata) {
+    return metadata.topicId;
+  }
+
   if (blueprint in skillMetadata) {
     return skillMetadata[blueprint as keyof typeof skillMetadata].topicId;
   }
@@ -256,6 +294,11 @@ function inferTopic(task: HelpableQuizTask, topicHint?: TopicId): TopicId {
 }
 
 function inferSection(task: HelpableQuizTask, topicId: TopicId): HelpSectionId {
+  const metadata = getTaskLearningMetadata(task.blueprint);
+  if (metadata?.topicId === topicId) {
+    return metadata.helpSectionId;
+  }
+
   const blueprintTarget = blueprintTargets[task.blueprint];
   const text = combinedTaskText(task);
 
@@ -301,6 +344,10 @@ function inferSection(task: HelpableQuizTask, topicId: TopicId): HelpSectionId {
 }
 
 function hasKnownHelpSignal(task: HelpableQuizTask) {
+  if (task.blueprint in taskLearningMetadataByTemplateId) {
+    return true;
+  }
+
   if (task.blueprint in skillMetadata || blueprintTargets[task.blueprint]) {
     return true;
   }
@@ -322,6 +369,11 @@ export function getHelpTargetForTask(
   task: HelpableQuizTask,
   topicHint?: TopicId,
 ): HelpTarget {
+  const metadata = getTaskLearningMetadata(task.blueprint);
+  if (metadata) {
+    return createTargetFromMetadata(metadata, "task");
+  }
+
   const topicId = inferTopic(task, topicHint);
   const sectionId = inferSection(task, topicId);
 
@@ -333,6 +385,16 @@ export function getHelpTargetForMistake(
   trap?: string,
   topicHint?: TopicId,
 ): HelpTarget {
+  const stableMisconception = getMisconceptionMetadata(trap);
+  const taskMetadata = getTaskLearningMetadata(task.blueprint);
+  if (stableMisconception && taskMetadata) {
+    return createTarget(
+      taskMetadata.topicId,
+      stableMisconception.helpSectionId,
+      "mistake",
+    );
+  }
+
   const topicId = inferTopic(task, topicHint);
   const mistakeText = normalize(trap);
 

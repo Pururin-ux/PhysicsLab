@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 
 const topicPracticeRoutes = [
   { name: "kinematics", path: "/practice/kinematics-demo" },
@@ -6,6 +6,12 @@ const topicPracticeRoutes = [
   { name: "electro", path: "/practice/electro-demo" },
   { name: "thermo", path: "/practice/thermo-demo" },
 ] as const;
+
+async function answerCurrentTaskAndMoveNext(page: Page) {
+  await page.locator(".quiz-option").first().click();
+  await page.getByTestId("next-task-button").click();
+  await expect(page.getByTestId("question-card")).toBeVisible();
+}
 
 for (const route of topicPracticeRoutes) {
   test(`targeted help ${route.name}: drawer закрыт и открывается из quickbar`, async ({
@@ -61,6 +67,36 @@ test("kinematics help targets accelerated first task and graph second task", asy
     "aria-pressed",
     "false",
   );
+});
+
+test("generated practice help uses template metadata for topic routes", async ({ page }) => {
+  await page.goto("/practice/dynamics-demo", { waitUntil: "domcontentloaded" });
+  await page.waitForLoadState("networkidle");
+  await page.getByTestId("practice-open-help").click();
+  await expect(page.getByTestId("topic-theory-drawer")).toHaveAttribute(
+    "data-active-section",
+    "newton-second-law",
+  );
+
+  await page.goto("/practice/electro-demo", { waitUntil: "domcontentloaded" });
+  await page.waitForLoadState("networkidle");
+  const electroDrawer = page.getByTestId("topic-theory-drawer");
+  await page.getByTestId("practice-open-help").click();
+  await expect(electroDrawer).toHaveAttribute("data-active-section", "ohms-law");
+  for (let index = 0; index < 4; index += 1) {
+    await answerCurrentTaskAndMoveNext(page);
+  }
+  await expect(electroDrawer).toHaveAttribute("data-active-section", "charge-sharing");
+
+  await page.goto("/practice/thermo-demo", { waitUntil: "domcontentloaded" });
+  await page.waitForLoadState("networkidle");
+  const thermoDrawer = page.getByTestId("topic-theory-drawer");
+  await page.getByTestId("practice-open-help").click();
+  await expect(thermoDrawer).toHaveAttribute("data-active-section", "gas-equation");
+  for (let index = 0; index < 2; index += 1) {
+    await answerCurrentTaskAndMoveNext(page);
+  }
+  await expect(thermoDrawer).toHaveAttribute("data-active-section", "heating-melting");
 });
 
 test("wrong answer opens contextual help without expanding solution", async ({ page }) => {
