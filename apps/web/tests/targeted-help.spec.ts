@@ -191,7 +191,7 @@ test("targeted help mobile has no horizontal overflow", async ({ page }) => {
   await page.goto("/practice/kinematics-demo", { waitUntil: "domcontentloaded" });
   await expect(page.getByTestId("question-card")).toBeVisible();
 
-  await page.getByRole("button", { name: "Справка" }).click();
+  await page.getByTestId("practice-open-help").click();
   await expect(page.getByTestId("topic-theory-drawer")).toHaveAttribute("open", "");
 
   const scrollWidth = await page.evaluate(() => document.documentElement.scrollWidth);
