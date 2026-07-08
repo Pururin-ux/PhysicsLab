@@ -9,6 +9,7 @@ import { useTypewriter } from "../coach/useTypewriter";
 import { Card } from "../ui/Card";
 import { MathText } from "../ui/MathText";
 import { cn } from "../../lib/utils";
+import type { HelpTarget } from "../../lib/learning/topic-help";
 
 interface AnswerFeedbackProps {
   isCorrect: boolean;
@@ -17,6 +18,8 @@ interface AnswerFeedbackProps {
   novaText: string;
   explanation: string;
   explanationLatex?: string;
+  helpTarget?: HelpTarget;
+  onOpenHelp?: () => void;
 }
 
 // После ответа — compact-first поверхность:
@@ -28,6 +31,8 @@ export function AnswerFeedback({
   novaText,
   explanation,
   explanationLatex,
+  helpTarget,
+  onOpenHelp,
 }: AnswerFeedbackProps) {
   const [open, setOpen] = useState(false);
   const panelId = useId();
@@ -65,6 +70,32 @@ export function AnswerFeedback({
         </div>
 
         <div className="border-t border-white/[.08] pt-0.5">
+          {!isCorrect && helpTarget && onOpenHelp ? (
+            <button
+              type="button"
+              data-testid="help-target-button"
+              onClick={onOpenHelp}
+              className="mb-1 flex w-full items-center justify-between gap-3 rounded-option border border-white/[.08] bg-white/[.025] px-3 py-2 text-left text-[13px] font-semibold text-white/70 transition-colors hover:border-nova-cyan/30 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/50"
+            >
+              <span>
+                Открыть справку: <span className="text-nova-cyan">{helpTarget.label}</span>
+              </span>
+              <svg
+                aria-hidden="true"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={2}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="h-4 w-4 shrink-0 text-white/42"
+              >
+                <path d="M7 17 17 7" />
+                <path d="M8 7h9v9" />
+              </svg>
+            </button>
+          ) : null}
+
           <button
             type="button"
             data-testid="solution-toggle"

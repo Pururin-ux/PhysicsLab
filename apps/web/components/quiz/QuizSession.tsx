@@ -21,6 +21,11 @@ import { Badge } from "../ui/Badge";
 import { Button } from "../ui/Button";
 import { Card } from "../ui/Card";
 import { getTaskFocus } from "../../lib/learning/task-focus";
+import {
+  getHelpTargetForMistake,
+  getHelpTargetForTask,
+  type HelpTarget,
+} from "../../lib/learning/topic-help";
 import type { TopicId } from "../../lib/stores/progress-store";
 import { addXP, resetSessionProgress } from "../../lib/stores/session-store";
 import { useSessionRecording } from "./useSessionRecording";
@@ -36,6 +41,9 @@ interface QuizSessionProps {
   // "exam" пишет результат в журнал пробных вариантов и слабые места тем,
   // не увеличивая счётчик тренировок темы.
   sessionKind?: "practice" | "exam";
+  onHelpTargetChange?: (target: HelpTarget) => void;
+  onOpenHelpTarget?: (target: HelpTarget) => void;
+  suppressCoachBubble?: boolean;
 }
 
 const nextStepByTopic: Record<string, { href: string; label: string }> = {
@@ -56,6 +64,9 @@ export function QuizSession({
   generatedTitle = "Задачи",
   topicId,
   sessionKind = "practice",
+  onHelpTargetChange,
+  onOpenHelpTarget,
+  suppressCoachBubble = false,
 }: QuizSessionProps) {
   const session = useStore($quizSession);
   const [generatedBatch, setGeneratedBatch] = useState(0);
@@ -90,6 +101,10 @@ export function QuizSession({
   const currentTask = tasks[session.currentIndex];
   const isLastTask = session.currentIndex >= session.total - 1;
   const progressLabel = `${Math.min(session.currentIndex + 1, session.total)} / ${session.total}`;
+  const currentHelpTarget = useMemo(
+    () => (currentTask ? getHelpTargetForTask(currentTask, topicId) : null),
+    [currentTask, topicId],
+  );
 
   const weakTraps = useMemo(
     () =>
@@ -129,6 +144,12 @@ export function QuizSession({
       clearPauseTimer();
     };
   }, [clearPauseTimer, emitCoachEvent, resetRecording, startPauseTimer, tasks]);
+
+  useEffect(() => {
+    if (currentHelpTarget) {
+      onHelpTargetChange?.(currentHelpTarget);
+    }
+  }, [currentHelpTarget, onHelpTargetChange]);
 
   // После ответа не двигаем страницу без необходимости: на desktop контекст
   // выбранного варианта важнее автоскролла, на mobile мягко подводим feedback
@@ -314,6 +335,15 @@ export function QuizSession({
   if (!currentTask) return null;
 
   const taskFocus = getTaskFocus(currentTask);
+  const latestAnswer = session.answers.at(-1);
+  const answerHelpTarget =
+    latestAnswer && currentTask
+      ? getHelpTargetForMistake(
+          currentTask,
+          latestAnswer.selectedMisconception || latestAnswer.taskTrap,
+          topicId,
+        )
+      : currentHelpTarget;
 
   return (
     <section className="relative mx-auto flex max-w-[580px] flex-col gap-4 pb-16 sm:pb-8">
@@ -348,7 +378,7 @@ export function QuizSession({
       {/* Пока ученик решает — Nova подсказывает плавающим баблом. После
           ответа её голос переезжает в карточку разбора (один голос, одна
           фокусная точка), поэтому здесь бабл скрываем. */}
-      {session.phase !== "answered" ? (
+      {session.phase !== "answered" && !suppressCoachBubble ? (
         <CoachBubble state={bubble.state} text={bubble.text} visible={bubble.visible} />
       ) : null}
 
@@ -360,9 +390,15 @@ export function QuizSession({
             novaText={bubble.text}
             explanation={currentTask.explanation}
             explanationLatex={currentTask.explanation_latex}
+            helpTarget={answerHelpTarget ?? undefined}
+            onOpenHelp={
+              answerHelpTarget && onOpenHelpTarget
+                ? () => onOpenHelpTarget(answerHelpTarget)
+                : undefined
+            }
           />
 
-          <Button type="button" size="lg" onClick={handleNext}>
+          <Button type="button" size="lg" data-testid="next-task-button" onClick={handleNext}>
             {isLastTask ? "Показать итог" : "Следующая задача"}
           </Button>
         </div>
