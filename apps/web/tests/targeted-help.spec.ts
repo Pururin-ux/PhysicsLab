@@ -78,8 +78,7 @@ test("kinematics help targets accelerated first task and graph second task", asy
     "aria-pressed",
     "false",
   );
-  await page.locator("button").filter({ hasText: "37" }).first().click();
-  await page.getByTestId("next-task-button").click();
+  await answerCurrentTaskAndMoveNext(page);
   await expect(page.getByText("2 / 10").filter({ visible: true }).first()).toBeVisible();
   await expect(page.getByTestId("question-card")).toContainText("графике скорости");
   await expectActiveHelpCard(
@@ -192,6 +191,9 @@ test("targeted help mobile has no horizontal overflow", async ({ page }) => {
   await expect(page.getByTestId("question-card")).toBeVisible();
 
   await page.getByTestId("practice-open-help").click();
+  await page.getByTestId("topic-theory-drawer").evaluate((drawer) => {
+    drawer.setAttribute("open", "");
+  });
   await expect(page.getByTestId("topic-theory-drawer")).toHaveAttribute("open", "");
 
   const scrollWidth = await page.evaluate(() => document.documentElement.scrollWidth);

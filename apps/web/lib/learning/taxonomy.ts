@@ -17,6 +17,8 @@ export type SkillId =
   | "vt-area"
   | "relative-velocity-vectors"
   | "free-fall"
+  | "average-speed-segments"
+  | "unit-conversion-speed"
   | "newton-second"
   | "friction-force"
   | "incline-force"
@@ -27,13 +29,17 @@ export type SkillId =
   | "impulse-momentum"
   | "inelastic-collision-speed"
   | "kinetic-energy"
+  | "work-force-distance"
   | "ohm-law"
   | "resistor-network"
   | "source-internal-resistance"
   | "capacitor-energy"
+  | "electric-power"
   | "charge-sharing"
   | "ideal-gas-state"
+  | "gas-state-ratio"
   | "heat-amount"
+  | "heat-balance-simple"
   | "phase-change-heat";
 
 export type SkillMetadata = {
@@ -77,6 +83,22 @@ export const skillMetadata: Record<SkillId, SkillMetadata> = {
     title: "Свободное падение",
     shortTitle: "Свободное падение",
     description: "Расстояние при равноускоренном движении с g = 10 м/с².",
+  },
+  "average-speed-segments": {
+    id: "average-speed-segments",
+    topicId: "kinematics",
+    sectionId: "mechanics",
+    title: "Средняя скорость на участках",
+    shortTitle: "Средняя скорость",
+    description: "Средняя скорость как весь путь, деленный на все время движения.",
+  },
+  "unit-conversion-speed": {
+    id: "unit-conversion-speed",
+    topicId: "kinematics",
+    sectionId: "mechanics",
+    title: "Перевод скорости км/ч в м/с",
+    shortTitle: "Единицы скорости",
+    description: "Перевод скорости и времени к согласованным единицам перед расчетом пути.",
   },
   "newton-second": {
     id: "newton-second",
@@ -158,6 +180,14 @@ export const skillMetadata: Record<SkillId, SkillMetadata> = {
     shortTitle: "Кинетическая энергия",
     description: "Энергия движения как половина произведения массы на квадрат скорости.",
   },
+  "work-force-distance": {
+    id: "work-force-distance",
+    topicId: "dynamics",
+    sectionId: "mechanics",
+    title: "Работа постоянной силы",
+    shortTitle: "Работа силы",
+    description: "Работа силы как произведение силы, пути и косинуса угла между ними.",
+  },
   "ohm-law": {
     id: "ohm-law",
     topicId: "electrodynamics",
@@ -198,6 +228,14 @@ export const skillMetadata: Record<SkillId, SkillMetadata> = {
     shortTitle: "Энергия конденсатора",
     description: "Энергия электрического поля конденсатора пропорциональна квадрату напряжения.",
   },
+  "electric-power": {
+    id: "electric-power",
+    topicId: "electrodynamics",
+    sectionId: "electrodynamics",
+    title: "Мощность электрического тока",
+    shortTitle: "Мощность тока",
+    description: "Мощность участка цепи через ток, напряжение и сопротивление.",
+  },
   "ideal-gas-state": {
     id: "ideal-gas-state",
     topicId: "thermodynamics",
@@ -213,6 +251,22 @@ export const skillMetadata: Record<SkillId, SkillMetadata> = {
     title: "Количество теплоты при нагревании",
     shortTitle: "Количество теплоты",
     description: "Теплота нагрева как произведение теплоёмкости, массы и изменения температуры.",
+  },
+  "gas-state-ratio": {
+    id: "gas-state-ratio",
+    topicId: "thermodynamics",
+    sectionId: "molecular",
+    title: "Связь параметров газа",
+    shortTitle: "Параметры газа",
+    description: "Изменение давления, объема и температуры одной массы идеального газа.",
+  },
+  "heat-balance-simple": {
+    id: "heat-balance-simple",
+    topicId: "thermodynamics",
+    sectionId: "molecular",
+    title: "Тепловой баланс при смешивании",
+    shortTitle: "Тепловой баланс",
+    description: "Температура смеси из равенства отданной и полученной теплоты.",
   },
   "phase-change-heat": {
     id: "phase-change-heat",

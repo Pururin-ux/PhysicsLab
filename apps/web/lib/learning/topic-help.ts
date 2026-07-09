@@ -11,6 +11,7 @@ export type HelpSectionId =
   | "accelerated-motion"
   | "motion-graphs"
   | "average-speed"
+  | "units-conversion"
   | "vectors-relative-motion"
   | "newton-second-law"
   | "resultant-force"
@@ -20,13 +21,16 @@ export type HelpSectionId =
   | "momentum"
   | "density-volume"
   | "kinetic-energy"
+  | "work-energy"
   | "ohms-law"
   | "full-circuit"
   | "charge-sharing"
   | "capacitor-energy"
+  | "electric-power"
   | "ideal-gas"
   | "gas-equation"
   | "heat-amount"
+  | "heat-balance"
   | "heating-melting";
 
 export type HelpReason = "task" | "mistake" | "fallback";
@@ -88,6 +92,13 @@ export const topicHelpSections: Record<TopicId, TopicHelpSection[]> = {
       shortHint: "Средняя скорость считается через весь путь и всё время.",
       formula: "v_{avg}=\\frac{s_{all}}{t_{all}}",
       mistake: "Не усредняй скорости без учёта времени или пройденного пути.",
+    },
+    {
+      id: "units-conversion",
+      label: "Единицы скорости",
+      shortHint: "Перед расчетом пути приведи скорость и время к согласованным единицам.",
+      formula: "1\\ \\mathrm{km/h}=\\frac{1}{3.6}\\ \\mathrm{m/s}",
+      mistake: "Не умножай км/ч на секунды напрямую: сначала переведи скорость в м/с.",
     },
     {
       id: "vectors-relative-motion",
@@ -154,6 +165,13 @@ export const topicHelpSections: Record<TopicId, TopicHelpSection[]> = {
       formula: "E_k=\\frac{mv^2}{2}",
       mistake: "Если скорость выросла в два раза, энергия выросла в четыре раза.",
     },
+    {
+      id: "work-energy",
+      label: "Работа силы",
+      shortHint: "Работа равна произведению силы, пути и cos угла между ними.",
+      formula: "A=Fs\\cos\\alpha",
+      mistake: "Если сила направлена против перемещения, работа отрицательна.",
+    },
   ],
   electrodynamics: [
     {
@@ -184,6 +202,13 @@ export const topicHelpSections: Record<TopicId, TopicHelpSection[]> = {
       formula: "W=\\frac{CU^2}{2}",
       mistake: "Не теряй квадрат напряжения и коэффициент 1/2.",
     },
+    {
+      id: "electric-power",
+      label: "Мощность тока",
+      shortHint: "Мощность участка цепи можно считать как P=UI или P=I²R.",
+      formula: "P=UI=I^2R",
+      mistake: "Не останавливайся на напряжении U=IR: для мощности нужен еще множитель I.",
+    },
   ],
   thermodynamics: [
     {
@@ -208,6 +233,13 @@ export const topicHelpSections: Record<TopicId, TopicHelpSection[]> = {
       mistake: "В формулу входит изменение температуры, а не конечная температура.",
     },
     {
+      id: "heat-balance",
+      label: "Тепловой баланс",
+      shortHint: "Сколько теплоты отдала горячая вода, столько получила холодная.",
+      formula: "m_1c(T_1-T)=m_2c(T-T_2)",
+      mistake: "Не усредняй температуры без учета масс.",
+    },
+    {
       id: "heating-melting",
       label: "Плавление / нагревание",
       shortHint: "Нагрев и плавление считаются отдельными стадиями: посчитай каждую и сложи.",
@@ -222,6 +254,8 @@ const blueprintTargets: Partial<
 > = {
   "formula-substitution": { topicId: "kinematics", sectionId: "accelerated-motion" },
   "free-fall": { topicId: "kinematics", sectionId: "accelerated-motion" },
+  "average-speed-segments": { topicId: "kinematics", sectionId: "average-speed" },
+  "unit-conversion-speed": { topicId: "kinematics", sectionId: "units-conversion" },
   "nth-second-displacement": { topicId: "kinematics", sectionId: "accelerated-motion" },
   "graph-area": { topicId: "kinematics", sectionId: "motion-graphs" },
   "graph-recognition": { topicId: "kinematics", sectionId: "motion-graphs" },
@@ -239,13 +273,17 @@ const blueprintTargets: Partial<
   "impulse-momentum": { topicId: "dynamics", sectionId: "momentum" },
   "inelastic-collision-speed": { topicId: "dynamics", sectionId: "momentum" },
   "kinetic-energy": { topicId: "dynamics", sectionId: "newton-second-law" },
+  "work-force-distance": { topicId: "dynamics", sectionId: "work-energy" },
   "ohm-law": { topicId: "electrodynamics", sectionId: "ohms-law" },
   "resistor-network": { topicId: "electrodynamics", sectionId: "ohms-law" },
   "source-internal-resistance": { topicId: "electrodynamics", sectionId: "full-circuit" },
   "charge-sharing": { topicId: "electrodynamics", sectionId: "charge-sharing" },
   "capacitor-energy": { topicId: "electrodynamics", sectionId: "capacitor-energy" },
+  "electric-power": { topicId: "electrodynamics", sectionId: "electric-power" },
   "ideal-gas-state": { topicId: "thermodynamics", sectionId: "gas-equation" },
+  "gas-state-ratio": { topicId: "thermodynamics", sectionId: "gas-equation" },
   "heat-amount": { topicId: "thermodynamics", sectionId: "heat-amount" },
+  "heat-balance-simple": { topicId: "thermodynamics", sectionId: "heat-balance" },
   "phase-change-heat": { topicId: "thermodynamics", sectionId: "heating-melting" },
 };
 

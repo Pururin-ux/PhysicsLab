@@ -1,9 +1,13 @@
 import { pathToFileURL } from "node:url";
+import { averageSpeedSegmentsBlueprint } from "./templates/average-speed-segments.ts";
 import { capacitorEnergyBlueprint } from "./templates/capacitor-energy.ts";
 import { chargeSharingBlueprint } from "./templates/charge-sharing.ts";
 import { densityVolumeRatioBlueprint } from "./templates/density-volume-ratio.ts";
+import { electricPowerBlueprint } from "./templates/electric-power.ts";
 import { frictionForceBlueprint } from "./templates/friction-force.ts";
 import { freeFallBlueprint } from "./templates/free-fall.ts";
+import { gasStateRatioBlueprint } from "./templates/gas-state-ratio.ts";
+import { heatBalanceSimpleBlueprint } from "./templates/heat-balance-simple.ts";
 import { heatAmountBlueprint } from "./templates/heat-amount.ts";
 import { idealGasStateBlueprint } from "./templates/ideal-gas-state.ts";
 import { impulseMomentumBlueprint } from "./templates/impulse-momentum.ts";
@@ -18,9 +22,11 @@ import { resistorNetworkBlueprint } from "./templates/resistor-network.ts";
 import { resultantForceBlueprint } from "./templates/resultant-force.ts";
 import { resultantForce2dBlueprint } from "./templates/resultant-force-2d.ts";
 import { sourceInternalResistanceBlueprint } from "./templates/source-internal-resistance.ts";
+import { unitConversionSpeedBlueprint } from "./templates/unit-conversion-speed.ts";
 import { vtAreaBlueprint } from "./templates/vt-area.ts";
 import { vtSlopeBlueprint } from "./templates/vt-slope.ts";
 import { weightLiftBlueprint } from "./templates/weight-lift.ts";
+import { workForceDistanceBlueprint } from "./templates/work-force-distance.ts";
 import type {
   GeneratedOption,
   GeneratedTask,
@@ -46,6 +52,8 @@ export const blueprints = {
   "vt-slope": vtSlopeBlueprint,
   "vt-area": vtAreaBlueprint,
   "relative-velocity-vectors": relativeVelocityVectorsBlueprint,
+  "average-speed-segments": averageSpeedSegmentsBlueprint,
+  "unit-conversion-speed": unitConversionSpeedBlueprint,
   "newton-second": newtonSecondBlueprint,
   "friction-force": frictionForceBlueprint,
   "incline-force": inclineForceBlueprint,
@@ -54,6 +62,7 @@ export const blueprints = {
   "weight-lift": weightLiftBlueprint,
   "inelastic-collision-speed": inelasticCollisionSpeedBlueprint,
   "kinetic-energy": kineticEnergyBlueprint,
+  "work-force-distance": workForceDistanceBlueprint,
   "ohm-law": ohmLawBlueprint,
   "resistor-network": resistorNetworkBlueprint,
   "source-internal-resistance": sourceInternalResistanceBlueprint,
@@ -61,9 +70,12 @@ export const blueprints = {
   "density-volume-ratio": densityVolumeRatioBlueprint,
   "impulse-momentum": impulseMomentumBlueprint,
   "charge-sharing": chargeSharingBlueprint,
+  "electric-power": electricPowerBlueprint,
   "ideal-gas-state": idealGasStateBlueprint,
   "heat-amount": heatAmountBlueprint,
   "phase-change-heat": phaseChangeHeatBlueprint,
+  "gas-state-ratio": gasStateRatioBlueprint,
+  "heat-balance-simple": heatBalanceSimpleBlueprint,
 };
 
 export type TemplateId = keyof typeof blueprints;

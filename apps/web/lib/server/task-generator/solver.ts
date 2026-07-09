@@ -14,6 +14,14 @@ export function freeFallDistance(p: Params): number {
   return (GRAVITY * p.t * p.t) / 2;
 }
 
+export function averageSpeedSegments(p: Params): number {
+  return (p.v1 * p.t1 + p.v2 * p.t2) / (p.t1 + p.t2);
+}
+
+export function distanceFromKmhAndMinutes(p: Params): number {
+  return (p.vKmh * 1000 * p.tMin) / 60;
+}
+
 export function vtSlopeAcceleration(p: Params): number {
   return (p.v2 - p.v1) / (p.t2 - p.t1);
 }
@@ -130,8 +138,37 @@ export function kineticEnergy(p: Params): number {
 }
 
 // Энергия конденсатора в мДж, если C задана в мкФ: W = CU²/2.
+export function workForceDistance(p: Params): number {
+  const sign = variantIndex(p, 2) === 0 ? 1 : -1;
+  return sign * p.F * p.s;
+}
+
 export function capacitorEnergyMilliJoules(p: Params): number {
   return (p.C * p.U * p.U) / 2000;
+}
+
+export function electricPower(p: Params): number {
+  const voltage = p.I * p.R;
+
+  switch (variantIndex(p, 3)) {
+    case 1:
+      return voltage * p.I;
+    case 2:
+      return (voltage * voltage) / p.R;
+    default:
+      return p.I * p.I * p.R;
+  }
+}
+
+export function gasStateRatioPressure(p: Params): number {
+  const t1 = p.temp1C + 273;
+  const t2 = p.temp2C + 273;
+
+  return (p.p1 * p.V1 * t2) / (t1 * p.V2);
+}
+
+export function heatBalanceFinalTemperature(p: Params): number {
+  return (p.mHot * p.tempHot + p.mCold * p.tempCold) / (p.mHot + p.mCold);
 }
 
 export const ICE_SPECIFIC_HEAT_KJ = 2.1;
