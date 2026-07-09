@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
 import test from "node:test";
+import { formulaReference } from "../physics/formula-reference.ts";
 import { templateRegistry } from "../server/task-generator/generate.ts";
 import { checkBySkill } from "./task-focus.ts";
 import { taskLearningMetadataByTemplateId } from "./task-metadata.ts";
@@ -14,13 +14,9 @@ import { weaknessCopyBySkill } from "./weakness-labels.ts";
 
 const skillIds = Object.keys(skillMetadata) as SkillId[];
 const templateIds = templateRegistry.map((entry) => entry.id as string);
-const formulaReferenceSource = readFileSync(
-  new URL("../physics/formula-reference.ts", import.meta.url),
-  "utf8",
-);
 const formulaReferenceSkillIds = new Set<SkillId>(
-  [...formulaReferenceSource.matchAll(/skillId:\s*"([^"]+)"/g)].map(
-    ([, skillId]) => skillId as SkillId,
+  formulaReference.flatMap((group) =>
+    group.entries.flatMap((entry) => (entry.skillId ? [entry.skillId] : [])),
   ),
 );
 

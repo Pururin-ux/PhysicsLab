@@ -1,5 +1,5 @@
 import type { SkillId } from "../learning/taxonomy";
-import { FORMULAS } from "./formulas";
+import { FORMULAS } from "./formulas.ts";
 
 export type FormulaReferenceEntry = {
   id: string;
