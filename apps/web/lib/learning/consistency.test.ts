@@ -1,7 +1,9 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import { formulaReference } from "../physics/formula-reference.ts";
 import { templateRegistry } from "../server/task-generator/generate.ts";
 import { checkBySkill } from "./task-focus.ts";
+import { taskLearningMetadataByTemplateId } from "./task-metadata.ts";
 import { skillMetadata, type SkillId } from "./taxonomy.ts";
 import { weaknessCopyBySkill } from "./weakness-labels.ts";
 
@@ -12,6 +14,34 @@ import { weaknessCopyBySkill } from "./weakness-labels.ts";
 
 const skillIds = Object.keys(skillMetadata) as SkillId[];
 const templateIds = templateRegistry.map((entry) => entry.id as string);
+const formulaReferenceSkillIds = new Set<SkillId>(
+  formulaReference.flatMap((group) =>
+    group.entries.flatMap((entry) => (entry.skillId ? [entry.skillId] : [])),
+  ),
+);
+
+// Formula cards are expected by default for generated skills. These current
+// exceptions are visual/composite families where the formula reference work is
+// still tracked separately from the generator metadata.
+const noFormulaReferenceRequired = new Set<SkillId>([
+  "relative-velocity-vectors",
+  "resultant-force-2d",
+  "inelastic-collision-speed",
+  "kinetic-energy",
+  "resistor-network",
+  "source-internal-resistance",
+  "capacitor-energy",
+  "phase-change-heat",
+]);
+
+const pr6FormulaReferenceSkillIds = [
+  "average-speed-segments",
+  "unit-conversion-speed",
+  "work-force-distance",
+  "electric-power",
+  "gas-state-ratio",
+  "heat-balance-simple",
+] as const satisfies readonly SkillId[];
 
 test("каждый шаблон генератора описан в таксономии навыков", () => {
   for (const id of templateIds) {
@@ -51,6 +81,39 @@ test("для каждого навыка есть копия в weakness-labels 
     assert.ok(
       checkBySkill[id],
       `Для "${id}" нет записи в checkBySkill (блок «Сейчас тренируем» покажет описание из таксономии)`,
+    );
+  }
+});
+
+test("task metadata skills expected to have formulas are covered by formulaReference", () => {
+  const missingMetadata = templateIds.filter((id) => !taskLearningMetadataByTemplateId[id]);
+  assert.deepEqual(missingMetadata, []);
+
+  for (const metadata of Object.values(taskLearningMetadataByTemplateId)) {
+    assert.ok(
+      metadata.skillId in skillMetadata,
+      `${metadata.templateId} points to missing skillMetadata entry "${metadata.skillId}"`,
+    );
+  }
+
+  for (const id of noFormulaReferenceRequired) {
+    assert.ok(
+      skillIds.includes(id),
+      `noFormulaReferenceRequired contains stale skill id "${id}"`,
+    );
+  }
+
+  const missingFormulaReferences = Object.values(taskLearningMetadataByTemplateId)
+    .filter((metadata) => !noFormulaReferenceRequired.has(metadata.skillId as SkillId))
+    .filter((metadata) => !formulaReferenceSkillIds.has(metadata.skillId as SkillId))
+    .map((metadata) => `${metadata.templateId} -> ${metadata.skillId}`);
+
+  assert.deepEqual(missingFormulaReferences, []);
+
+  for (const skillId of pr6FormulaReferenceSkillIds) {
+    assert.ok(
+      formulaReferenceSkillIds.has(skillId),
+      `PR #6 task family "${skillId}" must keep a formulaReference entry`,
     );
   }
 });
