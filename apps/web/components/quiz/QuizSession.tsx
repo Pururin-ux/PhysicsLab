@@ -301,7 +301,7 @@ export function QuizSession({
 
   if (mode === "generated" && generatedStatus === "loading") {
     return (
-      <section className="relative mx-auto flex max-w-[580px] flex-col gap-4 pb-16 sm:pb-8">
+      <section className="relative mx-auto flex max-w-[580px] flex-col gap-4 pb-[calc(5rem+env(safe-area-inset-bottom))] sm:pb-8">
         <Card className="flex flex-col gap-3">
           <Badge tone="cyan">{generatedTitle}</Badge>
           <p className="text-[14px] font-normal leading-[1.7] text-white/70">
@@ -314,7 +314,7 @@ export function QuizSession({
 
   if (mode === "generated" && generatedStatus === "error") {
     return (
-      <section className="relative mx-auto flex max-w-[580px] flex-col gap-4 pb-16 sm:pb-8">
+      <section className="relative mx-auto flex max-w-[580px] flex-col gap-4 pb-[calc(5rem+env(safe-area-inset-bottom))] sm:pb-8">
         <Card className="flex flex-col gap-4">
           <Badge tone="gold">Не удалось загрузить задачи</Badge>
           <p className="text-[14px] font-normal leading-[1.7] text-white/70">
@@ -346,7 +346,7 @@ export function QuizSession({
       : currentHelpTarget;
 
   return (
-    <section className="relative mx-auto flex max-w-[580px] flex-col gap-4 pb-16 sm:pb-8">
+    <section className="relative mx-auto flex max-w-[580px] flex-col gap-4 pb-[calc(5rem+env(safe-area-inset-bottom))] sm:pb-8">
       <div className="flex items-center justify-between gap-3">
         <Badge>{progressLabel}</Badge>
         {session.streak > 0 ? (

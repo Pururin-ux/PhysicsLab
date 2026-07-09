@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Locator } from "@playwright/test";
 
 // Визуальный базлайн из двух слоёв:
 //
@@ -77,3 +77,70 @@ for (const route of routes) {
     }
   });
 }
+
+async function expectScrollableAboveMobileNav(
+  control: Locator,
+  mobileNavContainer: Locator,
+) {
+  await control.evaluate((element) =>
+    element.scrollIntoView({ block: "end" }),
+  );
+
+  const [controlBox, navBox] = await Promise.all([
+    control.boundingBox(),
+    mobileNavContainer.boundingBox(),
+  ]);
+
+  expect(
+    controlBox,
+    "interactive control must have a bounding box",
+  ).not.toBeNull();
+  expect(
+    navBox,
+    "fixed mobile navigation must have a bounding box",
+  ).not.toBeNull();
+  expect(
+    navBox!.y - (controlBox!.y + controlBox!.height),
+    "interactive control must clear the fixed mobile navigation after scrollIntoView",
+  ).toBeGreaterThanOrEqual(8);
+}
+
+test("@visual mobile practice controls clear the fixed bottom navigation", async (
+  { page },
+  testInfo,
+) => {
+  test.skip(
+    !testInfo.project.name.startsWith("mobile"),
+    "This assertion exercises the fixed mobile navigation.",
+  );
+
+  await page.goto("/practice/kinematics-demo", {
+    waitUntil: "domcontentloaded",
+  });
+
+  const mobileNav = page.getByRole("navigation", {
+    name: "Мобильная навигация",
+  });
+  const mobileNavContainer = mobileNav.locator("xpath=..");
+  const options = page
+    .getByRole("list", { name: "Варианты ответа" })
+    .getByRole("button");
+
+  await expect(mobileNav).toBeVisible();
+  await expect(options).toHaveCount(4);
+  await expectScrollableAboveMobileNav(options.last(), mobileNavContainer);
+
+  await options.last().click();
+  await expect(page.getByText("Не совсем", { exact: true })).toBeVisible();
+  await expect(page.getByTestId("solution-toggle")).toBeVisible();
+
+  const nextTaskButton = page.getByTestId("next-task-button");
+  await expect(nextTaskButton).toBeVisible();
+  await expectScrollableAboveMobileNav(nextTaskButton, mobileNavContainer);
+
+  await page.getByTestId("solution-toggle").click();
+  await expect(
+    page.getByRole("button", { name: "Свернуть решение" }),
+  ).toBeVisible();
+  await expectScrollableAboveMobileNav(nextTaskButton, mobileNavContainer);
+});

@@ -26,6 +26,15 @@ html {
      открывалась не с начала, а с прокрученного места предыдущей). */
 }
 
+/* The fixed mobile nav must count as occupied viewport space when a focused
+   practice control is scrolled into view. The 5rem allowance covers the nav
+   itself plus a small visual gap; the env value covers phones with a home bar. */
+@media (max-width: 1023px) {
+  html {
+    scroll-padding-block-end: calc(5rem + env(safe-area-inset-bottom));
+  }
+}
+
 *::-webkit-scrollbar {
   width: 10px;
   height: 10px;
