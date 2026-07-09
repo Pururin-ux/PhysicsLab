@@ -75,6 +75,39 @@ test("stable misconception id can override task metadata", () => {
   assert.equal(target.reason, "mistake");
 });
 
+test("expanded task families map to precise help sections", () => {
+  const cases: Array<[string, string]> = [
+    ["average-speed-segments", "average-speed"],
+    ["unit-conversion-speed", "units-conversion"],
+    ["work-force-distance", "work-energy"],
+    ["electric-power", "electric-power"],
+    ["gas-state-ratio", "gas-equation"],
+    ["heat-balance-simple", "heat-balance"],
+  ];
+
+  for (const [blueprint, sectionId] of cases) {
+    const target = getHelpTargetForTask(task({ blueprint }));
+    assert.equal(target.sectionId, sectionId, blueprint);
+    assert.equal(target.reason, "task", blueprint);
+  }
+});
+
+test("expanded misconception ids open the matching targeted help", () => {
+  const cases: Array<[string, string, string]> = [
+    ["average-speed-segments", "average-speed-arithmetic-mean", "average-speed"],
+    ["unit-conversion-speed", "speed-unit-conversion", "units-conversion"],
+    ["work-force-distance", "work-sign-error", "work-energy"],
+    ["electric-power", "electric-power-voltage-only", "electric-power"],
+    ["heat-balance-simple", "heat-balance-arithmetic-mean", "heat-balance"],
+  ];
+
+  for (const [blueprint, trap, sectionId] of cases) {
+    const target = getHelpTargetForMistake(task({ blueprint }), trap);
+    assert.equal(target.sectionId, sectionId, `${blueprint}/${trap}`);
+    assert.equal(target.reason, "mistake", `${blueprint}/${trap}`);
+  }
+});
+
 test("v(t) graph task maps to motion graphs", () => {
   const target = getHelpTargetForTask(
     task({

@@ -115,6 +115,34 @@ export const formulaReference: FormulaReferenceGroup[] = [
         limitation:
           "Без сопротивления воздуха и с нулевой начальной скоростью.",
       },
+      {
+        id: "average-speed-segments",
+        skillId: "average-speed-segments",
+        title: "Средняя скорость на участках",
+        formula: "v_{avg}=\\frac{s_1+s_2+\\ldots}{t_1+t_2+\\ldots}",
+        caption: "весь путь делится на всё время движения",
+        symbols: [
+          "vavg — средняя скорость, м/с",
+          "s1, s2 — пути на отдельных участках, м",
+          "t1, t2 — время на отдельных участках, с",
+        ],
+        limitation:
+          "Нельзя просто усреднять скорости, если участки длились разное время.",
+      },
+      {
+        id: "unit-conversion-speed",
+        skillId: "unit-conversion-speed",
+        title: "Перевод скорости",
+        formula: "1\\ \\mathrm{km/h}=\\frac{1}{3.6}\\ \\mathrm{m/s}",
+        caption: "перед расчетом пути скорость и время должны быть в согласованных единицах",
+        symbols: [
+          "км/ч — километры в час",
+          "м/с — метры в секунду",
+          "мин — минуты, которые при расчете пути переводятся в секунды",
+        ],
+        limitation:
+          "Перевод выполняется до подстановки в s = vt.",
+      },
     ],
   },
   {
@@ -224,6 +252,21 @@ export const formulaReference: FormulaReferenceGroup[] = [
         limitation:
           "Для постоянной силы. Масса тела в эту формулу не входит напрямую.",
       },
+      {
+        id: "work-force-distance",
+        skillId: "work-force-distance",
+        title: "Работа постоянной силы",
+        formula: "A=Fs\\cos\\alpha",
+        caption: "работа зависит от направления силы относительно перемещения",
+        symbols: [
+          "A — работа силы, Дж",
+          "F — модуль силы, Н",
+          "s — перемещение, м",
+          "alpha — угол между силой и перемещением",
+        ],
+        limitation:
+          "Если сила направлена против перемещения, работа отрицательна.",
+      },
     ],
   },
   {
@@ -276,6 +319,7 @@ export const formulaReference: FormulaReferenceGroup[] = [
       },
       {
         id: "electric-power",
+        skillId: "electric-power",
         title: "Мощность тока",
         formula: "P = UI = I^2 R",
         caption: "сколько энергии участок цепи потребляет за секунду",
@@ -353,6 +397,34 @@ export const formulaReference: FormulaReferenceGroup[] = [
           "Q₁ — теплота, полученная от нагревателя, Дж",
         ],
         limitation: "Всегда меньше единицы: часть теплоты уходит холодильнику.",
+      },
+      {
+        id: "gas-state-ratio",
+        skillId: "gas-state-ratio",
+        title: "Связь параметров газа",
+        formula: "\\frac{p_1V_1}{T_1}=\\frac{p_2V_2}{T_2}",
+        caption: "для одной и той же массы идеального газа",
+        symbols: [
+          "p1, p2 — давление газа",
+          "V1, V2 — объем газа",
+          "T1, T2 — абсолютная температура, К",
+        ],
+        limitation:
+          "Температуру обязательно переводят в Кельвины.",
+      },
+      {
+        id: "heat-balance-simple",
+        skillId: "heat-balance-simple",
+        title: "Тепловой баланс",
+        formula: "m_1c(T_1-T)=m_2c(T-T_2)",
+        caption: "теплота, отданная горячей водой, равна теплоте, полученной холодной",
+        symbols: [
+          "m1, m2 — массы порций воды",
+          "T1, T2 — начальные температуры",
+          "T — итоговая температура смеси",
+        ],
+        limitation:
+          "Формула записана для одного вещества без потерь теплоты.",
       },
     ],
   },

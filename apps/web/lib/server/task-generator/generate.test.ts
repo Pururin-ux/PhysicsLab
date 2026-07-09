@@ -16,6 +16,8 @@ const kinematicsTemplateIds = [
   "vt-slope",
   "vt-area",
   "relative-velocity-vectors",
+  "average-speed-segments",
+  "unit-conversion-speed",
 ] as const;
 const dynamicsTemplateIds = [
   "newton-second",
@@ -28,13 +30,15 @@ const dynamicsTemplateIds = [
   "impulse-momentum",
   "inelastic-collision-speed",
   "kinetic-energy",
+  "work-force-distance",
 ] as const;
 const electrodynamicsTemplateIds = [
   "ohm-law",
   "resistor-network",
   "source-internal-resistance",
-  "charge-sharing",
   "capacitor-energy",
+  "charge-sharing",
+  "electric-power",
 ] as const;
 
 // Шаблоны на пифагоровых тройках имеют естественно малый пул параметров:
@@ -43,7 +47,13 @@ const uniqueTextPoolBySkill: Record<string, number> = {
   "relative-velocity-vectors": 36,
   "resultant-force-2d": 24,
 };
-const thermodynamicsTemplateIds = ["ideal-gas-state", "heat-amount", "phase-change-heat"] as const;
+const thermodynamicsTemplateIds = [
+  "ideal-gas-state",
+  "heat-amount",
+  "phase-change-heat",
+  "gas-state-ratio",
+  "heat-balance-simple",
+] as const;
 
 type ApiTask = {
   id: string;
@@ -117,6 +127,31 @@ test("vt-slope answers use whole or half-step acceleration values", () => {
     200,
     "vt-slope should keep at least 200 unique tasks after constraints",
   );
+});
+
+test("expanded task families encode the intended physical rule", () => {
+  const averageSpeed = getBlueprint("average-speed-segments");
+  const averageParams = { v1: 10, t1: 2, v2: 20, t2: 8 };
+  assert.equal(averageSpeed.solver(averageParams), 18);
+  assert.notEqual(averageSpeed.solver(averageParams), (averageParams.v1 + averageParams.v2) / 2);
+
+  const unitConversion = getBlueprint("unit-conversion-speed");
+  assert.equal(unitConversion.solver({ vKmh: 36, tMin: 5 }), 3000);
+
+  const work = getBlueprint("work-force-distance");
+  assert.equal(work.solver({ F: 20, s: 3, __variant: 0 }), 60);
+  assert.equal(work.solver({ F: 20, s: 3, __variant: 1 }), -60);
+
+  const power = getBlueprint("electric-power");
+  assert.equal(power.solver({ I: 3, R: 4, __variant: 0 }), 36);
+  assert.equal(power.solver({ I: 3, R: 4, __variant: 1 }), 36);
+  assert.equal(power.solver({ I: 3, R: 4, __variant: 2 }), 36);
+
+  const gasRatio = getBlueprint("gas-state-ratio");
+  assert.equal(gasRatio.solver({ p1: 100, V1: 4, V2: 2, temp1C: 27, temp2C: 327 }), 400);
+
+  const heatBalance = getBlueprint("heat-balance-simple");
+  assert.equal(heatBalance.solver({ mHot: 2, tempHot: 80, mCold: 3, tempCold: 30 }), 50);
 });
 
 test("production templates keep enough variants and explanations", () => {

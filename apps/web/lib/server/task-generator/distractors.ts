@@ -44,6 +44,30 @@ function vtAreaTriangleOnly(p: Params): number {
   return (p.dv * p.t2) / 2;
 }
 
+function averageSpeedArithmeticMean(p: Params): number {
+  return (p.v1 + p.v2) / 2;
+}
+
+function averageSpeedUsesFirstTimeOnly(p: Params): number {
+  return (p.v1 * p.t1 + p.v2 * p.t2) / p.t1;
+}
+
+function averageSpeedUsesFirstDistanceOnly(p: Params): number {
+  return (p.v1 * p.t1) / (p.t1 + p.t2);
+}
+
+function unitConversionTreatsKmhAsMetersPerSecond(p: Params): number {
+  return p.vKmh * p.tMin * 60;
+}
+
+function unitConversionForgetsMinutesToSeconds(p: Params): number {
+  return (p.vKmh / 3.6) * p.tMin;
+}
+
+function unitConversionLeavesKilometers(p: Params): number {
+  return (p.vKmh * p.tMin) / 60;
+}
+
 function newtonWrongOperation(p: Params): number {
   const force = p.m * p.a;
 
@@ -180,6 +204,36 @@ export const vtAreaDistractors: DistractorRule[] = [
   {
     label: "только треугольник",
     compute: vtAreaTriangleOnly,
+  },
+];
+
+export const averageSpeedSegmentsDistractors: DistractorRule[] = [
+  {
+    label: "усреднил скорости без учета времени",
+    compute: averageSpeedArithmeticMean,
+  },
+  {
+    label: "поделил весь путь только на первое время",
+    compute: averageSpeedUsesFirstTimeOnly,
+  },
+  {
+    label: "учел только первый участок пути",
+    compute: averageSpeedUsesFirstDistanceOnly,
+  },
+];
+
+export const unitConversionSpeedDistractors: DistractorRule[] = [
+  {
+    label: "принял км/ч за м/с",
+    compute: unitConversionTreatsKmhAsMetersPerSecond,
+  },
+  {
+    label: "перевел км/ч в м/с, но не минуты в секунды",
+    compute: unitConversionForgetsMinutesToSeconds,
+  },
+  {
+    label: "оставил расстояние в километрах",
+    compute: unitConversionLeavesKilometers,
   },
 ];
 
@@ -609,6 +663,62 @@ export const kineticEnergyDistractors: DistractorRule[] = [
   },
 ];
 
+function workForceWrongSign(p: Params): number {
+  const sign = variantIndex(p, 2) === 0 ? -1 : 1;
+  return sign * p.F * p.s;
+}
+
+function workForceAddsValues(p: Params): number {
+  return p.F + p.s;
+}
+
+function workForceUsesHalfDistance(p: Params): number {
+  const sign = variantIndex(p, 2) === 0 ? 1 : -1;
+  return (sign * p.F * p.s) / 2;
+}
+
+export const workForceDistanceDistractors: DistractorRule[] = [
+  {
+    label: "не учел знак работы",
+    compute: workForceWrongSign,
+  },
+  {
+    label: "сложил силу и путь вместо умножения",
+    compute: workForceAddsValues,
+  },
+  {
+    label: "ошибочно взял половину пути",
+    compute: workForceUsesHalfDistance,
+  },
+];
+
+function electricPowerUsesVoltageOnly(p: Params): number {
+  return p.I * p.R;
+}
+
+function electricPowerForgetsCurrentSquare(p: Params): number {
+  return p.I * p.R * p.R;
+}
+
+function electricPowerAddsCurrentAndResistance(p: Params): number {
+  return p.I + p.R;
+}
+
+export const electricPowerDistractors: DistractorRule[] = [
+  {
+    label: "нашел напряжение вместо мощности",
+    compute: electricPowerUsesVoltageOnly,
+  },
+  {
+    label: "перепутал I²R с IR²",
+    compute: electricPowerForgetsCurrentSquare,
+  },
+  {
+    label: "сложил данные вместо применения формулы мощности",
+    compute: electricPowerAddsCurrentAndResistance,
+  },
+];
+
 function capacitorEnergyForgetsHalf(p: Params): number {
   return (p.C * p.U * p.U) / 1000;
 }
@@ -633,6 +743,63 @@ export const capacitorEnergyDistractors: DistractorRule[] = [
   {
     label: "не учёл, что ёмкость дана в микрофарадах",
     compute: capacitorEnergyTreatsMicrofaradsAsFarads,
+  },
+];
+
+function gasRatioUsesCelsiusDirectly(p: Params): number {
+  return (p.p1 * p.V1 * p.temp2C) / (p.temp1C * p.V2);
+}
+
+function gasRatioInvertsVolumeRatio(p: Params): number {
+  const t1 = p.temp1C + 273;
+  const t2 = p.temp2C + 273;
+
+  return (p.p1 * p.V2 * t2) / (t1 * p.V1);
+}
+
+function gasRatioIgnoresTemperatureChange(p: Params): number {
+  return (p.p1 * p.V1) / p.V2;
+}
+
+export const gasStateRatioDistractors: DistractorRule[] = [
+  {
+    label: "подставил температуру в градусах Цельсия",
+    compute: gasRatioUsesCelsiusDirectly,
+  },
+  {
+    label: "перевернул отношение объемов",
+    compute: gasRatioInvertsVolumeRatio,
+  },
+  {
+    label: "не учел изменение температуры",
+    compute: gasRatioIgnoresTemperatureChange,
+  },
+];
+
+function heatBalanceArithmeticMean(p: Params): number {
+  return (p.tempHot + p.tempCold) / 2;
+}
+
+function heatBalanceInvertsMasses(p: Params): number {
+  return (p.mCold * p.tempHot + p.mHot * p.tempCold) / (p.mHot + p.mCold);
+}
+
+function heatBalanceUsesTemperatureDifference(p: Params): number {
+  return p.tempHot - p.tempCold;
+}
+
+export const heatBalanceSimpleDistractors: DistractorRule[] = [
+  {
+    label: "усреднил температуры без учета масс",
+    compute: heatBalanceArithmeticMean,
+  },
+  {
+    label: "перепутал, какая масса имеет какую температуру",
+    compute: heatBalanceInvertsMasses,
+  },
+  {
+    label: "взял разность температур вместо итоговой",
+    compute: heatBalanceUsesTemperatureDifference,
   },
 ];
 

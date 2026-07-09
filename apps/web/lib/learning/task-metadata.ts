@@ -37,6 +37,18 @@ export const misconceptionMetadataById: Record<string, MisconceptionMetadata> = 
     helpSectionId: "accelerated-motion",
     shortHint: "При постоянном ускорении путь содержит член at^2/2.",
   },
+  "average-speed-arithmetic-mean": {
+    id: "average-speed-arithmetic-mean",
+    label: "усредняет скорости без учета времени",
+    helpSectionId: "average-speed",
+    shortHint: "Средняя скорость равна всему пути, деленному на все время.",
+  },
+  "speed-unit-conversion": {
+    id: "speed-unit-conversion",
+    label: "не переводит скорость и время к одним единицам",
+    helpSectionId: "units-conversion",
+    shortHint: "Перед расчетом пути переведи км/ч в м/с, а минуты в секунды.",
+  },
   "wrong-force-direction": {
     id: "wrong-force-direction",
     label: "складывает силы без направлений",
@@ -67,6 +79,12 @@ export const misconceptionMetadataById: Record<string, MisconceptionMetadata> = 
     helpSectionId: "momentum",
     shortHint: "Для сцепившихся тел сохраняется суммарный импульс до и после.",
   },
+  "work-sign-error": {
+    id: "work-sign-error",
+    label: "не учитывает знак работы",
+    helpSectionId: "work-energy",
+    shortHint: "Работа отрицательна, если сила направлена против перемещения.",
+  },
   "ohm-transform-error": {
     id: "ohm-transform-error",
     label: "ошибка в преобразовании закона Ома",
@@ -91,6 +109,12 @@ export const misconceptionMetadataById: Record<string, MisconceptionMetadata> = 
     helpSectionId: "capacitor-energy",
     shortHint: "Энергия конденсатора пропорциональна U^2 и содержит коэффициент 1/2.",
   },
+  "electric-power-voltage-only": {
+    id: "electric-power-voltage-only",
+    label: "находит напряжение вместо мощности",
+    helpSectionId: "electric-power",
+    shortHint: "После U=IR нужно еще найти P=UI или P=I²R.",
+  },
   "temperature-celsius-kelvin": {
     id: "temperature-celsius-kelvin",
     label: "подставляет температуру в градусах Цельсия",
@@ -102,6 +126,12 @@ export const misconceptionMetadataById: Record<string, MisconceptionMetadata> = 
     label: "берет конечную температуру вместо изменения",
     helpSectionId: "heat-amount",
     shortHint: "В Q = cmΔT нужна разность температур.",
+  },
+  "heat-balance-arithmetic-mean": {
+    id: "heat-balance-arithmetic-mean",
+    label: "усредняет температуры без учета масс",
+    helpSectionId: "heat-balance",
+    shortHint: "В тепловом балансе массы задают вклад горячей и холодной воды.",
   },
   "melting-plateau-misread": {
     id: "melting-plateau-misread",
@@ -146,6 +176,24 @@ export const taskLearningMetadataByTemplateId: Record<string, TaskLearningMetada
     skillId: "relative-velocity-vectors",
     focusLabel: "Относительная скорость",
     shortHint: "Скорости складываются по направлению; перпендикулярные - как векторы.",
+  },
+  "average-speed-segments": {
+    templateId: "average-speed-segments",
+    topicId: "kinematics",
+    helpSectionId: "average-speed",
+    skillId: "average-speed-segments",
+    focusLabel: "Средняя скорость на участках",
+    shortHint: "Считай среднюю скорость через весь путь и все время движения.",
+    misconceptionIds: ["average-speed-arithmetic-mean"],
+  },
+  "unit-conversion-speed": {
+    templateId: "unit-conversion-speed",
+    topicId: "kinematics",
+    helpSectionId: "units-conversion",
+    skillId: "unit-conversion-speed",
+    focusLabel: "Перевод скорости",
+    shortHint: "Перед расчетом пути переведи км/ч в м/с, а минуты в секунды.",
+    misconceptionIds: ["speed-unit-conversion"],
   },
   "newton-second": {
     templateId: "newton-second",
@@ -235,6 +283,15 @@ export const taskLearningMetadataByTemplateId: Record<string, TaskLearningMetada
     shortHint: "Импульс силы равен изменению импульса тела.",
     misconceptionIds: ["momentum-not-conserved"],
   },
+  "work-force-distance": {
+    templateId: "work-force-distance",
+    topicId: "dynamics",
+    helpSectionId: "work-energy",
+    skillId: "work-force-distance",
+    focusLabel: "Работа силы",
+    shortHint: "Смотри на направление силы относительно перемещения: знак работы меняется.",
+    misconceptionIds: ["work-sign-error"],
+  },
   "ohm-law": {
     templateId: "ohm-law",
     topicId: "electrodynamics",
@@ -271,6 +328,15 @@ export const taskLearningMetadataByTemplateId: Record<string, TaskLearningMetada
     shortHint: "Энергия конденсатора зависит от U^2 и коэффициента 1/2.",
     misconceptionIds: ["capacitor-square-law"],
   },
+  "electric-power": {
+    templateId: "electric-power",
+    topicId: "electrodynamics",
+    helpSectionId: "electric-power",
+    skillId: "electric-power",
+    focusLabel: "Мощность тока",
+    shortHint: "Не останавливайся на U=IR: для мощности используй P=UI или P=I²R.",
+    misconceptionIds: ["electric-power-voltage-only", "ohm-transform-error"],
+  },
   "charge-sharing": {
     templateId: "charge-sharing",
     topicId: "electrodynamics",
@@ -289,6 +355,15 @@ export const taskLearningMetadataByTemplateId: Record<string, TaskLearningMetada
     shortHint: "В pV = nRT температура всегда в кельвинах.",
     misconceptionIds: ["temperature-celsius-kelvin"],
   },
+  "gas-state-ratio": {
+    templateId: "gas-state-ratio",
+    topicId: "thermodynamics",
+    helpSectionId: "gas-equation",
+    skillId: "gas-state-ratio",
+    focusLabel: "Связь параметров газа",
+    shortHint: "Для одной массы газа используй pV/T = const и температуру в Кельвинах.",
+    misconceptionIds: ["temperature-celsius-kelvin"],
+  },
   "heat-amount": {
     templateId: "heat-amount",
     topicId: "thermodynamics",
@@ -297,6 +372,15 @@ export const taskLearningMetadataByTemplateId: Record<string, TaskLearningMetada
     focusLabel: "Количество теплоты",
     shortHint: "В Q = cmΔT нужны масса, теплоемкость и изменение температуры.",
     misconceptionIds: ["heat-delta-temperature"],
+  },
+  "heat-balance-simple": {
+    templateId: "heat-balance-simple",
+    topicId: "thermodynamics",
+    helpSectionId: "heat-balance",
+    skillId: "heat-balance-simple",
+    focusLabel: "Тепловой баланс",
+    shortHint: "При смешивании вода обменивается теплотой: Q_отд = Q_пол.",
+    misconceptionIds: ["heat-balance-arithmetic-mean"],
   },
   "phase-change-heat": {
     templateId: "phase-change-heat",

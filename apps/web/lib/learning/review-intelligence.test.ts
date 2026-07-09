@@ -95,9 +95,12 @@ test("buildReviewDashboard aggregates urgency, attempts and topic focus", () => 
   assert.equal(dashboard.primaryAction?.skillId, "vt-slope");
 
   const kinematics = topicById(dashboard, "kinematics");
+  const kinematicsSkillCount = Object.values(skillMetadata).filter(
+    (skill) => skill.topicId === "kinematics",
+  ).length;
   assert.equal(kinematics.tone, "gold");
   assert.equal(kinematics.dueToday, 2);
-  assert.equal(kinematics.skillCoverageLabel, "2/4");
+  assert.equal(kinematics.skillCoverageLabel, `2/${kinematicsSkillCount}`);
   assert.deepEqual(kinematics.topSkillTitles.length, 2);
 
   const electrodynamics = topicById(dashboard, "electrodynamics");

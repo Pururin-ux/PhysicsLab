@@ -32,6 +32,14 @@ export const weaknessCopyBySkill: Partial<Record<SkillId, {
     title: "Свободное падение",
     hint: "Для падения из покоя используй $h = \\frac{gt^2}{2}$.",
   },
+  "average-speed-segments": {
+    title: "Средняя скорость",
+    hint: "Считай ==весь путь / всё время==, а не среднее арифметическое скоростей.",
+  },
+  "unit-conversion-speed": {
+    title: "Единицы скорости",
+    hint: "Перед расчетом пути переведи км/ч в м/с, а минуты в секунды.",
+  },
   "newton-second": {
     title: "Второй закон Ньютона",
     hint: "Сначала реши, **что именно ищем**: силу, массу или ускорение.",
@@ -55,6 +63,10 @@ export const weaknessCopyBySkill: Partial<Record<SkillId, {
   "weight-lift": {
     title: "Вес в лифте",
     hint: "При ускорении вверх вес ==больше==, при ускорении вниз — ==меньше==.",
+  },
+  "work-force-distance": {
+    title: "Работа силы",
+    hint: "Проверь знак: если сила направлена против перемещения, работа отрицательна.",
   },
   "relative-velocity-vectors": {
     title: "Сложение скоростей",
@@ -88,6 +100,10 @@ export const weaknessCopyBySkill: Partial<Record<SkillId, {
     title: "Кинетическая энергия",
     hint: "В $E_k=\\frac{mv^2}{2}$ скорость стоит ==в квадрате==, а не первой степенью.",
   },
+  "electric-power": {
+    title: "Мощность тока",
+    hint: "Не останавливайся на $U=IR$: мощность равна $P=UI$ или $P=I^2R$.",
+  },
   "charge-sharing": {
     title: "Деление заряда",
     hint: "После контакта одинаковых шариков заряд не складывается, а ==делится поровну==.",
@@ -103,6 +119,14 @@ export const weaknessCopyBySkill: Partial<Record<SkillId, {
   "heat-amount": {
     title: "Количество теплоты",
     hint: "В формуле $Q=cm\\Delta T$ важны ==все три== множителя: ни один нельзя пропускать.",
+  },
+  "gas-state-ratio": {
+    title: "Параметры газа",
+    hint: "В отношении $pV/T$ температуру всегда подставляй в Кельвинах.",
+  },
+  "heat-balance-simple": {
+    title: "Тепловой баланс",
+    hint: "Температура смеси зависит от масс: приравняй отданную и полученную теплоту.",
   },
   "phase-change-heat": {
     title: "Нагревание и плавление",
