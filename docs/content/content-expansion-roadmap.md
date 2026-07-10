@@ -1,12 +1,16 @@
 # Content Expansion Roadmap
 
-Status: audit draft.
+Status: living roadmap, updated after Task Family Expansion v1.
 
-This is the current content reality after PR #5. The product is usable and polished, but it is not yet a complete CE/CT exam trainer. It is a focused slice with a solid generator/help architecture and uneven topic coverage.
+This is the current content reality after PR #5 and Task Family Expansion v1. The product is usable and polished, but it is not yet a complete CE/CT exam trainer. It is a focused slice with a solid generator/help architecture and uneven topic coverage.
 
 ## A. Current Coverage
 
-Current generated task templates: **22**.
+Current generated task templates: **28** (kinematics 6, dynamics 11, electrodynamics 6, thermodynamics 5).
+
+Task Family Expansion v1 added: `average-speed-segments`, `unit-conversion-speed`,
+`work-force-distance`, `electric-power`, `gas-state-ratio`, and
+`heat-balance-simple`.
 
 Active generated topics:
 
@@ -28,6 +32,8 @@ Visible but not active topics:
 | Kinematics | v(t) slope | `vt-slope` | numeric choice | yes | yes | yes | high | good |
 | Kinematics | v(t) area | `vt-area` | numeric choice | yes | yes | yes | medium-high | good but needs mixed signed/interval variants |
 | Kinematics | relative perpendicular velocities | `relative-velocity-vectors` | numeric choice | yes | no | yes | high | good pilot, formula reference missing |
+| Kinematics | average speed on segments | `average-speed-segments` | numeric choice | yes | yes | yes | high | good, arithmetic-mean trap covered |
+| Kinematics | speed conversion | `unit-conversion-speed` | numeric choice | yes | yes | yes | high | good, mixed-unit comparison covered |
 | Dynamics | Newton's second law | `newton-second` | numeric choice | yes | yes | yes | high | weak: too simple vs exam force/friction coupling |
 | Dynamics | friction | `friction-force` | numeric choice | yes | yes | yes | high as component | weak standalone drill |
 | Dynamics | incline projection | `incline-force` | numeric choice | yes | yes | yes | medium | weak without friction/work variants |
@@ -35,15 +41,19 @@ Visible but not active topics:
 | Dynamics | resultant force, 2D | `resultant-force-2d` | numeric choice + vector diagram | yes | no | yes | high | good pilot, formula reference missing |
 | Dynamics | weight in lift | `weight-lift` | numeric choice | yes | yes | yes | medium | useful, lower evidence |
 | Dynamics | impulse / momentum | `impulse-momentum`, `inelastic-collision-speed` | numeric choice | yes | partial | yes | high | good start |
-| Dynamics | kinetic energy | `kinetic-energy` | numeric choice | yes | no | yes | high | good drill, no work-energy family yet |
+| Dynamics | kinetic energy | `kinetic-energy` | numeric choice | yes | no | yes | high | good drill, no work-energy transition yet |
+| Dynamics | work from force and distance | `work-force-distance` | numeric choice | yes | yes | yes | high | good basic work drill |
 | Dynamics | density and volume | `density-volume-ratio` | numeric choice | yes | yes | yes | high | good |
 | Electrodynamics | Ohm law | `ohm-law` | numeric choice | yes | yes | yes | high | good, needs inverse variants |
+| Electrodynamics | electric power | `electric-power` | numeric choice | yes | yes | yes | high | good basic power drill |
 | Electrodynamics | resistor network | `resistor-network` | numeric choice + circuit diagram | yes | no | yes | high | useful but help is too broad under Ohm law |
 | Electrodynamics | full circuit | `source-internal-resistance` | numeric choice + circuit diagram | yes | no | yes | high | good start |
 | Electrodynamics | charge sharing | `charge-sharing` | signed numeric choice | yes | yes | yes | high | good |
 | Electrodynamics | capacitor energy | `capacitor-energy` | numeric choice | yes | no | yes | medium-high | good, formula reference missing |
 | Thermodynamics | ideal gas state | `ideal-gas-state` | numeric choice | yes | no | yes | high | good, formula reference id mismatch |
 | Thermodynamics | heat amount | `heat-amount` | numeric choice | yes | yes | yes | medium-high | good |
+| Thermodynamics | gas state ratio | `gas-state-ratio` | numeric choice | yes | yes | yes | high | good process-ratio drill |
+| Thermodynamics | heat balance | `heat-balance-simple` | numeric choice | yes | yes | yes | high | good equilibrium-temperature drill |
 | Thermodynamics | heating and melting | `phase-change-heat` | numeric choice | yes | no | yes | high | good, graph variant missing |
 | Thermodynamics | p(V), V(T), t(tau) graphs | none | n/a | partial help only | partial formulas | n/a | high | missing |
 | Optics | reflection/refraction/lens/TIR | none | n/a | none | formulas exist | n/a | medium | missing |
@@ -61,8 +71,7 @@ P0 gaps:
 - Optics has zero task families.
 - Atomic/quantum/nuclear has zero task families.
 - Thermodynamics has no p(V), V(T), or heating curve graph tasks.
-- Kinematics lacks unit conversion and average-speed segment traps.
-- Dynamics still lacks combined force projection + friction and work/energy basics.
+- Dynamics still lacks combined force projection + friction; work/energy transition tasks are still missing.
 - Generated answer model is numeric-choice only; real CE/CT includes single choice, multiple choice, numeric input, matching, and unit/formula recognition.
 - Formula reference is behind generator coverage for several active families.
 
@@ -84,24 +93,18 @@ P2 gaps:
 
 These should be added first, but only through the task-family schema.
 
+Already added after the initial audit: `average-speed-segments`,
+`unit-conversion-speed`, `work-force-distance`, `electric-power`,
+`gas-state-ratio`, and `heat-balance-simple`.
+
 ### Kinematics
 
-1. `units-speed-compare`
-   - Pattern: compare speeds in mixed units.
-   - Why: direct RT A1-style trap.
-   - Needs: new `units-conversion` help section.
-
-2. `average-speed-segments`
-   - Pattern: two or three path/time segments.
-   - Trap: arithmetic mean of speeds.
-   - Needs: formula reference already has enough base material, help section exists.
-
-3. `relative-motion-linear`
+1. `relative-motion-linear`
    - Pattern: meeting/overtaking without vector diagram.
    - Trap: add instead of subtract, or vice versa.
    - Needs: can use existing relative-motion help.
 
-4. `graph-area-slope-mixed`
+2. `graph-area-slope-mixed`
    - Pattern: same visual asks slope in one case, area in another.
    - Trap: endpoint value vs slope vs area.
    - Needs: current PhysicsGraph can support v(t); add tests before broadening.
@@ -147,20 +150,12 @@ These should be added first, but only through the task-family schema.
 
 ### Thermodynamics
 
-1. `gas-process-ratio`
-   - Pattern: compare p, V, T in isobaric/isochoric/isothermal process.
-   - Trap: Celsius/Kelvin and inverse proportionality.
-
-2. `heat-balance`
-   - Pattern: two bodies reach equilibrium temperature.
-   - Trap: sign of heat lost/gained.
-
-3. `pv-graph-work`
+1. `pv-graph-work`
    - Pattern: work as area under p(V) or cycle area.
    - Trap: use area for every thermodynamic quantity.
    - Needs: GraphSpec/PhysicsGraph extension.
 
-4. `heating-curve-stage`
+2. `heating-curve-stage`
    - Pattern: t(tau) plateau, melting interval, mass/latent heat.
    - Trap: use full time instead of plateau.
    - Needs: graph extension.
@@ -267,7 +262,7 @@ Short-term copy fixes should target precision, not personality.
 P0:
 
 - Do not imply this is a complete CE/CT trainer while optics and atomic/nuclear are missing.
-- Avoid "real test" phrasing for exam-demo; call it "mixed variant from open sections".
+- Avoid "real test" phrasing for exam-demo; call it "mixed training from open topics".
 - Rename or reframe profile if it remains mainly progress/review.
 
 P1:
@@ -296,9 +291,9 @@ Do not start with 20 new templates.
 
 Recommended next commit after this audit:
 
-1. Add missing formula-reference entries for active generated families.
-2. Add `units-speed-compare` and `average-speed-segments`.
-3. Add `ohm-law-inverse`.
-4. Add tests that enforce formula reference coverage for every active generated family where a reusable formula exists.
+1. Complete formula-reference coverage for active generated families that still need it.
+2. Add a visual `graph-area-slope-mixed` family with renderer assertions.
+3. Add a coupled-force family such as `friction-with-acceleration`.
+4. Keep tests enforcing formula-reference coverage for every active generated family where a reusable formula exists.
 
 Leave optics/atomic until the product decides how to expose new topics in progress/navigation.

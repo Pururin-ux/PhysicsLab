@@ -86,15 +86,15 @@ export default function Home() {
               и термодинамика
             </h2>
             <p className="max-w-[480px] text-[14px] leading-[1.7] text-white/65">
-              Оптика и квантовая физика — позже. Начни с любой темы или сразу
-              проверь себя на пробном варианте.
+              Оптика и квантовая физика — позже. Начни с любой темы или реши
+              смешанную тренировку по открытым темам.
             </p>
             <div className="flex flex-wrap items-center justify-center gap-3">
               <Button asChild className="px-10">
                 <Link href="/topics">Начать</Link>
               </Button>
               <Button asChild variant="ghost">
-                <Link href="/practice/exam-demo">Пробный вариант</Link>
+                <Link href="/practice/exam-demo">Смешанная тренировка</Link>
               </Button>
             </div>
           </Card>
