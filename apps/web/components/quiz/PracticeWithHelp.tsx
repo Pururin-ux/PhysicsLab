@@ -11,15 +11,12 @@ import { TopicTheoryDrawer } from "../theory/TopicTheoryDrawer";
 import type { TopicTheorySubtopic } from "../theory/TopicTheoryDrawer";
 import { PracticeQuickBar } from "./PracticeQuickBar";
 import { QuizSession } from "./QuizSession";
-import type { QuizData } from "./quiz-session-store";
 
 interface PracticeWithHelpProps {
   topicId: TopicId;
-  mode?: "static" | "generated";
-  data?: QuizData;
-  generatedTemplate?: string;
-  generatedTopic?: string;
-  generatedTitle?: string;
+  generatedTemplate: string;
+  generatedTopic: string;
+  generatedTitle: string;
   accent?: "cyan" | "gold" | "blue" | "ember";
   drawerTitle: string;
   drawerDescription: string;
@@ -46,8 +43,6 @@ function scrollTheoryIntoView() {
 
 export function PracticeWithHelp({
   topicId,
-  mode = "static",
-  data,
   generatedTemplate,
   generatedTopic,
   generatedTitle,
@@ -79,8 +74,6 @@ export function PracticeWithHelp({
       <PracticeQuickBar onOpenHelp={() => openHelp(currentTarget)} helpOpen={helpOpen} />
 
       <QuizSession
-        data={data}
-        mode={mode}
         generatedTemplate={generatedTemplate}
         generatedTopic={generatedTopic}
         generatedTitle={generatedTitle}

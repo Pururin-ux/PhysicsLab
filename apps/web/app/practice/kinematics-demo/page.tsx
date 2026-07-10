@@ -29,6 +29,9 @@ export default function KinematicsDemoPage() {
       <section id="practice" className="scroll-mt-24">
         <PracticeWithHelp
           topicId="kinematics"
+          generatedTemplate="mixed"
+          generatedTopic="Кинематика"
+          generatedTitle="Задачи по кинематике"
           accent="cyan"
           drawerTitle="Справка по задаче"
           drawerDescription="Открыт раздел, который нужен для текущего вопроса."

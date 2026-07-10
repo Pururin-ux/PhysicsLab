@@ -25,7 +25,6 @@ export default function ThermoDemoPage() {
       <section id="practice" className="scroll-mt-24">
         <PracticeWithHelp
           topicId="thermodynamics"
-          mode="generated"
           generatedTemplate="thermo-mixed"
           generatedTopic="Термодинамика"
           generatedTitle="Задачи по термодинамике"

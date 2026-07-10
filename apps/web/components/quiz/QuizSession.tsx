@@ -14,7 +14,6 @@ import {
   answerCurrentTask,
   moveToNextTask,
   resetQuizSession,
-  restartQuizSession,
   type QuizData,
 } from "./quiz-session-store";
 import { Badge } from "../ui/Badge";
@@ -29,14 +28,11 @@ import {
 import type { TopicId } from "../../lib/stores/progress-store";
 import { addXP, resetSessionProgress } from "../../lib/stores/session-store";
 import { useSessionRecording } from "./useSessionRecording";
-import kinematicsData from "../../content/tasks/kinematics-10.json";
 
 interface QuizSessionProps {
-  data?: QuizData;
-  mode?: "static" | "generated";
-  generatedTemplate?: string;
-  generatedTopic?: string;
-  generatedTitle?: string;
+  generatedTemplate: string;
+  generatedTopic: string;
+  generatedTitle: string;
   topicId?: TopicId;
   // "exam" пишет результат в журнал смешанных тренировок и слабые места тем,
   // не увеличивая счётчик тренировок темы.
@@ -53,15 +49,12 @@ const nextStepByTopic: Record<string, { href: string; label: string }> = {
   thermodynamics: { href: "/topics", label: "К темам" },
 };
 
-const defaultQuizData = kinematicsData as QuizData;
 const emptyTasks: QuizData["tasks"] = [];
 
 export function QuizSession({
-  data = defaultQuizData,
-  mode = "static",
-  generatedTemplate = "free-fall",
-  generatedTopic = "Кинематика",
-  generatedTitle = "Задачи",
+  generatedTemplate,
+  generatedTopic,
+  generatedTitle,
   topicId,
   sessionKind = "practice",
   onHelpTargetChange,
@@ -75,7 +68,7 @@ export function QuizSession({
     error: generatedError,
     status: generatedStatus,
   } = useGeneratedQuizData({
-    enabled: mode === "generated",
+    enabled: true,
     template: generatedTemplate,
     topic: generatedTopic,
     title: generatedTitle,
@@ -96,7 +89,7 @@ export function QuizSession({
     topicId,
   });
   const reactionRef = useRef<HTMLDivElement>(null);
-  const activeData = mode === "generated" ? generatedData : data;
+  const activeData = generatedData;
   const tasks = activeData?.tasks ?? emptyTasks;
   const currentTask = tasks[session.currentIndex];
   const isLastTask = session.currentIndex >= session.total - 1;
@@ -255,20 +248,9 @@ export function QuizSession({
 
   function handleRestart() {
     resetRecording();
-
-    if (mode === "generated") {
-      resetSessionProgress();
-      hideCoach();
-      setGeneratedBatch((current) => current + 1);
-      return;
-    }
-
     resetSessionProgress();
-    restartQuizSession();
     hideCoach();
-    if (tasks[0]) {
-      startPauseTimer(tasks[0].coach_lines);
-    }
+    setGeneratedBatch((current) => current + 1);
   }
 
   if (session.phase === "completed") {
@@ -288,9 +270,7 @@ export function QuizSession({
         restartLabel={
           sessionKind === "exam"
             ? "Новый вариант"
-            : mode === "generated"
-              ? "Ещё 10 задач"
-              : undefined
+            : "Ещё 10 задач"
         }
         topic={activeData?.topic}
         nextHref={nextStep?.href}
@@ -299,7 +279,7 @@ export function QuizSession({
     );
   }
 
-  if (mode === "generated" && generatedStatus === "loading") {
+  if (generatedStatus === "loading") {
     return (
       <section className="relative mx-auto flex max-w-[580px] flex-col gap-4 pb-[calc(5rem+env(safe-area-inset-bottom))] sm:pb-8">
         <Card className="flex flex-col gap-3">
@@ -312,7 +292,7 @@ export function QuizSession({
     );
   }
 
-  if (mode === "generated" && generatedStatus === "error") {
+  if (generatedStatus === "error") {
     return (
       <section className="relative mx-auto flex max-w-[580px] flex-col gap-4 pb-[calc(5rem+env(safe-area-inset-bottom))] sm:pb-8">
         <Card className="flex flex-col gap-4">

@@ -55,7 +55,6 @@ export function ExamDemo() {
   if (started) {
     return (
       <QuizSession
-        mode="generated"
         generatedTemplate="exam"
         generatedTopic="Смешанная тренировка"
         generatedTitle="Смешанная тренировка · открытые темы"

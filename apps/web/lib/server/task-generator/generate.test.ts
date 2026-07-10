@@ -422,6 +422,20 @@ test("API route dynamics-mixed покрывает все навыки динам
   );
 });
 
+test("API route mixed покрывает все навыки кинематики", async () => {
+  const response = await GET(
+    new Request("http://localhost/api/tasks?template=mixed&count=10&batch=7"),
+  );
+  const data = (await response.json()) as ApiTaskResponse;
+
+  assert.equal(response.status, 200);
+  assert.equal(data.tasks.length, 10);
+  assert.deepEqual(
+    new Set(data.tasks.map((task) => task.blueprint)),
+    new Set(kinematicsTemplateIds),
+  );
+});
+
 test("API route electro-mixed покрывает все навыки электродинамики", async () => {
   const response = await GET(
     new Request("http://localhost/api/tasks?template=electro-mixed&count=10&batch=7"),

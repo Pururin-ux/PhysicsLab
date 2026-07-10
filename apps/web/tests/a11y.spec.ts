@@ -79,7 +79,15 @@ for (const route of routes) {
 // контраста (Nova-заголовок, свёрнутый разбор). Сканируем её обе ветки.
 test("@a11y карточка разбора после ошибки — без serious/critical", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
+  const taskResponse = page.waitForResponse((response) => {
+    const url = new URL(response.url());
+    return url.pathname === "/api/tasks" && url.searchParams.get("template") === "mixed";
+  });
+
   await page.goto("/practice/kinematics-demo", { waitUntil: "domcontentloaded" });
+  const payload = (await (await taskResponse).json()) as {
+    tasks: { options: { correct?: boolean; text: string }[] }[];
+  };
 
   // Тяжёлый desktop-shell гидратируется дольше: клик сразу после появления
   // вариантов может опередить навешивание обработчика. Ждём готовности и
@@ -87,8 +95,11 @@ test("@a11y карточка разбора после ошибки — без s
   await page.waitForLoadState("networkidle");
   const options = page.getByRole("list", { name: "Варианты ответа" });
   await expect(options).toBeVisible();
-  // Задача 1 статического набора: верный ответ 37 м, поэтому 31 м — ошибка.
-  const wrongOption = options.getByRole("button").filter({ hasText: "31" }).first();
+  const wrongAnswer = payload.tasks[0]?.options.find((option) => !option.correct);
+  expect(wrongAnswer, "generated kinematics task must expose a wrong option").toBeDefined();
+  const wrongOption = options
+    .getByRole("button")
+    .filter({ hasText: wrongAnswer!.text });
   await expect(async () => {
     await wrongOption.click();
     // Compact-first: на ошибке полное решение закрыто, пока ученик его не попросит.
