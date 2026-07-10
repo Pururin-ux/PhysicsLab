@@ -2,6 +2,13 @@ import { atom } from "nanostores";
 import type { OptionState } from "./OptionItem";
 import type { CircuitDiagramSpec } from "../../lib/physics/circuit-diagram-spec";
 import type { VectorDiagramSpec } from "../../lib/physics/vector-diagram-spec";
+import {
+  getNumericMisconception,
+  isNumericAnswerCorrect,
+  parseNumericAnswer,
+  type NumericAnswerSpec,
+  type NumericMisconception,
+} from "../../lib/answer/numeric-answer.ts";
 
 export type QuizOption = {
   id: string;
@@ -25,9 +32,9 @@ export type QuizDiagram =
   | { kind: "vector"; spec: VectorDiagramSpec }
   | { kind: "circuit"; spec: CircuitDiagramSpec };
 
-export type QuizTask = {
+// Общая часть задачи, не зависящая от формата ответа.
+type QuizTaskBase = {
   id: string;
-  type: "single_choice";
   blueprint: string;
   skill?: string;
   difficulty: 1 | 2 | 3;
@@ -35,8 +42,6 @@ export type QuizTask = {
   formula?: string;
   graph?: QuizGraph | null;
   diagram?: QuizDiagram | null;
-  options: QuizOption[];
-  answer: string;
   explanation: string;
   explanation_latex?: string;
   trap: string;
@@ -47,6 +52,25 @@ export type QuizTask = {
   };
 };
 
+export type SingleChoiceQuizTask = QuizTaskBase & {
+  type: "single_choice";
+  options: QuizOption[];
+  answer: string;
+};
+
+export type NumericInputQuizTask = QuizTaskBase & {
+  type: "numeric_input";
+  // Спецификация числового ответа (значение/единица/точность/допуск/знак).
+  answer: NumericAnswerSpec;
+  // Значения дистракторов с метками: по ним подбирается misconception после
+  // неверного ответа. Пустой список допустим.
+  misconceptions: NumericMisconception[];
+};
+
+// Дискриминированный union: TypeScript заставляет компоненты явно обработать
+// оба формата, а не подсовывать фиктивные options старому UI.
+export type QuizTask = SingleChoiceQuizTask | NumericInputQuizTask;
+
 export type QuizData = {
   id: string;
   topic: string;
@@ -54,22 +78,48 @@ export type QuizData = {
   tasks: QuizTask[];
 };
 
-export type AnswerRecord = {
+// Обобщённое представление отправленного ответа.
+export type SubmittedResponse =
+  | { kind: "single_choice"; optionId: string }
+  | { kind: "numeric_input"; raw: string; value: number };
+
+type BaseAnswerRecord = {
   taskId: string;
-  selectedOptionId: string;
-  correctOptionId: string;
+  blueprint: string;
   isCorrect: boolean;
   attempt: number;
-  blueprint: string;
   taskTrap: string;
   selectedMisconception?: string;
 };
+
+export type SingleChoiceAnswerRecord = BaseAnswerRecord & {
+  format: "single_choice";
+  response: { kind: "single_choice"; optionId: string };
+  selectedOptionId: string;
+  correctOptionId: string;
+};
+
+export type NumericAnswerRecord = BaseAnswerRecord & {
+  format: "numeric_input";
+  response: { kind: "numeric_input"; raw: string; value: number };
+  // Каноничный ответ и единица — для показа в фидбэке после submit.
+  correctValue: number;
+  unit: string;
+};
+
+// AnswerRecord различает форматы, но общие поля (blueprint, isCorrect,
+// taskTrap, selectedMisconception) лежат в базе — persistent-слой
+// (recordCompletedSession/recordExamSession) читает только их, поэтому схема
+// хранилища не меняется и миграция не нужна.
+export type AnswerRecord = SingleChoiceAnswerRecord | NumericAnswerRecord;
 
 export type QuizPhase = "active" | "answered" | "completed";
 
 export type QuizSessionState = {
   phase: QuizPhase;
   currentIndex: number;
+  // Заполняется только для single_choice (используется getOptionState);
+  // для numeric остаётся null.
   selectedOptionId: string | null;
   answers: AnswerRecord[];
   score: number;
@@ -103,8 +153,31 @@ export function resetQuizSession(total: number) {
   });
 }
 
+// Общий переход состояния после любого ответа: считает счёт/серию и добавляет
+// запись. Формат-специфичные обёртки строят AnswerRecord и передают его сюда.
+function commitAnswer(
+  isCorrect: boolean,
+  record: AnswerRecord,
+  selectedOptionId: string | null,
+): AnswerResult {
+  const state = $quizSession.get();
+  const streak = isCorrect ? state.streak + 1 : 0;
+  const score = isCorrect ? state.score + 1 : state.score;
+
+  $quizSession.set({
+    ...state,
+    phase: "answered",
+    selectedOptionId,
+    answers: [...state.answers, record],
+    score,
+    streak,
+  });
+
+  return { isCorrect, streak, score, attempt: record.attempt };
+}
+
 export function answerCurrentTask(
-  task: QuizTask,
+  task: SingleChoiceQuizTask,
   selectedOptionId: string,
 ): AnswerResult | null {
   const state = $quizSession.get();
@@ -117,32 +190,55 @@ export function answerCurrentTask(
   const selectedMisconception = !isCorrect
     ? selectedOption?.misconception?.trim() || undefined
     : undefined;
-  const taskTrap = task.trap.trim();
-  const attempt = 1;
-  const streak = isCorrect ? state.streak + 1 : 0;
-  const score = isCorrect ? state.score + 1 : state.score;
 
-  const answer: AnswerRecord = {
+  const record: SingleChoiceAnswerRecord = {
+    format: "single_choice",
     taskId: task.id,
+    blueprint: task.blueprint,
+    isCorrect,
+    attempt: 1,
+    taskTrap: task.trap.trim(),
+    selectedMisconception,
+    response: { kind: "single_choice", optionId: selectedOptionId },
     selectedOptionId,
     correctOptionId: task.answer,
-    isCorrect,
-    attempt,
-    blueprint: task.blueprint,
-    taskTrap,
-    selectedMisconception,
   };
 
-  $quizSession.set({
-    ...state,
-    phase: "answered",
-    selectedOptionId,
-    answers: [...state.answers, answer],
-    score,
-    streak,
-  });
+  return commitAnswer(isCorrect, record, selectedOptionId);
+}
 
-  return { isCorrect, streak, score, attempt };
+export function answerCurrentNumericTask(
+  task: NumericInputQuizTask,
+  raw: string,
+): AnswerResult | null {
+  const state = $quizSession.get();
+
+  if (state.phase !== "active") return null;
+
+  const parsed = parseNumericAnswer(raw);
+  if (!parsed.ok) return null;
+
+  const value = parsed.value;
+
+  const isCorrect = isNumericAnswerCorrect(value, task.answer);
+  const selectedMisconception = !isCorrect
+    ? getNumericMisconception(value, task.misconceptions, task.answer.tolerance)
+    : undefined;
+
+  const record: NumericAnswerRecord = {
+    format: "numeric_input",
+    taskId: task.id,
+    blueprint: task.blueprint,
+    isCorrect,
+    attempt: 1,
+    taskTrap: task.trap.trim(),
+    selectedMisconception,
+    response: { kind: "numeric_input", raw, value },
+    correctValue: task.answer.value,
+    unit: task.answer.unit,
+  };
+
+  return commitAnswer(isCorrect, record, null);
 }
 
 export function moveToNextTask() {
@@ -174,7 +270,7 @@ export function restartQuizSession() {
 }
 
 export function getOptionState(
-  task: QuizTask,
+  task: SingleChoiceQuizTask,
   optionId: string,
   session: QuizSessionState,
 ): OptionState {

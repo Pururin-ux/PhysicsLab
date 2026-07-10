@@ -28,6 +28,7 @@ export const averageSpeedSegmentsBlueprint: TaskBlueprint = {
   formula: "v_{avg}=\\frac{s_1+s_2}{t_1+t_2}",
   answerUnit: "м/с",
   answerKind: "positive",
+  answerFormat: "numeric_input",
   solver: averageSpeedSegments,
   distractors: averageSpeedSegmentsDistractors,
   textTemplate: (p) =>

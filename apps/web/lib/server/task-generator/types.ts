@@ -1,7 +1,9 @@
+import type { AnswerFormat } from "../../answer/numeric-answer.ts";
 import type { CircuitDiagramSpec } from "../../physics/circuit-diagram-spec.ts";
 import type { VectorDiagramSpec } from "../../physics/vector-diagram-spec.ts";
 
 export type Difficulty = 1 | 2 | 3;
+// Числовая семантика ответа — отдельная ось от формата ввода (answerFormat).
 export type AnswerKind = "positive" | "magnitude" | "signed";
 export type TemplateGroup =
   | "kinematics"
@@ -52,6 +54,9 @@ export interface TaskBlueprint {
   formula: string;
   answerUnit: string | ((p: Params) => string);
   answerKind?: AnswerKind;
+  // Формат ввода ответа. Отсутствует => "single_choice" (обратная совместимость
+  // со всеми существующими шаблонами). Числовая семантика — в answerKind.
+  answerFormat?: AnswerFormat;
   solver: (p: Params) => number;
   distractors: DistractorRule[];
   textTemplate: (p: Params, answer: number) => string;
@@ -83,9 +88,13 @@ export interface GeneratedTask {
   text: string;
   formula: string;
   answerUnit: string;
+  answerFormat: AnswerFormat;
   explanation?: string;
   graph?: GraphSpec;
   diagram?: TaskDiagram;
+  // options/answer сохраняются для всех форматов: это методический QA
+  // (валидатор проверяет 4 уникальных варианта) и источник значений
+  // misconception для numeric-задач. API решает, показывать ли их клиенту.
   options: GeneratedOption[];
   answer: GeneratedOption["id"];
   answerValue: number;

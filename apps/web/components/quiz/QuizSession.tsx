@@ -5,17 +5,24 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { CoachBubble } from "../coach/CoachBubble";
 import { useCoach } from "../coach/useCoach";
 import { AnswerFeedback } from "./AnswerFeedback";
+import { NumericAnswerInput } from "./NumericAnswerInput";
 import { OptionList } from "./OptionList";
 import { QuestionCard } from "./QuestionCard";
 import { SessionSummary } from "./SessionSummary";
 import { useGeneratedQuizData } from "./useGeneratedQuizData";
 import {
   $quizSession,
+  answerCurrentNumericTask,
   answerCurrentTask,
   moveToNextTask,
   resetQuizSession,
+  type AnswerResult,
   type QuizData,
+  type QuizTask,
 } from "./quiz-session-store";
+import {
+  formatNumericValue,
+} from "../../lib/answer/numeric-answer";
 import { Badge } from "../ui/Badge";
 import { Button } from "../ui/Button";
 import { Card } from "../ui/Card";
@@ -92,6 +99,7 @@ export function QuizSession({
   const activeData = generatedData;
   const tasks = activeData?.tasks ?? emptyTasks;
   const currentTask = tasks[session.currentIndex];
+  const latestAnswer = session.answers.at(-1);
   const isLastTask = session.currentIndex >= session.total - 1;
   const progressLabel = `${Math.min(session.currentIndex + 1, session.total)} / ${session.total}`;
   const currentHelpTarget = useMemo(
@@ -156,6 +164,12 @@ export function QuizSession({
       const reaction = reactionRef.current;
       if (!reaction) return;
 
+      if (latestAnswer?.format === "numeric_input") {
+        reaction
+          .querySelector<HTMLButtonElement>('[data-testid="next-task-button"]')
+          ?.focus({ preventScroll: true });
+      }
+
       const rect = reaction.getBoundingClientRect();
       const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
       const isVisible = rect.top >= 0 && rect.bottom <= viewportHeight;
@@ -168,14 +182,16 @@ export function QuizSession({
     });
 
     return () => cancelAnimationFrame(frame);
-  }, [session.phase, session.currentIndex]);
+  }, [latestAnswer?.format, session.phase, session.currentIndex]);
 
-  function handleAnswer(optionId: string) {
-    if (!currentTask || session.phase !== "active") return;
-
-    const result = answerCurrentTask(currentTask, optionId);
-    if (!result) return;
-
+  // Общая реакция на любой ответ (single_choice и numeric): Nova либо хвалит,
+  // либо называет конкретную ошибку прямой речью. selectedMisconception уже
+  // определён вызывающим кодом по формату ответа.
+  function reactToAnswer(
+    task: QuizTask,
+    result: AnswerResult,
+    selectedMisconception: string | undefined,
+  ) {
     clearPauseTimer();
     hideCoach();
 
@@ -185,36 +201,61 @@ export function QuizSession({
         {
           type: "correct_answer",
           streak: result.streak,
-          taskId: currentTask.id,
+          taskId: task.id,
         },
-        currentTask.coach_lines,
+        task.coach_lines,
       );
-    } else {
-      const selectedOption = currentTask.options.find(
-        (option) => option.id === optionId,
-      );
-      const taskFocus = getTaskFocus(currentTask);
-      const selectedMisconception = selectedOption?.misconception?.trim();
-
-      addXP(0);
-      emitCoachEvent(
-        {
-          type: "wrong_answer",
-          attempt: result.attempt,
-          taskId: currentTask.id,
-        },
-        {
-          ...currentTask.coach_lines,
-          // Называем конкретную ошибку выбранного варианта прямой речью;
-          // без варианта-приманки берём авторскую реплику задачи (она уже
-          // конкретна и с числами).
-          wrong: selectedMisconception
-            ? `Похоже, ты ${selectedMisconception}.`
-            : currentTask.coach_lines.wrong,
-          hint: taskFocus.check,
-        },
-      );
+      return;
     }
+
+    const taskFocus = getTaskFocus(task);
+
+    addXP(0);
+    emitCoachEvent(
+      {
+        type: "wrong_answer",
+        attempt: result.attempt,
+        taskId: task.id,
+      },
+      {
+        ...task.coach_lines,
+        // Называем конкретную ошибку прямой речью; без определённого
+        // misconception берём авторскую реплику задачи (она уже конкретна).
+        wrong: selectedMisconception
+          ? `Похоже, ты ${selectedMisconception}.`
+          : task.coach_lines.wrong,
+        hint: taskFocus.check,
+      },
+    );
+  }
+
+  function handleAnswer(optionId: string) {
+    if (!currentTask || currentTask.type !== "single_choice") return;
+    if (session.phase !== "active") return;
+
+    const result = answerCurrentTask(currentTask, optionId);
+    if (!result) return;
+
+    const selectedOption = currentTask.options.find(
+      (option) => option.id === optionId,
+    );
+
+    reactToAnswer(currentTask, result, selectedOption?.misconception?.trim());
+  }
+
+  function handleNumericSubmit(raw: string) {
+    if (!currentTask || currentTask.type !== "numeric_input") return;
+    if (session.phase !== "active") return;
+
+    const result = answerCurrentNumericTask(currentTask, raw);
+    if (!result) return;
+
+    // Misconception по значению уже вычислен в сторе и лежит в записи ответа.
+    const selectedMisconception = $quizSession
+      .get()
+      .answers.at(-1)?.selectedMisconception;
+
+    reactToAnswer(currentTask, result, selectedMisconception);
   }
 
   function handleNext() {
@@ -315,7 +356,6 @@ export function QuizSession({
   if (!currentTask) return null;
 
   const taskFocus = getTaskFocus(currentTask);
-  const latestAnswer = session.answers.at(-1);
   const answerHelpTarget =
     latestAnswer && currentTask
       ? getHelpTargetForMistake(
@@ -348,12 +388,29 @@ export function QuizSession({
         showSolutionContent={session.phase === "answered"}
       />
 
-      <OptionList
-        task={currentTask}
-        options={currentTask.options}
-        session={session}
-        onSelect={handleAnswer}
-      />
+      {currentTask.type === "single_choice" ? (
+        <OptionList
+          task={currentTask}
+          options={currentTask.options}
+          session={session}
+          onSelect={handleAnswer}
+        />
+      ) : (
+        <NumericAnswerInput
+          key={currentTask.id}
+          unit={currentTask.answer.unit}
+          decimals={currentTask.answer.decimals}
+          sign={currentTask.answer.sign}
+          disabled={session.phase !== "active"}
+          submitted={
+            session.phase === "answered" &&
+            latestAnswer?.format === "numeric_input"
+              ? { raw: latestAnswer.response.raw, isCorrect: latestAnswer.isCorrect }
+              : undefined
+          }
+          onSubmit={handleNumericSubmit}
+        />
+      )}
 
       {/* Пока ученик решает — Nova подсказывает плавающим баблом. После
           ответа её голос переезжает в карточку разбора (один голос, одна
@@ -374,6 +431,11 @@ export function QuizSession({
             onOpenHelp={
               answerHelpTarget && onOpenHelpTarget
                 ? () => onOpenHelpTarget(answerHelpTarget)
+                : undefined
+            }
+            correctAnswer={
+              latestAnswer?.format === "numeric_input"
+                ? `${formatNumericValue(latestAnswer.correctValue)} ${latestAnswer.unit}`
                 : undefined
             }
           />

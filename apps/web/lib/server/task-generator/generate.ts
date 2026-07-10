@@ -257,6 +257,7 @@ function createTask(blueprint: TaskBlueprint, params: Params, index: number): Ge
     text: blueprint.textTemplate(params, answerValue),
     formula: blueprint.formula,
     answerUnit: answerUnitFor(blueprint, params),
+    answerFormat: blueprint.answerFormat ?? "single_choice",
     explanation: explanationFor(blueprint, params, answerValue),
     graph: graphFor(blueprint, params),
     diagram: diagramFor(blueprint, params),

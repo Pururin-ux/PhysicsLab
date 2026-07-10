@@ -33,6 +33,7 @@ export const electricPowerBlueprint: TaskBlueprint = {
   formula: "P=UI=I^2R=\\frac{U^2}{R}",
   answerUnit: "Вт",
   answerKind: "positive",
+  answerFormat: "numeric_input",
   solver: electricPower,
   distractors: electricPowerDistractors,
   textTemplate: textFor,

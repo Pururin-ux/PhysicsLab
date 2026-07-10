@@ -20,6 +20,9 @@ interface AnswerFeedbackProps {
   explanationLatex?: string;
   helpTarget?: HelpTarget;
   onOpenHelp?: () => void;
+  // Для numeric-задач: правильный ответ с единицей показываем сразу, не пряча
+  // за разворотом решения (для single_choice верный вариант виден в списке).
+  correctAnswer?: string;
 }
 
 // После ответа — compact-first поверхность:
@@ -33,6 +36,7 @@ export function AnswerFeedback({
   explanationLatex,
   helpTarget,
   onOpenHelp,
+  correctAnswer,
 }: AnswerFeedbackProps) {
   const [open, setOpen] = useState(false);
   const panelId = useId();
@@ -43,6 +47,12 @@ export function AnswerFeedback({
     : null;
 
   const statusLabel = isCorrect ? "Верно" : "Не совсем";
+  const normalizedNovaText = novaText.trim();
+  const accessibleStatusText = normalizedNovaText
+    .toLocaleLowerCase("ru")
+    .startsWith(statusLabel.toLocaleLowerCase("ru"))
+    ? normalizedNovaText
+    : `${statusLabel}. ${normalizedNovaText}`;
   const accentText = isCorrect ? "text-nova-cyan" : "text-nova-gold";
   const accentBorder = isCorrect ? "border-l-nova-cyan/60" : "border-l-nova-gold/60";
 
@@ -57,10 +67,22 @@ export function AnswerFeedback({
         <div className="flex items-start gap-3">
           <CoachAvatar state={novaState} className="h-11 w-11" />
           <div className="min-w-0 flex-1">
-            <p className={cn("text-[13px] font-bold leading-none", accentText)}>{statusLabel}</p>
             <p
               role="status"
               aria-live="polite"
+              aria-atomic="true"
+              className="sr-only"
+            >
+              {accessibleStatusText}
+            </p>
+            <p
+              aria-hidden="true"
+              className={cn("text-[13px] font-bold leading-none", accentText)}
+            >
+              {statusLabel}
+            </p>
+            <p
+              aria-hidden="true"
               className="mt-1.5 text-[14px] font-medium leading-[1.6] text-white/85"
             >
               <MathText text={output} />
@@ -68,6 +90,16 @@ export function AnswerFeedback({
             </p>
           </div>
         </div>
+
+        {correctAnswer ? (
+          <div
+            data-testid="numeric-correct-answer"
+            className="rounded-option border border-white/[.08] bg-white/[.025] px-3 py-2 text-[13px] text-white/72"
+          >
+            Правильный ответ:{" "}
+            <span className="physics-number font-semibold text-white">{correctAnswer}</span>
+          </div>
+        ) : null}
 
         <div className="border-t border-white/[.08] pt-0.5">
           {!isCorrect && helpTarget && onOpenHelp ? (

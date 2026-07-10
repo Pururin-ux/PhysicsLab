@@ -120,3 +120,65 @@ test("@a11y карточка разбора после ошибки — без s
     })),
   ).toEqual([]);
 });
+
+// Числовой ввод — новая интерактивная поверхность: у поля должно быть имя,
+// единица понятна SR, статус верно/неверно не только цветом. Сканируем поле
+// до ответа и карточку разбора после ответа.
+test("@a11y числовой ввод и его разбор — без serious/critical", async ({
+  page,
+  request,
+}) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  const response = await request.get(
+    "/api/tasks?template=average-speed-segments&count=1&batch=0",
+  );
+  expect(response.ok()).toBe(true);
+  const payload = (await response.json()) as {
+    tasks: {
+      type: "numeric_input";
+      answer: { value: number; unit: string };
+    }[];
+  };
+
+  await page.route("**/api/tasks?*", async (route) => {
+    const template = new URL(route.request().url()).searchParams.get("template");
+    if (template !== "mixed") {
+      await route.continue();
+      return;
+    }
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify(payload),
+    });
+  });
+
+  await page.goto("/practice/kinematics-demo", { waitUntil: "domcontentloaded" });
+  await page.waitForLoadState("networkidle");
+
+  const input = page.getByTestId("numeric-answer-input");
+  await expect(input).toBeVisible();
+  await expect(input).toHaveAttribute(
+    "aria-label",
+    `Ответ в единицах: ${payload.tasks[0].answer.unit}`,
+  );
+
+  const beforeSubmit = await scanForBlockingViolations(page);
+  expect(beforeSubmit.map((violation) => violation.id)).toEqual([]);
+
+  const answer = payload.tasks[0].answer;
+  await input.fill(String(answer.value).replace(".", ","));
+  await page.getByTestId("numeric-submit").click();
+  await expect(page.getByTestId("numeric-answer")).toHaveAttribute("data-state", "correct");
+  await expect(page.getByTestId("numeric-answer")).toContainText("Верно");
+  await expect(page.locator('[role="status"]')).toHaveCount(1);
+  await expect(page.getByTestId("next-task-button")).toBeFocused();
+
+  const afterSubmit = await scanForBlockingViolations(page);
+  expect(
+    afterSubmit.map((violation) => ({
+      id: violation.id,
+      nodes: violation.nodes.slice(0, 5).map((node) => node.html.slice(0, 120)),
+    })),
+  ).toEqual([]);
+});
