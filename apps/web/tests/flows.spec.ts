@@ -46,3 +46,19 @@ for (const route of productRoutes) {
     );
   });
 }
+
+test("смешанная тренировка честно обозначает открытый scope", async ({ page }) => {
+  await page.goto("/practice/exam-demo", { waitUntil: "domcontentloaded" });
+
+  await expect(
+    page.getByRole("heading", { name: "Смешанная тренировка" }),
+  ).toBeVisible();
+  await expect(
+    page.getByText(
+      "Это не полный вариант ЦТ/ЦЭ: оптика, квантовая и атомно-ядерная физика пока не включены.",
+    ),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Начать тренировку" }),
+  ).toBeVisible();
+});

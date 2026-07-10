@@ -152,7 +152,7 @@ const sidebarGroups: NavGroup[] = [
     title: "Практика",
     items: [
       {
-        label: "Пробный вариант",
+        label: "Смешанная тренировка",
         href: "/practice/exam-demo",
         icon: navIcons.exam,
         match: (pathname) => pathname.startsWith("/practice/exam"),
@@ -225,7 +225,7 @@ const quickActions: NavItem[] = [
     match: (pathname) => pathname.startsWith("/topics"),
   },
   {
-    label: "Пробный",
+    label: "Смешанная",
     href: "/practice/exam-demo",
     match: (pathname) => pathname.startsWith("/practice/exam"),
   },

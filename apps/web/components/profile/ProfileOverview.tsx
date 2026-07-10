@@ -297,10 +297,10 @@ export function ProfileOverview() {
           hint={totalWeakTraps > 0 ? "раздел «Ошибки»" : undefined}
         />
         <StatCard
-          label="Пробный вариант"
+          label="Смешанная тренировка"
           value={bestExam ? `${bestExam.score}/${bestExam.total}` : "—"}
           hint={
-            examLog.length > 0 ? `попыток: ${examLog.length}` : "все разделы · 10"
+            examLog.length > 0 ? `попыток: ${examLog.length}` : "открытые темы · 10"
           }
         />
         <StatCard

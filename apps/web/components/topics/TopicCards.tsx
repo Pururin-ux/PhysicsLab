@@ -209,21 +209,21 @@ export function TopicCards() {
       })}
     </section>
 
-    <section aria-label="Пробный вариант">
+    <section aria-label="Смешанная тренировка">
       <Card
         variant="elevated"
         className="card-lift flex flex-col gap-4 border-l-2 border-nova-gold/30 !p-5 md:flex-row md:items-center md:justify-between md:!p-6"
       >
         <div className="flex min-w-0 flex-col gap-2">
           <div className="flex items-center gap-2.5">
-            <Badge tone="gold">Пробный вариант</Badge>
+            <Badge tone="gold">Смешанная тренировка</Badge>
             <span className="text-[11px] font-bold uppercase tracking-[.12em] text-white/60">
-              все открытые разделы
+              открытые темы
             </span>
           </div>
           <p className="text-[14px] leading-[1.65] text-white/70">
-            10 задач: механика, электродинамика и термодинамика вперемешку —
-            в пропорциях, близких к реальному тесту.
+            10 задач: механика, электродинамика и термодинамика вперемешку.
+            Это тренировка по открытым темам, не полный вариант ЦТ/ЦЭ.
           </p>
           {bestExam ? (
             <p className="text-[12px] font-semibold text-white/50">
@@ -239,7 +239,7 @@ export function TopicCards() {
           className="shrink-0 border-nova-gold bg-nova-gold shadow-gold-glow focus-visible:ring-nova-gold/50"
         >
           <Link href="/practice/exam-demo">
-            {bestExam ? "Ещё вариант" : "Начать вариант"}
+            {bestExam ? "Ещё тренировка" : "Начать тренировку"}
           </Link>
         </Button>
       </Card>

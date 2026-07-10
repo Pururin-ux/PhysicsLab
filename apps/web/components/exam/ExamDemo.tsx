@@ -57,8 +57,8 @@ export function ExamDemo() {
       <QuizSession
         mode="generated"
         generatedTemplate="exam"
-        generatedTopic="Пробный вариант"
-        generatedTitle="Пробный вариант · все открытые разделы"
+        generatedTopic="Смешанная тренировка"
+        generatedTitle="Смешанная тренировка · открытые темы"
         sessionKind="exam"
       />
     );
@@ -70,7 +70,7 @@ export function ExamDemo() {
       className="mx-auto flex w-full max-w-[580px] flex-col gap-5 border-nova-gold/25 !p-6 md:!p-7"
     >
       <div className="flex items-center gap-2.5">
-        <Badge tone="gold">Все открытые разделы</Badge>
+        <Badge tone="gold">Открытые темы</Badge>
         <span className="text-[11px] font-bold uppercase tracking-[.14em] text-white/60">
           10 задач
         </span>
@@ -98,7 +98,7 @@ export function ExamDemo() {
         className="border-nova-gold bg-nova-gold shadow-gold-glow focus-visible:ring-nova-gold/50"
         onClick={() => setStarted(true)}
       >
-        Начать вариант
+        Начать тренировку
       </Button>
     </Card>
   );

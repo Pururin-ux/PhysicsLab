@@ -116,7 +116,7 @@ export function DataTransfer() {
             В файле: решено{" "}
             <span className="physics-number font-semibold">{pending.summary.solved}</span> задач,{" "}
             <span className="physics-number font-semibold">{pending.summary.xp}</span> XP, попыток
-            варианта: <span className="physics-number font-semibold">{pending.summary.examAttempts}</span>.
+            смешанной тренировки: <span className="physics-number font-semibold">{pending.summary.examAttempts}</span>.
             Экспортирован {formatExportDate(pending.summary.exportedAt)}.
           </p>
           <p className="text-[12px] leading-[1.5] text-white/60">

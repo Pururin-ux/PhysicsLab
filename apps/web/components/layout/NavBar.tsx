@@ -15,7 +15,7 @@ export function NavBar() {
     ["/practice/kinematics", "Кинематика"],
     ["/practice/electro", "Электродинамика"],
     ["/practice/thermo", "Термодинамика"],
-    ["/practice/exam", "Пробный вариант"],
+    ["/practice/exam", "Смешанная"],
     ["/mistakes", "Ошибки"],
     ["/formulas", "Формулы"],
     ["/profile", "Профиль"],

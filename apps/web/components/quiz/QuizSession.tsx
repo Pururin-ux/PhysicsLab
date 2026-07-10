@@ -38,7 +38,7 @@ interface QuizSessionProps {
   generatedTopic?: string;
   generatedTitle?: string;
   topicId?: TopicId;
-  // "exam" пишет результат в журнал пробных вариантов и слабые места тем,
+  // "exam" пишет результат в журнал смешанных тренировок и слабые места тем,
   // не увеличивая счётчик тренировок темы.
   sessionKind?: "practice" | "exam";
   onHelpTargetChange?: (target: HelpTarget) => void;
@@ -48,7 +48,7 @@ interface QuizSessionProps {
 
 const nextStepByTopic: Record<string, { href: string; label: string }> = {
   kinematics: { href: "/practice/dynamics-demo", label: "Дальше: Динамика" },
-  dynamics: { href: "/practice/exam-demo", label: "Дальше: Пробный вариант" },
+  dynamics: { href: "/practice/exam-demo", label: "Дальше: смешанная тренировка" },
   electrodynamics: { href: "/practice/thermo-demo", label: "Дальше: Термодинамика" },
   thermodynamics: { href: "/topics", label: "К темам" },
 };
