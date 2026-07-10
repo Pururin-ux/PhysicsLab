@@ -33,16 +33,22 @@ for (const route of routesFixture.devOnly) {
   });
 }
 
-test("prod: /api/tasks?template=exam соблюдает квоты спецификации", async ({ request }) => {
+test("prod: /api/tasks?template=exam сохраняет сбалансированный mixed-контракт", async ({ request }) => {
   const response = await request.get("/api/tasks?template=exam&count=10&batch=1");
   expect(response.status()).toBe(200);
 
   const data = (await response.json()) as {
-    tasks: {
+    tasks: ({
+      type: "single_choice";
       blueprint: string;
       text: string;
       options: { correct?: boolean }[];
-    }[];
+    } | {
+      type: "numeric_input";
+      blueprint: string;
+      text: string;
+      answer: { value: number; tolerance: number };
+    })[];
   };
 
   expect(data.tasks).toHaveLength(10);
@@ -59,14 +65,22 @@ test("prod: /api/tasks?template=exam соблюдает квоты специф�
   expect(counts).toEqual({
     kinematics: 2,
     dynamics: 2,
-    electrodynamics: 3,
-    thermodynamics: 3,
+    electrodynamics: 2,
+    thermodynamics: 2,
+    optics: 2,
   });
 
   const texts = new Set(data.tasks.map((task) => task.text));
   expect(texts.size).toBe(10);
 
   for (const task of data.tasks) {
+    if (task.type === "numeric_input") {
+      expect("options" in task).toBe(false);
+      expect(Number.isFinite(task.answer.value)).toBe(true);
+      expect(task.answer.tolerance).toBeGreaterThan(0);
+      continue;
+    }
+
     expect(task.options).toHaveLength(4);
     expect(task.options.filter((option) => option.correct)).toHaveLength(1);
   }

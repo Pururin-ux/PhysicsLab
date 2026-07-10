@@ -4,7 +4,8 @@ export type TopicGlyphId =
   | "kinematics"
   | "dynamics"
   | "electrodynamics"
-  | "thermodynamics";
+  | "thermodynamics"
+  | "optics";
 
 const glyphs: Record<TopicGlyphId, ReactNode> = {
   // Растущий график v(t) с точкой — чтение движения по графику.
@@ -41,6 +42,16 @@ const glyphs: Record<TopicGlyphId, ReactNode> = {
       <circle cx="28" cy="23" r="1.7" fill="currentColor" stroke="none" />
       <circle cx="22" cy="28" r="1.7" fill="currentColor" stroke="none" />
       <path d="M17 41 q2.5 -3.5 5 0 t5 0" />
+    </>
+  ),
+  // Собирающая линза с лучом, преломляющимся к оси.
+  optics: (
+    <>
+      <path d="M24 8 V40" />
+      <path d="M20 12 L24 8 L28 12" />
+      <path d="M20 36 L24 40 L28 36" />
+      <path d="M8 16 L24 24 L40 32" />
+      <circle cx="24" cy="24" r="2" fill="currentColor" stroke="none" />
     </>
   ),
 };

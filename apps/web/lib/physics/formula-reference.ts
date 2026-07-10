@@ -532,47 +532,104 @@ export const formulaReference: FormulaReferenceGroup[] = [
   {
     id: "optics",
     title: "Оптика",
-    intro: "Задач по разделу пока нет — формулы уже можно повторять.",
-    badgeTone: "neutral",
-    status: "soon",
+    intro: "Отражение, преломление, плоское зеркало и собирающая тонкая линза.",
+    badgeTone: "cyan",
+    status: "active",
     entries: [
       {
-        id: "refraction-law",
+        id: "reflection-angle",
+        skillId: "reflection-angle",
+        title: "Закон отражения света",
+        formula: "\\theta_r=\\theta_i",
+        caption: "угол отражения равен углу падения",
+        symbols: [
+          { latex: "\\theta_i", description: "угол падения, от нормали" },
+          { latex: "\\theta_r", description: "угол отражения, от нормали" },
+        ],
+        limitation:
+          "Оба угла отсчитываются от нормали — перпендикуляра к зеркалу, а не от его поверхности.",
+      },
+      {
+        id: "plane-mirror-separation",
+        skillId: "plane-mirror-separation",
+        title: "Изображение в плоском зеркале",
+        formula: "L=2d",
+        caption: "предмет и мнимое изображение симметричны относительно зеркала",
+        symbols: [
+          { latex: "L", description: "расстояние между предметом и изображением" },
+          { latex: "d", description: "расстояние от предмета до зеркала" },
+        ],
+        limitation:
+          "Изображение в плоском зеркале мнимое и равно предмету по размеру; L — именно расстояние предмет—изображение.",
+      },
+      {
+        id: "refractive-index-speed",
+        skillId: "refractive-index-speed",
+        title: "Показатель преломления",
+        formula: "n=\\frac{c}{v}",
+        caption: "во сколько раз свет в среде медленнее, чем в вакууме",
+        symbols: [
+          { latex: "n", description: "абсолютный показатель преломления" },
+          { latex: "c", description: "скорость света в вакууме, 3·10⁸ м/с" },
+          { latex: "v", description: "скорость света в среде, м/с" },
+        ],
+        limitation:
+          "Свет в веществе всегда медленнее, чем в вакууме, поэтому n ≥ 1.",
+      },
+      {
+        id: "snell-index-ratio",
+        skillId: "snell-index-ratio",
         title: "Закон преломления света",
-        formula: "n_1 \\sin\\alpha = n_2 \\sin\\beta",
+        formula: "\\frac{n_2}{n_1}=\\frac{\\sin i}{\\sin r}",
         caption: "на границе двух сред луч меняет направление",
         symbols: [
           { latex: "n_1, n_2", description: "показатели преломления сред" },
-          { latex: "\\alpha", description: "угол падения (от нормали)" },
-          { latex: "\\beta", description: "угол преломления (от нормали)" },
+          { latex: "i", description: "угол падения, от нормали" },
+          { latex: "r", description: "угол преломления, от нормали" },
         ],
         limitation:
-          "Углы отсчитываются от перпендикуляра к границе, а не от самой границы.",
+          "Углы отсчитываются от нормали к границе; при переходе в оптически более плотную среду r < i.",
       },
       {
-        id: "thin-lens",
+        id: "thin-lens-image-distance",
+        skillId: "thin-lens-image-distance",
         title: "Формула тонкой линзы",
-        formula: "\\frac{1}{F} = \\frac{1}{d} + \\frac{1}{f}",
+        formula: "\\frac{1}{F}=\\frac{1}{d_o}+\\frac{1}{d_i}",
         caption: "связь фокусного расстояния с положением предмета и изображения",
         symbols: [
-          { latex: "F", description: "фокусное расстояние линзы, м" },
-          { latex: "d", description: "расстояние от предмета до линзы, м" },
-          { latex: "f", description: "расстояние от линзы до изображения, м" },
+          { latex: "F", description: "фокусное расстояние линзы" },
+          { latex: "d_o", description: "расстояние от предмета до линзы" },
+          { latex: "d_i", description: "расстояние от линзы до изображения" },
         ],
         limitation:
-          "В таком виде — для собирающей линзы и действительного изображения; иначе слагаемые берут со знаками.",
+          "В таком виде — для собирающей линзы и действительного изображения (d_o > F); иначе слагаемые берут со знаками.",
       },
       {
-        id: "optical-power",
+        id: "lens-optical-power",
+        skillId: "lens-optical-power",
         title: "Оптическая сила линзы",
-        formula: "D = \\frac{1}{F}",
+        formula: "D=\\frac{1}{F}",
         caption: "чем короче фокус, тем сильнее линза",
         symbols: [
           { latex: "D", description: "оптическая сила, дптр" },
           { latex: "F", description: "фокусное расстояние, м" },
         ],
         limitation:
-          "F подставляют в метрах; у рассеивающей линзы D отрицательна.",
+          "F подставляют строго в метрах: дптр = 1/м. У собирающей линзы D положительна.",
+      },
+      {
+        id: "lens-image-height",
+        skillId: "lens-image-height",
+        title: "Линейное увеличение линзы",
+        formula: "|\\Gamma|=\\frac{d_i}{d_o}=\\frac{h_i}{h_o}",
+        caption: "во сколько раз изображение больше или меньше предмета",
+        symbols: [
+          { latex: "|\\Gamma|", description: "модуль линейного увеличения" },
+          { latex: "d_o, d_i", description: "расстояния до предмета и изображения" },
+          { latex: "h_o, h_i", description: "высоты предмета и изображения" },
+        ],
+        limitation:
+          "Формула записана по модулю: правила знаков v1 намеренно не использует, ориентация изображения оговаривается отдельно.",
       },
     ],
   },

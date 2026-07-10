@@ -20,6 +20,7 @@ const routes = [
   { name: "mistakes", path: "/mistakes" },
   { name: "formulas", path: "/formulas" },
   { name: "practice-kinematics", path: "/practice/kinematics-demo" },
+  { name: "practice-optics", path: "/practice/optics-demo" },
   { name: "practice-exam", path: "/practice/exam-demo" },
 ] as const;
 

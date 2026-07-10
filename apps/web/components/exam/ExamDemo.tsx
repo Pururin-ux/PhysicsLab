@@ -78,7 +78,7 @@ export function ExamDemo() {
       <ul className="flex flex-col gap-2.5 text-[14px] leading-[1.65] text-white/72">
         <li className="grid grid-cols-[auto_1fr] gap-2.5">
           <span className="text-nova-gold">—</span>
-          Кинематика, динамика, электродинамика и термодинамика вперемешку.
+          Кинематика, динамика, электродинамика, термодинамика и оптика — по две задачи из каждой темы.
         </li>
         <li className="grid grid-cols-[auto_1fr] gap-2.5">
           <span className="text-nova-gold">—</span>

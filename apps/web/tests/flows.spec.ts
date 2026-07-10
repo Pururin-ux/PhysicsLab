@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { formulaReference } from "../lib/physics/formula-reference.ts";
 
 // Пользовательские сценарии поверх smoke: ответ на задачу с фидбеком
 // и доступность всех продуктовых страниц, а не только главных трёх.
@@ -55,7 +56,7 @@ test("смешанная тренировка честно обозначает 
   ).toBeVisible();
   await expect(
     page.getByText(
-      "Это не полный вариант ЦТ/ЦЭ: оптика, квантовая и атомно-ядерная физика пока не включены.",
+      "Это не полный вариант ЦТ/ЦЭ: квантовая и атомно-ядерная физика пока не включены.",
     ),
   ).toBeVisible();
   await expect(
@@ -70,9 +71,15 @@ test(
     await page.waitForLoadState("networkidle");
 
     const formulaRows = page.locator(".formula-row");
-    await expect(formulaRows).toHaveCount(36);
+    const formulaCount = formulaReference.reduce(
+      (count, group) => count + group.entries.length,
+      0,
+    );
+    await expect(formulaRows).toHaveCount(formulaCount);
     await expect(page.locator(".katex-error")).toHaveCount(0);
-    expect(await page.locator(".katex-mathml").count()).toBeGreaterThanOrEqual(36);
+    expect(await page.locator(".katex-mathml").count()).toBeGreaterThanOrEqual(
+      formulaCount,
+    );
 
     const averageSpeedRow = formulaRows.filter({
       hasText: "Средняя скорость на участках",

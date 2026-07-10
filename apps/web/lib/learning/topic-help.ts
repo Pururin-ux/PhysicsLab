@@ -31,7 +31,14 @@ export type HelpSectionId =
   | "gas-equation"
   | "heat-amount"
   | "heat-balance"
-  | "heating-melting";
+  | "heating-melting"
+  | "reflection"
+  | "plane-mirror"
+  | "refraction"
+  | "refractive-index"
+  | "thin-lens"
+  | "optical-power"
+  | "magnification";
 
 export type HelpReason = "task" | "mistake" | "fallback";
 
@@ -247,6 +254,57 @@ export const topicHelpSections: Record<TopicId, TopicHelpSection[]> = {
       mistake: "Во время плавления температура не растёт: теплота идёт на изменение состояния.",
     },
   ],
+  optics: [
+    {
+      id: "reflection",
+      label: "Отражение",
+      shortHint: "Угол отражения равен углу падения; оба отсчитываются от нормали.",
+      formula: "\\theta_r=\\theta_i",
+      mistake: "Не отсчитывай углы от поверхности зеркала: в законе отражения углы берутся от нормали.",
+    },
+    {
+      id: "plane-mirror",
+      label: "Плоское зеркало",
+      shortHint: "Мнимое изображение находится за зеркалом на том же расстоянии, что предмет перед ним.",
+      formula: "L=2d",
+      mistake: "Расстояние между предметом и изображением — это 2d, а не расстояние до зеркала.",
+    },
+    {
+      id: "refraction",
+      label: "Преломление",
+      shortHint: "Отношение показателей преломления равно отношению синусов углов от нормали.",
+      formula: "\\frac{n_2}{n_1}=\\frac{\\sin i}{\\sin r}",
+      mistake: "Дели синусы углов, а не сами углы: закон преломления связывает именно синусы.",
+    },
+    {
+      id: "refractive-index",
+      label: "Показатель преломления",
+      shortHint: "Показатель преломления показывает, во сколько раз свет в среде медленнее, чем в вакууме.",
+      formula: "n=\\frac{c}{v}",
+      mistake: "Не переворачивай отношение: n = c/v, поэтому у вещества n всегда не меньше единицы.",
+    },
+    {
+      id: "thin-lens",
+      label: "Тонкая линза",
+      shortHint: "Формула линзы связывает фокусное расстояние с расстояниями до предмета и изображения.",
+      formula: "\\frac{1}{F}=\\frac{1}{d_o}+\\frac{1}{d_i}",
+      mistake: "Выражая d_i, следи за знаменателем: там разность d_o − F, а не сумма.",
+    },
+    {
+      id: "optical-power",
+      label: "Оптическая сила",
+      shortHint: "Оптическая сила — обратная величина фокусного расстояния в метрах.",
+      formula: "D=\\frac{1}{F}",
+      mistake: "Сначала переведи фокусное расстояние в метры: диоптрия — это 1/м.",
+    },
+    {
+      id: "magnification",
+      label: "Увеличение",
+      shortHint: "Увеличение равно d_i/d_o; во столько же раз изображение выше или ниже предмета.",
+      formula: "|\\Gamma|=\\frac{d_i}{d_o}=\\frac{h_i}{h_o}",
+      mistake: "Не переворачивай отношение расстояний: в увеличении d_i делится на d_o.",
+    },
+  ],
 };
 
 const blueprintTargets: Partial<
@@ -285,6 +343,13 @@ const blueprintTargets: Partial<
   "heat-amount": { topicId: "thermodynamics", sectionId: "heat-amount" },
   "heat-balance-simple": { topicId: "thermodynamics", sectionId: "heat-balance" },
   "phase-change-heat": { topicId: "thermodynamics", sectionId: "heating-melting" },
+  "reflection-angle": { topicId: "optics", sectionId: "reflection" },
+  "plane-mirror-separation": { topicId: "optics", sectionId: "plane-mirror" },
+  "refractive-index-speed": { topicId: "optics", sectionId: "refractive-index" },
+  "snell-index-ratio": { topicId: "optics", sectionId: "refraction" },
+  "thin-lens-image-distance": { topicId: "optics", sectionId: "thin-lens" },
+  "lens-optical-power": { topicId: "optics", sectionId: "optical-power" },
+  "lens-image-height": { topicId: "optics", sectionId: "magnification" },
 };
 
 function normalize(value: string | undefined) {

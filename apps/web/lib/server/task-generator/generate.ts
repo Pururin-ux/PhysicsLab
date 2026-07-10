@@ -14,9 +14,16 @@ import { impulseMomentumBlueprint } from "./templates/impulse-momentum.ts";
 import { inclineForceBlueprint } from "./templates/incline-force.ts";
 import { inelasticCollisionSpeedBlueprint } from "./templates/inelastic-collision-speed.ts";
 import { kineticEnergyBlueprint } from "./templates/kinetic-energy.ts";
+import { lensImageHeightBlueprint } from "./templates/lens-image-height.ts";
+import { lensOpticalPowerBlueprint } from "./templates/lens-optical-power.ts";
 import { newtonSecondBlueprint } from "./templates/newton-second.ts";
 import { ohmLawBlueprint } from "./templates/ohm-law.ts";
 import { phaseChangeHeatBlueprint } from "./templates/phase-change-heat.ts";
+import { planeMirrorSeparationBlueprint } from "./templates/plane-mirror-separation.ts";
+import { reflectionAngleBlueprint } from "./templates/reflection-angle.ts";
+import { refractiveIndexSpeedBlueprint } from "./templates/refractive-index-speed.ts";
+import { snellIndexRatioBlueprint } from "./templates/snell-index-ratio.ts";
+import { thinLensImageDistanceBlueprint } from "./templates/thin-lens-image-distance.ts";
 import { relativeVelocityVectorsBlueprint } from "./templates/relative-velocity-vectors.ts";
 import { resistorNetworkBlueprint } from "./templates/resistor-network.ts";
 import { resultantForceBlueprint } from "./templates/resultant-force.ts";
@@ -76,6 +83,13 @@ export const blueprints = {
   "phase-change-heat": phaseChangeHeatBlueprint,
   "gas-state-ratio": gasStateRatioBlueprint,
   "heat-balance-simple": heatBalanceSimpleBlueprint,
+  "reflection-angle": reflectionAngleBlueprint,
+  "plane-mirror-separation": planeMirrorSeparationBlueprint,
+  "refractive-index-speed": refractiveIndexSpeedBlueprint,
+  "snell-index-ratio": snellIndexRatioBlueprint,
+  "thin-lens-image-distance": thinLensImageDistanceBlueprint,
+  "lens-optical-power": lensOpticalPowerBlueprint,
+  "lens-image-height": lensImageHeightBlueprint,
 };
 
 export type TemplateId = keyof typeof blueprints;

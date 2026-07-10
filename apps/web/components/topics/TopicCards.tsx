@@ -53,6 +53,15 @@ const topicStyles = {
       "mt-auto border-nova-ember bg-nova-ember shadow-ember-glow focus-visible:ring-nova-ember/50",
     tile: "border-nova-ember/25 bg-nova-ember/[.08] text-nova-ember",
   },
+  // Оптика переиспользует cyan (лучи света) — новых токенов не заводим.
+  optics: {
+    border: "border-white/[.08] border-l-nova-cyan/55",
+    depth:
+      "!shadow-[0_14px_38px_rgba(0,0,0,0.34),inset_0_1px_0_rgba(255,255,255,0.045)]",
+    badge: "cyan",
+    button: "mt-auto",
+    tile: "border-nova-cyan/25 bg-nova-cyan/[.08] text-nova-cyan",
+  },
 } as const;
 
 export function TopicCards() {
@@ -222,7 +231,7 @@ export function TopicCards() {
             </span>
           </div>
           <p className="text-[14px] leading-[1.65] text-white/70">
-            10 задач: механика, электродинамика и термодинамика вперемешку.
+            10 задач: механика, электродинамика, термодинамика и оптика вперемешку.
             Это тренировка по открытым темам, не полный вариант ЦТ/ЦЭ.
           </p>
           {bestExam ? (

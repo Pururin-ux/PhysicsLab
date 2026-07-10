@@ -161,7 +161,7 @@ export function FormulasBrowser({ groups }: FormulasBrowserProps) {
         </section>
       ))}
 
-      {!isFiltering ? (
+      {!isFiltering && groups.some((group) => group.status === "soon") ? (
         <p className="text-[13px] leading-[1.6] text-white/45">
           По разделам с пометкой «скоро задачи» тренировки появятся позже —
           формулы уже проверены и доступны.

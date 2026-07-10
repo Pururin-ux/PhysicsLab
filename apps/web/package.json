@@ -9,7 +9,7 @@
     "start": "next start",
     "check": "tsc --noEmit",
     "test": "node --test",
-    "test:physics": "node --test \"lib/physics/*.test.ts\" \"components/physics-graph/*.test.ts\" \"components/diagrams/*.test.mjs\" \"lib/server/task-generator/*.test.ts\"",
+    "test:physics": "node --test \"lib/physics/*.test.ts\" \"components/physics-graph/*.test.ts\" \"components/diagrams/*.test.mjs\" \"components/diagrams/*.test.ts\" \"lib/server/task-generator/*.test.ts\"",
     "test:e2e": "playwright test --grep-invert \"@a11y|@visual\"",
     "test:a11y": "playwright test --grep @a11y",
     "test:visual": "playwright test --grep @visual",

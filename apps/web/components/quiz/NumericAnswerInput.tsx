@@ -82,8 +82,8 @@ export function NumericAnswerInput({
       >
         <span className="min-w-0 text-[15px] font-semibold text-white">
           <span className="text-white/55">Твой ответ: </span>
-          <span className="physics-number">{submitted.raw || "—"}</span>{" "}
-          <span className="text-white/55">{unit}</span>
+          <span className="physics-number">{submitted.raw || "—"}</span>
+          {unit ? <span className="text-white/55"> {unit}</span> : null}
         </span>
         <span
           className={cn(
@@ -127,7 +127,8 @@ export function NumericAnswerInput({
             autoComplete="off"
             enterKeyHint="send"
             data-testid="numeric-answer-input"
-            aria-label={`Ответ в единицах: ${unit}`}
+            // Безразмерный ответ (unit === "") не анонсирует пустую единицу.
+            aria-label={unit ? `Ответ в единицах: ${unit}` : "Ответ (число без единиц)"}
             aria-describedby={cn(hint ? hintId : "", showInvalid && !parsed.ok ? errorId : "") || undefined}
             aria-invalid={showInvalid && !parsed.ok}
             value={raw}
@@ -139,13 +140,15 @@ export function NumericAnswerInput({
             placeholder={sign === "signed" ? "например, -120" : "например, 24"}
             className="h-12 min-w-0 flex-1 bg-transparent text-[16px] font-semibold text-white placeholder:text-white/35 focus:outline-none"
           />
-          <span
-            aria-hidden="true"
-            data-testid="numeric-answer-unit"
-            className="shrink-0 text-[14px] font-medium text-white/55"
-          >
-            {unit}
-          </span>
+          {unit ? (
+            <span
+              aria-hidden="true"
+              data-testid="numeric-answer-unit"
+              className="shrink-0 text-[14px] font-medium text-white/55"
+            >
+              {unit}
+            </span>
+          ) : null}
         </div>
 
         <Button

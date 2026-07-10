@@ -47,16 +47,18 @@ export const topics = [
     skillsCount: getSkillsCount("thermodynamics"),
     modeLabel: "газы и теплота",
   },
+  {
+    id: "optics",
+    title: "Оптика",
+    description: "Отражение, плоское зеркало, преломление и собирающая линза с диаграммами.",
+    href: "/practice/optics-demo",
+    skillsCount: getSkillsCount("optics"),
+    modeLabel: "лучи и линзы",
+  },
 ] as const satisfies readonly ProductTopic[];
 
 // Отдельный список: эти темы не попадают в progress-store и не имеют задач.
 export const upcomingTopics = [
-  {
-    id: "optics",
-    title: "Оптика",
-    description: "Отражение, преломление и построение изображений.",
-    reviewStatus: "needs-physics-review",
-  },
   {
     id: "quantum",
     title: "Атомная и квантовая физика",

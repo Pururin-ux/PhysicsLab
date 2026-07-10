@@ -19,35 +19,30 @@ const kinematicsTemplates = getTemplateIdsByGroup("kinematics");
 const dynamicsTemplates = getTemplateIdsByGroup("dynamics");
 const electrodynamicsTemplates = getTemplateIdsByGroup("electrodynamics");
 const thermodynamicsTemplates = getTemplateIdsByGroup("thermodynamics");
-// Пробный вариант собирается по пропорциям спецификации ЦТ-2026,
-// нормированным на открытые разделы: механика ~33%, МКТ/термодинамика ~23%,
-// электродинамика ~30% (оптика/квант/ядро пока не открыты). На 10 задач:
-// 4 механики (2 кинематика + 2 динамика), 3 электродинамики, 3 термодинамики.
-const examQuotas: { templates: readonly TemplateId[]; share: number }[] = [
-  { templates: kinematicsTemplates, share: 0.2 },
-  { templates: dynamicsTemplates, share: 0.2 },
-  { templates: electrodynamicsTemplates, share: 0.3 },
-  { templates: thermodynamicsTemplates, share: 0.3 },
+const opticsTemplates = getTemplateIdsByGroup("optics");
+// Смешанная тренировка — сбалансированное покрытие пяти открытых разделов
+// поровну (это учебный микс, а не официальный вариант ЦТ/ЦЭ). Слоты
+// раздаются по кругу групп: для count=10 каждая группа получает ровно 2
+// задачи, для других count распределение отличается не более чем на 1.
+const examGroups: readonly (readonly TemplateId[])[] = [
+  kinematicsTemplates,
+  dynamicsTemplates,
+  electrodynamicsTemplates,
+  thermodynamicsTemplates,
+  opticsTemplates,
 ];
 
 // Разные batch смещают выбор внутри группы, чтобы новые варианты
-// тренировали разные навыки, а не одну и ту же четвёрку шаблонов.
+// тренировали разные навыки, а не одну и ту же пятёрку шаблонов.
 function buildExamMix(count: number, batch: number): TemplateId[] {
   const mix: TemplateId[] = [];
 
-  for (const quota of examQuotas) {
-    const slots = Math.round(count * quota.share);
-    for (let slot = 0; slot < slots && mix.length < count; slot += 1) {
-      mix.push(quota.templates[(batch + slot) % quota.templates.length]);
-    }
-  }
-
-  // Округление долей может недодать задач — добираем по кругу групп.
-  let groupIndex = 0;
-  while (mix.length < count) {
-    const templates = examQuotas[groupIndex % examQuotas.length].templates;
-    mix.push(templates[(batch + mix.length) % templates.length]);
-    groupIndex += 1;
+  // Точное распределение без независимого округления долей: слот i идёт
+  // группе i mod 5 — ни лишних слотов, ни выпавшей последней группы.
+  for (let slot = 0; slot < count; slot += 1) {
+    const templates = examGroups[slot % examGroups.length];
+    const withinGroup = Math.floor(slot / examGroups.length);
+    mix.push(templates[(batch + withinGroup) % templates.length]);
   }
 
   return mix;
@@ -83,8 +78,9 @@ function hashSeed(seed: string) {
   return hash >>> 0;
 }
 
+// Безразмерные ответы (unit === "") не получают хвостового пробела.
 function withUnit(value: string, unit: string) {
-  return `${value} ${unit}`;
+  return unit ? `${value} ${unit}` : value;
 }
 
 function toQuizTask(task: GeneratedTask) {
@@ -93,7 +89,9 @@ function toQuizTask(task: GeneratedTask) {
     graph: task.graph ?? null,
     diagram: task.diagram ?? null,
     explanation: task.explanation ?? task.coach_lines.correct,
-    explanation_latex: `${task.formula},\\quad ${formatMathValue(task.answerValue)}\\text{ ${unit}}`,
+    explanation_latex: unit
+      ? `${task.formula},\\quad ${formatMathValue(task.answerValue)}\\text{ ${unit}}`
+      : `${task.formula},\\quad ${formatMathValue(task.answerValue)}`,
     coach_lines: {
       correct: task.coach_lines.correct,
       wrong: task.coach_lines.wrong,
@@ -216,6 +214,8 @@ export async function GET(req: Request) {
           ? generateMixedTasks(electrodynamicsTemplates, "electro-mixed", count, batch)
         : template === "thermo-mixed"
           ? generateMixedTasks(thermodynamicsTemplates, "thermo-mixed", count, batch)
+        : template === "optics-mixed"
+          ? generateMixedTasks(opticsTemplates, "optics-mixed", count, batch)
         : template === "exam"
           ? generateExamTasks(count, batch)
         : isTemplateId(template)
@@ -231,6 +231,7 @@ export async function GET(req: Request) {
             "dynamics-mixed",
             "electro-mixed",
             "thermo-mixed",
+            "optics-mixed",
             "exam",
           ].join(", ")}.`,
         },

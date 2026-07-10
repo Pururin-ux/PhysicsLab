@@ -136,9 +136,9 @@ const sidebarGroups: NavGroup[] = [
       },
       {
         label: "Оптика",
-        disabled: true,
+        href: "/practice/optics-demo",
         icon: navIcons.optics,
-        helper: "скоро",
+        match: (pathname) => pathname.startsWith("/practice/optics"),
       },
       {
         label: "Квантовая физика",

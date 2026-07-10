@@ -53,7 +53,8 @@ const nextStepByTopic: Record<string, { href: string; label: string }> = {
   kinematics: { href: "/practice/dynamics-demo", label: "Дальше: Динамика" },
   dynamics: { href: "/practice/exam-demo", label: "Дальше: смешанная тренировка" },
   electrodynamics: { href: "/practice/thermo-demo", label: "Дальше: Термодинамика" },
-  thermodynamics: { href: "/topics", label: "К темам" },
+  thermodynamics: { href: "/practice/optics-demo", label: "Дальше: Оптика" },
+  optics: { href: "/practice/exam-demo", label: "Дальше: смешанная тренировка" },
 };
 
 const emptyTasks: QuizData["tasks"] = [];
@@ -435,7 +436,7 @@ export function QuizSession({
             }
             correctAnswer={
               latestAnswer?.format === "numeric_input"
-                ? `${formatNumericValue(latestAnswer.correctValue)} ${latestAnswer.unit}`
+                ? `${formatNumericValue(latestAnswer.correctValue)} ${latestAnswer.unit}`.trim()
                 : undefined
             }
           />
