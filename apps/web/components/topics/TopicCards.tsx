@@ -19,35 +19,35 @@ import { TopicGlyph } from "./TopicGlyph";
 
 const topicStyles = {
   kinematics: {
-    border: "border-nova-cyan/30",
+    border: "border-white/[.08] border-l-nova-cyan/55",
     depth:
-      "ring-1 ring-white/[.045] !shadow-[0_18px_60px_rgba(0,0,0,0.50),0_0_34px_rgba(0,224,255,0.09),inset_0_1px_0_rgba(255,255,255,0.06)]",
+      "!shadow-[0_14px_38px_rgba(0,0,0,0.34),inset_0_1px_0_rgba(255,255,255,0.045)]",
     badge: "cyan",
     button: "mt-auto",
     tile: "border-nova-cyan/25 bg-nova-cyan/[.08] text-nova-cyan",
   },
   dynamics: {
-    border: "border-nova-gold/30",
+    border: "border-white/[.08] border-l-nova-gold/55",
     depth:
-      "ring-1 ring-white/[.045] !shadow-[0_18px_60px_rgba(0,0,0,0.50),0_0_34px_rgba(212,175,55,0.08),inset_0_1px_0_rgba(255,255,255,0.06)]",
+      "!shadow-[0_14px_38px_rgba(0,0,0,0.34),inset_0_1px_0_rgba(255,255,255,0.045)]",
     badge: "gold",
     button:
       "mt-auto border-nova-gold bg-nova-gold shadow-gold-glow focus-visible:ring-nova-gold/50",
     tile: "border-nova-gold/25 bg-nova-gold/[.08] text-nova-gold",
   },
   electrodynamics: {
-    border: "border-nova-blue/30",
+    border: "border-white/[.08] border-l-nova-blue/55",
     depth:
-      "ring-1 ring-white/[.045] !shadow-[0_18px_60px_rgba(0,0,0,0.50),0_0_34px_rgba(45,156,255,0.10),inset_0_1px_0_rgba(255,255,255,0.06)]",
+      "!shadow-[0_14px_38px_rgba(0,0,0,0.34),inset_0_1px_0_rgba(255,255,255,0.045)]",
     badge: "blue",
     button:
       "mt-auto border-nova-blue bg-nova-blue shadow-[0_0_22px_rgba(45,156,255,0.25)] focus-visible:ring-nova-blue/50",
     tile: "border-nova-blue/25 bg-nova-blue/[.08] text-nova-blue",
   },
   thermodynamics: {
-    border: "border-nova-ember/30",
+    border: "border-white/[.08] border-l-nova-ember/55",
     depth:
-      "ring-1 ring-white/[.045] !shadow-[0_18px_60px_rgba(0,0,0,0.50),0_0_34px_rgba(255,122,69,0.10),inset_0_1px_0_rgba(255,255,255,0.06)]",
+      "!shadow-[0_14px_38px_rgba(0,0,0,0.34),inset_0_1px_0_rgba(255,255,255,0.045)]",
     badge: "ember",
     button:
       "mt-auto border-nova-ember bg-nova-ember shadow-ember-glow focus-visible:ring-nova-ember/50",

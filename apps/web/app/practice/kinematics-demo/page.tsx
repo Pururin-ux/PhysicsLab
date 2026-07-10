@@ -47,9 +47,9 @@ export default function KinematicsDemoPage() {
               formula={FORMULAS.uniform_motion}
               formulaCaption="путь при постоянной скорости"
               symbols={[
-                "s — путь или модуль перемещения, м",
-                "v — постоянная скорость, м/с",
-                "t — время движения, с",
+                { latex: "s", description: "путь или модуль перемещения, м" },
+                { latex: "v", description: "постоянная скорость, м/с" },
+                { latex: "t", description: "время движения, с" },
               ]}
               limitation="Пока скорость постоянна и направление не меняется."
             />
@@ -65,11 +65,11 @@ export default function KinematicsDemoPage() {
               formula={FORMULAS.accelerated_motion}
               formulaCaption="координата при постоянном ускорении"
               symbols={[
-                "x — координата тела, м",
-                "x₀ — начальная координата, м",
-                "v₀ — начальная скорость, м/с",
-                "a — постоянное ускорение, м/с²",
-                "t — время движения, с",
+                { latex: "x", description: "координата тела, м" },
+                { latex: "x_0", description: "начальная координата, м" },
+                { latex: "v_0", description: "начальная скорость, м/с" },
+                { latex: "a", description: "постоянное ускорение, м/с²" },
+                { latex: "t", description: "время движения, с" },
               ]}
               limitation="Пока движение прямолинейное с постоянным ускорением."
             />

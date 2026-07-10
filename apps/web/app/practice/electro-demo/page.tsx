@@ -48,9 +48,9 @@ export default function ElectroDemoPage() {
               formula="I=\\frac{U}{R}"
               formulaCaption="закон Ома для участка цепи"
               symbols={[
-                "I — сила тока в участке, А",
-                "U — напряжение на участке, В",
-                "R — сопротивление участка, Ом",
+                { latex: "I", description: "сила тока в участке, А" },
+                { latex: "U", description: "напряжение на участке, В" },
+                { latex: "R", description: "сопротивление участка, Ом" },
               ]}
               limitation="Для участка цепи без источника внутри; сопротивление считаем постоянным."
             />

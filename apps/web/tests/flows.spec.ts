@@ -62,3 +62,31 @@ test("смешанная тренировка честно обозначает 
     page.getByRole("button", { name: "Начать тренировку" }),
   ).toBeVisible();
 });
+
+test(
+  "справочник рендерит весь корпус формул и ищет по содержимому",
+  async ({ page }) => {
+    await page.goto("/formulas", { waitUntil: "domcontentloaded" });
+    await page.waitForLoadState("networkidle");
+
+    const formulaRows = page.locator(".formula-row");
+    await expect(formulaRows).toHaveCount(36);
+    await expect(page.locator(".katex-error")).toHaveCount(0);
+    expect(await page.locator(".katex-mathml").count()).toBeGreaterThanOrEqual(36);
+
+    const averageSpeedRow = formulaRows.filter({
+      hasText: "Средняя скорость на участках",
+    });
+    await averageSpeedRow.getByRole("button").click();
+    await expect(averageSpeedRow).toHaveAttribute("data-open", "true");
+    await expect(
+      averageSpeedRow.locator(".formula-cyan .katex-mathml"),
+    ).toHaveCount(3);
+
+    await page
+      .getByRole("searchbox", { name: "Поиск по формулам" })
+      .fill("внутреннее сопротивление");
+    await expect(formulaRows).toHaveCount(1);
+    await expect(formulaRows).toContainText("Закон Ома для полной цепи");
+  },
+);

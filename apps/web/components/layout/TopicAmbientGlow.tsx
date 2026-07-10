@@ -1,21 +1,19 @@
-// Мягкое цветное пятно за теорией главы: у каждой темы свой акцент
-// (cyan/gold/blue/ember), чтобы главы не сливались друг с другом.
-const glowByAccent = {
-  cyan: "bg-nova-cyan/[.07]",
-  gold: "bg-nova-gold/[.07]",
-  blue: "bg-nova-blue/[.08]",
-  ember: "bg-nova-ember/[.08]",
+const lineByAccent = {
+  cyan: "bg-nova-cyan/45 shadow-[0_0_18px_rgba(0,224,255,.22)]",
+  gold: "bg-nova-gold/45 shadow-[0_0_18px_rgba(212,175,55,.18)]",
+  blue: "bg-nova-blue/45 shadow-[0_0_18px_rgba(45,156,255,.2)]",
+  ember: "bg-nova-ember/45 shadow-[0_0_18px_rgba(255,122,69,.18)]",
 } as const;
 
 interface TopicAmbientGlowProps {
-  accent: keyof typeof glowByAccent;
+  accent: keyof typeof lineByAccent;
 }
 
 export function TopicAmbientGlow({ accent }: TopicAmbientGlowProps) {
   return (
     <div
       aria-hidden="true"
-      className={`pointer-events-none absolute -top-16 right-0 hidden h-[300px] w-[300px] rounded-full blur-[100px] sm:block ${glowByAccent[accent]}`}
+      className={`pointer-events-none absolute -top-3 left-0 hidden h-px w-24 sm:block ${lineByAccent[accent]}`}
     />
   );
 }

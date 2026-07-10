@@ -8,6 +8,7 @@ import { Button } from "../ui/Button";
 import { Card } from "../ui/Card";
 import { MathText } from "../ui/MathText";
 import { cn } from "../../lib/utils";
+import type { FormulaSymbol } from "../../lib/physics/formula-symbol";
 
 interface TextConceptRevealProps {
   visual: ReactNode;
@@ -15,7 +16,7 @@ interface TextConceptRevealProps {
   trap: string;
   formula: string;
   formulaCaption: string;
-  symbols: string[];
+  symbols: FormulaSymbol[];
   limitation: string;
   // Левая полоса карточки "Главное" — совпадает с акцентным цветом главы,
   // чтобы темы визуально не сливались друг с другом.
