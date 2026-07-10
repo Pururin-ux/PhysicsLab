@@ -4,6 +4,7 @@ import { MathText } from "../ui/MathText";
 import { ModelVisual } from "../theory/ModelVisual";
 import { VectorDiagram } from "../diagrams/VectorDiagram";
 import { CircuitDiagram } from "../diagrams/CircuitDiagram";
+import { OpticsDiagram } from "../diagrams/OpticsDiagram";
 import { cn } from "../../lib/utils";
 import type { TaskFocus } from "../../lib/learning/task-focus";
 import type { QuizDiagram, QuizGraph } from "./quiz-session-store";
@@ -81,6 +82,13 @@ export function QuestionCard({
       {diagram?.kind === "circuit" ? (
         <div className="rounded-option border border-nova-cyan/[.10] bg-space-950/50 p-2">
           <CircuitDiagram spec={diagram.spec} />
+        </div>
+      ) : null}
+      {diagram?.kind === "optics" ? (
+        <div className="rounded-option border border-nova-cyan/[.10] bg-space-950/50 p-2">
+          {/* Решение (отражённый луч, изображение) появляется только после
+              ответа — до этого его нет ни в DOM, ни в accessibility tree. */}
+          <OpticsDiagram spec={diagram.spec} showSolution={showSolutionContent} />
         </div>
       ) : null}
 

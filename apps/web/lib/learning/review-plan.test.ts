@@ -45,6 +45,14 @@ function progressWithWeaknesses(
         weakTrapLastSeenAt: {},
         lastPracticedAt: null,
       },
+      optics: {
+        solved: 0,
+        correct: 0,
+        completedSessions: 0,
+        weakTraps: {},
+        weakTrapLastSeenAt: {},
+        lastPracticedAt: null,
+      },
     },
   };
 }

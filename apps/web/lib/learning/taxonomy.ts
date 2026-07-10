@@ -10,7 +10,8 @@ export type TopicId =
   | "kinematics"
   | "dynamics"
   | "electrodynamics"
-  | "thermodynamics";
+  | "thermodynamics"
+  | "optics";
 
 export type SkillId =
   | "vt-slope"
@@ -40,7 +41,14 @@ export type SkillId =
   | "gas-state-ratio"
   | "heat-amount"
   | "heat-balance-simple"
-  | "phase-change-heat";
+  | "phase-change-heat"
+  | "reflection-angle"
+  | "plane-mirror-separation"
+  | "refractive-index-speed"
+  | "snell-index-ratio"
+  | "thin-lens-image-distance"
+  | "lens-optical-power"
+  | "lens-image-height";
 
 export type SkillMetadata = {
   id: SkillId;
@@ -275,5 +283,61 @@ export const skillMetadata: Record<SkillId, SkillMetadata> = {
     title: "Нагревание и плавление",
     shortTitle: "Плавление",
     description: "Полная теплота при переходе через 0 °C складывается из нагрева и плавления.",
+  },
+  "reflection-angle": {
+    id: "reflection-angle",
+    topicId: "optics",
+    sectionId: "optics",
+    title: "Закон отражения света",
+    shortTitle: "Отражение",
+    description: "Угол отражения равен углу падения; оба отсчитываются от нормали к зеркалу.",
+  },
+  "plane-mirror-separation": {
+    id: "plane-mirror-separation",
+    topicId: "optics",
+    sectionId: "optics",
+    title: "Изображение в плоском зеркале",
+    shortTitle: "Плоское зеркало",
+    description: "Мнимое изображение симметрично предмету: расстояние предмет—изображение равно 2d.",
+  },
+  "refractive-index-speed": {
+    id: "refractive-index-speed",
+    topicId: "optics",
+    sectionId: "optics",
+    title: "Показатель преломления через скорость света",
+    shortTitle: "Показатель преломления",
+    description: "Показатель преломления как отношение скорости света в вакууме к скорости в среде.",
+  },
+  "snell-index-ratio": {
+    id: "snell-index-ratio",
+    topicId: "optics",
+    sectionId: "optics",
+    title: "Закон преломления света",
+    shortTitle: "Закон преломления",
+    description: "Отношение показателей преломления равно отношению синусов углов падения и преломления.",
+  },
+  "thin-lens-image-distance": {
+    id: "thin-lens-image-distance",
+    topicId: "optics",
+    sectionId: "optics",
+    title: "Формула тонкой линзы",
+    shortTitle: "Тонкая линза",
+    description: "Расстояние до действительного изображения собирающей линзы из формулы 1/F = 1/d_o + 1/d_i.",
+  },
+  "lens-optical-power": {
+    id: "lens-optical-power",
+    topicId: "optics",
+    sectionId: "optics",
+    title: "Оптическая сила линзы",
+    shortTitle: "Оптическая сила",
+    description: "Оптическая сила в диоптриях как 1/F при фокусном расстоянии в метрах.",
+  },
+  "lens-image-height": {
+    id: "lens-image-height",
+    topicId: "optics",
+    sectionId: "optics",
+    title: "Линейное увеличение линзы",
+    shortTitle: "Увеличение линзы",
+    description: "Модуль высоты изображения через отношение расстояний d_i/d_o и высоту предмета.",
   },
 };

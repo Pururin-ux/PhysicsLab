@@ -13,6 +13,7 @@ const routes = [
   "/mistakes",
   "/formulas",
   "/practice/kinematics-demo",
+  "/practice/optics-demo",
   "/practice/exam-demo",
 ] as const;
 
@@ -181,4 +182,98 @@ test("@a11y числовой ввод и его разбор — без serious/
       nodes: violation.nodes.slice(0, 5).map((node) => node.html.slice(0, 120)),
     })),
   ).toEqual([]);
+});
+
+// Оптическая диаграмма — новая визуальная поверхность: сканируем prompt-
+// и solution-состояния. До ответа решения нет в accessibility tree.
+test("@a11y оптическая диаграмма до и после ответа — без serious/critical", async ({
+  page,
+  request,
+}) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  const response = await request.get("/api/tasks?template=reflection-angle&count=1&batch=0");
+  expect(response.ok()).toBe(true);
+  const payload = (await response.json()) as {
+    tasks: { options: { text: string; correct?: boolean }[] }[];
+  };
+
+  await page.route("**/api/tasks?*", async (route) => {
+    const template = new URL(route.request().url()).searchParams.get("template");
+    if (template !== "optics-mixed") {
+      await route.continue();
+      return;
+    }
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify(payload),
+    });
+  });
+
+  await page.goto("/practice/optics-demo", { waitUntil: "domcontentloaded" });
+  await page.waitForLoadState("networkidle");
+
+  await expect(page.getByTestId("optics-diagram")).toBeVisible();
+  // SVG имеет доступное имя (title + desc) и не выдаёт решение до ответа.
+  await expect(page.getByRole("img", { name: /зеркал/i })).toBeVisible();
+  await expect(page.getByTestId("optics-solution")).toHaveCount(0);
+
+  const beforeSubmit = await scanForBlockingViolations(page);
+  expect(beforeSubmit.map((violation) => violation.id)).toEqual([]);
+
+  const correctIndex = payload.tasks[0].options.findIndex((option) => option.correct);
+  expect(correctIndex).toBeGreaterThanOrEqual(0);
+  await page.locator(".quiz-option").nth(correctIndex).click();
+  await expect(page.getByTestId("optics-solution")).toBeVisible();
+
+  const afterSubmit = await scanForBlockingViolations(page);
+  expect(
+    afterSubmit.map((violation) => ({
+      id: violation.id,
+      nodes: violation.nodes.slice(0, 5).map((node) => node.html.slice(0, 120)),
+    })),
+  ).toEqual([]);
+});
+
+test("@a11y безразмерный числовой ответ оптики — без пустой единицы", async ({
+  page,
+  request,
+}) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  const response = await request.get(
+    "/api/tasks?template=refractive-index-speed&count=1&batch=0",
+  );
+  expect(response.ok()).toBe(true);
+  const payload = (await response.json()) as {
+    tasks: { answer: { value: number; unit: string } }[];
+  };
+
+  await page.route("**/api/tasks?*", async (route) => {
+    const template = new URL(route.request().url()).searchParams.get("template");
+    if (template !== "optics-mixed") {
+      await route.continue();
+      return;
+    }
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify(payload),
+    });
+  });
+
+  await page.goto("/practice/optics-demo", { waitUntil: "domcontentloaded" });
+  await page.waitForLoadState("networkidle");
+
+  const input = page.getByTestId("numeric-answer-input");
+  await expect(input).toHaveAttribute("aria-label", "Ответ (число без единиц)");
+  await expect(page.getByTestId("numeric-answer-unit")).toHaveCount(0);
+  expect((await scanForBlockingViolations(page)).map((violation) => violation.id)).toEqual([]);
+
+  await input.fill(String(payload.tasks[0].answer.value).replace(".", ","));
+  await page.getByTestId("numeric-submit").click();
+  await expect(page.getByTestId("numeric-answer")).toHaveAttribute("data-state", "correct");
+  await expect(page.getByTestId("numeric-correct-answer")).toHaveText(
+    `Правильный ответ: ${String(payload.tasks[0].answer.value).replace(".", ",")}`,
+  );
+  expect((await scanForBlockingViolations(page)).map((violation) => violation.id)).toEqual([]);
 });

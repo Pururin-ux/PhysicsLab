@@ -18,6 +18,10 @@ const NUMERIC_PILOTS = [
   "work-force-distance",
   "electric-power",
   "heat-balance-simple",
+  "plane-mirror-separation",
+  "refractive-index-speed",
+  "thin-lens-image-distance",
+  "lens-optical-power",
 ] as const satisfies readonly TemplateId[];
 
 type ApiJson = {
@@ -37,7 +41,7 @@ async function fetchTasks(query: string): Promise<ApiJson> {
   return (await response.json()) as ApiJson;
 }
 
-test("ровно четыре pilot-семейства используют numeric_input, остальные — single_choice", () => {
+test("ровно восемь семейств используют numeric_input, остальные — single_choice", () => {
   const numeric = templateRegistry
     .filter((entry) => blueprints[entry.id].answerFormat === "numeric_input")
     .map((entry) => entry.id);
@@ -48,9 +52,9 @@ test("ровно четыре pilot-семейства используют nume
     (entry) => (blueprints[entry.id].answerFormat ?? "single_choice") === "single_choice",
   );
 
-  assert.equal(templateRegistry.length, 28);
-  assert.equal(numeric.length, 4);
-  assert.equal(single.length, 24);
+  assert.equal(templateRegistry.length, 35);
+  assert.equal(numeric.length, 8);
+  assert.equal(single.length, 27);
 });
 
 test("каждый шаблон имеет валидный answerFormat", () => {
@@ -90,9 +94,14 @@ for (const pilot of NUMERIC_PILOTS) {
         );
       }
 
-      // Метаданные для фидбэка/формулы сохранены.
+      // Метаданные для фидбэка/формулы сохранены. Пустая единица допустима
+      // только когда blueprint явно объявляет безразмерный ответ.
+      const declaresDimensionless = blueprints[pilot].answerUnit === "";
       assert.ok(task.formula.length > 0, `${task.id}: пустая формула`);
-      assert.ok(task.answerUnit.length > 0, `${task.id}: пустая единица`);
+      assert.ok(
+        declaresDimensionless || task.answerUnit.length > 0,
+        `${task.id}: пустая единица`,
+      );
       assert.ok((task.explanation ?? "").length > 0, `${task.id}: пустое объяснение`);
       assert.equal(task.answerFormat, "numeric_input");
     }

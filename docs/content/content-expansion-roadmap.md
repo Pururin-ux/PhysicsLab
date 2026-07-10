@@ -1,12 +1,22 @@
 # Content Expansion Roadmap
 
-Status: living roadmap, updated after Task Family Expansion v1.
+Status: living roadmap, updated after Optics Foundation v1.
 
-This is the current content reality after PR #5 and Task Family Expansion v1. The product is usable and polished, but it is not yet a complete CE/CT exam trainer. It is a focused slice with a solid generator/help architecture and uneven topic coverage.
+This is the current content reality. The product is usable and polished, but it is not yet a complete CE/CT exam trainer. It is a focused slice with a solid generator/help architecture and uneven topic coverage.
+
+## Update: Optics Foundation v1
+
+- Templates: 28 → **35**; optics opened as the fifth active topic with 7 families.
+- Answer formats: 27 single choice + 8 numeric input (`answerFormat` is separate from numeric `answerKind`).
+- Diagrams: vector, circuit and now **optics** (reflection, plane mirror, refraction, thin lens) with prompt/solution separation — solution elements are absent from DOM before submit.
+- Optics v1 scope: plane mirror, reflection, elementary refraction, converging thin lens, optical power, magnification.
+- Explicitly out of scope for optics v1: spherical mirrors, diverging lenses, total internal reflection tasks, interference, diffraction, dispersion, wave optics, optical instruments.
+- Mixed training now draws 5 groups evenly (2 tasks each at count=10) and remains an honest study mix, not an official ЦТ/ЦЭ variant.
+- Progress storage migrated v2 → v3 (optics topic added; old data preserved, same storage key).
 
 ## A. Current Coverage
 
-Current generated task templates: **28** (kinematics 6, dynamics 11, electrodynamics 6, thermodynamics 5).
+Current generated task templates: **35** (kinematics 6, dynamics 11, electrodynamics 6, thermodynamics 5, optics 7).
 
 Task Family Expansion v1 added: `average-speed-segments`, `unit-conversion-speed`,
 `work-force-distance`, `electric-power`, `gas-state-ratio`, and

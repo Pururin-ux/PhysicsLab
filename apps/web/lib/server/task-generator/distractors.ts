@@ -829,3 +829,196 @@ export const phaseChangeHeatDistractors: DistractorRule[] = [
     compute: phaseHeatForgetsMass,
   },
 ];
+
+// ===== Оптика =====
+
+function reflectionMeasuredFromMirror(p: Params): number {
+  return 90 - p.angle;
+}
+
+function reflectionDoublesAngle(p: Params): number {
+  return 2 * p.angle;
+}
+
+function reflectionHalvesAngle(p: Params): number {
+  return p.angle / 2;
+}
+
+export const reflectionAngleDistractors: DistractorRule[] = [
+  {
+    label: "отсчитал угол от зеркала, а не от нормали",
+    compute: reflectionMeasuredFromMirror,
+  },
+  {
+    label: "удвоил угол падения",
+    compute: reflectionDoublesAngle,
+  },
+  {
+    label: "взял половину угла падения",
+    compute: reflectionHalvesAngle,
+  },
+];
+
+function mirrorSeparationTakesSingleDistance(p: Params): number {
+  return p.d;
+}
+
+function mirrorSeparationHalvesDistance(p: Params): number {
+  return p.d / 2;
+}
+
+function mirrorSeparationQuadruplesDistance(p: Params): number {
+  return 4 * p.d;
+}
+
+export const planeMirrorSeparationDistractors: DistractorRule[] = [
+  {
+    label: "взял расстояние до зеркала вместо расстояния до изображения",
+    compute: mirrorSeparationTakesSingleDistance,
+  },
+  {
+    label: "поделил расстояние пополам",
+    compute: mirrorSeparationHalvesDistance,
+  },
+  {
+    label: "удвоил расстояние дважды",
+    compute: mirrorSeparationQuadruplesDistance,
+  },
+];
+
+function refractiveIndexInverted(p: Params): number {
+  return p.v8 / 3;
+}
+
+function refractiveIndexSubtracts(p: Params): number {
+  return 3 - p.v8;
+}
+
+function refractiveIndexMultiplies(p: Params): number {
+  return 3 * p.v8;
+}
+
+export const refractiveIndexSpeedDistractors: DistractorRule[] = [
+  {
+    label: "нашёл v/c вместо c/v",
+    compute: refractiveIndexInverted,
+  },
+  {
+    label: "вычел скорости вместо деления",
+    compute: refractiveIndexSubtracts,
+  },
+  {
+    label: "умножил скорости вместо деления",
+    compute: refractiveIndexMultiplies,
+  },
+];
+
+function snellRatioInverted(p: Params): number {
+  const ratio = Math.sin((p.r * Math.PI) / 180) / Math.sin((p.i * Math.PI) / 180);
+  return Math.round(ratio * 100) / 100;
+}
+
+function snellRatioAnglesWithoutSine(p: Params): number {
+  return Math.round((p.i / p.r) * 100) / 100;
+}
+
+function snellRatioUsesCosines(p: Params): number {
+  const ratio = Math.cos((p.i * Math.PI) / 180) / Math.cos((p.r * Math.PI) / 180);
+  return Math.round(ratio * 100) / 100;
+}
+
+export const snellIndexRatioDistractors: DistractorRule[] = [
+  {
+    label: "перевернул отношение синусов",
+    compute: snellRatioInverted,
+  },
+  {
+    label: "поделил сами углы без синусов",
+    compute: snellRatioAnglesWithoutSine,
+  },
+  {
+    label: "отсчитал углы от границы и получил косинусы",
+    compute: snellRatioUsesCosines,
+  },
+];
+
+function lensImageAddsDistances(p: Params): number {
+  return p.F + p.dObj;
+}
+
+function lensImageSubtractsDistances(p: Params): number {
+  return p.dObj - p.F;
+}
+
+function lensImageWrongDenominator(p: Params): number {
+  return (p.F * p.dObj) / (p.dObj + p.F);
+}
+
+export const thinLensImageDistanceDistractors: DistractorRule[] = [
+  {
+    label: "сложил фокусное расстояние и расстояние до предмета",
+    compute: lensImageAddsDistances,
+  },
+  {
+    label: "взял разность расстояний вместо формулы линзы",
+    compute: lensImageSubtractsDistances,
+  },
+  {
+    label: "поставил плюс в знаменателе формулы линзы",
+    compute: lensImageWrongDenominator,
+  },
+];
+
+function opticalPowerNoConversion(p: Params): number {
+  return 1 / p.Fcm;
+}
+
+function opticalPowerMetersOnly(p: Params): number {
+  return p.Fcm / 100;
+}
+
+function opticalPowerTakesFocalLength(p: Params): number {
+  return p.Fcm;
+}
+
+export const lensOpticalPowerDistractors: DistractorRule[] = [
+  {
+    label: "не перевёл сантиметры в метры",
+    compute: opticalPowerNoConversion,
+  },
+  {
+    label: "перевёл в метры, но забыл взять обратную величину",
+    compute: opticalPowerMetersOnly,
+  },
+  {
+    label: "взял само фокусное расстояние вместо 1/F",
+    compute: opticalPowerTakesFocalLength,
+  },
+];
+
+function imageHeightInvertedRatio(p: Params): number {
+  return (p.h * p.dObj) / p.di;
+}
+
+function imageHeightUnchanged(p: Params): number {
+  return p.h;
+}
+
+function imageHeightForgotObjectHeight(p: Params): number {
+  return p.di / p.dObj;
+}
+
+export const lensImageHeightDistractors: DistractorRule[] = [
+  {
+    label: "перевернул отношение расстояний",
+    compute: imageHeightInvertedRatio,
+  },
+  {
+    label: "решил, что высота не меняется",
+    compute: imageHeightUnchanged,
+  },
+  {
+    label: "нашёл увеличение, но не умножил на высоту предмета",
+    compute: imageHeightForgotObjectHeight,
+  },
+];

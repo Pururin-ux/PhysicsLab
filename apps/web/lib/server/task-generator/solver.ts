@@ -178,3 +178,51 @@ export const ICE_FUSION_HEAT_KJ = 334;
 export function phaseChangeHeat(p: Params): number {
   return p.m * (ICE_SPECIFIC_HEAT_KJ * Math.abs(p.temp0) + ICE_FUSION_HEAT_KJ);
 }
+
+// ===== Оптика =====
+
+// Скорость света в единицах 10^8 м/с — скорости сред задаются в тех же
+// единицах, поэтому показатель преломления считается без степеней.
+export const LIGHT_SPEED_E8 = 3;
+
+function degToRad(angleDeg: number): number {
+  return (angleDeg * Math.PI) / 180;
+}
+
+// Закон отражения: угол отражения равен углу падения (оба от нормали).
+export function reflectionAngle(p: Params): number {
+  return p.angle;
+}
+
+// Плоское зеркало: мнимое изображение симметрично предмету, расстояние
+// предмет—изображение равно удвоенному расстоянию до зеркала.
+export function planeMirrorSeparation(p: Params): number {
+  return 2 * p.d;
+}
+
+// Абсолютный показатель преломления: n = c / v (скорости в 10^8 м/с).
+export function refractiveIndexFromSpeed(p: Params): number {
+  return LIGHT_SPEED_E8 / p.v8;
+}
+
+// Закон Снеллиуса: n2/n1 = sin(i)/sin(r). Ответ приводится к двум знакам —
+// это дидактическая точность условия, а не скрытая подгонка.
+export function snellIndexRatio(p: Params): number {
+  const ratio = Math.sin(degToRad(p.i)) / Math.sin(degToRad(p.r));
+  return Math.round(ratio * 100) / 100;
+}
+
+// Тонкая собирающая линза, действительное изображение: d_i = F·d_o / (d_o − F).
+export function thinLensImageDistance(p: Params): number {
+  return (p.F * p.dObj) / (p.dObj - p.F);
+}
+
+// Оптическая сила: D = 1/F, фокусное расстояние дано в сантиметрах.
+export function lensOpticalPower(p: Params): number {
+  return 100 / p.Fcm;
+}
+
+// Модуль линейного увеличения: h_i = h_o · d_i / d_o.
+export function lensImageHeight(p: Params): number {
+  return (p.h * p.di) / p.dObj;
+}

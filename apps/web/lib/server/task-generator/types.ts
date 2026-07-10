@@ -1,5 +1,6 @@
 import type { AnswerFormat } from "../../answer/numeric-answer.ts";
 import type { CircuitDiagramSpec } from "../../physics/circuit-diagram-spec.ts";
+import type { OpticsDiagramSpec } from "../../physics/optics-diagram-spec.ts";
 import type { VectorDiagramSpec } from "../../physics/vector-diagram-spec.ts";
 
 export type Difficulty = 1 | 2 | 3;
@@ -9,7 +10,8 @@ export type TemplateGroup =
   | "kinematics"
   | "dynamics"
   | "electrodynamics"
-  | "thermodynamics";
+  | "thermodynamics"
+  | "optics";
 
 export type Params = Record<string, number>;
 
@@ -31,7 +33,8 @@ export interface DistractorRule {
 // VectorDiagram/CircuitDiagram на карточке вопроса.
 export type TaskDiagram =
   | { kind: "vector"; spec: VectorDiagramSpec }
-  | { kind: "circuit"; spec: CircuitDiagramSpec };
+  | { kind: "circuit"; spec: CircuitDiagramSpec }
+  | { kind: "optics"; spec: OpticsDiagramSpec };
 
 export interface GraphSpec {
   type: "vt" | "xt" | "at";

@@ -132,6 +132,34 @@ export const weaknessCopyBySkill: Partial<Record<SkillId, {
     title: "Нагревание и плавление",
     hint: "Сложи две стадии: нагрев до 0 °C и плавление $\\lambda m$.",
   },
+  "reflection-angle": {
+    title: "Закон отражения",
+    hint: "Отсчитывай углы падения и отражения ==от нормали==, а не от зеркала.",
+  },
+  "plane-mirror-separation": {
+    title: "Плоское зеркало",
+    hint: "Между предметом и изображением ==удвоенное== расстояние до зеркала: $L=2d$.",
+  },
+  "refractive-index-speed": {
+    title: "Показатель преломления",
+    hint: "Не переворачивай отношение: $n=\\frac{c}{v}$ всегда не меньше единицы.",
+  },
+  "snell-index-ratio": {
+    title: "Закон преломления",
+    hint: "Дели ==синусы углов==, а не сами углы: $\\frac{n_2}{n_1}=\\frac{\\sin i}{\\sin r}$.",
+  },
+  "thin-lens-image-distance": {
+    title: "Формула тонкой линзы",
+    hint: "В знаменателе ==разность==: $d_i=\\frac{Fd_o}{d_o-F}$.",
+  },
+  "lens-optical-power": {
+    title: "Оптическая сила",
+    hint: "Сначала переведи $F$ в ==метры==: диоптрия — это 1/м.",
+  },
+  "lens-image-height": {
+    title: "Увеличение линзы",
+    hint: "Увеличение равно $\\frac{d_i}{d_o}$ — расстояние до изображения в ==числителе==.",
+  },
 };
 
 function isKnownSkillId(value: string): value is SkillId {

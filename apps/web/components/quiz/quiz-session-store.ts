@@ -1,6 +1,7 @@
 import { atom } from "nanostores";
 import type { OptionState } from "./OptionItem";
 import type { CircuitDiagramSpec } from "../../lib/physics/circuit-diagram-spec";
+import type { OpticsDiagramSpec } from "../../lib/physics/optics-diagram-spec";
 import type { VectorDiagramSpec } from "../../lib/physics/vector-diagram-spec";
 import {
   getNumericMisconception,
@@ -30,7 +31,8 @@ export type QuizGraph = {
 
 export type QuizDiagram =
   | { kind: "vector"; spec: VectorDiagramSpec }
-  | { kind: "circuit"; spec: CircuitDiagramSpec };
+  | { kind: "circuit"; spec: CircuitDiagramSpec }
+  | { kind: "optics"; spec: OpticsDiagramSpec };
 
 // Общая часть задачи, не зависящая от формата ответа.
 type QuizTaskBase = {

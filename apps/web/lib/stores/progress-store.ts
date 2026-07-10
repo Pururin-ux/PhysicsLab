@@ -18,7 +18,9 @@ export const PROGRESS_STORAGE_KEY = "physicslab-v3-progress-v1";
 // это bump PROGRESS_VERSION плюс ветка в migrateStoredProgress. Ключ
 // хранилища не меняем, чтобы прогресс учеников переживал обновления.
 // v1 → v2: добавлено поле weakTrapLastSeenAt (даты последней встречи ловушки).
-export const PROGRESS_VERSION = 2;
+// v2 → v3: открыта тема optics — в topics появился новый ключ; старые данные
+// дополняются пустым прогрессом оптики, остальные темы сохраняются как есть.
+export const PROGRESS_VERSION = 3;
 
 export type TopicProgress = {
   solved: number;
@@ -128,8 +130,9 @@ export function migrateStoredProgress(value: unknown): AppProgress | null {
   }
 
   // v1: не было weakTrapLastSeenAt — normalizeTopicProgress дополняет его
-  // пустым словарём, других отличий от v2 нет.
-  if (value.version !== 1 && value.version !== PROGRESS_VERSION) {
+  // пустым словарём. v2: не было темы optics — цикл по актуальному списку
+  // topics создаёт для неё пустой прогресс, не трогая существующие темы.
+  if (value.version !== 1 && value.version !== 2 && value.version !== PROGRESS_VERSION) {
     return null;
   }
 

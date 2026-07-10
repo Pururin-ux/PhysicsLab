@@ -187,7 +187,14 @@ export function validateGeneratedTask(
     issues.push(formulaIssue);
   }
 
-  if (typeof task.answerUnit !== "string" || task.answerUnit.trim().length === 0) {
+  // Пустая единица допустима только когда blueprint явно объявляет
+  // безразмерный ответ (answerUnit: "") — например, показатель преломления.
+  const declaresDimensionless =
+    typeof blueprint.answerUnit === "string" && blueprint.answerUnit === "";
+  if (
+    typeof task.answerUnit !== "string" ||
+    (!declaresDimensionless && task.answerUnit.trim().length === 0)
+  ) {
     issues.push(issue("answer_unit", "Единица ответа должна быть непустой строкой."));
   }
 
