@@ -23,6 +23,7 @@ export const heatBalanceSimpleBlueprint: TaskBlueprint = {
   formula: "m_1c(T_1-T)=m_2c(T-T_2)",
   answerUnit: "°C",
   answerKind: "positive",
+  answerFormat: "numeric_input",
   solver: heatBalanceFinalTemperature,
   distractors: heatBalanceSimpleDistractors,
   textTemplate: (p) =>

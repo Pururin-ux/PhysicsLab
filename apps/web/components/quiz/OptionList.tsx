@@ -4,12 +4,12 @@ import { OptionItem } from "./OptionItem";
 import type {
   QuizOption,
   QuizSessionState,
-  QuizTask,
+  SingleChoiceQuizTask,
 } from "./quiz-session-store";
 import { getOptionState } from "./quiz-session-store";
 
 interface OptionListProps {
-  task: QuizTask;
+  task: SingleChoiceQuizTask;
   options: QuizOption[];
   session: QuizSessionState;
   onSelect: (optionId: string) => void;

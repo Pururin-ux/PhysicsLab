@@ -55,23 +55,50 @@ const thermodynamicsTemplateIds = [
   "heat-balance-simple",
 ] as const;
 
-type ApiTask = {
+type ApiTaskBase = {
   id: string;
-  answer: string;
   answerUnit: string;
   blueprint: string;
   coach_lines: { correct: string; wrong: string; hint: string };
   explanation: string;
-  options: { correct?: boolean; text: string; misconception?: string }[];
   params: Record<string, number>;
   text: string;
   graph?: { type: string } | null;
   diagram?: { kind: string } | null;
 };
 
+type ApiSingleChoiceTask = ApiTaskBase & {
+  type: "single_choice";
+  answer: string;
+  options: { correct?: boolean; text: string; misconception?: string }[];
+};
+
+type ApiNumericTask = ApiTaskBase & {
+  type: "numeric_input";
+  answer: {
+    value: number;
+    unit: string;
+    decimals: number;
+    tolerance: number;
+    sign: string;
+  };
+  misconceptions: { value: number; label: string }[];
+};
+
+type ApiTask = ApiSingleChoiceTask | ApiNumericTask;
+
 type ApiTaskResponse = {
   tasks: ApiTask[];
 };
+
+// Это coarse regression guard, не микробенчмарк: shared CI runner уже
+// показывал 126 ms на валидном baseline-пуле. Порог ловит только явный
+// переход к существенно более дорогому алгоритму генерации.
+const MAX_GENERATION_BATCH_MS = 500;
+
+function assertSingleChoice(task: ApiTask): asserts task is ApiSingleChoiceTask {
+  assert.equal(task.type, "single_choice");
+}
 
 for (const templateId of kinematicsTemplateIds) {
   test(`${templateId}: generates 500 deterministic valid variants`, () => {
@@ -81,7 +108,11 @@ for (const templateId of kinematicsTemplateIds) {
     const blueprint = getBlueprint(templateId);
 
     assert.equal(tasks.length, 500);
-    assert.equal(durationMs < 100, true, `${templateId} took ${durationMs.toFixed(2)}ms`);
+    assert.equal(
+      durationMs < MAX_GENERATION_BATCH_MS,
+      true,
+      `${templateId} took ${durationMs.toFixed(2)}ms`,
+    );
 
     for (const task of tasks) {
       const validation = validateGeneratedTask(task, blueprint);
@@ -261,6 +292,7 @@ test("validator allows signed answers without weakening current templates", () =
     text: "Найдите проекцию координаты.",
     formula: signedBlueprint.formula,
     answerUnit: "м",
+    answerFormat: "single_choice",
     options: [
       { id: "a", text: "-2", value: -2 },
       { id: "b", text: "-1", value: -1, misconception: "minus one" },
@@ -295,7 +327,11 @@ for (const templateId of [
     const blueprint = getBlueprint(templateId);
 
     assert.equal(tasks.length, 200);
-    assert.equal(durationMs < 100, true, `${templateId} took ${durationMs.toFixed(2)}ms`);
+    assert.equal(
+      durationMs < MAX_GENERATION_BATCH_MS,
+      true,
+      `${templateId} took ${durationMs.toFixed(2)}ms`,
+    );
 
     for (const task of tasks) {
       const validation = validateGeneratedTask(task, blueprint);
@@ -329,6 +365,7 @@ test("API route возвращает валидные задачи", async () =>
   assert.equal(response.status, 200);
   assert.equal(data.tasks.length, 5);
   data.tasks.forEach((task) => {
+    assertSingleChoice(task);
     assert.ok(task.answer);
     assert.ok(task.explanation.trim());
     assert.equal(task.options.length, 4);
@@ -363,6 +400,17 @@ test("API route возвращает все шаблоны динамики с �
       assert.ok(task.answerUnit);
       assert.ok(task.explanation);
       assert.notEqual(task.explanation, task.coach_lines.correct);
+
+      if (task.type === "numeric_input") {
+        // Числовой формат: без фиктивных вариантов, с единицей и допуском.
+        assert.equal("options" in task, false);
+        assert.equal(typeof task.answer.value, "number");
+        assert.equal(task.answer.unit, task.answerUnit);
+        assert.equal(task.answer.tolerance > 0, true);
+        assert.equal(Array.isArray(task.misconceptions), true);
+        return;
+      }
+
       assert.equal(task.options.filter((option) => option.correct).length, 1);
       assert.equal(
         task.options.filter((option) => !option.correct).every((option) => option.misconception),

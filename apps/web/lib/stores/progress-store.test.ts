@@ -14,7 +14,9 @@ test("progress store records completed topic sessions as aggregates", () => {
 
   const answers: AnswerRecord[] = [
     {
+      format: "single_choice",
       taskId: "d-01",
+      response: { kind: "single_choice", optionId: "a" },
       selectedOptionId: "a",
       correctOptionId: "a",
       isCorrect: true,
@@ -23,7 +25,9 @@ test("progress store records completed topic sessions as aggregates", () => {
       taskTrap: "единицы",
     },
     {
+      format: "single_choice",
       taskId: "d-02",
+      response: { kind: "single_choice", optionId: "b" },
       selectedOptionId: "b",
       correctOptionId: "c",
       isCorrect: false,
@@ -33,7 +37,9 @@ test("progress store records completed topic sessions as aggregates", () => {
       selectedMisconception: "подставил массу вместо реакции опоры",
     },
     {
+      format: "single_choice",
       taskId: "d-03",
+      response: { kind: "single_choice", optionId: "b" },
       selectedOptionId: "b",
       correctOptionId: "c",
       isCorrect: false,

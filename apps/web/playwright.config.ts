@@ -35,7 +35,10 @@ export default defineConfig({
   webServer: {
     command: "npm run dev -- --hostname 127.0.0.1 --port 3000",
     url: "http://127.0.0.1:3000/",
-    reuseExistingServer: true,
+    // По умолчанию тесты поднимают сервер из текущего рабочего дерева. Явный
+    // opt-in оставлен для ручной отладки, но stale dev server больше не может
+    // дать ложную красную/зелёную проверку после изменения кода.
+    reuseExistingServer: process.env.PLAYWRIGHT_REUSE_SERVER === "1",
     timeout: 120000,
   },
 });

@@ -27,6 +27,7 @@ const difficultyLabels: Record<QuestionCardProps["difficulty"], string> = {
 
 const typeLabels: Record<string, string> = {
   single_choice: "Один ответ",
+  numeric_input: "Числовой ответ",
 };
 
 export function QuestionCard({

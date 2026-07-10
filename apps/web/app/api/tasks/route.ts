@@ -1,5 +1,6 @@
 import {
   generateTasks,
+  getBlueprint,
   getTemplateIdsByGroup,
   isTemplateId,
   templateRegistry,
@@ -7,6 +8,10 @@ import {
 } from "../../../lib/server/task-generator/generate.ts";
 import type { GeneratedTask } from "../../../lib/server/task-generator/types.ts";
 import { formatMathValue } from "../../../lib/server/task-generator/validator.ts";
+import {
+  decimalsOf,
+  toleranceFor,
+} from "../../../lib/answer/numeric-answer.ts";
 
 export const dynamic = "force-dynamic";
 
@@ -84,19 +89,9 @@ function withUnit(value: string, unit: string) {
 
 function toQuizTask(task: GeneratedTask) {
   const unit = task.answerUnit;
-
-  return {
-    ...task,
-    type: "single_choice" as const,
+  const shared = {
     graph: task.graph ?? null,
     diagram: task.diagram ?? null,
-    options: task.options.map((option) => ({
-      id: option.id,
-      text: withUnit(option.text, unit),
-      value: option.value,
-      correct: option.id === task.answer,
-      misconception: option.misconception,
-    })),
     explanation: task.explanation ?? task.coach_lines.correct,
     explanation_latex: `${task.formula},\\quad ${formatMathValue(task.answerValue)}\\text{ ${unit}}`,
     coach_lines: {
@@ -104,6 +99,46 @@ function toQuizTask(task: GeneratedTask) {
       wrong: task.coach_lines.wrong,
       hint: task.trap,
     },
+  };
+
+  if (task.answerFormat === "numeric_input") {
+    // Числовой формат: не отдаём клиенту варианты и не кладём answerValue в
+    // верхнеуровневое поле. Спецификация ответа (value/допуск) нужна клиенту
+    // для проверки — проверка идёт на клиенте, как и correct-флаги у
+    // single_choice. Значения дистракторов идут отдельным списком: по ним
+    // после submit подбирается реальный misconception, они не рендерятся до
+    // ответа. options/answer/answerValue из ответа исключаем.
+    const { options, answer, answerValue, ...rest } = task;
+    const blueprint = getBlueprint(task.blueprint);
+
+    return {
+      ...rest,
+      ...shared,
+      type: "numeric_input" as const,
+      answer: {
+        value: answerValue,
+        unit,
+        decimals: decimalsOf(answerValue),
+        tolerance: toleranceFor(answerValue),
+        sign: blueprint.answerKind ?? "positive",
+      },
+      misconceptions: options
+        .filter((option) => option.id !== answer && option.misconception)
+        .map((option) => ({ value: option.value, label: option.misconception as string })),
+    };
+  }
+
+  return {
+    ...task,
+    ...shared,
+    type: "single_choice" as const,
+    options: task.options.map((option) => ({
+      id: option.id,
+      text: withUnit(option.text, unit),
+      value: option.value,
+      correct: option.id === task.answer,
+      misconception: option.misconception,
+    })),
   };
 }
 

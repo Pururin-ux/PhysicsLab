@@ -22,6 +22,7 @@ export const workForceDistanceBlueprint: TaskBlueprint = {
   formula: "A=Fs\\cos\\alpha",
   answerUnit: "Дж",
   answerKind: "signed",
+  answerFormat: "numeric_input",
   solver: workForceDistance,
   distractors: workForceDistanceDistractors,
   textTemplate: (p) =>
