@@ -80,7 +80,7 @@ test("kinematics help targets accelerated first task and graph second task", asy
   );
   await answerCurrentTaskAndMoveNext(page);
   await expect(page.getByText("2 / 10").filter({ visible: true }).first()).toBeVisible();
-  await expect(page.getByTestId("question-card")).toContainText("графике скорости");
+  await expect(page.getByTestId("question-card")).toContainText("графике v(t)");
   await expectActiveHelpCard(
     page,
     "motion-graphs",
@@ -155,12 +155,22 @@ test("generated practice help uses template metadata for topic routes", async ({
 });
 
 test("wrong answer opens contextual help without expanding solution", async ({ page }) => {
+  const taskResponse = page.waitForResponse((response) => {
+    const url = new URL(response.url());
+    return url.pathname === "/api/tasks" && url.searchParams.get("template") === "mixed";
+  });
+
   await page.goto("/practice/kinematics-demo", { waitUntil: "domcontentloaded" });
+  const payload = (await (await taskResponse).json()) as {
+    tasks: { options: { correct?: boolean; text: string }[] }[];
+  };
   await page.waitForLoadState("networkidle");
 
   const options = page.getByRole("list", { name: "Варианты ответа" });
   await expect(options).toBeVisible();
-  await options.getByRole("button").filter({ hasText: "31" }).first().click();
+  const wrongOption = payload.tasks[0]?.options.find((option) => !option.correct);
+  expect(wrongOption, "generated kinematics task must expose a wrong option").toBeDefined();
+  await options.getByRole("button").filter({ hasText: wrongOption!.text }).click();
 
   await expect(page.getByRole("button", { name: "Показать решение" })).toBeVisible();
   await expect(page.getByTestId("solution-formula")).toHaveCount(0);

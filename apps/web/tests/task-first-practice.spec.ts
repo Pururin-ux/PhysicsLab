@@ -36,17 +36,58 @@ for (const route of topicPracticeRoutes) {
   });
 }
 
+test("kinematics practice loads the generated mixed task set", async ({ page }) => {
+  const taskResponse = page.waitForResponse((response) => {
+    const url = new URL(response.url());
+    return (
+      url.pathname === "/api/tasks" &&
+      url.searchParams.get("template") === "mixed" &&
+      url.searchParams.get("count") === "10"
+    );
+  });
+
+  await page.goto("/practice/kinematics-demo", { waitUntil: "domcontentloaded" });
+
+  const response = await taskResponse;
+  expect(response.ok()).toBe(true);
+
+  const payload = (await response.json()) as {
+    tasks: { blueprint: string }[];
+  };
+  expect([...new Set(payload.tasks.map((task) => task.blueprint))].sort()).toEqual(
+    [
+      "average-speed-segments",
+      "free-fall",
+      "relative-velocity-vectors",
+      "unit-conversion-speed",
+      "vt-area",
+      "vt-slope",
+    ],
+  );
+  await expect(page.getByTestId("question-card")).toBeVisible();
+});
+
 test("wrong answer feedback is compact until solution is requested", async ({
   page,
 }, testInfo) => {
+  const taskResponse = page.waitForResponse((response) => {
+    const url = new URL(response.url());
+    return url.pathname === "/api/tasks" && url.searchParams.get("template") === "mixed";
+  });
+
   await page.goto("/practice/kinematics-demo", { waitUntil: "domcontentloaded" });
+  const payload = (await (await taskResponse).json()) as {
+    tasks: { options: { correct?: boolean; text: string }[] }[];
+  };
   await page.waitForLoadState("networkidle");
 
   const options = page.getByRole("list", { name: "Варианты ответа" });
   await expect(options).toBeVisible();
+  const wrongOption = payload.tasks[0]?.options.find((option) => !option.correct);
+  expect(wrongOption, "generated kinematics task must expose a wrong option").toBeDefined();
 
   const beforeAnswerScrollY = await page.evaluate(() => window.scrollY);
-  await options.getByRole("button").filter({ hasText: "31" }).first().click();
+  await options.getByRole("button").filter({ hasText: wrongOption!.text }).click();
 
   await expect(page.getByRole("button", { name: "Показать решение" })).toBeVisible();
   await expect(page.getByTestId("solution-formula")).toHaveCount(0);

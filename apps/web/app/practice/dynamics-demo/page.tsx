@@ -27,7 +27,6 @@ export default function DynamicsDemoPage() {
       <section id="practice" className="scroll-mt-24">
         <PracticeWithHelp
           topicId="dynamics"
-          mode="generated"
           generatedTemplate="dynamics-mixed"
           generatedTopic="Динамика"
           generatedTitle="Задачи по динамике"

@@ -25,7 +25,6 @@ export default function ElectroDemoPage() {
       <section id="practice" className="scroll-mt-24">
         <PracticeWithHelp
           topicId="electrodynamics"
-          mode="generated"
           generatedTemplate="electro-mixed"
           generatedTopic="Электродинамика"
           generatedTitle="Задачи по электродинамике"
