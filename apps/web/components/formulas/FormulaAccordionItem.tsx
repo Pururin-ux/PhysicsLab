@@ -37,7 +37,7 @@ export function FormulaAccordionItem({
 
   return (
     <div
-      className="formula-row border-b border-white/[.07] last:border-b-0"
+      className="formula-row border-b border-white/[.07] transition-colors last:border-b-0"
       data-open={isOpen}
     >
       <button
@@ -45,18 +45,18 @@ export function FormulaAccordionItem({
         aria-expanded={isOpen}
         aria-controls={panelId}
         onClick={() => setOpen((current) => !current)}
-        className="flex min-h-14 w-full flex-wrap items-center gap-3 py-2.5 text-left transition-colors hover:bg-white/[.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/50 sm:flex-nowrap"
+        className="grid min-h-[72px] w-full grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-3 gap-y-2 px-1 py-3 text-left transition-colors hover:bg-white/[.025] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/50 sm:min-h-14 sm:grid-cols-[auto_minmax(160px,1fr)_minmax(180px,.8fr)_auto] sm:py-2.5"
       >
         <span
           aria-hidden="true"
           className={cn("h-1.5 w-1.5 shrink-0 rounded-full", dotClassByTone[badgeTone])}
         />
-        <span className="min-w-0 flex-1 truncate text-[14px] font-semibold text-white/88">
+        <span className="min-w-0 text-[14px] font-semibold leading-[1.35] text-white/88 sm:truncate">
           {entry.title}
         </span>
         <span
           aria-hidden="true"
-          className="formula-white order-3 ml-4 min-w-0 max-w-[calc(100%-1rem)] overflow-x-auto text-[14px] sm:order-none sm:ml-0 sm:max-w-[45%] sm:shrink-0 sm:text-[15px] [&_.katex]:text-[0.92em]"
+          className="formula-white col-[2/4] row-start-2 min-w-0 overflow-x-auto text-[15px] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:col-auto sm:row-auto sm:text-right sm:text-[15px] [&_.katex]:text-[0.94em]"
           dangerouslySetInnerHTML={{ __html: renderFormulaToHtml(entry.formula) }}
         />
         <svg
@@ -67,15 +67,15 @@ export function FormulaAccordionItem({
           strokeWidth={2}
           strokeLinecap="round"
           strokeLinejoin="round"
-          className="formula-row-chevron h-4 w-4 shrink-0 text-white/40"
+          className="formula-row-chevron col-start-3 row-start-1 h-4 w-4 shrink-0 text-white/40 sm:col-auto sm:row-auto"
         >
           <path d="M9 6l6 6-6 6" />
         </svg>
       </button>
 
       {isOpen ? (
-        <div id={panelId} className="flex flex-col gap-2 pb-4 pl-4">
-          <p className="text-[12px] leading-[1.6] text-white/50">
+        <div id={panelId} className="flex flex-col gap-3 px-5 pb-5 pt-1 sm:px-6">
+          <p className="max-w-[760px] text-[12px] leading-[1.6] text-white/55">
             <MathText text={entry.caption} />
           </p>
           <FormulaDetails symbols={entry.symbols} limitation={entry.limitation} />

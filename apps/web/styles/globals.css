@@ -111,7 +111,7 @@ html {
 }
 
 .card-lift:hover {
-  transform: translateY(-4px);
+  transform: translateY(-2px);
 }
 
 /* Реакция вариантов ответа: неверный — вздрагивает, верный — мягкий пульс. */
@@ -317,6 +317,10 @@ mark.nova-highlight {
 /* Аккордеон формул: стрелка и высота панели. */
 .formula-row-chevron {
   transition: transform 0.2s ease;
+}
+
+.formula-row[data-open="true"] {
+  background: rgba(255, 255, 255, 0.018);
 }
 
 .formula-row[data-open="true"] .formula-row-chevron {

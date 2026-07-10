@@ -20,20 +20,6 @@ const formulaReferenceSkillIds = new Set<SkillId>(
   ),
 );
 
-// Formula cards are expected by default for generated skills. These current
-// exceptions are visual/composite families where the formula reference work is
-// still tracked separately from the generator metadata.
-const noFormulaReferenceRequired = new Set<SkillId>([
-  "relative-velocity-vectors",
-  "resultant-force-2d",
-  "inelastic-collision-speed",
-  "kinetic-energy",
-  "resistor-network",
-  "source-internal-resistance",
-  "capacitor-energy",
-  "phase-change-heat",
-]);
-
 const pr6FormulaReferenceSkillIds = [
   "average-speed-segments",
   "unit-conversion-speed",
@@ -85,7 +71,7 @@ test("для каждого навыка есть копия в weakness-labels 
   }
 });
 
-test("task metadata skills expected to have formulas are covered by formulaReference", () => {
+test("every generated task skill is covered by formulaReference", () => {
   const missingMetadata = templateIds.filter((id) => !taskLearningMetadataByTemplateId[id]);
   assert.deepEqual(missingMetadata, []);
 
@@ -96,19 +82,20 @@ test("task metadata skills expected to have formulas are covered by formulaRefer
     );
   }
 
-  for (const id of noFormulaReferenceRequired) {
-    assert.ok(
-      skillIds.includes(id),
-      `noFormulaReferenceRequired contains stale skill id "${id}"`,
-    );
-  }
-
   const missingFormulaReferences = Object.values(taskLearningMetadataByTemplateId)
-    .filter((metadata) => !noFormulaReferenceRequired.has(metadata.skillId as SkillId))
     .filter((metadata) => !formulaReferenceSkillIds.has(metadata.skillId as SkillId))
     .map((metadata) => `${metadata.templateId} -> ${metadata.skillId}`);
 
   assert.deepEqual(missingFormulaReferences, []);
+
+  const referencedSkillIds = formulaReference.flatMap((group) =>
+    group.entries.flatMap((entry) => (entry.skillId ? [entry.skillId] : [])),
+  );
+  assert.equal(
+    new Set(referencedSkillIds).size,
+    referencedSkillIds.length,
+    "formulaReference must not map the same generated skill more than once",
+  );
 
   for (const skillId of pr6FormulaReferenceSkillIds) {
     assert.ok(

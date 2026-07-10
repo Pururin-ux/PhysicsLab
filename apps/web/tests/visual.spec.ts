@@ -67,6 +67,35 @@ for (const route of routes) {
       // Роль navigation — на <nav> внутри fixed-контейнера с py-2:
       // допускаем паддинг контейнера (12px), но не «уплывшую» панель.
       expect(navBox!.y + navBox!.height).toBeGreaterThanOrEqual(viewport.height - 12);
+
+      if (route.name === "home") {
+        const warmupHeading = page.getByRole("heading", {
+          name: "Проверь себя на графике скорости",
+        });
+        const warmupBox = await warmupHeading.boundingBox();
+        expect(warmupBox, "next working section must be rendered").not.toBeNull();
+        expect(
+          warmupBox!.y,
+          "mobile home must hint at the warm-up task above the fixed nav",
+        ).toBeLessThan(navBox!.y);
+      }
+
+      if (route.name === "formulas") {
+        const rowMetrics = await page.locator(".formula-row button").evaluateAll(
+          (rows) =>
+            rows.map((row) => ({
+              clientWidth: row.clientWidth,
+              scrollWidth: row.scrollWidth,
+            })),
+        );
+        expect(rowMetrics.length).toBeGreaterThan(20);
+        expect(
+          rowMetrics.filter(
+            ({ clientWidth, scrollWidth }) => scrollWidth > clientWidth + 1,
+          ),
+          "formula rows must not overflow horizontally on mobile",
+        ).toEqual([]);
+      }
     }
 
     if (withSnapshots && SNAPSHOT_PROJECTS.includes(testInfo.project.name)) {

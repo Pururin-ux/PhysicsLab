@@ -19,7 +19,17 @@ const dotClassByTone: Record<FormulaReferenceGroup["badgeTone"], string> = {
 };
 
 function normalize(value: string) {
-  return value.toLowerCase();
+  return value.toLowerCase().replaceAll("ё", "е");
+}
+
+function searchableEntryText(entry: FormulaReferenceGroup["entries"][number]) {
+  return [
+    entry.title,
+    entry.caption,
+    entry.formula,
+    entry.limitation,
+    ...entry.symbols.flatMap((symbol) => [symbol.latex, symbol.description]),
+  ].join(" ");
 }
 
 export function FormulasBrowser({ groups }: FormulasBrowserProps) {
@@ -35,10 +45,8 @@ export function FormulasBrowser({ groups }: FormulasBrowserProps) {
     return groups
       .map((group) => ({
         ...group,
-        entries: group.entries.filter(
-          (entry) =>
-            normalize(entry.title).includes(normalizedQuery) ||
-            normalize(entry.caption).includes(normalizedQuery),
+        entries: group.entries.filter((entry) =>
+          normalize(searchableEntryText(entry)).includes(normalizedQuery),
         ),
       }))
       .filter((group) => group.entries.length > 0);
@@ -46,6 +54,10 @@ export function FormulasBrowser({ groups }: FormulasBrowserProps) {
 
   const isFiltering = normalizedQuery.length > 0;
   const hasResults = filteredGroups.length > 0;
+  const resultCount = filteredGroups.reduce(
+    (total, group) => total + group.entries.length,
+    0,
+  );
 
   return (
     <div className="flex flex-col gap-8">
@@ -72,6 +84,15 @@ export function FormulasBrowser({ groups }: FormulasBrowserProps) {
             className="h-12 w-full rounded-option border border-white/[.12] bg-white/[.03] pl-10 pr-4 text-[14px] font-medium text-white placeholder:text-white/35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/55"
           />
         </label>
+
+        {isFiltering && hasResults ? (
+          <p
+            aria-live="polite"
+            className="text-[12px] font-semibold text-white/48"
+          >
+            Найдено: <span className="physics-number text-white/72">{resultCount}</span>
+          </p>
+        ) : null}
 
         {!isFiltering ? (
           <nav aria-label="Разделы справочника" className="flex flex-wrap gap-2">
@@ -115,6 +136,9 @@ export function FormulasBrowser({ groups }: FormulasBrowserProps) {
           <div className="flex flex-col gap-1">
             <div className="flex flex-wrap items-center gap-2.5">
               <h2 className="text-xl font-[800] text-white">{group.title}</h2>
+              <span className="text-[12px] font-semibold text-white/58">
+                <span className="physics-number">{group.entries.length}</span> формул
+              </span>
               {group.status === "soon" ? <Badge>скоро задачи</Badge> : null}
             </div>
             {!isFiltering ? (
@@ -124,7 +148,7 @@ export function FormulasBrowser({ groups }: FormulasBrowserProps) {
             ) : null}
           </div>
 
-          <Card className="!p-2 shadow-none md:!p-3">
+          <Card className="overflow-hidden border-white/[.08] bg-space-900/72 !p-2 shadow-none md:!p-3">
             {group.entries.map((entry) => (
               <FormulaAccordionItem
                 key={entry.id}

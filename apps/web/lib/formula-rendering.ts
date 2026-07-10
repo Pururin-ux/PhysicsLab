@@ -12,7 +12,7 @@ export function renderFormulaToHtml(
     displayMode,
     throwOnError: false,
     strict: false,
-    output: "html",
+    output: "htmlAndMathml",
   });
 }
 
