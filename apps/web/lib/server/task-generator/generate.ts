@@ -43,6 +43,7 @@ import type {
   ParamRange,
   TaskBlueprint,
   TemplateGroup,
+  Difficulty,
 } from "./types.ts";
 import { GENERATED_TASK_VARIANT } from "./types.ts";
 import {
@@ -50,9 +51,11 @@ import {
   isAnswerValueAllowed,
   normalizeAnswerValue,
 } from "./validator.ts";
+import { calibratedVariantDifficulty } from "./difficulty.ts";
 
 const optionIds: GeneratedOption["id"][] = ["a", "b", "c", "d"];
 const candidateCache = new Map<string, Params[]>();
+const difficultyCandidateCache = new Map<string, Params[]>();
 
 export const blueprints = {
   "free-fall": freeFallBlueprint,
@@ -135,7 +138,7 @@ function valuesFromRange(range: ParamRange): number[] {
   return values;
 }
 
-function enumerateParams(blueprint: TaskBlueprint): Params[] {
+export function enumerateBlueprintParams(blueprint: TaskBlueprint): Params[] {
   const entries = Object.entries(blueprint.params);
   const variants = blueprint.variantCount ?? 1;
   let combinations: Params[] = [{}];
@@ -165,6 +168,12 @@ function enumerateParams(blueprint: TaskBlueprint): Params[] {
   return combinations.filter((params) =>
     blueprint.constraints ? blueprint.constraints.every((constraint) => constraint(params)) : true,
   );
+}
+
+export function difficultyForCandidate(blueprint: TaskBlueprint, params: Params): Difficulty {
+  const answer = normalizeAnswerValue(blueprint.solver(params));
+  return blueprint.difficultyFor?.(params, answer) ??
+    calibratedVariantDifficulty(blueprint.id, params, answer, blueprint.difficulty);
 }
 
 function publicParams(params: Params): Params {
@@ -266,7 +275,7 @@ function createTask(blueprint: TaskBlueprint, params: Params, index: number): Ge
     blueprint: blueprint.id,
     skill: blueprint.skill,
     topic: blueprint.topic,
-    difficulty: blueprint.difficulty,
+    difficulty: difficultyForCandidate(blueprint, params),
     params: publicParams(params),
     text: blueprint.textTemplate(params, answerValue),
     formula: blueprint.formula,
@@ -298,12 +307,13 @@ export function getBlueprint(templateId: string): TaskBlueprint {
 
 export interface GenerateTasksOptions {
   offset?: number;
+  difficulty?: Difficulty;
 }
 
 export function generateTasks(
   templateId: string,
   count: number,
-  { offset = 0 }: GenerateTasksOptions = {},
+  { offset = 0, difficulty }: GenerateTasksOptions = {},
 ): GeneratedTask[] {
   if (!Number.isInteger(count) || count < 1) {
     throw new Error(`Count must be a positive integer, received ${count}.`);
@@ -315,18 +325,62 @@ export function generateTasks(
   const blueprint = getBlueprint(templateId);
   const validCandidates =
     candidateCache.get(blueprint.id) ??
-    enumerateParams(blueprint).filter((params) => isValidCandidate(blueprint, params));
+    enumerateBlueprintParams(blueprint).filter((params) => isValidCandidate(blueprint, params));
   candidateCache.set(blueprint.id, validCandidates);
 
-  if (validCandidates.length === 0) {
-    throw new Error(`Template "${templateId}" produced no valid parameter sets.`);
+  const selectedCandidates = difficulty
+    ? difficultyCandidateCache.get(`${blueprint.id}:${difficulty}`) ??
+      validCandidates.filter((params) => difficultyForCandidate(blueprint, params) === difficulty)
+    : validCandidates;
+
+  if (difficulty) {
+    difficultyCandidateCache.set(`${blueprint.id}:${difficulty}`, selectedCandidates);
+  }
+
+  if (selectedCandidates.length === 0) {
+    throw new Error(
+      difficulty
+        ? `Template "${templateId}" does not support difficulty ${difficulty}.`
+        : `Template "${templateId}" produced no valid parameter sets.`,
+    );
   }
 
   return Array.from({ length: count }, (_, index) => {
     const absoluteIndex = offset + index;
-    const params = validCandidates[absoluteIndex % validCandidates.length];
+    const params = selectedCandidates[absoluteIndex % selectedCandidates.length];
     return createTask(blueprint, params, absoluteIndex);
   });
+}
+
+export function getCandidateParams(templateId: string, difficulty?: Difficulty): readonly Params[] {
+  const blueprint = getBlueprint(templateId);
+  const valid =
+    candidateCache.get(blueprint.id) ??
+    enumerateBlueprintParams(blueprint).filter((params) => isValidCandidate(blueprint, params));
+  candidateCache.set(blueprint.id, valid);
+  return difficulty
+    ? valid.filter((params) => difficultyForCandidate(blueprint, params) === difficulty)
+    : valid;
+}
+
+export function getDifficultyCounts(templateId: string): Record<Difficulty, number> {
+  const counts: Record<Difficulty, number> = { 1: 0, 2: 0, 3: 0 };
+  const blueprint = getBlueprint(templateId);
+  for (const params of getCandidateParams(templateId)) {
+    counts[difficultyForCandidate(blueprint, params)] += 1;
+  }
+  return counts;
+}
+
+export function supportsDifficulty(templateId: string, difficulty: Difficulty): boolean {
+  return getDifficultyCounts(templateId)[difficulty] > 0;
+}
+
+export function getTemplateIdsByGroupAndDifficulty(
+  group: TemplateGroup,
+  difficulty: Difficulty,
+): TemplateId[] {
+  return getTemplateIdsByGroup(group).filter((id) => supportsDifficulty(id, difficulty));
 }
 
 function readCliArg(name: string, fallback?: string): string | undefined {

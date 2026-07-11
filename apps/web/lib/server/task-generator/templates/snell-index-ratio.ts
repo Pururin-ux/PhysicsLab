@@ -14,6 +14,11 @@ const anglePairs: ReadonlyArray<readonly [number, number]> = [
   [37, 30],
   [50, 30],
   [64, 40],
+  [40, 30],
+  [50, 35],
+  [55, 40],
+  [60, 40],
+  [64, 45],
 ];
 
 function isCuratedPair(p: Params): boolean {
@@ -34,7 +39,7 @@ export const snellIndexRatioBlueprint: TaskBlueprint = {
   skill: "Закон преломления",
   topic: "Оптика",
   group: "optics",
-  difficulty: 2,
+  difficulty: 3,
   params: {
     i: { min: 37, max: 64, step: 1, unit: "°" },
     r: { min: 30, max: 45, step: 5, unit: "°" },

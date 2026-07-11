@@ -23,7 +23,7 @@ export const lensOpticalPowerBlueprint: TaskBlueprint = {
   params: {
     // F=10 см отсеивается сам: там 100/F = F и правильный ответ совпадает
     // с дистрактором «взял само фокусное расстояние».
-    Fcm: { min: 10, max: 50, step: 5, unit: "см" },
+    Fcm: { min: 10, max: 100, step: 2.5, unit: "см" },
   },
   formula: "D=\\frac{1}{F}",
   answerUnit: "дптр",

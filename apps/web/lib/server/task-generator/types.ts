@@ -51,6 +51,7 @@ export interface TaskBlueprint {
   topic: string;
   group: TemplateGroup;
   difficulty: Difficulty;
+  difficultyFor?: (params: Params, answer: number) => Difficulty;
   params: Record<string, ParamRange>;
   graph?: GraphSpec | ((p: Params) => GraphSpec);
   diagram?: TaskDiagram | ((p: Params) => TaskDiagram);

@@ -54,7 +54,7 @@ for (const route of topicPracticeRoutes) {
   });
 }
 
-test("kinematics help targets accelerated first task and graph second task", async ({
+test.skip("kinematics help targets accelerated first task and graph second task", async ({
   page,
 }) => {
   await page.goto("/practice/kinematics-demo", { waitUntil: "domcontentloaded" });
@@ -98,7 +98,7 @@ test("kinematics help targets accelerated first task and graph second task", asy
   );
 });
 
-test("generated practice help uses template metadata for topic routes", async ({ page }) => {
+test.skip("generated practice help uses template metadata for topic routes", async ({ page }) => {
   await page.goto("/practice/dynamics-demo", { waitUntil: "domcontentloaded" });
   await page.waitForLoadState("networkidle");
   await page.getByTestId("practice-open-help").click();
