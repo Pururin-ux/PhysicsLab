@@ -22,7 +22,7 @@ export const resistorNetworkBlueprint: TaskBlueprint = {
   skill: "Последовательное и параллельное соединение",
   topic: "Электродинамика",
   group: "electrodynamics",
-  difficulty: 2,
+  difficulty: 3,
   params: {
     r1: { min: 2, max: 30, step: 1, unit: "Ом" },
     r2: { min: 2, max: 30, step: 1, unit: "Ом" },

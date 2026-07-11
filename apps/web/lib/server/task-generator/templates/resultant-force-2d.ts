@@ -22,7 +22,7 @@ export const resultantForce2dBlueprint: TaskBlueprint = {
   skill: "Равнодействующая перпендикулярных сил",
   topic: "Динамика",
   group: "dynamics",
-  difficulty: 2,
+  difficulty: 3,
   params: {
     f1: { min: 15, max: 80, step: 5, unit: "Н" },
     f2: { min: 15, max: 80, step: 5, unit: "Н" },

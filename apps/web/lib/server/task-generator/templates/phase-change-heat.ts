@@ -24,7 +24,7 @@ export const phaseChangeHeatBlueprint: TaskBlueprint = {
   skill: "Нагревание и плавление",
   topic: "Термодинамика",
   group: "thermodynamics",
-  difficulty: 2,
+  difficulty: 3,
   params: {
     m: { min: 0.2, max: 2, step: 0.2, unit: "кг" },
     temp0: { min: -30, max: -5, step: 5, unit: "°C" },

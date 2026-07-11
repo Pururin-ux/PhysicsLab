@@ -2,11 +2,12 @@ import {
   generateTasks,
   getBlueprint,
   getTemplateIdsByGroup,
+  supportsDifficulty,
   isTemplateId,
   templateRegistry,
   type TemplateId,
 } from "../../../lib/server/task-generator/generate.ts";
-import type { GeneratedTask } from "../../../lib/server/task-generator/types.ts";
+import type { Difficulty, GeneratedTask } from "../../../lib/server/task-generator/types.ts";
 import { formatMathValue } from "../../../lib/server/task-generator/validator.ts";
 import {
   decimalsOf,
@@ -31,6 +32,25 @@ const examGroups: readonly (readonly TemplateId[])[] = [
   thermodynamicsTemplates,
   opticsTemplates,
 ];
+const difficultyPattern: readonly Difficulty[] = [1, 1, 1, 1, 1, 2, 2, 2, 3, 3];
+
+function difficultyForSlot(slot: number, batch: number): Difficulty {
+  return difficultyPattern[(slot + batch * 3) % difficultyPattern.length];
+}
+
+function templateForDifficulty(
+  templates: readonly TemplateId[],
+  difficulty: Difficulty,
+  offset: number,
+): TemplateId {
+  const supported = templates.filter((template) => supportsDifficulty(template, difficulty));
+  if (supported.length === 0) {
+    throw new Error(`No template supports difficulty ${difficulty}.`);
+  }
+  const native = supported.filter((template) => getBlueprint(template).difficulty === difficulty);
+  const candidates = native.length > 0 ? native : supported;
+  return candidates[offset % candidates.length];
+}
 
 // Разные batch смещают выбор внутри группы, чтобы новые варианты
 // тренировали разные навыки, а не одну и ту же пятёрку шаблонов.
@@ -42,10 +62,23 @@ function buildExamMix(count: number, batch: number): TemplateId[] {
   for (let slot = 0; slot < count; slot += 1) {
     const templates = examGroups[slot % examGroups.length];
     const withinGroup = Math.floor(slot / examGroups.length);
-    mix.push(templates[(batch + withinGroup) % templates.length]);
+    const difficulty = difficultyForSlot(slot, batch);
+    mix.push(templateForDifficulty(templates, difficulty, batch + withinGroup));
   }
 
   return mix;
+}
+
+function buildTopicMix(templates: readonly TemplateId[], count: number, batch: number): TemplateId[] {
+  if (count !== 10) {
+    return Array.from({ length: count }, (_, slot) => templates[(batch + slot) % templates.length]);
+  }
+  const occurrences: Record<Difficulty, number> = { 1: 0, 2: 0, 3: 0 };
+  return Array.from({ length: count }, (_, slot) => {
+    const difficulty = difficultyForSlot(slot, batch);
+    const occurrence = occurrences[difficulty]++;
+    return templateForDifficulty(templates, difficulty, batch + occurrence);
+  });
 }
 const supportedTemplates = templateRegistry.map((entry) => entry.id);
 
@@ -65,6 +98,12 @@ function normalizeBatch(value: string | null) {
   }
 
   return Date.now();
+}
+
+function normalizeDifficulty(value: string | null): Difficulty | undefined | null {
+  if (value === null) return undefined;
+  const parsed = Number(value);
+  return parsed === 1 || parsed === 2 || parsed === 3 ? parsed : null;
 }
 
 function hashSeed(seed: string) {
@@ -140,11 +179,16 @@ function toQuizTask(task: GeneratedTask) {
   };
 }
 
-function generateRandomizedTasks(template: TemplateId, count: number, batch: number) {
+function generateRandomizedTasks(
+  template: TemplateId,
+  count: number,
+  batch: number,
+  difficulty?: Difficulty,
+) {
   const baseOffset = hashSeed(`direct:${template}`) % 97;
   const offset = baseOffset + batch * count;
 
-  return generateTasks(template, count, { offset });
+  return generateTasks(template, count, { offset, difficulty });
 }
 
 function seededShuffle<T>(items: T[], seed: number): T[] {
@@ -161,7 +205,7 @@ function seededShuffle<T>(items: T[], seed: number): T[] {
 }
 
 function generateExamTasks(count: number, batch: number) {
-  const tasks = generateMixedTasks(buildExamMix(count, batch), "exam", count, batch);
+  const tasks = generateMixedTasks(buildExamMix(count, batch), "exam", count, batch, true);
 
   // На экзамене навыки не идут блоками по темам — порядок задач перемешан,
   // но детерминирован для одного и того же batch.
@@ -173,6 +217,7 @@ function generateMixedTasks(
   groupId: string,
   count: number,
   batch: number,
+  balancedDifficulty = false,
 ) {
   // Счётчик вхождений вместо floor(index/length): exam-микс может содержать
   // один шаблон дважды, и повторное вхождение обязано получить другой offset,
@@ -185,7 +230,8 @@ function generateMixedTasks(
     occurrences.set(template, occurrence + 1);
     const baseOffset = hashSeed(`${groupId}:${template}`) % 97;
     const offset = baseOffset + batch * count + occurrence;
-    const task = generateTasks(template, 1, { offset })[0];
+    const difficulty = balancedDifficulty ? difficultyForSlot(index, batch) : undefined;
+    const task = generateTasks(template, 1, { offset, difficulty })[0];
 
     if (!task) {
       throw new Error(`Template "${template}" produced no task.`);
@@ -203,23 +249,28 @@ export async function GET(req: Request) {
   const template = searchParams.get("template") ?? "free-fall";
   const count = normalizeCount(searchParams.get("count"));
   const batch = normalizeBatch(searchParams.get("batch"));
+  const difficulty = normalizeDifficulty(searchParams.get("difficulty"));
+
+  if (difficulty === null) {
+    return Response.json({ error: "Difficulty must be 1, 2 or 3." }, { status: 400 });
+  }
 
   try {
     const generatedTasks =
       template === "mixed"
-        ? generateMixedTasks(kinematicsTemplates, "mixed", count, batch)
+        ? generateMixedTasks(buildTopicMix(kinematicsTemplates, count, batch), "mixed", count, batch, count === 10)
         : template === "dynamics-mixed"
-          ? generateMixedTasks(dynamicsTemplates, "dynamics-mixed", count, batch)
+          ? generateMixedTasks(buildTopicMix(dynamicsTemplates, count, batch), "dynamics-mixed", count, batch, count === 10)
         : template === "electro-mixed"
-          ? generateMixedTasks(electrodynamicsTemplates, "electro-mixed", count, batch)
+          ? generateMixedTasks(buildTopicMix(electrodynamicsTemplates, count, batch), "electro-mixed", count, batch, count === 10)
         : template === "thermo-mixed"
-          ? generateMixedTasks(thermodynamicsTemplates, "thermo-mixed", count, batch)
+          ? generateMixedTasks(buildTopicMix(thermodynamicsTemplates, count, batch), "thermo-mixed", count, batch, count === 10)
         : template === "optics-mixed"
-          ? generateMixedTasks(opticsTemplates, "optics-mixed", count, batch)
+          ? generateMixedTasks(buildTopicMix(opticsTemplates, count, batch), "optics-mixed", count, batch, count === 10)
         : template === "exam"
           ? generateExamTasks(count, batch)
         : isTemplateId(template)
-          ? generateRandomizedTasks(template, count, batch)
+          ? generateRandomizedTasks(template, count, batch, difficulty ?? undefined)
           : null;
 
     if (!generatedTasks) {

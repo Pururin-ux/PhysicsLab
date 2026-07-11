@@ -15,7 +15,8 @@
     "test:visual": "playwright test --grep @visual",
     "screenshots": "playwright test tests/screenshots",
     "assert:routes": "node scripts/assert-routes-manifest.mjs",
-    "smoke": "playwright test --config=playwright.prod.config.ts"
+    "smoke": "playwright test --config=playwright.prod.config.ts",
+    "audit:tasks": "node lib/server/task-generator/task-bank-audit.ts"
   },
   "dependencies": {
     "@nanostores/react": "^1.1.0",
