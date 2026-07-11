@@ -13,9 +13,29 @@ const isProduction = process.env.NODE_ENV === "production";
 
 const nextConfig: NextConfig = {
   devIndicators: false,
+  poweredByHeader: false,
   pageExtensions: isProduction ? ["tsx", "ts"] : ["dev.tsx", "dev.ts", "tsx", "ts"],
   turbopack: {
     root: projectRoot,
+  },
+  // Базовые security headers. CSP сознательно НЕ добавлен: непроверенный CSP
+  // ломает KaTeX/inline-styles/Next-скрипты/Framer Motion — задокументирован
+  // как follow-up в docs/quality/public-beta-hardening-v1.md.
+  async headers() {
+    return [
+      {
+        source: "/:path*",
+        headers: [
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+          { key: "X-Frame-Options", value: "DENY" },
+          {
+            key: "Permissions-Policy",
+            value: "camera=(), microphone=(), geolocation=()",
+          },
+        ],
+      },
+    ];
   },
 };
 

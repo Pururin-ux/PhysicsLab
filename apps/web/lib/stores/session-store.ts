@@ -5,6 +5,12 @@ import {
   writeStore,
   type StoreCodec,
 } from "./storage-envelope.ts";
+import {
+  allowWriteForKey,
+  isWriteBlockedForKey,
+  reportReadResult,
+  reportWriteResult,
+} from "./persistence-status.ts";
 
 export const XP_STORAGE_KEY = "physicslab-v3-xp-v1";
 
@@ -37,11 +43,13 @@ export const xpCodec: StoreCodec<number> = {
 };
 
 function saveXP(value: number) {
-  writeStore(xpCodec, value);
+  if (isWriteBlockedForKey(xpCodec.key)) return;
+  reportWriteResult(writeStore(xpCodec, value));
 }
 
 export function hydrateXPFromStorage() {
   const result = readStore(xpCodec);
+  reportReadResult(xpCodec.key, result);
   if (!result.ok) {
     if (result.reason === "corrupt") {
       $xp.set(0);
@@ -51,7 +59,7 @@ export function hydrateXPFromStorage() {
 
   $xp.set(result.value);
   if (result.migrated) {
-    writeStore(xpCodec, result.value);
+    saveXP(result.value);
   }
 }
 
@@ -71,6 +79,7 @@ export function resetSessionProgress() {
 }
 
 export function resetStoredXP() {
+  allowWriteForKey(xpCodec.key);
   $xp.set(0);
   $xpAward.set(null);
   xpAwardId = 0;

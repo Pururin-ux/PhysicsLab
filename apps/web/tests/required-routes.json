@@ -14,5 +14,5 @@
     "/practice/exam-demo",
     "/api/tasks"
   ],
-  "devOnly": ["/dev/graphs", "/dev/diagrams"]
+  "devOnly": ["/dev/graphs", "/dev/diagrams", "/dev/boom"]
 }

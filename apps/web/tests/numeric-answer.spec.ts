@@ -65,6 +65,9 @@ async function mountTaskSet(
   routeTemplate: string,
   tasks: ApiTask[],
 ) {
+  await page.addInitScript((count) => {
+    window.__physlabQuizExpectedCount = count;
+  }, tasks.length);
   await page.route("**/api/tasks?*", async (route) => {
     const requestedTemplate = new URL(route.request().url()).searchParams.get(
       "template",

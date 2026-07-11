@@ -5,6 +5,12 @@ import {
   writeStore,
   type StoreCodec,
 } from "./storage-envelope.ts";
+import {
+  allowWriteForKey,
+  isWriteBlockedForKey,
+  reportReadResult,
+  reportWriteResult,
+} from "./persistence-status.ts";
 import { skillMetadata, type TopicId } from "../learning/taxonomy.ts";
 import { topics } from "../topics.ts";
 import type { AnswerRecord } from "../../components/quiz/quiz-session-store.ts";
@@ -159,13 +165,19 @@ export const progressCodec: StoreCodec<AppProgress> = {
 };
 
 function saveProgress(progress: AppProgress) {
-  writeStore(progressCodec, progress);
+  // Future-version данные не затираем: текущая версия работает с временным
+  // in-memory состоянием, запись в этот ключ заблокирована.
+  if (isWriteBlockedForKey(progressCodec.key)) {
+    return;
+  }
+  reportWriteResult(writeStore(progressCodec, progress));
 }
 
 export const $appProgress = atom<AppProgress>(createDefaultProgress());
 
 export function hydrateProgressFromStorage() {
   const result = readStore(progressCodec);
+  reportReadResult(progressCodec.key, result);
   if (!result.ok) {
     return;
   }
@@ -298,6 +310,7 @@ export function combineWeakTrapLastSeenAt(progress: AppProgress): Record<string,
 }
 
 export function resetProgress() {
+  allowWriteForKey(progressCodec.key);
   const progress = createDefaultProgress();
   $appProgress.set(progress);
   clearStore(progressCodec);

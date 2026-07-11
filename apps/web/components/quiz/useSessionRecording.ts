@@ -8,18 +8,20 @@ import {
   type TopicId,
 } from "../../lib/stores/progress-store";
 import type { QuizSessionState } from "./quiz-session-store";
+import { isSessionCompleted, markSessionCompleted } from "../../lib/quiz/session-completion";
 
 type UseSessionRecordingOptions = {
   // "exam" пишет в журнал пробных вариантов и слабые места тем,
   // не увеличивая счётчик тренировок темы.
   sessionKind: "practice" | "exam";
   topicId?: TopicId;
+  sessionId: string | null;
 };
 
 // Единственное место, где завершённая сессия попадает в persistent-сторы.
 // Хук гарантирует идемпотентность: повторный вызов для той же сессии
 // (двойной клик по «Показать итог», ре-рендер) ничего не запишет дважды.
-export function useSessionRecording({ sessionKind, topicId }: UseSessionRecordingOptions) {
+export function useSessionRecording({ sessionKind, topicId, sessionId }: UseSessionRecordingOptions) {
   const recordedRef = useRef(false);
 
   const resetRecording = useCallback(() => {
@@ -28,7 +30,7 @@ export function useSessionRecording({ sessionKind, topicId }: UseSessionRecordin
 
   const recordSessionResult = useCallback(
     (session: Pick<QuizSessionState, "answers" | "score" | "total">) => {
-      if (recordedRef.current) {
+      if (!sessionId || recordedRef.current || isSessionCompleted(sessionId)) {
         return;
       }
 
@@ -36,6 +38,7 @@ export function useSessionRecording({ sessionKind, topicId }: UseSessionRecordin
         recordedRef.current = true;
         recordExamSession(session.answers);
         recordExamAttempt(session.score, session.total);
+        markSessionCompleted(sessionId);
         return;
       }
 
@@ -47,9 +50,10 @@ export function useSessionRecording({ sessionKind, topicId }: UseSessionRecordin
           total: session.total,
           answers: session.answers,
         });
+        markSessionCompleted(sessionId);
       }
     },
-    [sessionKind, topicId],
+    [sessionId, sessionKind, topicId],
   );
 
   return { recordSessionResult, resetRecording };

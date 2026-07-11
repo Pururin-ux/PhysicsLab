@@ -8,6 +8,8 @@ import { AnswerFeedback } from "./AnswerFeedback";
 import { NumericAnswerInput } from "./NumericAnswerInput";
 import { OptionList } from "./OptionList";
 import { QuestionCard } from "./QuestionCard";
+import { QuizLoadErrorCard } from "./QuizLoadErrorCard";
+import { QuizLoadingCard } from "./QuizLoadingCard";
 import { SessionSummary } from "./SessionSummary";
 import { useGeneratedQuizData } from "./useGeneratedQuizData";
 import {
@@ -23,9 +25,17 @@ import {
 import {
   formatNumericValue,
 } from "../../lib/answer/numeric-answer";
+import {
+  buildSnapshot,
+  clearActiveQuizSnapshot,
+  readActiveQuizSnapshot,
+  snapshotMatches,
+  writeActiveQuizSnapshot,
+  type ActiveQuizSnapshot,
+} from "../../lib/quiz/active-session-snapshot";
+import { integrityError } from "../../lib/quiz/quiz-load-error";
 import { Badge } from "../ui/Badge";
 import { Button } from "../ui/Button";
-import { Card } from "../ui/Card";
 import { getTaskFocus } from "../../lib/learning/task-focus";
 import {
   getHelpTargetForMistake,
@@ -70,11 +80,35 @@ export function QuizSession({
   suppressCoachBubble = false,
 }: QuizSessionProps) {
   const session = useStore($quizSession);
-  const [generatedBatch, setGeneratedBatch] = useState(0);
+  const snapshotWriteBlockedRef = useRef(false);
+  // Кандидат на восстановление читается один раз при монтировании и до
+  // первого fetch: если снапшот указывает другой batch, лишний запрос
+  // batch=0 не выполняется (I4). Разметка первого рендера от этого не
+  // зависит (всегда loading-карточка), поэтому hydration mismatch нет.
+  const pendingRestoreRef = useRef<ActiveQuizSnapshot | null | undefined>(undefined);
+  if (pendingRestoreRef.current === undefined) {
+    if (typeof window === "undefined") {
+      pendingRestoreRef.current = null;
+    } else {
+      const result = readActiveQuizSnapshot();
+      snapshotWriteBlockedRef.current = !result.ok && result.reason === "future-version";
+      pendingRestoreRef.current =
+        result.ok &&
+        result.snapshot.template === generatedTemplate &&
+        result.snapshot.sessionKind === sessionKind
+          ? result.snapshot
+          : null;
+    }
+  }
+  const [generatedBatch, setGeneratedBatch] = useState(
+    () => pendingRestoreRef.current?.batch ?? 0,
+  );
+  const [restoredNotice, setRestoredNotice] = useState<string | null>(null);
   const {
     data: generatedData,
     error: generatedError,
     status: generatedStatus,
+    retry: retryGeneratedLoad,
   } = useGeneratedQuizData({
     enabled: true,
     template: generatedTemplate,
@@ -92,13 +126,20 @@ export function QuizSession({
   const sessionStartTimerRef = useRef<ReturnType<typeof setTimeout> | null>(
     null,
   );
-  const { recordSessionResult, resetRecording } = useSessionRecording({
-    sessionKind,
-    topicId,
-  });
   const reactionRef = useRef<HTMLDivElement>(null);
   const activeData = generatedData;
   const tasks = activeData?.tasks ?? emptyTasks;
+  const sessionId = useMemo(
+    () => tasks.length > 0
+      ? `${generatedTemplate}:${generatedBatch}:${tasks.map((task) => task.id).join("|")}`
+      : null,
+    [generatedBatch, generatedTemplate, tasks],
+  );
+  const { recordSessionResult, resetRecording } = useSessionRecording({
+    sessionKind,
+    topicId,
+    sessionId,
+  });
   const currentTask = tasks[session.currentIndex];
   const latestAnswer = session.answers.at(-1);
   const isLastTask = session.currentIndex >= session.total - 1;
@@ -123,8 +164,48 @@ export function QuizSession({
     }
 
     resetSessionProgress();
-    resetQuizSession(tasks.length);
     resetRecording();
+
+    // Попытка восстановления: снапшот должен точно совпасть с загруженным
+    // набором задач. При mismatch — молча начинаем новую сессию (снапшот
+    // очищается: он относится к другому набору).
+    const pendingRestore = pendingRestoreRef.current;
+    pendingRestoreRef.current = null;
+    const taskIds = tasks.map((task) => task.id);
+
+    if (
+      pendingRestore &&
+      snapshotMatches(pendingRestore, {
+        sessionId: sessionId ?? "",
+        template: generatedTemplate,
+        topic: generatedTopic,
+        topicId,
+        sessionKind,
+        taskIds,
+      })
+    ) {
+      // Восстанавливаем состояние сессии без повторных side-эффектов:
+      // XP не начисляется, coach-события не переигрываются.
+      $quizSession.set({
+        phase: pendingRestore.session.phase,
+        currentIndex: pendingRestore.session.currentIndex,
+        selectedOptionId: pendingRestore.session.selectedOptionId,
+        answers: pendingRestore.session.answers,
+        score: pendingRestore.session.score,
+        streak: pendingRestore.session.streak,
+        total: pendingRestore.session.total,
+      });
+      setRestoredNotice(
+        `Тренировка восстановлена: задание ${pendingRestore.session.currentIndex + 1} из ${pendingRestore.session.total}.`,
+      );
+      return;
+    }
+
+    if (pendingRestore && !snapshotWriteBlockedRef.current) {
+      clearActiveQuizSnapshot();
+    }
+
+    resetQuizSession(tasks.length);
 
     if (sessionStartTimerRef.current) {
       clearTimeout(sessionStartTimerRef.current);
@@ -145,7 +226,36 @@ export function QuizSession({
       }
       clearPauseTimer();
     };
+    // generatedTemplate/sessionKind стабильны для конкретного экрана.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [clearPauseTimer, emitCoachEvent, resetRecording, startPauseTimer, tasks]);
+
+  // Снапшот активной сессии: обновляется после ответов/переходов (не в
+  // render). Completed не сохраняется — к этому моменту результат записан
+  // в прогресс и снапшот очищен.
+  useEffect(() => {
+    if (!activeData || tasks.length === 0 || !sessionId || snapshotWriteBlockedRef.current) return;
+
+    if (session.phase === "completed") {
+      clearActiveQuizSnapshot();
+      return;
+    }
+
+    const snapshot = buildSnapshot({
+      sessionId,
+      template: generatedTemplate,
+      topic: generatedTopic,
+      title: generatedTitle,
+      topicId,
+      sessionKind,
+      batch: generatedBatch,
+      taskIds: tasks.map((task) => task.id),
+      session,
+    });
+    if (snapshot) {
+      writeActiveQuizSnapshot(snapshot);
+    }
+  }, [activeData, generatedBatch, generatedTemplate, generatedTitle, generatedTopic, session, sessionId, sessionKind, tasks, topicId]);
 
   useEffect(() => {
     if (currentHelpTarget) {
@@ -263,9 +373,14 @@ export function QuizSession({
     if (!currentTask || session.phase !== "answered") return;
 
     hideCoach();
+    setRestoredNotice(null);
 
     if (isLastTask) {
+      // Запись результата идемпотентна (useSessionRecording); снапшот
+      // очищается сразу, чтобы reload после записи не восстановил сессию
+      // и не привёл к повторной записи.
       recordSessionResult(session);
+      if (!snapshotWriteBlockedRef.current) clearActiveQuizSnapshot();
     }
 
     const nextIndex = session.currentIndex + 1;
@@ -292,6 +407,9 @@ export function QuizSession({
     resetRecording();
     resetSessionProgress();
     hideCoach();
+    setRestoredNotice(null);
+    clearActiveQuizSnapshot();
+    snapshotWriteBlockedRef.current = false;
     setGeneratedBatch((current) => current + 1);
   }
 
@@ -321,40 +439,19 @@ export function QuizSession({
     );
   }
 
-  if (generatedStatus === "loading") {
-    return (
-      <section className="relative mx-auto flex max-w-[580px] flex-col gap-4 pb-[calc(5rem+env(safe-area-inset-bottom))] sm:pb-8">
-        <Card className="flex flex-col gap-3">
-          <Badge tone="cyan">{generatedTitle}</Badge>
-          <p className="text-[14px] font-normal leading-[1.7] text-white/70">
-            Готовлю новый набор задач…
-          </p>
-        </Card>
-      </section>
-    );
+  if (generatedStatus === "loading" || generatedStatus === "idle") {
+    return <QuizLoadingCard title={generatedTitle} />;
   }
 
-  if (generatedStatus === "error") {
-    return (
-      <section className="relative mx-auto flex max-w-[580px] flex-col gap-4 pb-[calc(5rem+env(safe-area-inset-bottom))] sm:pb-8">
-        <Card className="flex flex-col gap-4">
-          <Badge tone="gold">Не удалось загрузить задачи</Badge>
-          <p className="text-[14px] font-normal leading-[1.7] text-white/70">
-            {generatedError}
-          </p>
-          <Button
-            type="button"
-            variant="ghost"
-            onClick={() => setGeneratedBatch((current) => current + 1)}
-          >
-            Попробовать ещё раз
-          </Button>
-        </Card>
-      </section>
-    );
+  if (generatedStatus === "error" && generatedError) {
+    return <QuizLoadErrorCard error={generatedError} onRetry={retryGeneratedLoad} />;
   }
 
-  if (!currentTask) return null;
+  // Ready, но текущей задачи нет (integrity-дыра): восстановимая ошибка
+  // вместо пустого экрана. Retry повторяет тот же batch.
+  if (!currentTask) {
+    return <QuizLoadErrorCard error={integrityError()} onRetry={retryGeneratedLoad} />;
+  }
 
   const taskFocus = getTaskFocus(currentTask);
   const answerHelpTarget =
@@ -368,6 +465,16 @@ export function QuizSession({
 
   return (
     <section className="relative mx-auto flex max-w-[580px] flex-col gap-4 pb-[calc(5rem+env(safe-area-inset-bottom))] sm:pb-8">
+      {restoredNotice ? (
+        <p
+          data-testid="session-restored-notice"
+          aria-live="polite"
+          className="rounded-option border border-nova-cyan/20 bg-nova-cyan/[.05] px-3.5 py-2.5 text-[13px] leading-[1.6] text-white/75"
+        >
+          {restoredNotice}
+        </p>
+      ) : null}
+
       <div className="flex items-center justify-between gap-3">
         <Badge>{progressLabel}</Badge>
         {session.streak > 0 ? (
