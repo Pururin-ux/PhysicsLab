@@ -66,9 +66,11 @@ The committed `npm run audit:tasks` command enumerates the real parameter/candid
 - Numeric families with variable precision or sign decisions receive candidate-level difficulty.
 - D1 numeric candidates never require more than one decimal; D2 never more than two; all generated numeric answers remain capped at three.
 - The candidate cache is filterable by actual difficulty and never silently substitutes a different level.
+- Curated small-pool improvements: refractive-index speed 15 → 18 valid variants, Snell ratio 12 → 22, and optical power 12 → 18.
+- Across 50 batches per mixed endpoint there are no duplicate texts inside a session. Maximum adjacent-session exact-text overlap is 10% (optics); the other measured mixes are 0%.
 
 ## Known limitations
 
-The smallest content pools remain `snell-index-ratio`, `lens-optical-power`, and `refractive-index-speed`. They are curated to avoid false material constants and physically invalid angle pairs. Their repetition ceiling is a real content limitation, not hidden by IDs. Broadening those pools safely needs additional reviewed contexts and angle/value tables, not arbitrary random numbers.
+The smallest content pools remain `refractive-index-speed`, `lens-optical-power`, and `snell-index-ratio` even after measured expansion. They are curated to avoid false material constants and physically invalid angle pairs. Their repetition ceiling is a real content limitation, not hidden by IDs. Further broadening safely needs additional reviewed contexts and angle/value tables, not arbitrary random numbers.
 
 Difficulty is not persisted historically in v1. It describes the delivered task and badge only. The progress schema remains v3.
