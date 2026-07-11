@@ -5,6 +5,12 @@ import {
   writeStore,
   type StoreCodec,
 } from "./storage-envelope.ts";
+import {
+  allowWriteForKey,
+  isWriteBlockedForKey,
+  reportReadResult,
+  reportWriteResult,
+} from "./persistence-status.ts";
 
 export const EXAM_LOG_STORAGE_KEY = "physicslab-v3-exam-log-v1";
 
@@ -64,18 +70,20 @@ export const examLogCodec: StoreCodec<ExamAttempt[]> = {
 };
 
 function saveLog(log: ExamAttempt[]) {
-  writeStore(examLogCodec, log);
+  if (isWriteBlockedForKey(examLogCodec.key)) return;
+  reportWriteResult(writeStore(examLogCodec, log));
 }
 
 export function hydrateExamLogFromStorage() {
   const result = readStore(examLogCodec);
+  reportReadResult(examLogCodec.key, result);
   if (!result.ok) {
     return;
   }
 
   $examLog.set(result.value);
   if (result.migrated) {
-    writeStore(examLogCodec, result.value);
+    saveLog(result.value);
   }
 }
 
@@ -96,6 +104,7 @@ export function recordExamAttempt(score: number, total: number) {
 }
 
 export function resetExamLog() {
+  allowWriteForKey(examLogCodec.key);
   $examLog.set([]);
   clearStore(examLogCodec);
 }

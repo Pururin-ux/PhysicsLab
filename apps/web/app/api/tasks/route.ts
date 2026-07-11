@@ -244,6 +244,24 @@ function generateMixedTasks(
   });
 }
 
+// Стабильный error envelope: { error, code, retryable }. Поле error остаётся
+// для обратной совместимости с существующими потребителями/тестами.
+// Cache-Control: no-store — задачи не должны кэшироваться промежуточными
+// прокси (batch задаёт детерминизм явно).
+const JSON_HEADERS = { "Cache-Control": "no-store" } as const;
+
+function jsonError(
+  status: number,
+  code: string,
+  message: string,
+  retryable: boolean,
+): Response {
+  return Response.json(
+    { error: message, code, retryable },
+    { status, headers: JSON_HEADERS },
+  );
+}
+
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const template = searchParams.get("template") ?? "free-fall";
@@ -252,7 +270,15 @@ export async function GET(req: Request) {
   const difficulty = normalizeDifficulty(searchParams.get("difficulty"));
 
   if (difficulty === null) {
-    return Response.json({ error: "Difficulty must be 1, 2 or 3." }, { status: 400 });
+    return jsonError(400, "INVALID_DIFFICULTY", "Difficulty must be 1, 2 or 3.", false);
+  }
+  if (difficulty && isTemplateId(template) && !supportsDifficulty(template, difficulty)) {
+    return jsonError(
+      400,
+      "UNSUPPORTED_DIFFICULTY",
+      `Template does not support difficulty ${difficulty}.`,
+      false,
+    );
   }
 
   try {
@@ -274,29 +300,41 @@ export async function GET(req: Request) {
           : null;
 
     if (!generatedTasks) {
-      return Response.json(
-        {
-          error: `Unknown template "${template}". Available templates: ${[
-            ...supportedTemplates,
-            "mixed",
-            "dynamics-mixed",
-            "electro-mixed",
-            "thermo-mixed",
-            "optics-mixed",
-            "exam",
-          ].join(", ")}.`,
-        },
-        { status: 400 },
+      return jsonError(
+        400,
+        "UNKNOWN_TEMPLATE",
+        `Unknown template "${template}". Available templates: ${[
+          ...supportedTemplates,
+          "mixed",
+          "dynamics-mixed",
+          "electro-mixed",
+          "thermo-mixed",
+          "optics-mixed",
+          "exam",
+        ].join(", ")}.`,
+        false,
       );
     }
 
-    return Response.json({ tasks: generatedTasks.map(toQuizTask) });
-  } catch (error) {
+    // Guard целостности: пустой результат или дубли id — внутренний сбой,
+    // который не должен уходить клиенту как success.
+    if (generatedTasks.length === 0) {
+      return jsonError(500, "EMPTY_GENERATION", "Task generation failed.", true);
+    }
+    const ids = new Set(generatedTasks.map((task) => task.id));
+    if (ids.size !== generatedTasks.length) {
+      return jsonError(500, "DUPLICATE_TASK_IDS", "Task generation failed.", true);
+    }
+
     return Response.json(
-      {
-        error: error instanceof Error ? error.message : "Task generation failed.",
-      },
-      { status: 400 },
+      { tasks: generatedTasks.map(toQuizTask) },
+      { headers: JSON_HEADERS },
     );
+  } catch (error) {
+    // Внутренние сообщения (пути, имена шаблонов, стеки) наружу не уходят.
+    if (process.env.NODE_ENV !== "production") {
+      console.error("[api/tasks]", error);
+    }
+    return jsonError(500, "TASK_GENERATION_FAILED", "Task generation failed.", true);
   }
 }

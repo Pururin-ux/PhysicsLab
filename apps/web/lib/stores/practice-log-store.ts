@@ -5,6 +5,12 @@ import {
   writeStore,
   type StoreCodec,
 } from "./storage-envelope.ts";
+import {
+  allowWriteForKey,
+  isWriteBlockedForKey,
+  reportReadResult,
+  reportWriteResult,
+} from "./persistence-status.ts";
 
 export const PRACTICE_LOG_STORAGE_KEY = "physicslab-v3-practice-log-v1";
 
@@ -47,18 +53,20 @@ export const practiceLogCodec: StoreCodec<string[]> = {
 };
 
 function saveLog(log: string[]) {
-  writeStore(practiceLogCodec, log);
+  if (isWriteBlockedForKey(practiceLogCodec.key)) return;
+  reportWriteResult(writeStore(practiceLogCodec, log));
 }
 
 export function hydratePracticeLogFromStorage() {
   const result = readStore(practiceLogCodec);
+  reportReadResult(practiceLogCodec.key, result);
   if (!result.ok) {
     return;
   }
 
   $practiceLog.set(result.value);
   if (result.migrated) {
-    writeStore(practiceLogCodec, result.value);
+    saveLog(result.value);
   }
 }
 
@@ -76,6 +84,7 @@ export function logPracticeDay(date: Date = new Date()) {
 }
 
 export function resetPracticeLog() {
+  allowWriteForKey(practiceLogCodec.key);
   $practiceLog.set([]);
   clearStore(practiceLogCodec);
 }

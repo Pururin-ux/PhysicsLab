@@ -134,17 +134,37 @@ export function readStore<T>(codec: StoreCodec<T>): ReadResult<T> {
   return result;
 }
 
-export function writeStore<T>(codec: StoreCodec<T>, value: T): void {
+export type WriteResult = "success" | "no-storage" | "quota" | "error";
+
+// Квоту определяем по DOMException name/code, а не по тексту сообщения:
+// Safari/Firefox исторически используют разные имена и код 22/1014.
+function isQuotaError(error: unknown): boolean {
+  if (typeof DOMException !== "undefined" && error instanceof DOMException) {
+    return (
+      error.name === "QuotaExceededError" ||
+      error.name === "NS_ERROR_DOM_QUOTA_REACHED" ||
+      error.code === 22 ||
+      error.code === 1014
+    );
+  }
+  return false;
+}
+
+// Возвращает typed result; существующие вызовы могут игнорировать его —
+// сигнатура обратно совместима.
+export function writeStore<T>(codec: StoreCodec<T>, value: T): WriteResult {
   if (!canUseStorage()) {
-    return;
+    return "no-storage";
   }
 
   const envelope: StoredEnvelope = { version: codec.currentVersion, data: value };
 
   try {
     window.localStorage.setItem(codec.key, JSON.stringify(envelope));
-  } catch {
-    // localStorage может быть недоступен (приватный режим, квота).
+    return "success";
+  } catch (error) {
+    // localStorage может быть недоступен (приватный режим) или переполнен.
+    return isQuotaError(error) ? "quota" : "error";
   }
 }
 

@@ -33,6 +33,18 @@ for (const route of routesFixture.devOnly) {
   });
 }
 
+test("prod: базовые security headers присутствуют", async ({ request }) => {
+  const response = await request.get("/");
+  expect(response.headers()["x-content-type-options"]).toBe("nosniff");
+  expect(response.headers()["x-frame-options"]).toBe("DENY");
+  expect(response.headers()["referrer-policy"]).toBe(
+    "strict-origin-when-cross-origin",
+  );
+  expect(response.headers()["permissions-policy"]).toBe(
+    "camera=(), microphone=(), geolocation=()",
+  );
+});
+
 test("prod: /api/tasks?template=exam сохраняет сбалансированный mixed-контракт", async ({ request }) => {
   const response = await request.get("/api/tasks?template=exam&count=10&batch=1");
   expect(response.status()).toBe(200);

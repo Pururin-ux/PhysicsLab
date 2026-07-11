@@ -27,6 +27,10 @@ import {
   practiceLogCodec,
 } from "./practice-log-store.ts";
 import { $xp, hydrateXPFromStorage, xpCodec } from "./session-store.ts";
+import {
+  allowWriteForKey,
+  reportWriteResult,
+} from "./persistence-status.ts";
 import { topics } from "../topics.ts";
 
 export const EXPORT_FORMAT = "physicslab-progress-export";
@@ -162,10 +166,19 @@ export function applyImport(file: ProgressExportFile): boolean {
     return false;
   }
 
-  writeStore(progressCodec, decoded.progress);
-  writeStore(examLogCodec, decoded.examLog ?? []);
-  writeStore(practiceLogCodec, decoded.practiceLog ?? []);
-  writeStore(xpCodec, decoded.xp ?? 0);
+  const imports = [
+    [progressCodec, decoded.progress],
+    [examLogCodec, decoded.examLog ?? []],
+    [practiceLogCodec, decoded.practiceLog ?? []],
+    [xpCodec, decoded.xp ?? 0],
+  ] as const;
+
+  for (const [codec, value] of imports) {
+    // Import is an explicit replacement confirmed by the user, so it may
+    // supersede data written by a newer app version.
+    allowWriteForKey(codec.key);
+    reportWriteResult(writeStore(codec, value));
+  }
 
   hydrateProgressFromStorage();
   hydrateExamLogFromStorage();

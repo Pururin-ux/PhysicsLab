@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { ConditionalAppShell } from "../components/layout/ConditionalAppShell";
 import { PersistenceHydrator } from "../components/layout/PersistenceHydrator";
+import { PersistenceNotice } from "../components/layout/PersistenceNotice";
 import { StarField } from "../components/layout/StarField";
 import "../styles/globals.css";
 
@@ -28,6 +29,7 @@ export default function RootLayout({
         <PersistenceHydrator />
         <StarField />
         <ConditionalAppShell>{children}</ConditionalAppShell>
+        <PersistenceNotice />
       </body>
     </html>
   );

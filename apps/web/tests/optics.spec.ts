@@ -37,6 +37,9 @@ async function fetchTemplate(
 }
 
 async function mountOpticsTasks(page: Page, tasks: ApiTask[]) {
+  await page.addInitScript((count) => {
+    window.__physlabQuizExpectedCount = count;
+  }, tasks.length);
   await page.route("**/api/tasks?*", async (route) => {
     const template = new URL(route.request().url()).searchParams.get("template");
     if (template !== "optics-mixed") {

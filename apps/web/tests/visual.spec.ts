@@ -22,6 +22,7 @@ const routes = [
   { name: "practice-kinematics", path: "/practice/kinematics-demo" },
   { name: "practice-optics", path: "/practice/optics-demo" },
   { name: "practice-exam", path: "/practice/exam-demo" },
+  { name: "not-found", path: "/definitely-not-a-page" },
 ] as const;
 
 // Снапшоты держим на двух конфигурациях; tablet/mobile-360 гоняют
@@ -173,4 +174,36 @@ test("@visual mobile practice controls clear the fixed bottom navigation", async
     page.getByRole("button", { name: "Свернуть решение" }),
   ).toBeVisible();
   await expectScrollableAboveMobileNav(nextTaskButton, mobileNavContainer);
+});
+
+// Стабильные hardening-состояния: карточка ошибки загрузки (детерминированный
+// мок 500). Layout-слой — на всех платформах; пиксельные снапшоты — только
+// при VISUAL_SNAPSHOTS=1 на снапшот-проектах.
+test("@visual карточка ошибки загрузки: раскладка целая", async ({ page }, testInfo) => {
+  await page.route("**/api/tasks?*", (route) =>
+    new URL(route.request().url()).searchParams.get("template") === "mixed"
+      ? route.fulfill({ status: 500, contentType: "application/json", body: "{}" })
+      : route.continue(),
+  );
+  await page.goto("/practice/kinematics-demo", { waitUntil: "domcontentloaded" });
+  const card = page.getByTestId("quiz-load-error-card");
+  await expect(card).toBeVisible({ timeout: 10000 });
+  await page.evaluate(() => document.fonts.ready);
+  await page.addStyleTag({ content: "canvas { visibility: hidden !important; }" });
+
+  const viewport = page.viewportSize()!;
+  const scrollWidth = await page.evaluate(() => document.documentElement.scrollWidth);
+  expect(scrollWidth).toBeLessThanOrEqual(viewport.width + 1);
+
+  const box = await card.boundingBox();
+  expect(box).not.toBeNull();
+  expect(box!.x).toBeGreaterThanOrEqual(-1);
+  expect(box!.x + box!.width).toBeLessThanOrEqual(viewport.width + 1);
+
+  if (withSnapshots && SNAPSHOT_PROJECTS.includes(testInfo.project.name)) {
+    await expect(page.getByRole("main")).toHaveScreenshot("quiz-load-error.png", {
+      animations: "disabled",
+      maxDiffPixelRatio: 0.02,
+    });
+  }
 });
