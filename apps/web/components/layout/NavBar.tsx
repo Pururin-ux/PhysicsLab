@@ -11,6 +11,7 @@ export function NavBar() {
   const session = useStore($quizSession);
   const pathname = usePathname();
   const sectionLabels: [prefix: string, label: string][] = [
+    ["/practice/family", "Похожие задачи"],
     ["/practice/dynamics", "Динамика"],
     ["/practice/kinematics", "Кинематика"],
     ["/practice/electro", "Электродинамика"],
@@ -19,18 +20,28 @@ export function NavBar() {
     ["/mistakes", "Ошибки"],
     ["/formulas", "Формулы"],
     ["/profile", "Профиль"],
+    ["/tasks", "Задачи"],
   ];
   const topic =
     sectionLabels.find(([prefix]) => pathname.startsWith(prefix))?.[1] ??
     "Темы";
   const showProgress = pathname.startsWith("/practice/");
-  const total = Math.max(session.total, 1);
+  // Store is shared across client-side routes and can briefly contain the
+  // previous session while a new batch loads. Route semantics keep the header
+  // honest during that transition: focused drills always contain five tasks.
+  const expectedTotal = pathname.startsWith("/practice/family/") ? 5 : 10;
+  const hasCurrentRouteSession = session.total === expectedTotal;
+  const total = hasCurrentRouteSession ? session.total : expectedTotal;
   const currentStep =
-    session.phase === "completed"
+    !hasCurrentRouteSession
+      ? 1
+      : session.phase === "completed"
       ? total
       : Math.min(session.currentIndex + 1, total);
   const completed =
-    session.phase === "completed"
+    !hasCurrentRouteSession
+      ? 0
+      : session.phase === "completed"
       ? total
       : session.phase === "answered"
         ? Math.min(session.currentIndex + 1, total)

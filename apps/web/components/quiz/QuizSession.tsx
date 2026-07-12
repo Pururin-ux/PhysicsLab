@@ -46,6 +46,7 @@ import {
 import type { TopicId } from "../../lib/stores/progress-store";
 import { addXP, resetSessionProgress } from "../../lib/stores/session-store";
 import { useSessionRecording } from "./useSessionRecording";
+import type { GeneratedQuizCount } from "../../lib/quiz/generated-quiz-count";
 
 interface QuizSessionProps {
   generatedTemplate: string;
@@ -60,6 +61,10 @@ interface QuizSessionProps {
   suppressCoachBubble?: boolean;
   recoveryMode?: "auto" | "fresh";
   freshAttemptId?: string;
+  generatedCount?: GeneratedQuizCount;
+  restartLabel?: string;
+  nextHref?: string;
+  nextLabel?: string;
 }
 
 const nextStepByTopic: Record<string, { href: string; label: string }> = {
@@ -83,6 +88,10 @@ export function QuizSession({
   suppressCoachBubble = false,
   recoveryMode = "auto",
   freshAttemptId,
+  generatedCount = 10,
+  restartLabel,
+  nextHref,
+  nextLabel,
 }: QuizSessionProps) {
   const session = useStore($quizSession);
   const snapshotWriteBlockedRef = useRef(false);
@@ -143,6 +152,7 @@ export function QuizSession({
     topic: generatedTopic,
     title: generatedTitle,
     batch: generatedBatch,
+    count: generatedCount,
   });
   const {
     bubble,
@@ -452,7 +462,9 @@ export function QuizSession({
 
   if (session.phase === "completed") {
     const nextStep =
-      sessionKind === "exam"
+      nextHref
+        ? { href: nextHref, label: nextLabel ?? "Дальше" }
+        : sessionKind === "exam"
         ? { href: "/topics", label: "К темам" }
         : topicId
           ? nextStepByTopic[topicId]
@@ -465,9 +477,9 @@ export function QuizSession({
         weakTraps={weakTraps}
         onRestart={handleRestart}
         restartLabel={
-          sessionKind === "exam"
+          restartLabel ?? (sessionKind === "exam"
             ? "Новый вариант"
-            : "Ещё 10 задач"
+            : `Ещё ${generatedCount} задач`)
         }
         topic={activeData?.topic}
         nextHref={nextStep?.href}

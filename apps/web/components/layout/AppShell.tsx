@@ -105,10 +105,11 @@ const sidebarGroups: NavGroup[] = [
     title: "Темы",
     items: [
       {
-        label: "Все темы",
-        href: "/topics",
+        label: "Задачи",
+        href: "/tasks",
         icon: navIcons.topics,
-        match: (pathname) => pathname.startsWith("/topics"),
+        match: (pathname) =>
+          pathname.startsWith("/tasks") || pathname.startsWith("/practice/family"),
       },
       {
         label: "Кинематика",
@@ -189,11 +190,14 @@ const sidebarGroups: NavGroup[] = [
 
 const mobileNavItems: NavItem[] = [
   {
-    label: "Темы",
-    href: "/topics",
+    label: "Задачи",
+    href: "/tasks",
     mobile: true,
     icon: navIcons.topics,
-    match: (pathname) => pathname.startsWith("/topics") || pathname.startsWith("/practice/"),
+    match: (pathname) =>
+      pathname.startsWith("/tasks") ||
+      pathname.startsWith("/topics") ||
+      pathname.startsWith("/practice/"),
   },
   {
     label: "Ошибки",
@@ -220,9 +224,10 @@ const mobileNavItems: NavItem[] = [
 
 const quickActions: NavItem[] = [
   {
-    label: "Темы",
-    href: "/topics",
-    match: (pathname) => pathname.startsWith("/topics"),
+    label: "Задачи",
+    href: "/tasks",
+    match: (pathname) =>
+      pathname.startsWith("/tasks") || pathname.startsWith("/practice/family"),
   },
   {
     label: "Смешанная",
@@ -407,7 +412,11 @@ function ShellTopBar() {
     return null;
   }
 
-  const fallbackHref = pathname.startsWith("/practice/") ? "/topics" : "/";
+  const fallbackHref = pathname.startsWith("/practice/family")
+    ? "/tasks"
+    : pathname.startsWith("/practice/")
+      ? "/topics"
+      : "/";
 
   return (
     <div className="mb-5 flex min-w-0 items-center justify-between gap-3">
