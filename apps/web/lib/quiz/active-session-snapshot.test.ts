@@ -85,7 +85,7 @@ const taskIds = ["t-1", "t-2", "t-3", "t-4", "t-5", "t-6", "t-7", "t-8", "t-9", 
 
 function makeSnapshot(now = Date.now()): ActiveQuizSnapshot {
   const snapshot = buildSnapshot({
-    sessionId: "mixed:2:test",
+    attemptId: "attempt-test-0001",
     template: "mixed",
     topic: "Кинематика",
     title: "Кинематика",
@@ -107,7 +107,7 @@ test("round-trip: снапшот пишется и читается", () => {
     assert.equal(result.ok, true);
     if (result.ok) {
       assert.equal(result.snapshot.batch, 2);
-      assert.equal(result.snapshot.sessionId, "mixed:2:test");
+      assert.equal(result.snapshot.attemptId, "attempt-test-0001");
       assert.equal(result.snapshot.title, "Кинематика");
       assert.equal(result.snapshot.session.currentIndex, 3);
       assert.equal(result.snapshot.session.answers.length, 3);
@@ -122,7 +122,7 @@ test("answered-фаза: ответов на один больше индекс�
   installSessionStorage();
   try {
     const answered = buildSnapshot({
-      sessionId: "mixed:0:test",
+      attemptId: "attempt-test-0002",
       template: "mixed",
       topic: "Кинематика",
       title: "Кинематика",
@@ -142,7 +142,7 @@ test("answered-фаза: ответов на один больше индекс�
 
 test("completed не сохраняется", () => {
   const snapshot = buildSnapshot({
-    sessionId: "mixed:0:test",
+    attemptId: "attempt-test-0002",
     template: "mixed",
     topic: "Кинематика",
     title: "Кинематика",
@@ -221,21 +221,21 @@ test("future-version не используется и НЕ удаляется", 
 test("snapshotMatches: другой template/набор задач не совпадает", () => {
   const snapshot = makeSnapshot();
   assert.equal(
-    snapshotMatches(snapshot, { sessionId: "mixed:2:test", template: "mixed", topic: "Кинематика", sessionKind: "practice", taskIds }),
+    snapshotMatches(snapshot, { attemptId: "attempt-test-0001", template: "mixed", topic: "Кинематика", sessionKind: "practice", taskIds }),
     true,
   );
   assert.equal(
-    snapshotMatches(snapshot, { sessionId: "mixed:2:test", template: "exam", topic: "Кинематика", sessionKind: "practice", taskIds }),
+    snapshotMatches(snapshot, { attemptId: "attempt-test-0001", template: "exam", topic: "Кинематика", sessionKind: "practice", taskIds }),
     false,
   );
   assert.equal(
-    snapshotMatches(snapshot, { sessionId: "mixed:2:test", template: "mixed", topic: "Кинематика", sessionKind: "exam", taskIds }),
+    snapshotMatches(snapshot, { attemptId: "attempt-test-0001", template: "mixed", topic: "Кинематика", sessionKind: "exam", taskIds }),
     false,
   );
   assert.equal(
     snapshotMatches(snapshot, {
       template: "mixed",
-      sessionId: "mixed:2:test",
+      attemptId: "attempt-test-0001",
       topic: "Кинематика",
       sessionKind: "practice",
       taskIds: [...taskIds.slice(0, 9), "other"],
@@ -263,4 +263,50 @@ test("бросающий sessionStorage не роняет чтение/запи�
   } finally {
     uninstall();
   }
+});
+
+test("malformed attemptId делает снапшот corrupt", () => {
+  const data = installSessionStorage();
+  try {
+    for (const badId of ["", "short", 42, null]) {
+      const broken = { ...makeSnapshot(), attemptId: badId };
+      data.set(ACTIVE_QUIZ_SNAPSHOT_KEY, JSON.stringify(broken));
+      const result = readActiveQuizSnapshot();
+      assert.equal(
+        result.ok === false && result.reason,
+        "corrupt",
+        `attemptId=${JSON.stringify(badId)} должен быть отвергнут`,
+      );
+    }
+  } finally {
+    uninstall();
+  }
+});
+
+test("legacy v1-снапшот (sessionId без attemptId) безопасно отбрасывается", () => {
+  const data = installSessionStorage();
+  try {
+    const { attemptId: _dropped, ...rest } = makeSnapshot();
+    const legacyV1 = { ...rest, version: 1, sessionId: "mixed:2:kin-1|kin-2" };
+    data.set(ACTIVE_QUIZ_SNAPSHOT_KEY, JSON.stringify(legacyV1));
+    const result = readActiveQuizSnapshot();
+    assert.equal(result.ok === false && result.reason, "corrupt");
+    assert.equal(data.has(ACTIVE_QUIZ_SNAPSHOT_KEY), false, "v1 отброшен (это не прогресс)");
+  } finally {
+    uninstall();
+  }
+});
+
+test("snapshotMatches: чужой attemptId не совпадает", () => {
+  const snapshot = makeSnapshot();
+  assert.equal(
+    snapshotMatches(snapshot, {
+      attemptId: "another-attempt-id",
+      template: "mixed",
+      topic: "Кинематика",
+      sessionKind: "practice",
+      taskIds,
+    }),
+    false,
+  );
 });

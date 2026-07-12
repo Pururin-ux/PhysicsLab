@@ -437,6 +437,94 @@ test.describe("session recovery", () => {
     expect(progressAfter?.data.topics.kinematics.completedSessions).toBe(1);
   });
 
+  test("повторное прохождение того же batch=0 в одной вкладке записывается второй раз", async ({
+    page,
+    request,
+  }) => {
+    // Регрессия P1: sessionId был детерминирован по набору задач, и второй
+    // честный проход batch=0 молча не записывался. attemptId различает попытки.
+    const tasks = (await fetchTasks(request, "mixed", 10)).slice(0, 2);
+
+    const readProgress = () =>
+      page.evaluate((key) => {
+        const raw = window.localStorage.getItem(key);
+        if (!raw) return null;
+        const parsed = JSON.parse(raw) as {
+          data: {
+            topics: Record<string, { completedSessions: number; solved: number; correct: number }>;
+          };
+        };
+        return parsed.data.topics.kinematics;
+      }, PROGRESS_KEY);
+
+    const completeSession = async () => {
+      await expect(page.getByTestId("question-card")).toBeVisible({ timeout: 15000 });
+      await answerCorrectly(page, tasks[0]);
+      await page.getByTestId("next-task-button").click();
+      await answerCorrectly(page, tasks[1]);
+      await page.getByTestId("next-task-button").click();
+      await expect(page.getByText("Итог тренировки", { exact: true })).toBeVisible();
+    };
+
+    await mountMixed(page, tasks);
+    await completeSession();
+    const first = await readProgress();
+    expect(first?.completedSessions).toBe(1);
+    expect(first?.solved).toBe(2);
+
+    // Уходим и возвращаемся В ТОЙ ЖЕ вкладке: batch снова 0, задачи те же.
+    await page.goto("/topics", { waitUntil: "domcontentloaded" });
+    await page.goto(KINEMATICS, { waitUntil: "domcontentloaded" });
+    await completeSession();
+
+    const second = await readProgress();
+    expect(second?.completedSessions, "вторая попытка обязана записаться").toBe(2);
+    expect(second?.solved).toBe(4);
+    expect(second?.correct).toBe(4);
+  });
+
+  test("exam: повторный вариант того же batch записывается, дубль одной попытки — нет", async ({
+    page,
+    request,
+  }) => {
+    const tasks = (await fetchTasks(request, "exam", 10)).slice(0, 2);
+    await prime(page, 2);
+    await page.route("**/api/tasks?*", (route) =>
+      new URL(route.request().url()).searchParams.get("template") === "exam"
+        ? route.fulfill({
+            status: 200,
+            contentType: "application/json",
+            body: JSON.stringify({ tasks }),
+          })
+        : route.continue(),
+    );
+
+    const readAttempts = () =>
+      page.evaluate(() => {
+        const raw = window.localStorage.getItem("physicslab-v3-exam-log-v1");
+        if (!raw) return 0;
+        return (JSON.parse(raw) as { data: unknown[] }).data.length;
+      });
+
+    const completeExam = async () => {
+      await page.goto("/practice/exam-demo", { waitUntil: "domcontentloaded" });
+      await page.getByRole("button", { name: "Начать тренировку" }).click();
+      await expect(page.getByTestId("question-card")).toBeVisible({ timeout: 15000 });
+      await answerCorrectly(page, tasks[0]);
+      await page.getByTestId("next-task-button").click();
+      await answerCorrectly(page, tasks[1]);
+      // Двойной клик по «Показать итог» — одна попытка, одна запись.
+      await page.getByTestId("next-task-button").click({ clickCount: 2, delay: 40 });
+      await expect(page.getByText("Итог тренировки", { exact: true })).toBeVisible();
+    };
+
+    await completeExam();
+    expect(await readAttempts()).toBe(1);
+
+    await completeExam();
+    expect(await readAttempts(), "второй вариант того же batch записан").toBe(2);
+  });
+
   test("Restart очищает снапшот и начинает новый batch", async ({ page, request }) => {
     const tasks = (await fetchTasks(request, "mixed", 10)).slice(0, 2);
     const nextBatch = (await fetchTasks(request, "mixed", 10, 1)).slice(0, 2);
