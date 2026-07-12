@@ -58,6 +58,8 @@ interface QuizSessionProps {
   onHelpTargetChange?: (target: HelpTarget) => void;
   onOpenHelpTarget?: (target: HelpTarget) => void;
   suppressCoachBubble?: boolean;
+  recoveryMode?: "auto" | "fresh";
+  freshAttemptId?: string;
 }
 
 const nextStepByTopic: Record<string, { href: string; label: string }> = {
@@ -79,6 +81,8 @@ export function QuizSession({
   onHelpTargetChange,
   onOpenHelpTarget,
   suppressCoachBubble = false,
+  recoveryMode = "auto",
+  freshAttemptId,
 }: QuizSessionProps) {
   const session = useStore($quizSession);
   const snapshotWriteBlockedRef = useRef(false);
@@ -93,12 +97,29 @@ export function QuizSession({
     } else {
       const result = readActiveQuizSnapshot();
       snapshotWriteBlockedRef.current = !result.ok && result.reason === "future-version";
-      pendingRestoreRef.current =
-        result.ok &&
-        result.snapshot.template === generatedTemplate &&
-        result.snapshot.sessionKind === sessionKind
-          ? result.snapshot
-          : null;
+      if (recoveryMode === "fresh") {
+        const isDiscardedAttempt =
+          result.ok &&
+          result.snapshot.attemptId === freshAttemptId &&
+          result.snapshot.template === generatedTemplate &&
+          result.snapshot.sessionKind === sessionKind;
+        // A snapshot replaced between gate rendering and the click is not the
+        // attempt the user discarded. Preserve it rather than overwriting it.
+        if (result.ok && !isDiscardedAttempt) {
+          snapshotWriteBlockedRef.current = true;
+        }
+        if (isDiscardedAttempt) {
+          clearActiveQuizSnapshot();
+        }
+        pendingRestoreRef.current = null;
+      } else {
+        pendingRestoreRef.current =
+          result.ok &&
+          result.snapshot.template === generatedTemplate &&
+          result.snapshot.sessionKind === sessionKind
+            ? result.snapshot
+            : null;
+      }
     }
   }
   const [generatedBatch, setGeneratedBatch] = useState(

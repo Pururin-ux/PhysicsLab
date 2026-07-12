@@ -28,10 +28,10 @@ Active generated topics:
 - Dynamics
 - Electrodynamics
 - Molecular physics / thermodynamics
+- Optics
 
 Visible but not active topics:
 
-- Optics
 - Atomic / quantum / nuclear physics
 
 ### Coverage Table
@@ -42,7 +42,7 @@ Visible but not active topics:
 | Kinematics | v(t) slope | `vt-slope` | numeric choice | yes | yes | yes | high | good |
 | Kinematics | v(t) area | `vt-area` | numeric choice | yes | yes | yes | medium-high | good but needs mixed signed/interval variants |
 | Kinematics | relative perpendicular velocities | `relative-velocity-vectors` | numeric choice | yes | no | yes | high | good pilot, formula reference missing |
-| Kinematics | average speed on segments | `average-speed-segments` | numeric choice | yes | yes | yes | high | good, arithmetic-mean trap covered |
+| Kinematics | average speed on segments | `average-speed-segments` | numeric input | yes | yes | yes | high | good, arithmetic-mean trap covered |
 | Kinematics | speed conversion | `unit-conversion-speed` | numeric choice | yes | yes | yes | high | good, mixed-unit comparison covered |
 | Dynamics | Newton's second law | `newton-second` | numeric choice | yes | yes | yes | high | weak: too simple vs exam force/friction coupling |
 | Dynamics | friction | `friction-force` | numeric choice | yes | yes | yes | high as component | weak standalone drill |
@@ -52,10 +52,10 @@ Visible but not active topics:
 | Dynamics | weight in lift | `weight-lift` | numeric choice | yes | yes | yes | medium | useful, lower evidence |
 | Dynamics | impulse / momentum | `impulse-momentum`, `inelastic-collision-speed` | numeric choice | yes | partial | yes | high | good start |
 | Dynamics | kinetic energy | `kinetic-energy` | numeric choice | yes | no | yes | high | good drill, no work-energy transition yet |
-| Dynamics | work from force and distance | `work-force-distance` | numeric choice | yes | yes | yes | high | good basic work drill |
+| Dynamics | work from force and distance | `work-force-distance` | numeric input | yes | yes | yes | high | good basic work drill |
 | Dynamics | density and volume | `density-volume-ratio` | numeric choice | yes | yes | yes | high | good |
 | Electrodynamics | Ohm law | `ohm-law` | numeric choice | yes | yes | yes | high | good, needs inverse variants |
-| Electrodynamics | electric power | `electric-power` | numeric choice | yes | yes | yes | high | good basic power drill |
+| Electrodynamics | electric power | `electric-power` | numeric input | yes | yes | yes | high | good basic power drill |
 | Electrodynamics | resistor network | `resistor-network` | numeric choice + circuit diagram | yes | no | yes | high | useful but help is too broad under Ohm law |
 | Electrodynamics | full circuit | `source-internal-resistance` | numeric choice + circuit diagram | yes | no | yes | high | good start |
 | Electrodynamics | charge sharing | `charge-sharing` | signed numeric choice | yes | yes | yes | high | good |
@@ -63,12 +63,12 @@ Visible but not active topics:
 | Thermodynamics | ideal gas state | `ideal-gas-state` | numeric choice | yes | no | yes | high | good, formula reference id mismatch |
 | Thermodynamics | heat amount | `heat-amount` | numeric choice | yes | yes | yes | medium-high | good |
 | Thermodynamics | gas state ratio | `gas-state-ratio` | numeric choice | yes | yes | yes | high | good process-ratio drill |
-| Thermodynamics | heat balance | `heat-balance-simple` | numeric choice | yes | yes | yes | high | good equilibrium-temperature drill |
+| Thermodynamics | heat balance | `heat-balance-simple` | numeric input | yes | yes | yes | high | good equilibrium-temperature drill |
 | Thermodynamics | heating and melting | `phase-change-heat` | numeric choice | yes | no | yes | high | good, graph variant missing |
 | Thermodynamics | p(V), V(T), t(tau) graphs | none | n/a | partial help only | partial formulas | n/a | high | missing |
-| Optics | reflection/refraction/lens/TIR | none | n/a | none | formulas exist | n/a | medium | missing |
+| Optics | reflection, plane mirror, refraction, converging lens | 7 active families | single choice + numeric input | yes | yes | yes | high | useful v1; no wave optics, TIR family, diverging lenses or instruments |
 | Atomic/quantum/nuclear | photoeffect/half-life/reactions/photon | none | n/a | none | none | n/a | medium | missing |
-| Exam mode | mixed open sections | generated from active groups | numeric choice | yes per task | partial | yes | high | honest slice, not full exam |
+| Exam mode | mixed open sections | generated from active groups | single choice + numeric input | yes per task | partial | yes | high | honest slice, not full exam |
 | Profile/progress | local practice state | n/a | n/a | n/a | n/a | n/a | product support | useful but label should probably be Progress |
 | Formulas | active + upcoming references | n/a | n/a | n/a | yes | n/a | support | partial, missing generated-family refs |
 
@@ -78,18 +78,17 @@ The main gaps are not UI polish. They are content breadth and visual exam gramma
 
 P0 gaps:
 
-- Optics has zero task families.
 - Atomic/quantum/nuclear has zero task families.
 - Thermodynamics has no p(V), V(T), or heating curve graph tasks.
 - Dynamics still lacks combined force projection + friction; work/energy transition tasks are still missing.
-- Generated answer model is numeric-choice only; real CE/CT includes single choice, multiple choice, numeric input, matching, and unit/formula recognition.
+- Generated answer model supports single choice and numeric input; real CE/CT also includes multiple choice, matching, and unit/formula recognition.
 - Formula reference is behind generator coverage for several active families.
 
 P1 gaps:
 
 - Magnetic field / Lorentz / induction are absent.
 - Circuit families do not yet cover ideal meters, switch states, power comparison, or changing current.
-- Optics formulas exist, but no renderer or task family uses them.
+- Optics v1 remains narrow: no wave optics, diverging lenses, total-internal-reflection family or optical instruments.
 - Explanation quality is solid for short numeric drills, but graph/diagram explanations need a stricter pattern.
 
 P2 gaps:
@@ -183,30 +182,12 @@ Already added after the initial audit: `average-speed-segments`,
 - `statics-moment-balance`
 - `sound-medium-concept`
 
-## E. Optics Plan
+## E. Optics Backlog
 
-Do not expose optics as a full practice topic until at least three families exist.
-
-Minimum viable optics:
-
-1. `refraction-index-speed`
-   - No renderer required.
-   - Formula: `n = c/v`.
-   - Good first pilot.
-
-2. `thin-lens-equation`
-   - Needs simple optics diagram or very constrained text.
-   - Formula: `1/F = 1/d + 1/f`.
-
-3. `total-internal-reflection-critical-angle`
-   - Needs ray/geometry diagram before release.
-
-4. `image-properties-ray-construction`
-   - Postpone until optics renderer exists.
-
-Implementation gate:
-
-- Add `TopicId`/progress/formula/help intentionally, or keep optics in a hidden generator test until topic support exists. Do not half-expose it.
+Optics is active with seven v1 families, targeted help, formulas, progress and
+semantic ray diagrams. The remaining expansion should focus on diverging
+lenses, total internal reflection, wave optics and optical instruments rather
+than duplicating the existing foundation.
 
 ## F. Atomic / Quantum / Nuclear Plan
 
@@ -271,7 +252,7 @@ Short-term copy fixes should target precision, not personality.
 
 P0:
 
-- Do not imply this is a complete CE/CT trainer while optics and atomic/nuclear are missing.
+- Do not imply this is a complete CE/CT trainer while atomic/nuclear physics and substantial optics breadth are missing.
 - Avoid "real test" phrasing for exam-demo; call it "mixed training from open topics".
 - Rename or reframe profile if it remains mainly progress/review.
 
@@ -290,8 +271,8 @@ Detailed examples are in `docs/content/copy-audit.md`.
 ## I. Risks
 
 - Product risk: current UI can look more complete than the content actually is.
-- Pedagogy risk: too many numeric-choice drills will undertrain real exam answer formats.
-- Architecture risk: adding optics/atomic by forcing them into current four-topic `TopicId` would corrupt progress and review semantics.
+- Pedagogy risk: single-choice and numeric-input drills still undertrain matching and multiple-choice exam formats.
+- Architecture risk: adding atomic/quantum as a sixth topic requires deliberate progress and review semantics.
 - Renderer risk: thermodynamics/optics tasks need semantic visuals; text-only versions would train the wrong skill.
 - Maintenance risk: formula reference, help mapping, taxonomy, and generator can drift unless tests keep checking 1:1 coverage.
 
@@ -306,4 +287,5 @@ Recommended next commit after this audit:
 3. Add a coupled-force family such as `friction-with-acceleration`.
 4. Keep tests enforcing formula-reference coverage for every active generated family where a reusable formula exists.
 
-Leave optics/atomic until the product decides how to expose new topics in progress/navigation.
+Treat atomic/quantum/nuclear as a separate foundation project; optics should be
+expanded only where the current v1 coverage is demonstrably insufficient.

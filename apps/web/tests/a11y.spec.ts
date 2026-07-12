@@ -78,6 +78,33 @@ for (const route of routes) {
 
 // Карточка разбора после ответа — новая поверхность и отдельный класс
 // контраста (Nova-заголовок, свёрнутый разбор). Сканируем её обе ветки.
+test("@a11y exam resume gate after an answered task", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/practice/exam-demo", { waitUntil: "domcontentloaded" });
+  await page.getByRole("button", { name: "Начать тренировку" }).click();
+  await expect(page.getByTestId("question-card")).toBeVisible({ timeout: 15000 });
+
+  const numericInput = page.getByTestId("numeric-answer-input");
+  if (await numericInput.isVisible().catch(() => false)) {
+    await numericInput.fill("0");
+    await page.getByTestId("numeric-submit").click();
+  } else {
+    await page.locator(".quiz-option").first().click();
+  }
+  await expect(page.getByTestId("next-task-button")).toBeVisible();
+  await page.reload({ waitUntil: "domcontentloaded" });
+
+  const candidate = page.getByTestId("exam-resume-candidate");
+  await expect(candidate).toContainText("Ответ на задание 1 уже сохранён");
+  const continueButton = candidate.getByRole("button", { name: "Продолжить вариант" });
+  const freshButton = candidate.getByRole("button", { name: "Начать новый вариант" });
+  await continueButton.focus();
+  await expect(continueButton).toBeFocused();
+  await freshButton.focus();
+  await expect(freshButton).toBeFocused();
+  expect(await scanForBlockingViolations(page)).toEqual([]);
+});
+
 test("@a11y карточка разбора после ошибки — без serious/critical", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   const taskResponse = page.waitForResponse((response) => {

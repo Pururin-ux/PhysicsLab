@@ -7,6 +7,11 @@ import { Badge } from "../ui/Badge";
 import { Button } from "../ui/Button";
 import { Card } from "../ui/Card";
 import { QuizSession } from "../quiz/QuizSession";
+import {
+  clearExamResumeCandidate,
+  readExamResumeCandidate,
+  type ExamResumeCandidate,
+} from "../../lib/quiz/active-session-snapshot";
 
 function ExamHistoryLine() {
   const log = useStore($examLog);
@@ -50,7 +55,13 @@ function ExamHistoryLine() {
 }
 
 export function ExamDemo() {
-  const [started, setStarted] = useState(false);
+  const [started, setStarted] = useState<"normal" | "resume" | "fresh" | null>(null);
+  const [resumeCandidate, setResumeCandidate] = useState<ExamResumeCandidate | null>();
+  const [discardedAttemptId, setDiscardedAttemptId] = useState<string | undefined>();
+
+  useEffect(() => {
+    setResumeCandidate(readExamResumeCandidate());
+  }, []);
 
   if (started) {
     return (
@@ -59,6 +70,8 @@ export function ExamDemo() {
         generatedTopic="Смешанная тренировка"
         generatedTitle="Смешанная тренировка · открытые темы"
         sessionKind="exam"
+        recoveryMode={started === "fresh" ? "fresh" : "auto"}
+        freshAttemptId={discardedAttemptId}
       />
     );
   }
@@ -92,13 +105,56 @@ export function ExamDemo() {
 
       <ExamHistoryLine />
 
-      <Button
-        size="lg"
-        className="border-nova-gold bg-nova-gold shadow-gold-glow focus-visible:ring-nova-gold/50"
-        onClick={() => setStarted(true)}
-      >
-        Начать тренировку
-      </Button>
+      {resumeCandidate === undefined ? (
+        <Button size="lg" disabled aria-label="Проверяем незавершённый вариант">
+          Проверяем сохранение…
+        </Button>
+      ) : resumeCandidate ? (
+        <section
+          aria-labelledby="exam-resume-title"
+          className="flex flex-col gap-3 border-t border-white/10 pt-5"
+          data-testid="exam-resume-candidate"
+        >
+          <div className="flex flex-col gap-1">
+            <h2 id="exam-resume-title" className="text-[17px] font-bold text-white">
+              Незавершённый вариант
+            </h2>
+            <p className="text-[14px] leading-[1.6] text-white/68">
+              {resumeCandidate.phase === "answered"
+                ? `Ответ на задание ${resumeCandidate.currentTaskNumber} уже сохранён — можно продолжить с разбора.`
+                : `Можно продолжить с задания ${resumeCandidate.currentTaskNumber} из ${resumeCandidate.total}.`}
+            </p>
+          </div>
+          <div className="grid gap-2.5 sm:grid-cols-2">
+            <Button
+              size="lg"
+              className="border-nova-gold bg-nova-gold shadow-gold-glow focus-visible:ring-nova-gold/50"
+              onClick={() => setStarted("resume")}
+            >
+              Продолжить вариант
+            </Button>
+            <Button
+              size="lg"
+              variant="ghost"
+              onClick={() => {
+                setDiscardedAttemptId(resumeCandidate.attemptId);
+                clearExamResumeCandidate(resumeCandidate.attemptId);
+                setStarted("fresh");
+              }}
+            >
+              Начать новый вариант
+            </Button>
+          </div>
+        </section>
+      ) : (
+        <Button
+          size="lg"
+          className="border-nova-gold bg-nova-gold shadow-gold-glow focus-visible:ring-nova-gold/50"
+          onClick={() => setStarted("normal")}
+        >
+          Начать тренировку
+        </Button>
+      )}
     </Card>
   );
 }

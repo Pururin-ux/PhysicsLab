@@ -179,6 +179,42 @@ test("@visual mobile practice controls clear the fixed bottom navigation", async
 // Стабильные hardening-состояния: карточка ошибки загрузки (детерминированный
 // мок 500). Layout-слой — на всех платформах; пиксельные снапшоты — только
 // при VISUAL_SNAPSHOTS=1 на снапшот-проектах.
+test("@visual exam resume gate: layout is stable", async ({ page }, testInfo) => {
+  await page.goto("/practice/exam-demo", { waitUntil: "domcontentloaded" });
+  await page.getByRole("button", { name: "Начать тренировку" }).click();
+  await expect(page.getByTestId("question-card")).toBeVisible({ timeout: 15000 });
+  await page.reload({ waitUntil: "domcontentloaded" });
+
+  const candidate = page.getByTestId("exam-resume-candidate");
+  await expect(candidate).toBeVisible();
+  await page.evaluate(() => document.fonts.ready);
+  await page.addStyleTag({ content: "canvas { visibility: hidden !important; }" });
+
+  const viewport = page.viewportSize()!;
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(
+    viewport.width + 1,
+  );
+
+  if (testInfo.project.name.startsWith("mobile")) {
+    const freshButton = candidate.getByRole("button", { name: "Начать новый вариант" });
+    await freshButton.scrollIntoViewIfNeeded();
+    const [buttonBox, navBox] = await Promise.all([
+      freshButton.boundingBox(),
+      page.getByRole("navigation", { name: "Мобильная навигация" }).boundingBox(),
+    ]);
+    expect(buttonBox).not.toBeNull();
+    expect(navBox).not.toBeNull();
+    expect(navBox!.y - (buttonBox!.y + buttonBox!.height)).toBeGreaterThanOrEqual(8);
+  }
+
+  if (withSnapshots && SNAPSHOT_PROJECTS.includes(testInfo.project.name)) {
+    await expect(page.getByRole("main")).toHaveScreenshot("exam-resume-gate.png", {
+      animations: "disabled",
+      maxDiffPixelRatio: 0.02,
+    });
+  }
+});
+
 test("@visual карточка ошибки загрузки: раскладка целая", async ({ page }, testInfo) => {
   await page.route("**/api/tasks?*", (route) =>
     new URL(route.request().url()).searchParams.get("template") === "mixed"
