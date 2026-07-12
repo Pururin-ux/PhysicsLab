@@ -33,6 +33,7 @@ import {
   writeActiveQuizSnapshot,
   type ActiveQuizSnapshot,
 } from "../../lib/quiz/active-session-snapshot";
+import { newAttemptId } from "../../lib/quiz/attempt-id";
 import { integrityError } from "../../lib/quiz/quiz-load-error";
 import { Badge } from "../ui/Badge";
 import { Button } from "../ui/Button";
@@ -103,6 +104,12 @@ export function QuizSession({
   const [generatedBatch, setGeneratedBatch] = useState(
     () => pendingRestoreRef.current?.batch ?? 0,
   );
+  // Идентификатор попытки: восстановление сохраняет id из снапшота, новая
+  // сессия и Restart получают свежий. Две честные попытки одного batch=0
+  // различимы — completion-маркер идентифицирует попытку, а не набор задач.
+  const [attemptId, setAttemptId] = useState(
+    () => pendingRestoreRef.current?.attemptId ?? newAttemptId(),
+  );
   const [restoredNotice, setRestoredNotice] = useState<string | null>(null);
   const {
     data: generatedData,
@@ -129,11 +136,11 @@ export function QuizSession({
   const reactionRef = useRef<HTMLDivElement>(null);
   const activeData = generatedData;
   const tasks = activeData?.tasks ?? emptyTasks;
+  // Identity записи прогресса: попытка, а не набор задач. taskIds при этом
+  // по-прежнему строго сверяются при восстановлении снапшота.
   const sessionId = useMemo(
-    () => tasks.length > 0
-      ? `${generatedTemplate}:${generatedBatch}:${tasks.map((task) => task.id).join("|")}`
-      : null,
-    [generatedBatch, generatedTemplate, tasks],
+    () => (tasks.length > 0 ? `${generatedTemplate}:${generatedBatch}:${attemptId}` : null),
+    [attemptId, generatedBatch, generatedTemplate, tasks.length],
   );
   const { recordSessionResult, resetRecording } = useSessionRecording({
     sessionKind,
@@ -176,7 +183,7 @@ export function QuizSession({
     if (
       pendingRestore &&
       snapshotMatches(pendingRestore, {
-        sessionId: sessionId ?? "",
+        attemptId,
         template: generatedTemplate,
         topic: generatedTopic,
         topicId,
@@ -203,6 +210,12 @@ export function QuizSession({
 
     if (pendingRestore && !snapshotWriteBlockedRef.current) {
       clearActiveQuizSnapshot();
+    }
+
+    // Fresh-старт: если attemptId был позаимствован у не совпавшего снапшота,
+    // выдаём новой попытке собственный идентификатор.
+    if (pendingRestore) {
+      setAttemptId(newAttemptId());
     }
 
     resetQuizSession(tasks.length);
@@ -242,7 +255,7 @@ export function QuizSession({
     }
 
     const snapshot = buildSnapshot({
-      sessionId,
+      attemptId,
       template: generatedTemplate,
       topic: generatedTopic,
       title: generatedTitle,
@@ -255,7 +268,7 @@ export function QuizSession({
     if (snapshot) {
       writeActiveQuizSnapshot(snapshot);
     }
-  }, [activeData, generatedBatch, generatedTemplate, generatedTitle, generatedTopic, session, sessionId, sessionKind, tasks, topicId]);
+  }, [activeData, attemptId, generatedBatch, generatedTemplate, generatedTitle, generatedTopic, session, sessionId, sessionKind, tasks, topicId]);
 
   useEffect(() => {
     if (currentHelpTarget) {
@@ -410,6 +423,9 @@ export function QuizSession({
     setRestoredNotice(null);
     clearActiveQuizSnapshot();
     snapshotWriteBlockedRef.current = false;
+    // Новая попытка получает новый идентификатор, даже если template/batch/
+    // набор задач совпадут с предыдущими.
+    setAttemptId(newAttemptId());
     setGeneratedBatch((current) => current + 1);
   }
 

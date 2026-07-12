@@ -9,15 +9,21 @@ import type {
   AnswerRecord,
   QuizSessionState,
 } from "../../components/quiz/quiz-session-store";
+import { isValidAttemptId } from "./attempt-id.ts";
 
 export const ACTIVE_QUIZ_SNAPSHOT_KEY = "physicslab-v3-active-quiz-v1";
-export const ACTIVE_QUIZ_SNAPSHOT_VERSION = 1;
+// v2: sessionId (детерминированный по набору задач) заменён на attemptId —
+// уникальный идентификатор ПОПЫТКИ. Старые v1-снапшоты безопасно
+// отбрасываются (это активная сессия одной вкладки, не прогресс).
+export const ACTIVE_QUIZ_SNAPSHOT_VERSION = 2;
 // Снапшот старше суток не восстанавливаем: контекст тренировки уже потерян.
 export const ACTIVE_QUIZ_SNAPSHOT_MAX_AGE_MS = 24 * 60 * 60 * 1000;
 
 export type ActiveQuizSnapshot = {
   version: number;
-  sessionId: string;
+  // Идентификатор попытки: восстановление сохраняет его, Restart/новая
+  // сессия генерируют новый — две попытки одного batch различимы.
+  attemptId: string;
   savedAt: number;
   template: string;
   topic: string;
@@ -90,7 +96,7 @@ function isValidAnswerRecord(value: unknown): boolean {
 function isValidSnapshotShape(value: unknown): value is ActiveQuizSnapshot {
   if (!isRecord(value)) return false;
   if (typeof value.savedAt !== "number" || !Number.isFinite(value.savedAt)) return false;
-  if (typeof value.sessionId !== "string" || value.sessionId.length === 0) return false;
+  if (!isValidAttemptId(value.attemptId)) return false;
   if (typeof value.template !== "string" || value.template.length === 0) return false;
   if (typeof value.topic !== "string") return false;
   if (typeof value.title !== "string" || value.title.length === 0) return false;
@@ -194,10 +200,12 @@ export function clearActiveQuizSnapshot(): void {
 }
 
 // Снапшот применим к текущему экрану и загруженному набору задач?
+// taskIds сверяются поштучно — это строгая проверка recovery; attemptId
+// сверяется с принятым компонентом идентификатором попытки.
 export function snapshotMatches(
   snapshot: ActiveQuizSnapshot,
   context: {
-    sessionId: string;
+    attemptId: string;
     template: string;
     topic: string;
     topicId?: string;
@@ -207,7 +215,7 @@ export function snapshotMatches(
 ): boolean {
   return (
     snapshot.template === context.template &&
-    snapshot.sessionId === context.sessionId &&
+    snapshot.attemptId === context.attemptId &&
     snapshot.topic === context.topic &&
     snapshot.topicId === context.topicId &&
     snapshot.sessionKind === context.sessionKind &&
@@ -217,7 +225,7 @@ export function snapshotMatches(
 }
 
 export function buildSnapshot(input: {
-  sessionId: string;
+  attemptId: string;
   template: string;
   topic: string;
   title: string;
@@ -235,7 +243,7 @@ export function buildSnapshot(input: {
 
   return {
     version: ACTIVE_QUIZ_SNAPSHOT_VERSION,
-    sessionId: input.sessionId,
+    attemptId: input.attemptId,
     savedAt: input.now ?? Date.now(),
     template: input.template,
     topic: input.topic,
