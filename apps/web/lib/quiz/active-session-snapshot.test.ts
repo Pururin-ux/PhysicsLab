@@ -5,8 +5,10 @@ import {
   ACTIVE_QUIZ_SNAPSHOT_MAX_AGE_MS,
   ACTIVE_QUIZ_SNAPSHOT_VERSION,
   buildSnapshot,
+  clearExamResumeCandidate,
   clearActiveQuizSnapshot,
   readActiveQuizSnapshot,
+  readExamResumeCandidate,
   snapshotMatches,
   writeActiveQuizSnapshot,
   type ActiveQuizSnapshot,
@@ -98,6 +100,123 @@ function makeSnapshot(now = Date.now()): ActiveQuizSnapshot {
   assert.ok(snapshot);
   return snapshot!;
 }
+
+function makeExamSnapshot(
+  phase: "active" | "answered" = "active",
+  now = Date.now(),
+): ActiveQuizSnapshot {
+  const snapshot = buildSnapshot({
+    attemptId: "exam-attempt-0001",
+    template: "exam",
+    topic: "Смешанная тренировка",
+    title: "Смешанная тренировка · открытые темы",
+    sessionKind: "exam",
+    batch: 4,
+    taskIds,
+    session: {
+      ...activeSession,
+      phase,
+      currentIndex: phase === "answered" ? 2 : 3,
+    },
+    now,
+  });
+  assert.ok(snapshot);
+  return snapshot;
+}
+
+test("exam resume candidate: active and answered snapshots expose compact metadata", () => {
+  installSessionStorage();
+  try {
+    writeActiveQuizSnapshot(makeExamSnapshot("active"));
+    assert.deepEqual(readExamResumeCandidate(), {
+      attemptId: "exam-attempt-0001",
+      batch: 4,
+      currentTaskNumber: 4,
+      total: 10,
+      phase: "active",
+      savedAt: readExamResumeCandidate()?.savedAt,
+    });
+
+    writeActiveQuizSnapshot(makeExamSnapshot("answered"));
+    const answered = readExamResumeCandidate();
+    assert.equal(answered?.phase, "answered");
+    assert.equal(answered?.currentTaskNumber, 3);
+  } finally {
+    uninstall();
+  }
+});
+
+test("exam resume candidate ignores and preserves practice or another template", () => {
+  const data = installSessionStorage();
+  try {
+    const practice = makeSnapshot();
+    writeActiveQuizSnapshot(practice);
+    assert.equal(readExamResumeCandidate(), null);
+    assert.equal(data.has(ACTIVE_QUIZ_SNAPSHOT_KEY), true);
+
+    const otherTemplate = { ...makeExamSnapshot(), template: "mixed" };
+    writeActiveQuizSnapshot(otherTemplate);
+    assert.equal(readExamResumeCandidate(), null);
+    assert.equal(data.has(ACTIVE_QUIZ_SNAPSHOT_KEY), true);
+  } finally {
+    uninstall();
+  }
+});
+
+test("exam resume candidate follows corrupt, expired and future-version policy", () => {
+  const data = installSessionStorage();
+  try {
+    data.set(ACTIVE_QUIZ_SNAPSHOT_KEY, "{broken");
+    assert.equal(readExamResumeCandidate(), null);
+    assert.equal(data.has(ACTIVE_QUIZ_SNAPSHOT_KEY), false);
+
+    writeActiveQuizSnapshot(
+      makeExamSnapshot("active", Date.now() - ACTIVE_QUIZ_SNAPSHOT_MAX_AGE_MS - 1),
+    );
+    assert.equal(readExamResumeCandidate(), null);
+    assert.equal(data.has(ACTIVE_QUIZ_SNAPSHOT_KEY), false);
+
+    data.set(
+      ACTIVE_QUIZ_SNAPSHOT_KEY,
+      JSON.stringify({ ...makeExamSnapshot(), version: ACTIVE_QUIZ_SNAPSHOT_VERSION + 1 }),
+    );
+    assert.equal(readExamResumeCandidate(), null);
+    assert.equal(data.has(ACTIVE_QUIZ_SNAPSHOT_KEY), true);
+  } finally {
+    uninstall();
+  }
+});
+
+test("clearExamResumeCandidate clears only the matching exam attempt", () => {
+  const data = installSessionStorage();
+  try {
+    writeActiveQuizSnapshot(makeExamSnapshot());
+    assert.equal(clearExamResumeCandidate("another-attempt"), false);
+    assert.equal(data.has(ACTIVE_QUIZ_SNAPSHOT_KEY), true);
+    assert.equal(clearExamResumeCandidate("exam-attempt-0001"), true);
+    assert.equal(data.has(ACTIVE_QUIZ_SNAPSHOT_KEY), false);
+
+    writeActiveQuizSnapshot(makeSnapshot());
+    assert.equal(clearExamResumeCandidate("attempt-test-0001"), false);
+    assert.equal(data.has(ACTIVE_QUIZ_SNAPSHOT_KEY), true);
+  } finally {
+    uninstall();
+  }
+});
+
+test("exam resume candidate handles unavailable sessionStorage", () => {
+  installSessionStorage({
+    getItem: () => {
+      throw new Error("blocked");
+    },
+  });
+  try {
+    assert.doesNotThrow(() => readExamResumeCandidate());
+    assert.equal(readExamResumeCandidate(), null);
+  } finally {
+    uninstall();
+  }
+});
 
 test("round-trip: снапшот пишется и читается", () => {
   installSessionStorage();

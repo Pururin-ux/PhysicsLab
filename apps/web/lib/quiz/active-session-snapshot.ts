@@ -47,6 +47,15 @@ export type SnapshotReadResult =
   | { ok: true; snapshot: ActiveQuizSnapshot }
   | { ok: false; reason: "empty" | "corrupt" | "future-version" | "expired" | "no-storage" };
 
+export type ExamResumeCandidate = {
+  attemptId: string;
+  batch: number;
+  currentTaskNumber: number;
+  total: number;
+  phase: "active" | "answered";
+  savedAt: number;
+};
+
 function storage(): Storage | null {
   try {
     if (typeof window === "undefined") return null;
@@ -197,6 +206,43 @@ export function clearActiveQuizSnapshot(): void {
   } catch {
     // приватный режим
   }
+}
+
+export function readExamResumeCandidate(now = Date.now()): ExamResumeCandidate | null {
+  const result = readActiveQuizSnapshot(now);
+  if (
+    !result.ok ||
+    result.snapshot.sessionKind !== "exam" ||
+    result.snapshot.template !== "exam"
+  ) {
+    return null;
+  }
+
+  return {
+    attemptId: result.snapshot.attemptId,
+    batch: result.snapshot.batch,
+    currentTaskNumber: result.snapshot.session.currentIndex + 1,
+    total: result.snapshot.session.total,
+    phase: result.snapshot.session.phase,
+    savedAt: result.snapshot.savedAt,
+  };
+}
+
+// Explicitly discard only the exact exam attempt shown by the gate. A
+// practice, future-version, replaced, or otherwise unrelated snapshot stays.
+export function clearExamResumeCandidate(attemptId: string): boolean {
+  const result = readActiveQuizSnapshot();
+  if (
+    !result.ok ||
+    result.snapshot.sessionKind !== "exam" ||
+    result.snapshot.template !== "exam" ||
+    result.snapshot.attemptId !== attemptId
+  ) {
+    return false;
+  }
+
+  clearActiveQuizSnapshot();
+  return true;
 }
 
 // Снапшот применим к текущему экрану и загруженному набору задач?
