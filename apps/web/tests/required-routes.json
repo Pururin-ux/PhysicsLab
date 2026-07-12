@@ -3,6 +3,8 @@
   "required": [
     "/",
     "/topics",
+    "/tasks",
+    "/tasks/[family]",
     "/mistakes",
     "/profile",
     "/formulas",
@@ -12,7 +14,12 @@
     "/practice/thermo-demo",
     "/practice/optics-demo",
     "/practice/exam-demo",
+    "/practice/family/[family]",
     "/api/tasks"
   ],
+  "smokePaths": {
+    "/tasks/[family]": "/tasks/ohm-law",
+    "/practice/family/[family]": "/practice/family/ohm-law"
+  },
   "devOnly": ["/dev/graphs", "/dev/diagrams", "/dev/boom"]
 }

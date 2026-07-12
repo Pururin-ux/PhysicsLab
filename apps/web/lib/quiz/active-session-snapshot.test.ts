@@ -218,6 +218,60 @@ test("exam resume candidate handles unavailable sessionStorage", () => {
   }
 });
 
+test("focused five-task practice snapshot remains strictly recoverable", () => {
+  const focusedTaskIds = ["ohm-1", "ohm-2", "ohm-3", "ohm-4", "ohm-5"];
+  const focusedSession: QuizSessionState = {
+    phase: "active",
+    currentIndex: 2,
+    selectedOptionId: null,
+    answers: activeSession.answers.slice(0, 2).map((answer, index) => ({
+      ...answer,
+      taskId: focusedTaskIds[index],
+      blueprint: "ohm-law",
+    })),
+    score: 1,
+    streak: 0,
+    total: 5,
+  };
+  const snapshot = buildSnapshot({
+    attemptId: "focused-attempt-0001",
+    template: "ohm-law",
+    topic: "Электродинамика",
+    title: "Закон Ома",
+    topicId: "electrodynamics",
+    sessionKind: "practice",
+    batch: 3,
+    taskIds: focusedTaskIds,
+    session: focusedSession,
+  });
+
+  assert.ok(snapshot);
+  assert.equal(snapshot.session.total, 5);
+  assert.equal(
+    snapshotMatches(snapshot, {
+      attemptId: "focused-attempt-0001",
+      template: "ohm-law",
+      topic: "Электродинамика",
+      topicId: "electrodynamics",
+      sessionKind: "practice",
+      taskIds: focusedTaskIds,
+    }),
+    true,
+  );
+  assert.equal(
+    snapshotMatches(snapshot, {
+      attemptId: "focused-attempt-0001",
+      template: "ohm-law",
+      topic: "Электродинамика",
+      topicId: "electrodynamics",
+      sessionKind: "practice",
+      taskIds: [...focusedTaskIds, "ohm-6"],
+    }),
+    false,
+  );
+});
+
+
 test("round-trip: снапшот пишется и читается", () => {
   installSessionStorage();
   try {

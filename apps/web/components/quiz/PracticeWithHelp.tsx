@@ -11,6 +11,7 @@ import { TopicTheoryDrawer } from "../theory/TopicTheoryDrawer";
 import type { TopicTheorySubtopic } from "../theory/TopicTheoryDrawer";
 import { PracticeQuickBar } from "./PracticeQuickBar";
 import { QuizSession } from "./QuizSession";
+import type { GeneratedQuizCount } from "../../lib/quiz/generated-quiz-count";
 
 interface PracticeWithHelpProps {
   topicId: TopicId;
@@ -23,6 +24,10 @@ interface PracticeWithHelpProps {
   drawerLayout?: "grid" | "stack";
   subtopics?: TopicTheorySubtopic[] | TopicHelpSection[];
   children: ReactNode;
+  generatedCount?: GeneratedQuizCount;
+  restartLabel?: string;
+  nextHref?: string;
+  nextLabel?: string;
 }
 
 function sameTarget(left: HelpTarget, right: HelpTarget) {
@@ -52,6 +57,10 @@ export function PracticeWithHelp({
   drawerLayout = "grid",
   subtopics = [],
   children,
+  generatedCount = 10,
+  restartLabel,
+  nextHref,
+  nextLabel,
 }: PracticeWithHelpProps) {
   const defaultTarget = useMemo(() => getDefaultHelpTarget(topicId), [topicId]);
   const [currentTarget, setCurrentTarget] = useState(defaultTarget);
@@ -81,6 +90,10 @@ export function PracticeWithHelp({
         onHelpTargetChange={updateTarget}
         onOpenHelpTarget={openHelp}
         suppressCoachBubble={helpOpen}
+        generatedCount={generatedCount}
+        restartLabel={restartLabel}
+        nextHref={nextHref}
+        nextLabel={nextLabel}
       />
 
       <TopicTheoryDrawer

@@ -67,6 +67,12 @@ test("каждый шаблон имеет валидный answerFormat", () =>
   }
 });
 
+test("focused API batch returns exactly five tasks from one requested family", async () => {
+  const payload = await fetchTasks("template=ohm-law&count=5&batch=4");
+  assert.equal(payload.tasks.length, 5);
+  assert.deepEqual(new Set(payload.tasks.map((task) => task.blueprint)), new Set(["ohm-law"]));
+});
+
 for (const pilot of NUMERIC_PILOTS) {
   test(`${pilot}: numeric-ответ самосогласован на 200 вариантах`, () => {
     const tasks = generateTasks(pilot, 200);

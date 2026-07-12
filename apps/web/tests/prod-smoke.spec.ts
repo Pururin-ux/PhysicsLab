@@ -4,19 +4,30 @@ import { fileURLToPath } from "node:url";
 import { expect, test } from "@playwright/test";
 import { templateRegistry } from "../lib/server/task-generator/generate.ts";
 
+type RoutesFixture = {
+  required: string[];
+  devOnly: string[];
+  smokePaths?: Record<string, string>;
+};
+
 const routesFixture = JSON.parse(
   readFileSync(join(dirname(fileURLToPath(import.meta.url)), "required-routes.json"), "utf8"),
-) as { required: string[]; devOnly: string[] };
+) as RoutesFixture;
 
 // Смок против production-сборки (playwright.prod.config.ts, next start :3100).
 // Ловит класс багов «build прошёл, рантайм отдаёт 404» — реальный случай
 // с неполным манифестом turbopack-сборки дошёл бы только до пользователей.
 
-const pageRoutes = routesFixture.required.filter((route) => !route.startsWith("/api"));
+const pageRoutes = routesFixture.required
+  .filter((route) => !route.startsWith("/api"))
+  .map((manifestRoute) => ({
+    manifestRoute,
+    path: routesFixture.smokePaths?.[manifestRoute] ?? manifestRoute,
+  }));
 
 for (const route of pageRoutes) {
-  test(`prod: ${route} отвечает 200 и рендерит контент`, async ({ page }) => {
-    const response = await page.goto(route, { waitUntil: "domcontentloaded" });
+  test(`prod: ${route.manifestRoute} отвечает 200 и рендерит контент`, async ({ page }) => {
+    const response = await page.goto(route.path, { waitUntil: "domcontentloaded" });
 
     expect(response?.status()).toBe(200);
     await expect(page.getByRole("main")).toBeVisible();

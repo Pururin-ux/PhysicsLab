@@ -9,10 +9,11 @@ import {
   type GeneratedQuizError,
 } from "../../lib/quiz/quiz-load-error";
 import { parseQuizTasksPayload } from "../../lib/quiz/quiz-payload";
+import type { GeneratedQuizCount } from "../../lib/quiz/generated-quiz-count";
 
 export type GeneratedQuizStatus = "idle" | "loading" | "ready" | "error";
 
-const TASK_COUNT = 10;
+const DEFAULT_TASK_COUNT: GeneratedQuizCount = 10;
 // 12 секунд: достаточно для холодного сервера, но не «вечная» загрузка.
 // В тестах переопределяется через window-хук, чтобы не ждать реальные секунды.
 const DEFAULT_TIMEOUT_MS = 12000;
@@ -33,7 +34,7 @@ function resolveTimeoutMs(): number {
   return DEFAULT_TIMEOUT_MS;
 }
 
-function resolveExpectedCount(): number {
+function resolveExpectedCount(count: GeneratedQuizCount): number {
   if (
     process.env.NODE_ENV !== "production" &&
     typeof window !== "undefined" &&
@@ -43,7 +44,7 @@ function resolveExpectedCount(): number {
   ) {
     return window.__physlabQuizExpectedCount;
   }
-  return TASK_COUNT;
+  return count;
 }
 
 type UseGeneratedQuizDataInput = {
@@ -52,6 +53,7 @@ type UseGeneratedQuizDataInput = {
   topic: string;
   title: string;
   batch: number;
+  count?: GeneratedQuizCount;
 };
 
 export function useGeneratedQuizData({
@@ -60,6 +62,7 @@ export function useGeneratedQuizData({
   topic,
   title,
   batch,
+  count = DEFAULT_TASK_COUNT,
 }: UseGeneratedQuizDataInput) {
   const [data, setData] = useState<QuizData | null>(null);
   const [status, setStatus] = useState<GeneratedQuizStatus>(
@@ -111,7 +114,7 @@ export function useGeneratedQuizData({
       try {
         const params = new URLSearchParams({
           template,
-          count: String(TASK_COUNT),
+          count: String(count),
           batch: String(batch),
         });
         response = await fetch(`/api/tasks?${params.toString()}`, {
@@ -148,7 +151,7 @@ export function useGeneratedQuizData({
 
       if (!isCurrent()) return;
 
-      const parsed = parseQuizTasksPayload(payload, { expectedCount: resolveExpectedCount() });
+      const parsed = parseQuizTasksPayload(payload, { expectedCount: resolveExpectedCount(count) });
       if (!parsed.ok) {
         if (process.env.NODE_ENV !== "production") {
           console.warn(`[quiz] payload rejected: ${parsed.issue.code} — ${parsed.issue.detail}`);
@@ -164,7 +167,7 @@ export function useGeneratedQuizData({
       }
 
       setData({
-        id: `generated-${template}-${batch}`,
+        id: `generated-${template}-${count}-${batch}`,
         topic,
         title,
         tasks: parsed.tasks,
@@ -178,7 +181,7 @@ export function useGeneratedQuizData({
       clearTimeout(timer);
       controller.abort();
     };
-  }, [attempt, batch, enabled, template, title, topic]);
+  }, [attempt, batch, count, enabled, template, title, topic]);
 
   return { data, error, status, retry };
 }
