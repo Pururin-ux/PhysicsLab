@@ -1,5 +1,6 @@
+import { Suspense } from "react";
 import { FormulasBrowser } from "../../components/formulas/FormulasBrowser";
-import { formulaReference } from "../../lib/physics/formula-reference";
+import { getFormulaReferenceView } from "../../lib/learning/learning-links";
 
 export const metadata = {
   title: "Формулы | PhysicsLab",
@@ -18,7 +19,11 @@ export default function FormulasPage() {
         </p>
       </section>
 
-      <FormulasBrowser groups={[...formulaReference]} />
+      <Suspense
+        fallback={<p className="text-[13px] font-semibold text-white/50">Загружаем справочник…</p>}
+      >
+        <FormulasBrowser groups={getFormulaReferenceView()} />
+      </Suspense>
     </div>
   );
 }

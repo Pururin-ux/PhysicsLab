@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import { TaskCatalogBrowser } from "../../components/tasks/TaskCatalogBrowser";
+import { buildCoverageSections } from "../../lib/learning/coverage";
 import { getTaskCatalog } from "../../lib/server/task-catalog";
 
 export const metadata = {
@@ -8,6 +9,7 @@ export const metadata = {
 
 export default function TasksPage() {
   const entries = getTaskCatalog();
+  const coverage = buildCoverageSections(entries.map((entry) => entry.id));
 
   return (
     <div className="flex min-w-0 flex-col gap-7">
@@ -27,7 +29,7 @@ export default function TasksPage() {
           </p>
         }
       >
-        <TaskCatalogBrowser entries={entries} />
+        <TaskCatalogBrowser entries={entries} coverage={coverage} />
       </Suspense>
     </div>
   );

@@ -16,7 +16,7 @@ const skillIds = Object.keys(skillMetadata) as SkillId[];
 const templateIds = templateRegistry.map((entry) => entry.id as string);
 const formulaReferenceSkillIds = new Set<SkillId>(
   formulaReference.flatMap((group) =>
-    group.entries.flatMap((entry) => (entry.skillId ? [entry.skillId] : [])),
+    group.entries.flatMap((entry) => entry.relatedSkillIds),
   ),
 );
 
@@ -89,13 +89,9 @@ test("every generated task skill is covered by formulaReference", () => {
   assert.deepEqual(missingFormulaReferences, []);
 
   const referencedSkillIds = formulaReference.flatMap((group) =>
-    group.entries.flatMap((entry) => (entry.skillId ? [entry.skillId] : [])),
+    group.entries.flatMap((entry) => entry.relatedSkillIds),
   );
-  assert.equal(
-    new Set(referencedSkillIds).size,
-    referencedSkillIds.length,
-    "formulaReference must not map the same generated skill more than once",
-  );
+  assert.ok(referencedSkillIds.every((skillId) => skillId in skillMetadata));
 
   for (const skillId of pr6FormulaReferenceSkillIds) {
     assert.ok(

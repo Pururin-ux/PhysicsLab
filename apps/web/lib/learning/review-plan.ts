@@ -6,6 +6,8 @@ import {
 } from "../stores/progress-store.ts";
 import { skillMetadata, type SkillId, type TopicId } from "./taxonomy.ts";
 import { getTopWeaknesses, type WeaknessDisplay } from "./weakness-labels.ts";
+import { getLearningDestination } from "./learning-links.ts";
+import type { TemplateId } from "../server/task-generator/generate.ts";
 
 export type ReviewUrgency = "today" | "next-session" | "later";
 
@@ -13,9 +15,13 @@ export type ReviewPlanItem = WeaknessDisplay & {
   urgency: ReviewUrgency;
   dueLabel: string;
   reason: string;
-  href: string;
   topicId: TopicId | null;
   topicTitle: string | null;
+  familyId: TemplateId | null;
+  taskHref: string | null;
+  practiceHref: string | null;
+  fallbackHref: string;
+  hasReferenceSolution: boolean;
 };
 
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -104,6 +110,7 @@ export function buildReviewPlan(
     .map((weakness) => {
       const topicId = getTopicIdForWeakness(weakness);
       const topic = topicId ? topicById[topicId] : null;
+      const destination = getLearningDestination(weakness.skillId);
       const lastSeenAt =
         lastSeenByWeakTrap[weakness.key] ??
         (topicId ? progress.topics[topicId]?.lastPracticedAt : null);
@@ -115,9 +122,13 @@ export function buildReviewPlan(
         ...weakness,
         ...copy,
         urgency,
-        href: topic?.href ?? "/topics",
         topicId,
         topicTitle: topic?.title ?? null,
+        familyId: destination?.familyId ?? null,
+        taskHref: destination?.taskHref ?? null,
+        practiceHref: destination?.practiceHref ?? null,
+        fallbackHref: destination?.taskHref ?? "/tasks",
+        hasReferenceSolution: destination?.hasReferenceSolution ?? false,
       };
     })
     .sort((left, right) => {

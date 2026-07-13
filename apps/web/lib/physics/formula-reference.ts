@@ -1,10 +1,11 @@
-import type { SkillId } from "../learning/taxonomy";
+﻿import type { SkillId } from "../learning/taxonomy";
 import type { FormulaSymbol } from "./formula-symbol.ts";
 import { FORMULAS } from "./formulas.ts";
 
 export type FormulaReferenceEntry = {
   id: string;
-  skillId?: SkillId;
+  // A formula can support several task families. Empty means it is reference-only.
+  relatedSkillIds: readonly SkillId[];
   title: string;
   formula: string;
   caption: string;
@@ -32,6 +33,7 @@ export const formulaReference: FormulaReferenceGroup[] = [
     entries: [
       {
         id: "uniform-motion",
+        relatedSkillIds: [],
         title: "Равномерное движение",
         formula: FORMULAS.uniform_motion,
         caption: "путь при постоянной скорости вдоль одной прямой",
@@ -45,6 +47,7 @@ export const formulaReference: FormulaReferenceGroup[] = [
       },
       {
         id: "velocity",
+        relatedSkillIds: [],
         title: "Скорость при постоянном ускорении",
         formula: FORMULAS.velocity,
         caption: "как скорость меняется со временем",
@@ -59,6 +62,7 @@ export const formulaReference: FormulaReferenceGroup[] = [
       },
       {
         id: "coordinate",
+        relatedSkillIds: [],
         title: "Координата при постоянном ускорении",
         formula: FORMULAS.accelerated_motion,
         caption: "положение тела в любой момент времени",
@@ -74,7 +78,7 @@ export const formulaReference: FormulaReferenceGroup[] = [
       },
       {
         id: "vt-slope",
-        skillId: "vt-slope",
+        relatedSkillIds: ["vt-slope"],
         title: "Ускорение по графику v(t)",
         formula: "a = \\frac{\\Delta v}{\\Delta t}",
         caption: "наклон графика скорости",
@@ -88,7 +92,7 @@ export const formulaReference: FormulaReferenceGroup[] = [
       },
       {
         id: "vt-area",
-        skillId: "vt-area",
+        relatedSkillIds: ["vt-area"],
         title: "Перемещение по графику v(t)",
         formula: "s = \\frac{v_0 + v}{2}\\,t",
         caption: "перемещение равно площади под графиком v(t)",
@@ -103,7 +107,7 @@ export const formulaReference: FormulaReferenceGroup[] = [
       },
       {
         id: "free-fall",
-        skillId: "free-fall",
+        relatedSkillIds: ["free-fall"],
         title: "Свободное падение из покоя",
         formula: `${FORMULAS.free_fall_h}, \\qquad ${FORMULAS.free_fall_v}`,
         caption: "путь и скорость при падении без начальной скорости",
@@ -118,7 +122,7 @@ export const formulaReference: FormulaReferenceGroup[] = [
       },
       {
         id: "average-speed-segments",
-        skillId: "average-speed-segments",
+        relatedSkillIds: ["average-speed-segments"],
         title: "Средняя скорость на участках",
         formula: "v_{avg}=\\frac{s_1+s_2+\\ldots}{t_1+t_2+\\ldots}",
         caption: "весь путь делится на всё время движения",
@@ -132,7 +136,7 @@ export const formulaReference: FormulaReferenceGroup[] = [
       },
       {
         id: "unit-conversion-speed",
-        skillId: "unit-conversion-speed",
+        relatedSkillIds: ["unit-conversion-speed"],
         title: "Перевод скорости",
         formula: "1\\ \\mathrm{km/h}=\\frac{1}{3.6}\\ \\mathrm{m/s}",
         caption: "перед расчетом пути скорость и время должны быть в согласованных единицах",
@@ -146,7 +150,7 @@ export const formulaReference: FormulaReferenceGroup[] = [
       },
       {
         id: "relative-velocity-vectors",
-        skillId: "relative-velocity-vectors",
+        relatedSkillIds: ["relative-velocity-vectors"],
         title: "Сложение перпендикулярных скоростей",
         formula: "v=\\sqrt{v_1^2+v_2^2}",
         caption: "модуль результирующей скорости по двум взаимно перпендикулярным направлениям",
@@ -168,7 +172,7 @@ export const formulaReference: FormulaReferenceGroup[] = [
     entries: [
       {
         id: "newton-second",
-        skillId: "newton-second",
+        relatedSkillIds: ["newton-second"],
         title: "Второй закон Ньютона",
         formula: "F = ma",
         caption: "связь равнодействующей силы, массы и ускорения",
@@ -182,7 +186,7 @@ export const formulaReference: FormulaReferenceGroup[] = [
       },
       {
         id: "resultant-force",
-        skillId: "resultant-force",
+        relatedSkillIds: ["resultant-force"],
         title: "Равнодействующая сил",
         formula: "\\vec{F} = \\vec{F}_1 + \\vec{F}_2 + \\ldots",
         caption: "векторная сумма всех сил, действующих на тело",
@@ -195,7 +199,7 @@ export const formulaReference: FormulaReferenceGroup[] = [
       },
       {
         id: "resultant-force-2d",
-        skillId: "resultant-force-2d",
+        relatedSkillIds: ["resultant-force-2d"],
         title: "Перпендикулярные силы",
         formula: "F=\\sqrt{F_1^2+F_2^2}",
         caption: "модуль равнодействующей двух взаимно перпендикулярных сил",
@@ -208,7 +212,7 @@ export const formulaReference: FormulaReferenceGroup[] = [
       },
       {
         id: "friction-force",
-        skillId: "friction-force",
+        relatedSkillIds: ["friction-force"],
         title: "Сила трения скольжения",
         formula: "F_{\\text{тр}} = \\mu N",
         caption: "пропорциональна прижатию тела к опоре",
@@ -222,7 +226,7 @@ export const formulaReference: FormulaReferenceGroup[] = [
       },
       {
         id: "incline-force",
-        skillId: "incline-force",
+        relatedSkillIds: ["incline-force"],
         title: "Наклонная плоскость",
         formula: "F_x = mg\\sin\\alpha, \\qquad N = mg\\cos\\alpha",
         caption: "проекции силы тяжести вдоль и поперёк плоскости",
@@ -238,7 +242,7 @@ export const formulaReference: FormulaReferenceGroup[] = [
       },
       {
         id: "weight-lift",
-        skillId: "weight-lift",
+        relatedSkillIds: ["weight-lift"],
         title: "Вес тела в лифте",
         formula: "P = m(g \\pm a)",
         caption: "плюс — ускорение лифта направлено вверх, минус — вниз",
@@ -253,7 +257,7 @@ export const formulaReference: FormulaReferenceGroup[] = [
       },
       {
         id: "density-volume-ratio",
-        skillId: "density-volume-ratio",
+        relatedSkillIds: ["density-volume-ratio"],
         title: "Масса через плотность и объём",
         formula: "m = \\rho V",
         caption: "масса растёт с объёмом, а не с линейным размером",
@@ -267,7 +271,7 @@ export const formulaReference: FormulaReferenceGroup[] = [
       },
       {
         id: "impulse-momentum",
-        skillId: "impulse-momentum",
+        relatedSkillIds: ["impulse-momentum"],
         title: "Импульс силы",
         formula: "\\Delta p = F\\,\\Delta t",
         caption: "изменение импульса тела за интервал действия силы",
@@ -281,7 +285,7 @@ export const formulaReference: FormulaReferenceGroup[] = [
       },
       {
         id: "inelastic-collision-speed",
-        skillId: "inelastic-collision-speed",
+        relatedSkillIds: ["inelastic-collision-speed"],
         title: "Неупругое столкновение",
         formula: "m_1v_1+m_2v_2=(m_1+m_2)v",
         caption: "закон сохранения импульса для тел, которые после удара движутся вместе",
@@ -295,7 +299,7 @@ export const formulaReference: FormulaReferenceGroup[] = [
       },
       {
         id: "kinetic-energy",
-        skillId: "kinetic-energy",
+        relatedSkillIds: ["kinetic-energy"],
         title: "Кинетическая энергия",
         formula: "E_k=\\frac{mv^2}{2}",
         caption: "энергия движения тела",
@@ -309,7 +313,7 @@ export const formulaReference: FormulaReferenceGroup[] = [
       },
       {
         id: "work-force-distance",
-        skillId: "work-force-distance",
+        relatedSkillIds: ["work-force-distance"],
         title: "Работа постоянной силы",
         formula: "A=Fs\\cos\\alpha",
         caption: "работа зависит от направления силы относительно перемещения",
@@ -333,7 +337,7 @@ export const formulaReference: FormulaReferenceGroup[] = [
     entries: [
       {
         id: "ohm-law",
-        skillId: "ohm-law",
+        relatedSkillIds: ["ohm-law"],
         title: "Закон Ома для участка цепи",
         formula: "I = \\frac{U}{R}",
         caption: "ток растёт с напряжением и падает с сопротивлением",
@@ -347,6 +351,7 @@ export const formulaReference: FormulaReferenceGroup[] = [
       },
       {
         id: "resistance-wire",
+        relatedSkillIds: [],
         title: "Сопротивление проводника",
         formula: "R = \\frac{\\rho\\,l}{S}",
         caption: "длинный и тонкий провод сопротивляется сильнее",
@@ -360,7 +365,7 @@ export const formulaReference: FormulaReferenceGroup[] = [
       },
       {
         id: "series-parallel",
-        skillId: "resistor-network",
+        relatedSkillIds: ["resistor-network"],
         title: "Соединения проводников",
         formula:
           "R_{\\text{посл}} = R_1 + R_2, \\qquad R_{\\text{пар}} = \\frac{R_1 R_2}{R_1 + R_2}",
@@ -375,7 +380,7 @@ export const formulaReference: FormulaReferenceGroup[] = [
       },
       {
         id: "source-internal-resistance",
-        skillId: "source-internal-resistance",
+        relatedSkillIds: ["source-internal-resistance"],
         title: "Закон Ома для полной цепи",
         formula: "I=\\frac{\\mathcal{E}}{R+r}",
         caption: "ток ограничивают внешнее и внутреннее сопротивления",
@@ -390,7 +395,7 @@ export const formulaReference: FormulaReferenceGroup[] = [
       },
       {
         id: "electric-power",
-        skillId: "electric-power",
+        relatedSkillIds: ["electric-power"],
         title: "Мощность тока",
         formula: "P = UI = I^2 R",
         caption: "сколько энергии участок цепи потребляет за секунду",
@@ -405,7 +410,7 @@ export const formulaReference: FormulaReferenceGroup[] = [
       },
       {
         id: "charge-sharing",
-        skillId: "charge-sharing",
+        relatedSkillIds: ["charge-sharing"],
         title: "Деление заряда при контакте",
         formula: "q' = \\frac{q_1 + q_2}{2}",
         caption: "одинаковые проводники после контакта получают равный заряд",
@@ -418,7 +423,7 @@ export const formulaReference: FormulaReferenceGroup[] = [
       },
       {
         id: "capacitor-energy",
-        skillId: "capacitor-energy",
+        relatedSkillIds: ["capacitor-energy"],
         title: "Энергия конденсатора",
         formula: "W=\\frac{CU^2}{2}",
         caption: "энергия электрического поля заряженного конденсатора",
@@ -441,7 +446,7 @@ export const formulaReference: FormulaReferenceGroup[] = [
     entries: [
       {
         id: "mendeleev-clapeyron",
-        skillId: "ideal-gas-state",
+        relatedSkillIds: ["ideal-gas-state"],
         title: "Уравнение Менделеева — Клапейрона",
         formula: "pV = \\frac{m}{M}RT",
         caption: "связь давления, объёма и температуры идеального газа",
@@ -458,7 +463,7 @@ export const formulaReference: FormulaReferenceGroup[] = [
       },
       {
         id: "heat-amount",
-        skillId: "heat-amount",
+        relatedSkillIds: ["heat-amount"],
         title: "Количество теплоты при нагревании",
         formula: "Q = cm\\,\\Delta T",
         caption: "сколько энергии нужно, чтобы изменить температуру тела",
@@ -473,7 +478,7 @@ export const formulaReference: FormulaReferenceGroup[] = [
       },
       {
         id: "phase-change-heat",
-        skillId: "phase-change-heat",
+        relatedSkillIds: ["phase-change-heat"],
         title: "Нагревание и плавление",
         formula: "Q=cm\\Delta T+\\lambda m",
         caption: "полная теплота складывается из отдельных стадий процесса",
@@ -489,6 +494,7 @@ export const formulaReference: FormulaReferenceGroup[] = [
       },
       {
         id: "heat-engine-efficiency",
+        relatedSkillIds: [],
         title: "КПД теплового двигателя",
         formula: "\\eta = \\frac{A}{Q_1}",
         caption: "какая доля полученной теплоты стала полезной работой",
@@ -501,7 +507,7 @@ export const formulaReference: FormulaReferenceGroup[] = [
       },
       {
         id: "gas-state-ratio",
-        skillId: "gas-state-ratio",
+        relatedSkillIds: ["gas-state-ratio"],
         title: "Связь параметров газа",
         formula: "\\frac{p_1V_1}{T_1}=\\frac{p_2V_2}{T_2}",
         caption: "для одной и той же массы идеального газа",
@@ -515,7 +521,7 @@ export const formulaReference: FormulaReferenceGroup[] = [
       },
       {
         id: "heat-balance-simple",
-        skillId: "heat-balance-simple",
+        relatedSkillIds: ["heat-balance-simple"],
         title: "Тепловой баланс",
         formula: "m_1c(T_1-T)=m_2c(T-T_2)",
         caption: "теплота, отданная горячей водой, равна теплоте, полученной холодной",
@@ -538,7 +544,7 @@ export const formulaReference: FormulaReferenceGroup[] = [
     entries: [
       {
         id: "reflection-angle",
-        skillId: "reflection-angle",
+        relatedSkillIds: ["reflection-angle"],
         title: "Закон отражения света",
         formula: "\\theta_r=\\theta_i",
         caption: "угол отражения равен углу падения",
@@ -551,7 +557,7 @@ export const formulaReference: FormulaReferenceGroup[] = [
       },
       {
         id: "plane-mirror-separation",
-        skillId: "plane-mirror-separation",
+        relatedSkillIds: ["plane-mirror-separation"],
         title: "Изображение в плоском зеркале",
         formula: "L=2d",
         caption: "предмет и мнимое изображение симметричны относительно зеркала",
@@ -564,7 +570,7 @@ export const formulaReference: FormulaReferenceGroup[] = [
       },
       {
         id: "refractive-index-speed",
-        skillId: "refractive-index-speed",
+        relatedSkillIds: ["refractive-index-speed"],
         title: "Показатель преломления",
         formula: "n=\\frac{c}{v}",
         caption: "во сколько раз свет в среде медленнее, чем в вакууме",
@@ -578,7 +584,7 @@ export const formulaReference: FormulaReferenceGroup[] = [
       },
       {
         id: "snell-index-ratio",
-        skillId: "snell-index-ratio",
+        relatedSkillIds: ["snell-index-ratio"],
         title: "Закон преломления света",
         formula: "\\frac{n_2}{n_1}=\\frac{\\sin i}{\\sin r}",
         caption: "на границе двух сред луч меняет направление",
@@ -592,7 +598,7 @@ export const formulaReference: FormulaReferenceGroup[] = [
       },
       {
         id: "thin-lens-image-distance",
-        skillId: "thin-lens-image-distance",
+        relatedSkillIds: ["thin-lens-image-distance"],
         title: "Формула тонкой линзы",
         formula: "\\frac{1}{F}=\\frac{1}{d_o}+\\frac{1}{d_i}",
         caption: "связь фокусного расстояния с положением предмета и изображения",
@@ -606,7 +612,7 @@ export const formulaReference: FormulaReferenceGroup[] = [
       },
       {
         id: "lens-optical-power",
-        skillId: "lens-optical-power",
+        relatedSkillIds: ["lens-optical-power"],
         title: "Оптическая сила линзы",
         formula: "D=\\frac{1}{F}",
         caption: "чем короче фокус, тем сильнее линза",
@@ -619,7 +625,7 @@ export const formulaReference: FormulaReferenceGroup[] = [
       },
       {
         id: "lens-image-height",
-        skillId: "lens-image-height",
+        relatedSkillIds: ["lens-image-height"],
         title: "Линейное увеличение линзы",
         formula: "|\\Gamma|=\\frac{d_i}{d_o}=\\frac{h_i}{h_o}",
         caption: "во сколько раз изображение больше или меньше предмета",

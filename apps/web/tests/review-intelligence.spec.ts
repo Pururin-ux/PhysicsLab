@@ -63,7 +63,7 @@ test("страница ошибок показывает review cockpit, кар�
   await expect(
     page.getByRole("heading", { name: "План восстановления" }),
   ).toBeVisible();
-  await expect(page.getByText("Review Intelligence")).toBeVisible();
+  await expect(page.getByText("План повторения").first()).toBeVisible();
   await expect(page.getByRole("heading", { name: "Карта тем" })).toBeVisible();
   await expect(
     page.getByRole("heading", { name: "Очередь повторения" }),
@@ -81,6 +81,6 @@ test("страница ошибок показывает review cockpit, кар�
   await expect(queue.getByText("Закон Ома").first()).toBeVisible();
   await expect(queue.getByText("Наклон v(t)")).toHaveCount(0);
 
-  await queue.getByRole("link", { name: "Потренировать" }).click();
-  await expect(page).toHaveURL(/\/practice\/electro-demo/);
+  await queue.getByRole("link", { name: "Решить 5 похожих" }).click();
+  await expect(page).toHaveURL("/practice/family/ohm-law");
 });

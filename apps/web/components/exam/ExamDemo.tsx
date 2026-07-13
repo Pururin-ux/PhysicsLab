@@ -1,6 +1,7 @@
 "use client";
 
 import { useStore } from "@nanostores/react";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { $examLog, getBestAttempt } from "../../lib/stores/exam-log-store";
 import { Badge } from "../ui/Badge";
@@ -102,6 +103,16 @@ export function ExamDemo() {
           Ошибки попадут в твой список слабых мест.
         </li>
       </ul>
+
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[13px] leading-[1.55] text-white/55">
+        <span>Это тренировочный набор, а не полный вариант ЦТ/ЦЭ.</span>
+        <Link
+          href="/tasks#coverage"
+          className="font-semibold text-nova-cyan/85 transition-colors hover:text-nova-cyan focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/55"
+        >
+          Посмотреть покрытие программы
+        </Link>
+      </div>
 
       <ExamHistoryLine />
 

@@ -8,11 +8,13 @@ import {
   type TaskCatalogTopicFilter,
   type TaskTypeCatalogEntry,
 } from "../../lib/learning/task-catalog";
+import type { CoverageSection } from "../../lib/learning/coverage";
 import type { TopicId } from "../../lib/learning/taxonomy";
 import { topics } from "../../lib/topics";
 
 interface TaskCatalogBrowserProps {
   entries: readonly TaskTypeCatalogEntry[];
+  coverage: readonly CoverageSection[];
 }
 
 function isTopicFilter(value: string | null): value is TopicId {
@@ -41,7 +43,11 @@ function taskTypeCountLabel(count: number) {
   return "типов";
 }
 
-export function TaskCatalogBrowser({ entries }: TaskCatalogBrowserProps) {
+function coverageStatusLabel(status: CoverageSection["status"]) {
+  return status === "partial" ? "Частично" : "Пока нет задач";
+}
+
+export function TaskCatalogBrowser({ entries, coverage }: TaskCatalogBrowserProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -51,10 +57,18 @@ export function TaskCatalogBrowser({ entries }: TaskCatalogBrowserProps) {
     ? topicFromUrl
     : "all";
   const [query, setQuery] = useState(queryFromUrl);
+  const [coverageOpen, setCoverageOpen] = useState(false);
 
   useEffect(() => {
     setQuery(queryFromUrl);
   }, [queryFromUrl]);
+
+  useEffect(() => {
+    const syncCoverageHash = () => setCoverageOpen(window.location.hash === "#coverage");
+    syncCoverageHash();
+    window.addEventListener("hashchange", syncCoverageHash);
+    return () => window.removeEventListener("hashchange", syncCoverageHash);
+  }, []);
 
   const filteredEntries = useMemo(
     () => filterTaskCatalog(entries, query, activeTopic),
@@ -157,6 +171,53 @@ export function TaskCatalogBrowser({ entries }: TaskCatalogBrowserProps) {
           </Link>
         </div>
       </section>
+
+      <details
+        id="coverage"
+        open={coverageOpen}
+        onToggle={(event) => setCoverageOpen(event.currentTarget.open)}
+        data-testid="program-coverage"
+        className="group rounded-card border border-white/[.09] bg-space-900/45"
+      >
+        <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-4 px-4 py-3 text-[15px] font-[800] text-white marker:content-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-nova-cyan/55 sm:px-5">
+          <span>Покрытие программы</span>
+          <span className="text-[12px] font-semibold text-nova-cyan/80 transition-transform group-open:rotate-45" aria-hidden="true">
+            +
+          </span>
+        </summary>
+        <div className="border-t border-white/[.08] px-4 pb-5 pt-4 sm:px-5">
+          <h2 className="text-lg font-[800] text-white">Что уже покрывает PhysicsLab</h2>
+          <p className="mt-1 max-w-3xl text-[13px] leading-[1.6] text-white/58">
+            Сейчас доступны 35 типов задач в четырёх разделах. Все четыре раздела покрыты частично.
+          </p>
+          <p className="mt-2 text-[12px] font-semibold text-white/50">
+            4 раздела с задачами · 2 раздела без задач
+          </p>
+          <p className="mt-1 text-[12px] leading-[1.55] text-white/45">
+            Количество типов относится ко всему каталогу, а не к текущему фильтру.
+          </p>
+
+          <ul className="mt-4 grid gap-3 lg:grid-cols-2" aria-label="Покрытие разделов физики">
+            {coverage.map((section) => (
+              <li key={section.id} className="border-l-2 border-white/[.13] pl-3.5">
+                <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
+                  <h3 className="text-[14px] font-[800] text-white">{section.title}</h3>
+                  <span className="text-[11px] font-bold text-white/55">{coverageStatusLabel(section.status)}</span>
+                  <span className="text-[11px] font-semibold text-nova-cyan/75">
+                    {section.familyCount} {taskTypeCountLabel(section.familyCount)}
+                  </span>
+                </div>
+                <p className="mt-1 text-[12px] leading-[1.55] text-white/55">{section.summary}</p>
+                <ul className="mt-2 space-y-1 text-[12px] leading-[1.5] text-white/45">
+                  {section.knownGaps.map((gap) => (
+                    <li key={gap}>Не покрыто: {gap}</li>
+                  ))}
+                </ul>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </details>
 
       {groups.length > 0 ? (
         <div className="flex flex-col gap-7" data-testid="task-catalog-results">
