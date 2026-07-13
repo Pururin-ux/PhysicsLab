@@ -7,10 +7,10 @@ sandbox for assets and motion ideas only.
 
 | File | Role |
 | --- | --- |
-| `CoachBubble.tsx` | Floating coach message during the **active** (solving) phase only — ambient hints. In the answered phase the bubble is hidden and Nova's line moves into `AnswerFeedback` (single voice, single focal point). |
+| `CoachBubble.tsx` | Optional coach surface outside the core practice hierarchy. Practice sessions do not render it before or after an answer. |
 | `CoachAvatar.tsx` | Compact emotional avatar for tight UI surfaces. Uses `public/mascot/nova-{state}.png`. |
 | `NovaStage.tsx` | Lightweight presentation character for the landing hero or dev previews. It must not introduce its own product section. |
-| `useCoach.ts` | Emits `session_start`, `correct_answer`, `wrong_answer`, `pause`, and `session_end` messages. |
+| `useCoach.ts` | Keeps `session_start`, `correct_answer`, `wrong_answer`, `pause`, and `session_end` events available without making them a required visual surface. |
 | `useTypewriter.ts` | Optional typewriter effect that keeps inline formula fragments intact. |
 
 ## Pedagogical rule
@@ -19,11 +19,10 @@ Nova should ask a useful learning question, not fill empty space. After a wrong
 answer, prefer the selected option's misconception label and a diagnostic prompt
 over generic encouragement or a duplicate solution.
 
-The post-answer surface (`AnswerFeedback.tsx`) uses progressive disclosure to
-avoid cognitive overload: Nova's reaction (the misconception) is the anchor, one
-reflective question stays visible, and the full step-by-step разбор + formula +
-method live behind a collapsed toggle. Nova's line must NOT also repeat the
-diagnostic — that reflective prompt is rendered once, separately.
+The post-answer surface (`AnswerFeedback.tsx`) is static and compact: status and
+one task-specific line are announced once. The primary next action follows it;
+the explanation and contextual help remain collapsed secondary actions. Coach
+events must not reintroduce an avatar, typewriter, or duplicate diagnostic there.
 
 ## Asset rule
 

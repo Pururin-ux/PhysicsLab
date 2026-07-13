@@ -79,6 +79,76 @@ for (const route of routes) {
   });
 }
 
+test("@a11y simplified navigation and practice disclosures", async ({
+  page,
+  request,
+}, testInfo) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  const response = await request.get("/api/tasks?template=ohm-law&count=5&batch=0");
+  expect(response.ok()).toBe(true);
+  const payload = (await response.json()) as {
+    tasks: { options: { correct?: boolean }[] }[];
+  };
+  await page.route("**/api/tasks?*", (route) => {
+    const template = new URL(route.request().url()).searchParams.get("template");
+    return template === "ohm-law"
+      ? route.fulfill({
+          status: 200,
+          contentType: "application/json",
+          body: JSON.stringify(payload),
+        })
+      : route.continue();
+  });
+
+  await page.goto("/practice/family/ohm-law", { waitUntil: "domcontentloaded" });
+  await page.waitForLoadState("networkidle");
+
+  if (testInfo.project.name === "desktop") {
+    const navigation = page.getByTestId("desktop-sidebar-nav");
+    await expect(navigation.getByRole("link")).toHaveCount(5);
+    await expect(
+      navigation.getByRole("link", { name: "Задачи", exact: true }),
+    ).toHaveAttribute("aria-current", "page");
+  } else if (testInfo.project.name === "tablet") {
+    await expect(page.getByTestId("tablet-quick-actions").getByRole("link")).toHaveCount(4);
+  } else {
+    const navigation = page.getByTestId("mobile-bottom-nav");
+    await expect(navigation.getByRole("link")).toHaveCount(4);
+    await expect(
+      navigation.getByRole("link", { name: "Задачи", exact: true }),
+    ).toHaveAttribute("aria-current", "page");
+  }
+
+  const helpTrigger = page.getByTestId("practice-open-help");
+  await expect(helpTrigger).toHaveAttribute("aria-expanded", "false");
+  await expect(helpTrigger).toHaveAttribute("aria-controls", "theory");
+  await helpTrigger.click();
+  await expect(helpTrigger).toHaveAttribute("aria-expanded", "true");
+  await expect(page.getByTestId("topic-theory-drawer")).toBeVisible();
+  await page.getByTestId("close-topic-help").click();
+  await expect(helpTrigger).toBeFocused();
+
+  const wrongIndex = payload.tasks[0].options.findIndex((option) => !option.correct);
+  expect(wrongIndex).toBeGreaterThanOrEqual(0);
+  await page.locator(".quiz-option").nth(wrongIndex).click();
+  await expect(page.getByTestId("next-task-button")).toBeVisible();
+  await expect(page.locator('[role="status"]')).toHaveCount(1);
+  await expect(page.getByRole("img", { name: "Nova" })).toHaveCount(0);
+  await expect(page.getByTestId("solution-toggle")).toHaveAttribute(
+    "aria-expanded",
+    "false",
+  );
+  await page.getByTestId("solution-toggle").click();
+  await expect(page.getByTestId("solution-content")).toBeVisible();
+
+  expect(
+    (await scanForBlockingViolations(page)).map((violation) => ({
+      id: violation.id,
+      nodes: violation.nodes.slice(0, 5).map((node) => node.html.slice(0, 160)),
+    })),
+  ).toEqual([]);
+});
+
 // Карточка разбора после ответа — новая поверхность и отдельный класс
 // контраста (Nova-заголовок, свёрнутый разбор). Сканируем её обе ветки.
 test("@a11y exam resume gate after an answered task", async ({ page }) => {
@@ -138,10 +208,11 @@ test("@a11y карточка разбора после ошибки — без s
       timeout: 2000,
     });
   }).toPass({ timeout: 15000 });
-  await expect(page.getByTestId("solution-formula")).toHaveCount(0);
+  await expect(page.getByTestId("solution-content")).toHaveCount(0);
 
   await page.getByRole("button", { name: "Показать решение" }).click();
-  await expect(page.getByTestId("solution-formula")).toBeVisible();
+  await expect(page.getByTestId("solution-content")).toBeVisible();
+  await expect(page.getByTestId("solution-formula")).toHaveCount(0);
 
   const blocking = await scanForBlockingViolations(page);
   expect(
@@ -311,9 +382,10 @@ test("@a11y безразмерный числовой ответ оптики �
   await input.fill(String(payload.tasks[0].answer.value).replace(".", ","));
   await page.getByTestId("numeric-submit").click();
   await expect(page.getByTestId("numeric-answer")).toHaveAttribute("data-state", "correct");
-  await expect(page.getByTestId("numeric-correct-answer")).toHaveText(
-    `Правильный ответ: ${String(payload.tasks[0].answer.value).replace(".", ",")}`,
+  await expect(page.getByTestId("numeric-answer")).toContainText(
+    String(payload.tasks[0].answer.value).replace(".", ","),
   );
+  await expect(page.getByTestId("numeric-correct-answer")).toHaveCount(0);
   expect((await scanForBlockingViolations(page)).map((violation) => violation.id)).toEqual([]);
 });
 

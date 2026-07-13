@@ -78,11 +78,12 @@ test.describe("optics desktop flows", () => {
 
     await expect(page.getByRole("heading", { name: "Оптика", exact: true })).toBeVisible();
     const sidebar = page.getByRole("navigation", { name: "Разделы PhysicsLab" });
-    await expect(sidebar.getByRole("link", { name: "Оптика", exact: true })).toBeVisible();
+    await expect(sidebar.getByRole("link")).toHaveCount(5);
+    await expect(sidebar.getByRole("link", { name: "Оптика", exact: true })).toHaveCount(0);
 
     const opticsLinks = page.locator('a[href="/practice/optics-demo"]');
-    await expect(opticsLinks).toHaveCount(2);
-    await opticsLinks.nth(1).click();
+    await expect(opticsLinks).toHaveCount(1);
+    await opticsLinks.click();
 
     await expect(page).toHaveURL(/\/practice\/optics-demo/);
     await expect(page.getByTestId("question-card")).toBeVisible({ timeout: 15000 });
@@ -145,7 +146,8 @@ test.describe("optics desktop flows", () => {
     await clickCorrectOption(page, tasks[0]);
 
     await page.getByTestId("solution-toggle").click();
-    await expect(page.getByTestId("solution-formula")).toBeVisible();
+    await expect(page.getByTestId("solution-content")).toBeVisible();
+    await expect(page.getByTestId("solution-formula")).toHaveCount(0);
   });
 
   test("тонкая линза: F и 2F видны, изображение и лучи — после ответа", async ({
@@ -222,7 +224,8 @@ test.describe("optics desktop flows", () => {
 
     await page.getByTestId("practice-open-help").click();
     const drawer = page.getByTestId("topic-theory-drawer");
-    await expect(drawer).toHaveAttribute("open", "");
+    await expect(drawer).toBeVisible();
+    await expect(drawer).toHaveAttribute("data-state", "open");
     await expect(drawer).toHaveAttribute("data-active-section", "reflection");
     await expect(drawer.getByTestId("compact-help-formula")).toHaveAttribute(
       "data-help-card-formula",
@@ -390,7 +393,8 @@ test.describe("optics mobile layout", () => {
     expect(nextNavBox!.y - (nextBox!.y + nextBox!.height)).toBeGreaterThanOrEqual(4);
 
     await page.getByTestId("solution-toggle").click();
-    await expect(page.getByTestId("solution-formula")).toBeVisible();
+    await expect(page.getByTestId("solution-content")).toBeVisible();
+    await expect(page.getByTestId("solution-formula")).toHaveCount(0);
     await next.evaluate((element) => element.scrollIntoView({ block: "end" }));
     const [expandedNextBox, expandedNavBox] = await Promise.all([
       next.boundingBox(),

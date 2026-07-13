@@ -29,7 +29,7 @@ export default defineConfig({
     },
     {
       name: "mobile-360",
-      use: { viewport: { width: 360, height: 740 }, isMobile: true },
+      use: { viewport: { width: 360, height: 800 }, isMobile: true },
     },
   ],
   webServer: {

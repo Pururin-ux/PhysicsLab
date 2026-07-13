@@ -1,16 +1,17 @@
 "use client";
 
 import { useStore } from "@nanostores/react";
-import { useEffect, useMemo, useRef, useState } from "react";
-import { CoachBubble } from "../coach/CoachBubble";
+import { useEffect, useMemo, useRef, useState, type RefObject } from "react";
 import { useCoach } from "../coach/useCoach";
 import { AnswerFeedback } from "./AnswerFeedback";
 import { NumericAnswerInput } from "./NumericAnswerInput";
 import { OptionList } from "./OptionList";
+import { PracticeToolbar } from "./PracticeToolbar";
 import { QuestionCard } from "./QuestionCard";
 import { QuizLoadErrorCard } from "./QuizLoadErrorCard";
 import { QuizLoadingCard } from "./QuizLoadingCard";
 import { SessionSummary } from "./SessionSummary";
+import { SolutionDisclosure } from "./SolutionDisclosure";
 import { useGeneratedQuizData } from "./useGeneratedQuizData";
 import {
   $quizSession,
@@ -35,7 +36,6 @@ import {
 } from "../../lib/quiz/active-session-snapshot";
 import { newAttemptId } from "../../lib/quiz/attempt-id";
 import { integrityError } from "../../lib/quiz/quiz-load-error";
-import { Badge } from "../ui/Badge";
 import { Button } from "../ui/Button";
 import { getTaskFocus } from "../../lib/learning/task-focus";
 import {
@@ -58,7 +58,8 @@ interface QuizSessionProps {
   sessionKind?: "practice" | "exam";
   onHelpTargetChange?: (target: HelpTarget) => void;
   onOpenHelpTarget?: (target: HelpTarget) => void;
-  suppressCoachBubble?: boolean;
+  helpOpen?: boolean;
+  helpButtonRef?: RefObject<HTMLButtonElement | null>;
   recoveryMode?: "auto" | "fresh";
   freshAttemptId?: string;
   generatedCount?: GeneratedQuizCount;
@@ -85,7 +86,8 @@ export function QuizSession({
   sessionKind = "practice",
   onHelpTargetChange,
   onOpenHelpTarget,
-  suppressCoachBubble = false,
+  helpOpen = false,
+  helpButtonRef,
   recoveryMode = "auto",
   freshAttemptId,
   generatedCount = 10,
@@ -155,7 +157,6 @@ export function QuizSession({
     count: generatedCount,
   });
   const {
-    bubble,
     emitCoachEvent,
     startPauseTimer,
     clearPauseTimer,
@@ -181,7 +182,7 @@ export function QuizSession({
   const currentTask = tasks[session.currentIndex];
   const latestAnswer = session.answers.at(-1);
   const isLastTask = session.currentIndex >= session.total - 1;
-  const progressLabel = `${Math.min(session.currentIndex + 1, session.total)} / ${session.total}`;
+  const progressLabel = `Задание ${Math.min(session.currentIndex + 1, session.total)} из ${session.total}`;
   const currentHelpTarget = useMemo(
     () => (currentTask ? getHelpTargetForTask(currentTask, topicId) : null),
     [currentTask, topicId],
@@ -511,9 +512,21 @@ export function QuizSession({
           topicId,
         )
       : currentHelpTarget;
+  const latestIsCorrect = latestAnswer?.isCorrect ?? false;
+  const feedbackText =
+    latestIsCorrect
+      ? currentTask.coach_lines.correct
+      : latestAnswer?.selectedMisconception
+        ? `Похоже, ты ${latestAnswer.selectedMisconception}.`
+        : currentTask.coach_lines.wrong;
+  const mistakeHelpTarget =
+    latestAnswer && !latestAnswer.isCorrect ? answerHelpTarget : null;
 
   return (
-    <section className="relative mx-auto flex max-w-[580px] flex-col gap-4 pb-[calc(5rem+env(safe-area-inset-bottom))] sm:pb-8">
+    <section
+      data-testid="quiz-session"
+      className="relative mx-auto flex w-full max-w-[640px] flex-col gap-4 pb-[calc(5rem+env(safe-area-inset-bottom))] sm:pb-8"
+    >
       {restoredNotice ? (
         <p
           data-testid="session-restored-notice"
@@ -524,14 +537,16 @@ export function QuizSession({
         </p>
       ) : null}
 
-      <div className="flex items-center justify-between gap-3">
-        <Badge>{progressLabel}</Badge>
-        {session.streak > 0 ? (
-          <span className="text-[12px] font-semibold text-nova-cyan/80">
-            Серия: {session.streak}
-          </span>
-        ) : null}
-      </div>
+      <PracticeToolbar
+        progressLabel={progressLabel}
+        helpOpen={helpOpen}
+        helpButtonRef={helpButtonRef}
+        onOpenHelp={
+          currentHelpTarget && onOpenHelpTarget
+            ? () => onOpenHelpTarget(currentHelpTarget)
+            : undefined
+        }
+      />
 
       <QuestionCard
         type={currentTask.type}
@@ -543,6 +558,7 @@ export function QuizSession({
         // работа сделана, и он лишь конкурирует с разбором за внимание.
         focus={session.phase === "answered" ? undefined : taskFocus}
         showSolutionContent={session.phase === "answered"}
+        showMetadata={false}
       />
 
       {currentTask.type === "single_choice" ? (
@@ -569,29 +585,13 @@ export function QuizSession({
         />
       )}
 
-      {/* Пока ученик решает — Nova подсказывает плавающим баблом. После
-          ответа её голос переезжает в карточку разбора (один голос, одна
-          фокусная точка), поэтому здесь бабл скрываем. */}
-      {session.phase !== "answered" && !suppressCoachBubble ? (
-        <CoachBubble state={bubble.state} text={bubble.text} visible={bubble.visible} />
-      ) : null}
-
       {session.phase === "answered" ? (
         <div ref={reactionRef} className="flex flex-col gap-4 scroll-mt-6">
           <AnswerFeedback
-            isCorrect={session.answers.at(-1)?.isCorrect ?? false}
-            novaState={bubble.state}
-            novaText={bubble.text}
-            explanation={currentTask.explanation}
-            explanationLatex={currentTask.explanation_latex}
-            helpTarget={answerHelpTarget ?? undefined}
-            onOpenHelp={
-              answerHelpTarget && onOpenHelpTarget
-                ? () => onOpenHelpTarget(answerHelpTarget)
-                : undefined
-            }
+            isCorrect={latestIsCorrect}
+            feedbackText={feedbackText}
             correctAnswer={
-              latestAnswer?.format === "numeric_input"
+              latestAnswer?.format === "numeric_input" && !latestAnswer.isCorrect
                 ? `${formatNumericValue(latestAnswer.correctValue)} ${latestAnswer.unit}`.trim()
                 : undefined
             }
@@ -600,6 +600,17 @@ export function QuizSession({
           <Button type="button" size="lg" data-testid="next-task-button" onClick={handleNext}>
             {isLastTask ? "Показать итог" : "Следующая задача"}
           </Button>
+
+          <SolutionDisclosure
+            key={currentTask.id}
+            explanation={currentTask.explanation}
+            helpTarget={mistakeHelpTarget ?? undefined}
+            onOpenHelp={
+              mistakeHelpTarget && onOpenHelpTarget
+                ? () => onOpenHelpTarget(mistakeHelpTarget)
+                : undefined
+            }
+          />
         </div>
       ) : null}
     </section>

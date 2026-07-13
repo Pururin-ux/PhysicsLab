@@ -23,16 +23,9 @@ for (const route of topicPracticeRoutes) {
       "карточка задачи должна начинаться в первом viewport",
     ).toBeLessThan(viewport!.height);
 
-    const theory = page.locator("#theory details");
-    await expect(theory).toBeVisible();
-    await expect(theory).not.toHaveAttribute("open", "");
-
-    const theoryBox = await theory.boundingBox();
-    expect(theoryBox).not.toBeNull();
-    expect(
-      theoryBox!.y,
-      "закрытая справка должна идти после task block, а не перед ним",
-    ).toBeGreaterThan(questionBox!.y);
+    const theory = page.getByTestId("topic-theory-drawer");
+    await expect(theory).toBeHidden();
+    await expect(theory).toHaveAttribute("data-state", "closed");
   });
 }
 
@@ -90,7 +83,7 @@ test("wrong answer feedback is compact until solution is requested", async ({
   await options.getByRole("button").filter({ hasText: wrongOption!.text }).click();
 
   await expect(page.getByRole("button", { name: "Показать решение" })).toBeVisible();
-  await expect(page.getByTestId("solution-formula")).toHaveCount(0);
+  await expect(page.getByTestId("solution-content")).toHaveCount(0);
   await expect(page.getByTestId("question-formula")).toHaveCount(0);
 
   if (testInfo.project.name === "desktop") {
@@ -102,8 +95,9 @@ test("wrong answer feedback is compact until solution is requested", async ({
   }
 
   await page.getByRole("button", { name: "Показать решение" }).click();
-  await expect(page.getByTestId("solution-formula")).toBeVisible();
+  await expect(page.getByTestId("solution-content")).toBeVisible();
+  await expect(page.getByTestId("solution-formula")).toHaveCount(0);
 
   await page.getByRole("button", { name: "Следующая задача" }).click();
-  await expect(page.getByText("2 / 10").filter({ visible: true }).first()).toBeVisible();
+  await expect(page.getByTestId("practice-progress")).toHaveText("Задание 2 из 10");
 });

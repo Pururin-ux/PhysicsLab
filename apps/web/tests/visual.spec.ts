@@ -1,4 +1,10 @@
-import { expect, test, type Locator, type Page } from "@playwright/test";
+import {
+  expect,
+  test,
+  type APIRequestContext,
+  type Locator,
+  type Page,
+} from "@playwright/test";
 
 // Визуальный базлайн из двух слоёв:
 //
@@ -112,6 +118,198 @@ for (const route of routes) {
   });
 }
 
+type VisualPracticeTask = {
+  type: "single_choice" | "numeric_input";
+  options?: { correct?: boolean }[];
+  answer: { value?: number; unit?: string };
+};
+
+async function useDeterministicPracticeBatch(
+  page: Page,
+  request: APIRequestContext,
+  template: string,
+) {
+  const response = await request.get(`/api/tasks?template=${template}&count=5&batch=0`);
+  expect(response.ok()).toBe(true);
+  const payload = (await response.json()) as { tasks: VisualPracticeTask[] };
+
+  await page.route("**/api/tasks?*", (route) => {
+    const requestedTemplate = new URL(route.request().url()).searchParams.get("template");
+    return requestedTemplate === template
+      ? route.fulfill({
+          status: 200,
+          contentType: "application/json",
+          body: JSON.stringify(payload),
+        })
+      : route.continue();
+  });
+
+  return payload;
+}
+
+async function prepareVisualSurface(page: Page) {
+  await page.waitForLoadState("networkidle");
+  await page.evaluate(() => document.fonts.ready);
+  await page.addStyleTag({
+    content: "canvas { visibility: hidden !important; }",
+  });
+}
+
+async function expectPracticeSnapshot(surface: Locator, name: string) {
+  if (!withSnapshots) return;
+  await expect(surface).toHaveScreenshot(name, {
+    animations: "disabled",
+    maxDiffPixelRatio: 0.02,
+  });
+}
+
+test("@visual simplified navigation shell is stable", async ({ page }, testInfo) => {
+  await page.goto("/tasks", { waitUntil: "domcontentloaded" });
+  await prepareVisualSurface(page);
+
+  const viewport = page.viewportSize()!;
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(
+    viewport.width + 1,
+  );
+
+  if (testInfo.project.name === "desktop") {
+    await expect(page.getByTestId("desktop-sidebar-nav").getByRole("link")).toHaveCount(5);
+  } else if (testInfo.project.name === "tablet") {
+    await expect(page.getByTestId("tablet-quick-actions").getByRole("link")).toHaveCount(4);
+  } else {
+    await expect(page.getByTestId("mobile-bottom-nav").getByRole("link")).toHaveCount(4);
+  }
+
+  if (
+    withSnapshots &&
+    ["desktop", "tablet", "mobile-390"].includes(testInfo.project.name)
+  ) {
+    await expect(page).toHaveScreenshot("navigation-shell.png", {
+      animations: "disabled",
+      maxDiffPixelRatio: 0.02,
+    });
+  }
+});
+
+test("@visual compact wrong-answer hierarchy and contextual help are stable", async ({
+  page,
+  request,
+}, testInfo) => {
+  test.skip(
+    !SNAPSHOT_PROJECTS.includes(testInfo.project.name),
+    "Practice state baselines are kept for desktop and mobile-390.",
+  );
+  const payload = await useDeterministicPracticeBatch(page, request, "ohm-law");
+  await page.goto("/practice/family/ohm-law", { waitUntil: "domcontentloaded" });
+  await prepareVisualSurface(page);
+
+  const surface = page.getByTestId("practice-with-help");
+  await expectPracticeSnapshot(surface, "practice-before-answer.png");
+
+  const wrongIndex = payload.tasks[0].options!.findIndex((option) => !option.correct);
+  expect(wrongIndex).toBeGreaterThanOrEqual(0);
+  await page.locator(".quiz-option").nth(wrongIndex).click();
+  await expect(page.getByTestId("answer-feedback")).toHaveAttribute("data-state", "wrong");
+  await expectPracticeSnapshot(surface, "practice-wrong-collapsed.png");
+
+  await page.getByTestId("solution-toggle").click();
+  await expect(page.getByTestId("solution-content")).toBeVisible();
+  await expectPracticeSnapshot(surface, "practice-wrong-expanded.png");
+
+  await page.getByTestId("solution-toggle").click();
+  await expect(page.getByTestId("solution-content")).toHaveCount(0);
+  await page.getByTestId("help-target-button").click();
+  await expect(page.getByTestId("topic-theory-drawer")).toBeVisible();
+  await expectPracticeSnapshot(surface, "practice-help-open.png");
+});
+
+test("@visual correct and restored answer hierarchy is stable", async ({
+  page,
+  request,
+}, testInfo) => {
+  test.skip(
+    !SNAPSHOT_PROJECTS.includes(testInfo.project.name),
+    "Practice state baselines are kept for desktop and mobile-390.",
+  );
+  const payload = await useDeterministicPracticeBatch(page, request, "ohm-law");
+  await page.goto("/practice/family/ohm-law", { waitUntil: "domcontentloaded" });
+  await prepareVisualSurface(page);
+
+  const correctIndex = payload.tasks[0].options!.findIndex((option) => option.correct);
+  expect(correctIndex).toBeGreaterThanOrEqual(0);
+  await page.locator(".quiz-option").nth(correctIndex).click();
+  await expect(page.getByTestId("answer-feedback")).toHaveAttribute("data-state", "correct");
+  await expectPracticeSnapshot(
+    page.getByTestId("practice-with-help"),
+    "practice-correct.png",
+  );
+
+  await page.reload({ waitUntil: "domcontentloaded" });
+  await prepareVisualSurface(page);
+  await expect(page.getByTestId("session-restored-notice")).toBeVisible();
+  await expect(page.getByTestId("solution-toggle")).toHaveAttribute("aria-expanded", "false");
+  await expectPracticeSnapshot(
+    page.getByTestId("practice-with-help"),
+    "practice-answered-restored.png",
+  );
+});
+
+test("@visual numeric feedback hierarchy is stable", async ({ page, request }, testInfo) => {
+  test.skip(
+    !SNAPSHOT_PROJECTS.includes(testInfo.project.name),
+    "Numeric state baselines are kept for desktop and mobile-390.",
+  );
+  const payload = await useDeterministicPracticeBatch(
+    page,
+    request,
+    "average-speed-segments",
+  );
+  await page.goto("/practice/family/average-speed-segments", {
+    waitUntil: "domcontentloaded",
+  });
+  await prepareVisualSurface(page);
+
+  const expected = payload.tasks[0].answer.value;
+  expect(typeof expected).toBe("number");
+  await page.getByTestId("numeric-answer-input").fill(String(expected).replace(".", ","));
+  await page.getByTestId("numeric-submit").click();
+  await expect(page.getByTestId("numeric-answer")).toHaveAttribute("data-state", "correct");
+  await expectPracticeSnapshot(
+    page.getByTestId("practice-with-help"),
+    "practice-numeric-correct.png",
+  );
+});
+
+test("@visual numeric wrong-answer hierarchy is stable", async ({
+  page,
+  request,
+}, testInfo) => {
+  test.skip(
+    !SNAPSHOT_PROJECTS.includes(testInfo.project.name),
+    "Numeric state baselines are kept for desktop and mobile-390.",
+  );
+  const payload = await useDeterministicPracticeBatch(
+    page,
+    request,
+    "average-speed-segments",
+  );
+  await page.goto("/practice/family/average-speed-segments", {
+    waitUntil: "domcontentloaded",
+  });
+  await prepareVisualSurface(page);
+
+  const expected = payload.tasks[0].answer.value;
+  expect(typeof expected).toBe("number");
+  await page.getByTestId("numeric-answer-input").fill(String(expected! + 1000));
+  await page.getByTestId("numeric-submit").click();
+  await expect(page.getByTestId("numeric-answer")).toHaveAttribute("data-state", "wrong");
+  await expect(page.getByTestId("numeric-correct-answer")).toHaveCount(1);
+  await expectPracticeSnapshot(
+    page.getByTestId("practice-with-help"),
+    "practice-numeric-wrong.png",
+  );
+});
+
 async function expectScrollableAboveMobileNav(
   control: Locator,
   mobileNavContainer: Locator,
@@ -176,6 +374,8 @@ test("@visual mobile practice controls clear the fixed bottom navigation", async
   await expect(
     page.getByRole("button", { name: "Свернуть решение" }),
   ).toBeVisible();
+  await expect(page.getByTestId("solution-content")).toBeVisible();
+  await expect(page.getByTestId("solution-formula")).toHaveCount(0);
   await expectScrollableAboveMobileNav(nextTaskButton, mobileNavContainer);
 });
 

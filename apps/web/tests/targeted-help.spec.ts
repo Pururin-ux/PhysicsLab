@@ -38,19 +38,26 @@ for (const route of topicPracticeRoutes) {
     await page.goto(route.path, { waitUntil: "domcontentloaded" });
     await expect(page.getByTestId("question-card")).toBeVisible({ timeout: 15000 });
 
-    await expect(page.getByRole("button", { name: "Задачи" })).toBeVisible();
+    await expect(page.getByTestId("practice-tab-tasks")).toHaveCount(0);
     const helpButton = page.getByRole("button", { name: "Справка" });
     await expect(helpButton).toBeVisible();
+    await expect(helpButton).toHaveAttribute("aria-expanded", "false");
 
     const drawer = page.getByTestId("topic-theory-drawer");
-    await expect(drawer).toBeVisible();
-    await expect(drawer).not.toHaveAttribute("open", "");
+    await expect(drawer).toBeHidden();
+    await expect(drawer).toHaveAttribute("data-state", "closed");
 
     await helpButton.click();
-    await expect(drawer).toHaveAttribute("open", "");
+    await expect(drawer).toBeVisible();
+    await expect(drawer).toHaveAttribute("data-state", "open");
+    await expect(helpButton).toHaveAttribute("aria-expanded", "true");
     await expect(drawer).toHaveAttribute("data-active-section", /\S+/);
     await expect(page.locator('[data-testid^="help-chip-"]')).toHaveCount(0);
-    await expect(page.locator('[data-testid^="help-section-button-"][aria-pressed="true"]')).toHaveCount(1);
+    await expect(page.getByTestId("help-section-selector")).toHaveCount(1);
+
+    await page.getByTestId("close-topic-help").click();
+    await expect(drawer).toBeHidden();
+    await expect(helpButton).toBeFocused();
   });
 }
 
@@ -70,16 +77,9 @@ test.skip("kinematics help targets accelerated first task and graph second task"
     "x=x_0+v_0t+\\frac{at^2}{2}",
   );
   await expect(drawer.getByTestId("compact-help-card")).toContainText("at²/2");
-  await expect(page.getByTestId("help-section-button-accelerated-motion")).toHaveAttribute(
-    "aria-pressed",
-    "true",
-  );
-  await expect(page.getByTestId("help-section-button-motion-graphs")).toHaveAttribute(
-    "aria-pressed",
-    "false",
-  );
+  await expect(page.getByTestId("help-section-selector")).toHaveValue("accelerated-motion");
   await answerCurrentTaskAndMoveNext(page);
-  await expect(page.getByText("2 / 10").filter({ visible: true }).first()).toBeVisible();
+  await expect(page.getByTestId("practice-progress")).toHaveText("Задание 2 из 10");
   await expect(page.getByTestId("question-card")).toContainText("графике v(t)");
   await expectActiveHelpCard(
     page,
@@ -88,14 +88,7 @@ test.skip("kinematics help targets accelerated first task and graph second task"
     "a=\\frac{\\Delta v}{\\Delta t},\\quad s=S_{v(t)}",
   );
   await expect(drawer.getByTestId("compact-help-card")).toContainText("площадь под v(t)");
-  await expect(page.getByTestId("help-section-button-motion-graphs")).toHaveAttribute(
-    "aria-pressed",
-    "true",
-  );
-  await expect(page.getByTestId("help-section-button-accelerated-motion")).toHaveAttribute(
-    "aria-pressed",
-    "false",
-  );
+  await expect(page.getByTestId("help-section-selector")).toHaveValue("motion-graphs");
 });
 
 test.skip("generated practice help uses template metadata for topic routes", async ({ page }) => {
@@ -173,17 +166,17 @@ test("wrong answer opens contextual help without expanding solution", async ({ p
   await options.getByRole("button").filter({ hasText: wrongOption!.text }).click();
 
   await expect(page.getByRole("button", { name: "Показать решение" })).toBeVisible();
-  await expect(page.getByTestId("solution-formula")).toHaveCount(0);
+  await expect(page.getByTestId("solution-content")).toHaveCount(0);
 
   const drawer = page.getByTestId("topic-theory-drawer");
-  await expect(drawer).not.toHaveAttribute("open", "");
+  await expect(drawer).toBeHidden();
 
   const helpTarget = page.getByTestId("help-target-button");
   await expect(helpTarget).toBeVisible();
   await expect(helpTarget).toContainText("Равноускоренное движение");
   await helpTarget.click();
 
-  await expect(drawer).toHaveAttribute("open", "");
+  await expect(drawer).toBeVisible();
   await expectActiveHelpCard(
     page,
     "accelerated-motion",
@@ -191,8 +184,8 @@ test("wrong answer opens contextual help without expanding solution", async ({ p
     "x=x_0+v_0t+\\frac{at^2}{2}",
   );
   await expect(page.locator('[data-testid^="help-chip-"]')).toHaveCount(0);
-  await expect(page.locator('[data-testid^="help-section-button-"][aria-pressed="true"]')).toHaveCount(1);
-  await expect(page.getByTestId("solution-formula")).toHaveCount(0);
+  await expect(page.getByTestId("help-section-selector")).toHaveValue("accelerated-motion");
+  await expect(page.getByTestId("solution-content")).toHaveCount(0);
 });
 
 test("targeted help mobile has no horizontal overflow", async ({ page }) => {
@@ -201,10 +194,7 @@ test("targeted help mobile has no horizontal overflow", async ({ page }) => {
   await expect(page.getByTestId("question-card")).toBeVisible();
 
   await page.getByTestId("practice-open-help").click();
-  await page.getByTestId("topic-theory-drawer").evaluate((drawer) => {
-    drawer.setAttribute("open", "");
-  });
-  await expect(page.getByTestId("topic-theory-drawer")).toHaveAttribute("open", "");
+  await expect(page.getByTestId("topic-theory-drawer")).toBeVisible();
 
   const scrollWidth = await page.evaluate(() => document.documentElement.scrollWidth);
   const clientWidth = await page.evaluate(() => document.documentElement.clientWidth);
