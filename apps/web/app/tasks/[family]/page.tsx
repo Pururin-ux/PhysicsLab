@@ -4,6 +4,11 @@ import { notFound } from "next/navigation";
 import { ReferenceSolution } from "../../../components/tasks/ReferenceSolution";
 import { Button } from "../../../components/ui/Button";
 import { getReferenceSolution } from "../../../lib/learning/reference-solutions";
+import {
+  buildFormulaHref,
+  getFormulaEntry,
+  getLearningDestinationForFamily,
+} from "../../../lib/learning/learning-links";
 import { getTaskCatalog, getTaskCatalogEntry } from "../../../lib/server/task-catalog";
 
 type TaskTypePageProps = {
@@ -31,6 +36,11 @@ export default async function TaskTypePage({ params }: TaskTypePageProps) {
   const entry = getTaskCatalogEntry(family);
   if (!entry) notFound();
   const referenceSolution = getReferenceSolution(entry.id);
+  const destination = getLearningDestinationForFamily(entry.id);
+  const relatedFormulas = (destination?.formulaIds ?? []).flatMap((formulaId) => {
+    const formula = getFormulaEntry(formulaId);
+    return formula ? [formula] : [];
+  });
 
   const difficulty =
     entry.difficultyRange.min === entry.difficultyRange.max
@@ -78,6 +88,31 @@ export default async function TaskTypePage({ params }: TaskTypePageProps) {
           ) : null}
         </div>
       </section>
+
+      {relatedFormulas.length > 0 ? (
+        <section className="border-t border-white/[.08] pt-6" aria-labelledby="related-formulas-title">
+          <h2 id="related-formulas-title" className="text-xl font-[800] text-white">
+            Связанные формулы
+          </h2>
+          <p className="mt-2 text-[13px] leading-[1.6] text-white/58">
+            Открой формулу, обозначения и условия применения для этого типа задач.
+          </p>
+          <ul className="mt-4 flex flex-col gap-2">
+            {relatedFormulas.map((formula) => (
+              <li key={formula.id}>
+                <Link
+                  href={buildFormulaHref(formula.id)}
+                  className="inline-flex min-h-10 items-center rounded-option border border-white/[.12] bg-white/[.025] px-3.5 text-[13px] font-semibold text-nova-cyan/85 transition-colors hover:border-nova-cyan/45 hover:text-nova-cyan focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/55"
+                >
+                  {relatedFormulas.length === 1
+                    ? "Открыть формулу и условия применения"
+                    : formula.title}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
 
       {referenceSolution ? <ReferenceSolution solution={referenceSolution} /> : null}
 

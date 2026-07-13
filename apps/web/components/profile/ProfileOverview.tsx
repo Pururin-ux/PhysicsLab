@@ -345,9 +345,21 @@ export function ProfileOverview() {
                     {item.reason}
                   </p>
                 </div>
-                <Button asChild size="sm" variant="ghost" className="mt-auto">
-                  <Link href={item.href}>К задаче</Link>
-                </Button>
+                <div className="mt-auto flex flex-col items-start gap-2">
+                  <Button asChild size="sm" variant="ghost">
+                    <Link href={item.practiceHref ?? item.fallbackHref}>
+                      {item.practiceHref ? "Решить 5 похожих" : "Открыть каталог"}
+                    </Link>
+                  </Button>
+                  {item.taskHref ? (
+                    <Link
+                      href={item.taskHref}
+                      className="rounded-option px-1 text-[12px] font-semibold text-nova-cyan/80 transition-colors hover:text-nova-cyan focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/55"
+                    >
+                      {item.hasReferenceSolution ? "Открыть разбор" : "Открыть тип"}
+                    </Link>
+                  ) : null}
+                </div>
               </Card>
             ))}
           </div>

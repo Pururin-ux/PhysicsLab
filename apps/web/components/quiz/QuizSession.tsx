@@ -479,7 +479,7 @@ export function QuizSession({
         onRestart={handleRestart}
         restartLabel={
           restartLabel ?? (sessionKind === "exam"
-            ? "Новый вариант"
+            ? "Новая тренировка"
             : `Ещё ${generatedCount} задач`)
         }
         topic={activeData?.topic}

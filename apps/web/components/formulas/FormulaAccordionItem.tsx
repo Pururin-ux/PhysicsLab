@@ -1,14 +1,15 @@
 "use client";
 
 import { useId, useState } from "react";
+import Link from "next/link";
 import { FormulaDetails } from "../theory/FormulaDisplay";
 import { MathText } from "../ui/MathText";
 import { renderFormulaToHtml } from "../../lib/formula-rendering";
 import { cn } from "../../lib/utils";
 import type {
-  FormulaReferenceEntry,
   FormulaReferenceGroup,
 } from "../../lib/physics/formula-reference";
+import type { FormulaReferenceViewEntry } from "../../lib/learning/learning-links";
 
 const dotClassByTone: Record<FormulaReferenceGroup["badgeTone"], string> = {
   cyan: "bg-nova-cyan",
@@ -19,7 +20,7 @@ const dotClassByTone: Record<FormulaReferenceGroup["badgeTone"], string> = {
 };
 
 interface FormulaAccordionItemProps {
-  entry: FormulaReferenceEntry;
+  entry: FormulaReferenceViewEntry;
   badgeTone: FormulaReferenceGroup["badgeTone"];
   forceOpen?: boolean;
 }
@@ -42,6 +43,7 @@ export function FormulaAccordionItem({
     >
       <button
         type="button"
+        data-formula-id={entry.id}
         aria-expanded={isOpen}
         aria-controls={panelId}
         onClick={() => setOpen((current) => !current)}
@@ -79,6 +81,40 @@ export function FormulaAccordionItem({
             <MathText text={entry.caption} />
           </p>
           <FormulaDetails symbols={entry.symbols} limitation={entry.limitation} />
+          {entry.relatedTasks.length > 0 ? (
+            <section className="border-t border-white/[.08] pt-3" aria-labelledby={`${panelId}-tasks`}>
+              <h3 id={`${panelId}-tasks`} className="text-[13px] font-bold text-white/82">
+                Задачи по этой формуле
+              </h3>
+              <ul className="mt-2 flex flex-col gap-2">
+                {entry.relatedTasks.map((task) => (
+                  <li
+                    key={task.familyId}
+                    className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 rounded-option border border-white/[.08] bg-white/[.02] px-3 py-2.5"
+                  >
+                    <div className="min-w-0">
+                      <p className="text-[12px] font-semibold text-white/88">{task.title}</p>
+                      <p className="mt-0.5 text-[11px] text-white/48">{task.topicLabel}</p>
+                    </div>
+                    <div className="flex flex-wrap items-center gap-3 text-[12px] font-semibold">
+                      <Link
+                        href={task.taskHref}
+                        className="rounded-option text-white/65 transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/55"
+                      >
+                        Открыть тип
+                      </Link>
+                      <Link
+                        href={task.practiceHref}
+                        className="rounded-option text-nova-cyan/85 transition-colors hover:text-nova-cyan focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/55"
+                      >
+                        Решить 5 похожих
+                      </Link>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ) : null}
         </div>
       ) : null}
     </div>

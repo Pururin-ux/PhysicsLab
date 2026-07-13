@@ -17,13 +17,13 @@ export function getLearningNextStep(
 ): LearningNextStep {
   const topReview = buildReviewPlan(progress, 1)[0] ?? null;
 
-  if (topReview && topReview.urgency !== "later") {
+  if (topReview?.familyId && topReview.practiceHref && topReview.urgency !== "later") {
     return {
       label: topReview.dueLabel,
-      title: `Разобрать: ${topReview.skillTitle}`,
+      title: `Повтори: ${topReview.skillTitle}`,
       body: `${topReview.hint} ${topReview.reason}.`,
-      href: "/mistakes",
-      cta: "Разобрать",
+      href: topReview.practiceHref,
+      cta: "Решить 5 похожих",
       tone: "gold",
     };
   }

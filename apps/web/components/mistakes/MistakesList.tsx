@@ -106,7 +106,7 @@ function EmptyState({ totalSolved }: { totalSolved: number }) {
     <Card className="flex flex-col items-start gap-4 !p-6 md:!p-8">
       {totalSolved > 0 ? (
         <>
-          <Badge tone="cyan">Контроль ошибок</Badge>
+          <Badge tone="cyan">План повторения</Badge>
           <h2 className="text-lg font-[800] text-white">
             Записанных ловушек нет
           </h2>
@@ -119,7 +119,7 @@ function EmptyState({ totalSolved }: { totalSolved: number }) {
         </>
       ) : (
         <>
-          <Badge tone="gold">Review Intelligence</Badge>
+          <Badge tone="gold">План повторения</Badge>
           <h2 className="text-lg font-[800] text-white">
             Здесь появится очередь повторения
           </h2>
@@ -131,7 +131,7 @@ function EmptyState({ totalSolved }: { totalSolved: number }) {
         </>
       )}
       <Button asChild>
-        <Link href="/topics">К темам</Link>
+        <Link href="/tasks">К задачам</Link>
       </Button>
     </Card>
   );
@@ -196,7 +196,7 @@ function TopicInsightCard({ insight }: { insight: ReviewTopicInsight }) {
       </div>
 
       <Button asChild variant="ghost" size="sm" className="mt-auto w-full">
-        <Link href={insight.href}>Тренировать тему</Link>
+        <Link href={insight.href}>Тренировать всю тему</Link>
       </Button>
     </Card>
   );
@@ -236,9 +236,21 @@ function ReviewQueueCard({ weakness }: { weakness: ReviewPlanItem }) {
         </p>
       </div>
 
-      <Button asChild size="sm" className="shrink-0">
-        <Link href={weakness.href}>Потренировать</Link>
-      </Button>
+      <div className="flex shrink-0 flex-col items-stretch gap-2 sm:items-end">
+        <Button asChild size="sm">
+          <Link href={weakness.practiceHref ?? weakness.fallbackHref}>
+            {weakness.practiceHref ? "Решить 5 похожих" : "Открыть каталог"}
+          </Link>
+        </Button>
+        {weakness.taskHref ? (
+          <Link
+            href={weakness.taskHref}
+            className="rounded-option px-1 text-center text-[12px] font-semibold text-nova-cyan/80 transition-colors hover:text-nova-cyan focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/55"
+          >
+            {weakness.hasReferenceSolution ? "Открыть разбор" : "Открыть тип"}
+          </Link>
+        ) : null}
+      </div>
     </Card>
   );
 }
@@ -281,7 +293,7 @@ export function MistakesList() {
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
               <Badge tone={dashboard.dueToday > 0 ? "gold" : "cyan"}>
-                Review Intelligence
+                План повторения
               </Badge>
               <span className="text-[11px] font-bold uppercase tracking-[.12em] text-white/40">
                 ловушки · срочность · темы
@@ -296,11 +308,25 @@ export function MistakesList() {
           </div>
 
           {primaryAction ? (
-            <Button asChild className="w-full max-w-full sm:w-auto">
-              <Link href={primaryAction.href}>
-                Начать: {primaryAction.skillTitle}
-              </Link>
-            </Button>
+            <div className="flex w-full flex-col items-start gap-2 sm:w-auto sm:items-end">
+              <Button asChild className="w-full max-w-full sm:w-auto">
+                <Link href={primaryAction.practiceHref ?? primaryAction.fallbackHref}>
+                  {primaryAction.practiceHref
+                    ? `Решить 5 похожих: ${primaryAction.skillTitle}`
+                    : "Открыть каталог"}
+                </Link>
+              </Button>
+              {primaryAction.taskHref ? (
+                <Link
+                  href={primaryAction.taskHref}
+                  className="rounded-option px-1 text-[12px] font-semibold text-nova-cyan/80 transition-colors hover:text-nova-cyan focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/55"
+                >
+                  {primaryAction.hasReferenceSolution
+                    ? "Посмотреть пример и разбор"
+                    : "Открыть тип задачи"}
+                </Link>
+              ) : null}
+            </div>
           ) : null}
         </div>
 
