@@ -1,14 +1,9 @@
 "use client";
 
-import { useStore } from "@nanostores/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { $quizSession } from "../quiz/quiz-session-store";
-import { ProgressDots } from "../ui/ProgressDots";
-import { XPBadge } from "./XPBadge";
 
 export function NavBar() {
-  const session = useStore($quizSession);
   const pathname = usePathname();
   const sectionLabels: [prefix: string, label: string][] = [
     ["/practice/family", "Похожие задачи"],
@@ -16,41 +11,21 @@ export function NavBar() {
     ["/practice/kinematics", "Кинематика"],
     ["/practice/electro", "Электродинамика"],
     ["/practice/thermo", "Термодинамика"],
+    ["/practice/optics", "Оптика"],
     ["/practice/exam", "Смешанная"],
     ["/mistakes", "Ошибки"],
     ["/formulas", "Формулы"],
-    ["/profile", "Профиль"],
+    ["/profile", "Прогресс"],
     ["/tasks", "Задачи"],
   ];
   const topic =
     sectionLabels.find(([prefix]) => pathname.startsWith(prefix))?.[1] ??
     "Темы";
-  const showProgress = pathname.startsWith("/practice/");
-  // Store is shared across client-side routes and can briefly contain the
-  // previous session while a new batch loads. Route semantics keep the header
-  // honest during that transition: focused drills always contain five tasks.
-  const expectedTotal = pathname.startsWith("/practice/family/") ? 5 : 10;
-  const hasCurrentRouteSession = session.total === expectedTotal;
-  const total = hasCurrentRouteSession ? session.total : expectedTotal;
-  const currentStep =
-    !hasCurrentRouteSession
-      ? 1
-      : session.phase === "completed"
-      ? total
-      : Math.min(session.currentIndex + 1, total);
-  const completed =
-    !hasCurrentRouteSession
-      ? 0
-      : session.phase === "completed"
-      ? total
-      : session.phase === "answered"
-        ? Math.min(session.currentIndex + 1, total)
-        : Math.min(session.currentIndex, total);
 
   return (
     <header className="sticky top-0 z-20 border-b border-nova-cyan/[.07] bg-space-950/85 backdrop-blur-[14px]">
       <nav
-        className="mx-auto flex max-w-[960px] items-center justify-between gap-3 px-4 py-3 md:px-8 md:py-4"
+        className="mx-auto flex max-w-[960px] items-center px-4 py-3 md:px-8 md:py-4"
         aria-label="Главная навигация"
       >
         <Link
@@ -65,28 +40,6 @@ export function NavBar() {
             {topic}
           </span>
         </Link>
-
-        {showProgress ? (
-          <div className="flex min-w-0 items-center justify-center md:gap-3">
-            <span
-              className="whitespace-nowrap text-[12px] font-semibold text-white/55 md:hidden"
-              aria-label={`Прогресс задач: ${currentStep} из ${total}`}
-            >
-              {currentStep} / {total}
-            </span>
-            <span className="hidden text-[10px] font-bold uppercase tracking-[.12em] text-white/60 md:inline">
-              Прогресс
-            </span>
-            <ProgressDots
-              className="hidden md:flex"
-              total={total}
-              currentStep={currentStep}
-              completed={completed}
-            />
-          </div>
-        ) : null}
-
-        <XPBadge />
       </nav>
     </header>
   );

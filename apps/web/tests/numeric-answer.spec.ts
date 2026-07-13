@@ -199,7 +199,7 @@ test.describe("numeric answer desktop flows", () => {
       "correct",
     );
     await expect(page.getByRole("status")).not.toContainText("Верно. Верно.");
-    await expect(page.getByTestId("numeric-correct-answer")).toBeVisible();
+    await expect(page.getByTestId("numeric-correct-answer")).toHaveCount(0);
     await expect(page.getByTestId("next-task-button")).toBeFocused();
 
     await page.getByTestId("next-task-button").click();
@@ -243,7 +243,8 @@ test.describe("numeric answer desktop flows", () => {
     await expect(page.getByTestId("help-target-button")).toBeVisible();
 
     await page.getByTestId("solution-toggle").click();
-    await expect(page.getByTestId("solution-formula")).toBeVisible();
+    await expect(page.getByTestId("solution-content")).toBeVisible();
+    await expect(page.getByTestId("solution-formula")).toHaveCount(0);
   });
 
   test("signed work distinguishes a sign mistake and accepts a leading minus", async ({
@@ -392,7 +393,11 @@ test.describe("numeric answer desktop flows", () => {
       .getByTestId("numeric-answer-input")
       .fill(commaOf(numericTask.answer.value));
     await page.getByTestId("numeric-submit").click();
-    await expect(page.getByText("Серия: 1", { exact: true })).toBeVisible();
+    await expect(page.getByText("Серия: 1", { exact: true })).toHaveCount(0);
+    await expect.poll(() => page.evaluate(() => {
+      const raw = sessionStorage.getItem("physicslab-v3-active-quiz-v1");
+      return raw ? (JSON.parse(raw) as { session: { streak: number } }).session.streak : null;
+    })).toBe(1);
     await page.getByTestId("next-task-button").click();
 
     await expectSummaryScore(page, 1, 2);
@@ -475,7 +480,8 @@ test.describe("numeric answer mobile layout", () => {
     );
 
     await page.getByTestId("solution-toggle").click();
-    await expect(page.getByTestId("solution-formula")).toBeVisible();
+    await expect(page.getByTestId("solution-content")).toBeVisible();
+    await expect(page.getByTestId("solution-formula")).toHaveCount(0);
     await expectScrollableAboveMobileNav(
       page.getByTestId("next-task-button"),
       mobileNavContainer,

@@ -34,7 +34,7 @@ export default async function FocusedPracticePage({ params }: FocusedPracticePag
         >
           К типу задачи
         </Link>
-        <p className="text-[11px] font-bold uppercase tracking-[.14em] text-white/42">
+        <p className="text-[11px] font-bold uppercase tracking-[.14em] text-white/58">
           Пять похожих задач
         </p>
         <h1 className="text-[32px] font-[800] leading-tight text-white sm:text-[40px]">

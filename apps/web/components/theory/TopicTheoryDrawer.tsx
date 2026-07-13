@@ -9,8 +9,12 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import type {
+  HelpReason,
+  HelpSectionId,
+  TopicHelpSection,
+} from "../../lib/learning/topic-help";
 import { cn } from "../../lib/utils";
-import type { HelpReason, HelpSectionId, TopicHelpSection } from "../../lib/learning/topic-help";
 import { CompactHelpCard } from "./CompactHelpCard";
 
 export type TopicTheorySubtopic = TopicHelpSection | string;
@@ -27,21 +31,8 @@ interface TopicTheoryDrawerProps {
   onOpenChange?: (open: boolean) => void;
   activeSectionId?: HelpSectionId;
   highlightReason?: HelpReason;
+  presentation?: "responsive" | "inline" | "aside";
 }
-
-const accentClasses: Record<NonNullable<TopicTheoryDrawerProps["accent"]>, string> = {
-  cyan: "border-nova-cyan/24 bg-nova-cyan/[.035] text-nova-cyan",
-  gold: "border-nova-gold/24 bg-nova-gold/[.04] text-nova-gold",
-  blue: "border-nova-blue/24 bg-nova-blue/[.04] text-nova-blue",
-  ember: "border-nova-ember/24 bg-nova-ember/[.04] text-nova-ember",
-};
-
-const activeChipClasses: Record<NonNullable<TopicTheoryDrawerProps["accent"]>, string> = {
-  cyan: "border-nova-cyan/40 bg-nova-cyan/[.12] text-nova-cyan",
-  gold: "border-nova-gold/40 bg-nova-gold/[.13] text-nova-gold",
-  blue: "border-nova-blue/40 bg-nova-blue/[.13] text-nova-blue",
-  ember: "border-nova-ember/40 bg-nova-ember/[.13] text-nova-ember",
-};
 
 type SectionChildProps = {
   "data-help-section-id"?: string;
@@ -79,12 +70,13 @@ export function TopicTheoryDrawer({
   accent = "cyan",
   className,
   subtopics = [],
-  open,
+  open = false,
   onOpenChange,
   activeSectionId,
   highlightReason,
+  presentation = "responsive",
 }: TopicTheoryDrawerProps) {
-  const panelId = useId();
+  const headingId = useId();
   const normalizedSubtopics = useMemo(
     () => subtopics.map(normalizeSubtopic),
     [subtopics],
@@ -111,148 +103,124 @@ export function TopicTheoryDrawer({
   const hasSectionedChildren = childList.some(
     (child) => getChildSectionIds(child).length > 0,
   );
-  const visibleChildren =
-    hasCompactActiveContent
-      ? []
-      : hasSectionedChildren && effectiveSectionId
+  const visibleChildren = hasCompactActiveContent
+    ? []
+    : hasSectionedChildren && effectiveSectionId
       ? childList.filter((child) => getChildSectionIds(child).includes(effectiveSectionId))
       : childList;
-  const isControlled = typeof open === "boolean";
-  const isOpen = isControlled ? open : false;
   const reasonLabel =
     highlightReason === "mistake"
-      ? "по ошибке"
+      ? "Раздел выбран по ошибке в ответе."
       : highlightReason === "task"
-        ? "к задаче"
+        ? "Раздел выбран для текущей задачи."
         : null;
 
   return (
-    <section id="theory" className={cn("scroll-mt-24", className)}>
-      <details
-        data-testid="topic-theory-drawer"
-        data-active-section={effectiveSectionId}
-        open={isControlled ? open : undefined}
-        onToggle={(event) => {
-          const nextOpen = event.currentTarget.open;
-          if (!isControlled || nextOpen !== open) {
-            onOpenChange?.(nextOpen);
-          }
-        }}
-        className="group rounded-card border border-white/[.09] bg-space-900/72 shadow-card backdrop-blur-sm"
-      >
-        <summary
-          aria-controls={panelId}
-          className="flex cursor-pointer list-none flex-col gap-4 rounded-card p-4 marker:hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/55 focus-visible:ring-offset-2 focus-visible:ring-offset-space-950 sm:flex-row sm:items-center sm:justify-between sm:p-5 [&::-webkit-details-marker]:hidden"
+    <aside
+      id="theory"
+      hidden={!open}
+      data-testid="topic-theory-drawer"
+      data-state={open ? "open" : "closed"}
+      data-active-section={effectiveSectionId}
+      data-presentation={presentation}
+      aria-labelledby={headingId}
+      className={cn(
+        "min-w-0 scroll-mt-24 rounded-card border border-white/[.09] bg-space-900/92 p-4 shadow-card backdrop-blur-md sm:p-5",
+        presentation === "aside"
+          ? "sticky top-6"
+          : presentation === "responsive"
+            ? "min-[1180px]:sticky min-[1180px]:top-6"
+            : null,
+        className,
+      )}
+    >
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <h2 id={headingId} className="text-[20px] font-[800] leading-tight text-white">
+            {title}
+          </h2>
+          <p className="mt-1.5 text-[13px] leading-[1.6] text-white/58">
+            {description}
+          </p>
+        </div>
+
+        <button
+          type="button"
+          data-testid="close-topic-help"
+          onClick={() => onOpenChange?.(false)}
+          aria-label="Закрыть справку"
+          title="Закрыть справку"
+          className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-option border border-white/[.09] bg-white/[.025] text-white/62 transition-colors hover:border-white/[.18] hover:bg-white/[.05] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/55"
         >
-          <div className="flex min-w-0 flex-col gap-1.5">
-            <h2 className="text-[22px] font-[800] leading-tight text-white sm:text-[26px]">
-              {title}
-            </h2>
-            <p className="max-w-[680px] text-[13px] leading-[1.65] text-white/62">
-              {description}
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={1.9}
+            strokeLinecap="round"
+            className="h-4 w-4"
+            aria-hidden="true"
+          >
+            <path d="m6 6 12 12M18 6 6 18" />
+          </svg>
+        </button>
+      </div>
+
+      {reasonLabel ? (
+        <p className="mt-3 text-[12px] leading-[1.5] text-white/48">{reasonLabel}</p>
+      ) : null}
+
+      {normalizedSubtopics.length > 1 ? (
+        <label className="mt-4 flex flex-col gap-1.5 text-[11px] font-bold uppercase tracking-[.12em] text-white/45">
+          Другой раздел
+          <select
+            data-testid="help-section-selector"
+            value={effectiveSectionId}
+            onChange={(event) => setSelectedSectionId(event.target.value as HelpSectionId)}
+            className="min-h-10 w-full rounded-option border border-white/[.11] bg-space-950/70 px-3 text-[13px] font-semibold normal-case tracking-normal text-white/78 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/55"
+          >
+            {normalizedSubtopics.map((subtopic) => (
+              <option key={subtopic.id} value={subtopic.id}>
+                {subtopic.label}
+              </option>
+            ))}
+          </select>
+        </label>
+      ) : null}
+
+      <div
+        className={cn(
+          "mt-5",
+          hasCompactActiveContent || hasSectionedChildren
+            ? "flex flex-col gap-5"
+            : layout === "stack"
+              ? "flex flex-col gap-6"
+              : "grid gap-5",
+        )}
+      >
+        {activeSubtopic && hasCompactActiveContent ? (
+          <CompactHelpCard
+            accent={accent}
+            sectionId={activeSubtopic.id}
+            title={activeSubtopic.label}
+            body={activeSubtopic.shortHint}
+            formula={activeSubtopic.formula}
+            trap={activeSubtopic.mistake}
+          />
+        ) : visibleChildren.length > 0 ? (
+          visibleChildren
+        ) : (
+          <div className="border-l-2 border-white/[.12] pl-4">
+            <h3 className="text-[17px] font-bold text-white/82">
+              {activeSubtopic?.label ?? "Разбор темы"}
+            </h3>
+            <p className="mt-2 text-[13px] leading-[1.65] text-white/62">
+              {activeSubtopic?.shortHint ??
+                "Открой подробное решение задачи — там будет нужный шаг."}
             </p>
           </div>
-
-          <span
-            className={cn(
-              "inline-flex min-h-10 shrink-0 items-center justify-center gap-2 rounded-option border px-3 text-[12px] font-bold transition-colors",
-              accentClasses[accent],
-            )}
-          >
-            {isOpen ? "Свернуть" : "Справка"}
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth={1.9}
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="h-4 w-4 transition-transform group-open:rotate-180"
-              aria-hidden="true"
-            >
-              <path d="m6 9 6 6 6-6" />
-            </svg>
-          </span>
-        </summary>
-
-        <div
-          id={panelId}
-          className="border-t border-white/[.08] px-4 pb-5 pt-4 sm:px-5 sm:pb-6 sm:pt-5"
-        >
-          {normalizedSubtopics.length > 0 ? (
-            <div className="mb-4 flex flex-col gap-3">
-              <div className="flex flex-wrap gap-2" aria-label="Разделы справки">
-                {normalizedSubtopics.map((subtopic) => (
-                  <button
-                    key={subtopic.id}
-                    type="button"
-                    data-testid={`help-section-button-${subtopic.id}`}
-                    aria-pressed={subtopic.id === effectiveSectionId}
-                    onClick={() => setSelectedSectionId(subtopic.id)}
-                    className={cn(
-                      "rounded-option border px-3 py-2 text-left text-[12px] font-bold leading-none transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/50",
-                      subtopic.id === effectiveSectionId
-                        ? activeChipClasses[accent]
-                        : "border-white/[.08] bg-white/[.035] text-white/62 hover:border-white/[.14] hover:text-white/80",
-                    )}
-                  >
-                    {subtopic.label}
-                  </button>
-                ))}
-              </div>
-
-              {activeSubtopic && !hasCompactActiveContent ? (
-                <p className="text-[13px] leading-[1.6] text-white/62">
-                  {reasonLabel ? (
-                    <span
-                      className={cn(
-                        "mr-2 rounded-badge border px-2 py-0.5 text-[11px] font-bold",
-                        accentClasses[accent],
-                      )}
-                    >
-                      {reasonLabel}
-                    </span>
-                  ) : null}
-                  {activeSubtopic.shortHint}
-                </p>
-              ) : null}
-            </div>
-          ) : null}
-
-          <div
-            className={cn(
-              hasCompactActiveContent || hasSectionedChildren
-                ? "mx-auto flex w-full max-w-[860px] flex-col gap-5"
-                : layout === "stack"
-                  ? "mx-auto flex w-full max-w-[820px] flex-col gap-6 md:gap-8"
-                  : "grid gap-5 lg:grid-cols-2",
-            )}
-          >
-            {activeSubtopic && hasCompactActiveContent ? (
-              <CompactHelpCard
-                accent={accent}
-                sectionId={activeSubtopic.id}
-                title={activeSubtopic.label}
-                body={activeSubtopic.shortHint}
-                formula={activeSubtopic.formula}
-                trap={activeSubtopic.mistake}
-              />
-            ) : visibleChildren.length > 0 ? (
-              visibleChildren
-            ) : (
-              <div className="rounded-card border border-white/[.08] bg-white/[.035] p-4">
-                <p className="text-[15px] font-bold text-white/82">
-                  {activeSubtopic?.label ?? "Разбор темы"}
-                </p>
-                <p className="mt-2 text-[13px] leading-[1.65] text-white/62">
-                  {activeSubtopic?.shortHint ??
-                    "Открой подробное решение задачи — там будет нужный шаг."}
-                </p>
-              </div>
-            )}
-          </div>
-        </div>
-      </details>
-    </section>
+        )}
+      </div>
+    </aside>
   );
 }

@@ -5,15 +5,11 @@ import { usePathname, useRouter } from "next/navigation";
 import type { ReactNode } from "react";
 import { cn } from "../../lib/utils";
 import { NavBar } from "./NavBar";
-import { XPBadge } from "./XPBadge";
 
 type NavItem = {
   label: string;
-  href?: string;
-  disabled?: boolean;
-  mobile?: boolean;
+  href: string;
   icon?: ReactNode;
-  helper?: string;
   match?: (pathname: string) => boolean;
 };
 
@@ -25,53 +21,12 @@ type NavGroup = {
 const navIconClass = "h-[18px] w-[18px] shrink-0";
 
 const navIcons = {
-  topics: (
+  tasks: (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className={navIconClass} aria-hidden="true">
       <rect x="3.5" y="3.5" width="7" height="7" rx="1.8" />
       <rect x="13.5" y="3.5" width="7" height="7" rx="1.8" />
       <rect x="3.5" y="13.5" width="7" height="7" rx="1.8" />
       <rect x="13.5" y="13.5" width="7" height="7" rx="1.8" />
-    </svg>
-  ),
-  motion: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" className={navIconClass} aria-hidden="true">
-      <path d="M4 15.5c3.6-5.8 7.3-7.3 11.1-4.4" />
-      <path d="M14.5 6.5h5v5" />
-      <path d="M14.6 6.7 20 12.1" />
-      <circle cx="5" cy="16" r="1.5" />
-    </svg>
-  ),
-  forces: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" className={navIconClass} aria-hidden="true">
-      <path d="M12 4v16" />
-      <path d="m8 8 4-4 4 4" />
-      <path d="m8 16 4 4 4-4" />
-      <path d="M4 12h16" />
-    </svg>
-  ),
-  electro: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" className={navIconClass} aria-hidden="true">
-      <path d="M13 2 5 13h6l-1 9 9-13h-6l0-7Z" />
-    </svg>
-  ),
-  thermo: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" className={navIconClass} aria-hidden="true">
-      <path d="M14 14.8V5.5a2 2 0 0 0-4 0v9.3a4 4 0 1 0 4 0Z" />
-      <path d="M12 7.5v8" />
-    </svg>
-  ),
-  optics: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" className={navIconClass} aria-hidden="true">
-      <path d="M3 12s3.3-5 9-5 9 5 9 5-3.3 5-9 5-9-5-9-5Z" />
-      <circle cx="12" cy="12" r="2.6" />
-    </svg>
-  ),
-  quantum: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" className={navIconClass} aria-hidden="true">
-      <circle cx="12" cy="12" r="1.7" />
-      <path d="M4.5 12c2-4.2 5-6.3 9-6.3 2.3 0 4.2.7 5.8 2" />
-      <path d="M19.5 12c-2 4.2-5 6.3-9 6.3-2.3 0-4.2-.7-5.8-2" />
-      <path d="M7.3 5.2c4.6.4 7.8 2.5 9.7 6.4 1.1 2.2 1.2 4.2.4 6.1" />
     </svg>
   ),
   exam: (
@@ -102,56 +57,15 @@ const navIcons = {
 
 const sidebarGroups: NavGroup[] = [
   {
-    title: "Темы",
+    title: "Практика",
     items: [
       {
         label: "Задачи",
         href: "/tasks",
-        icon: navIcons.topics,
+        icon: navIcons.tasks,
         match: (pathname) =>
           pathname.startsWith("/tasks") || pathname.startsWith("/practice/family"),
       },
-      {
-        label: "Кинематика",
-        href: "/practice/kinematics-demo",
-        icon: navIcons.motion,
-        match: (pathname) => pathname.startsWith("/practice/kinematics"),
-      },
-      {
-        label: "Динамика",
-        href: "/practice/dynamics-demo",
-        icon: navIcons.forces,
-        match: (pathname) => pathname.startsWith("/practice/dynamics"),
-      },
-      {
-        label: "Электродинамика",
-        href: "/practice/electro-demo",
-        icon: navIcons.electro,
-        match: (pathname) => pathname.startsWith("/practice/electro"),
-      },
-      {
-        label: "Термодинамика",
-        href: "/practice/thermo-demo",
-        icon: navIcons.thermo,
-        match: (pathname) => pathname.startsWith("/practice/thermo"),
-      },
-      {
-        label: "Оптика",
-        href: "/practice/optics-demo",
-        icon: navIcons.optics,
-        match: (pathname) => pathname.startsWith("/practice/optics"),
-      },
-      {
-        label: "Квантовая физика",
-        disabled: true,
-        icon: navIcons.quantum,
-        helper: "скоро",
-      },
-    ],
-  },
-  {
-    title: "Практика",
-    items: [
       {
         label: "Смешанная тренировка",
         href: "/practice/exam-demo",
@@ -162,7 +76,6 @@ const sidebarGroups: NavGroup[] = [
         label: "Ошибки",
         href: "/mistakes",
         icon: navIcons.mistakes,
-        mobile: true,
         match: (pathname) => pathname.startsWith("/mistakes"),
       },
     ],
@@ -174,14 +87,12 @@ const sidebarGroups: NavGroup[] = [
         label: "Формулы",
         href: "/formulas",
         icon: navIcons.formulas,
-        mobile: true,
         match: (pathname) => pathname.startsWith("/formulas"),
       },
       {
-        label: "Профиль",
+        label: "Прогресс",
         href: "/profile",
         icon: navIcons.profile,
-        mobile: true,
         match: (pathname) => pathname.startsWith("/profile"),
       },
     ],
@@ -192,8 +103,7 @@ const mobileNavItems: NavItem[] = [
   {
     label: "Задачи",
     href: "/tasks",
-    mobile: true,
-    icon: navIcons.topics,
+    icon: navIcons.tasks,
     match: (pathname) =>
       pathname.startsWith("/tasks") ||
       pathname.startsWith("/topics") ||
@@ -202,21 +112,18 @@ const mobileNavItems: NavItem[] = [
   {
     label: "Ошибки",
     href: "/mistakes",
-    mobile: true,
     icon: navIcons.mistakes,
     match: (pathname) => pathname.startsWith("/mistakes"),
   },
   {
     label: "Формулы",
     href: "/formulas",
-    mobile: true,
     icon: navIcons.formulas,
     match: (pathname) => pathname.startsWith("/formulas"),
   },
   {
-    label: "Профиль",
+    label: "Прогресс",
     href: "/profile",
-    mobile: true,
     icon: navIcons.profile,
     match: (pathname) => pathname.startsWith("/profile"),
   },
@@ -227,7 +134,9 @@ const quickActions: NavItem[] = [
     label: "Задачи",
     href: "/tasks",
     match: (pathname) =>
-      pathname.startsWith("/tasks") || pathname.startsWith("/practice/family"),
+      pathname.startsWith("/tasks") ||
+      pathname.startsWith("/topics") ||
+      (pathname.startsWith("/practice/") && !pathname.startsWith("/practice/exam")),
   },
   {
     label: "Смешанная",
@@ -240,12 +149,7 @@ const quickActions: NavItem[] = [
     match: (pathname) => pathname.startsWith("/mistakes"),
   },
   {
-    label: "Формулы",
-    href: "/formulas",
-    match: (pathname) => pathname.startsWith("/formulas"),
-  },
-  {
-    label: "Профиль",
+    label: "Прогресс",
     href: "/profile",
     match: (pathname) => pathname.startsWith("/profile"),
   },
@@ -260,11 +164,9 @@ function SidebarItem({ item, mobile = false }: { item: NavItem; mobile?: boolean
       ? "min-h-[52px] flex-col justify-center gap-1 px-1 py-1.5 text-[10px]"
       : "min-h-11 gap-3 px-3 text-[13px]",
   );
-  const stateClass = item.disabled
-    ? "cursor-not-allowed border-transparent text-white/30"
-    : active
-      ? "border-nova-cyan/50 bg-nova-cyan/[.12] text-white shadow-[inset_2px_0_0_rgba(0,224,255,.85),0_0_22px_rgba(0,224,255,.08)]"
-      : "border-transparent text-white/62 hover:border-white/[.08] hover:bg-white/[.035] hover:text-white/88";
+  const stateClass = active
+    ? "border-nova-cyan/50 bg-nova-cyan/[.12] text-white shadow-[inset_2px_0_0_rgba(0,224,255,.85),0_0_22px_rgba(0,224,255,.08)]"
+    : "border-transparent text-white/62 hover:border-white/[.08] hover:bg-white/[.035] hover:text-white/88";
 
   const content = (
     <>
@@ -273,27 +175,19 @@ function SidebarItem({ item, mobile = false }: { item: NavItem; mobile?: boolean
           {item.icon}
         </span>
       ) : null}
-      <span className={cn("min-w-0 flex-1", mobile ? "leading-none" : "truncate")}>
+      <span
+        className={cn(
+          "min-w-0 flex-1",
+          mobile ? "leading-none" : "break-words leading-[1.35]",
+        )}
+      >
         {item.label}
       </span>
-      {!mobile && item.helper ? (
-        <span className="text-[10px] font-bold uppercase tracking-[.1em] text-white/30">
-          {item.helper}
-        </span>
-      ) : null}
       {!mobile && active ? (
         <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-nova-cyan shadow-cyan-glow" />
       ) : null}
     </>
   );
-
-  if (item.disabled || !item.href) {
-    return (
-      <span aria-disabled="true" className={cn(baseClass, stateClass)}>
-        {content}
-      </span>
-    );
-  }
 
   return (
     <Link
@@ -308,7 +202,11 @@ function SidebarItem({ item, mobile = false }: { item: NavItem; mobile?: boolean
 
 function SidebarNav() {
   return (
-    <nav className="flex flex-col gap-5" aria-label="Разделы PhysicsLab">
+    <nav
+      data-testid="desktop-sidebar-nav"
+      className="flex flex-col gap-5"
+      aria-label="Разделы PhysicsLab"
+    >
       {sidebarGroups.map((group) => (
         <section key={group.title} className="flex flex-col gap-2">
           <p className="px-3 text-[10px] font-bold uppercase tracking-[.16em] text-white/42">
@@ -329,6 +227,7 @@ function MobileSidebarNav() {
   return (
     <nav
       className="grid grid-cols-4 gap-1"
+      data-testid="mobile-bottom-nav"
       aria-label="Мобильная навигация"
     >
       {mobileNavItems.map((item) => (
@@ -340,7 +239,7 @@ function MobileSidebarNav() {
 
 function AppSidebar() {
   return (
-    <aside className="sticky top-6 hidden h-[calc(100vh-48px)] flex-col rounded-card border border-white/[.08] bg-space-900/82 p-4 shadow-card backdrop-blur-md lg:flex">
+    <aside data-testid="app-sidebar" className="sticky top-6 hidden self-start flex-col rounded-card border border-white/[.08] bg-space-900/82 p-4 shadow-card backdrop-blur-md lg:flex">
       <Link
         href="/"
         className="mb-5 shrink-0 rounded-option focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/55 focus-visible:ring-offset-2 focus-visible:ring-offset-space-950"
@@ -354,26 +253,14 @@ function AppSidebar() {
         </span>
       </Link>
 
-      {/* Список разделов прокручивается сам, если не влезает в высоту экрана;
-          логотип сверху и XP снизу закреплены. Отрицательный отступ прячет
-          дорожку скролла, чтобы контент не обрезался у края. */}
-      <div className="-mr-2 min-h-0 flex-1 overflow-y-auto pr-2">
-        <SidebarNav />
-      </div>
-
-      <div className="mt-4 flex shrink-0 items-center justify-between gap-2 rounded-option border border-white/[.07] bg-white/[.025] px-3 py-3">
-        <span className="text-[10px] font-bold uppercase tracking-[.14em] text-white/48">
-          Опыт
-        </span>
-        <XPBadge />
-      </div>
+      <SidebarNav />
     </aside>
   );
 }
 
 function MobileBottomNav() {
   return (
-    <div className="fixed inset-x-0 bottom-0 z-30 border-t border-white/[.08] bg-space-950/92 px-3 py-2 backdrop-blur-xl lg:hidden">
+    <div className="fixed inset-x-0 bottom-0 z-30 border-t border-white/[.08] bg-space-950/92 px-3 py-2 backdrop-blur-xl md:hidden">
       <MobileSidebarNav />
     </div>
   );
@@ -427,6 +314,7 @@ function ShellTopBar() {
           прячем — иначе одни и те же разделы висят дважды на экране. */}
       <nav
         className="hidden min-w-0 items-center gap-1 rounded-card border border-white/[.08] bg-space-900/62 p-1 shadow-[inset_0_1px_0_rgba(255,255,255,.035)] backdrop-blur-md md:flex lg:hidden"
+        data-testid="tablet-quick-actions"
         aria-label="Быстрые разделы"
       >
         {quickActions.map((item) => {
@@ -466,7 +354,7 @@ export function AppShell({ children }: AppShellProps) {
 
       <div
         className={cn(
-          "mx-auto grid w-full max-w-[1400px] grid-cols-1 gap-5 px-4 pb-28 pt-5 sm:px-6 sm:pt-6 lg:grid-cols-[280px_minmax(0,1fr)] lg:gap-7 lg:px-6 lg:pb-10 2xl:grid-cols-[292px_minmax(0,1fr)]",
+          "mx-auto grid w-full max-w-[1400px] grid-cols-1 gap-5 px-4 pb-28 pt-5 sm:px-6 sm:pt-6 md:pb-10 lg:grid-cols-[224px_minmax(0,1fr)] lg:gap-5 lg:px-4 lg:pb-10 2xl:grid-cols-[232px_minmax(0,1fr)]",
         )}
       >
         <AppSidebar />

@@ -1,15 +1,15 @@
 "use client";
 
-import { useCallback, useMemo, useState, type ReactNode } from "react";
+import { useCallback, useMemo, useRef, useState, type ReactNode } from "react";
 import {
   getDefaultHelpTarget,
   type HelpTarget,
   type TopicHelpSection,
 } from "../../lib/learning/topic-help";
 import type { TopicId } from "../../lib/learning/taxonomy";
+import { cn } from "../../lib/utils";
 import { TopicTheoryDrawer } from "../theory/TopicTheoryDrawer";
 import type { TopicTheorySubtopic } from "../theory/TopicTheoryDrawer";
-import { PracticeQuickBar } from "./PracticeQuickBar";
 import { QuizSession } from "./QuizSession";
 import type { GeneratedQuizCount } from "../../lib/quiz/generated-quiz-count";
 
@@ -38,14 +38,6 @@ function sameTarget(left: HelpTarget, right: HelpTarget) {
   );
 }
 
-function scrollTheoryIntoView() {
-  window.requestAnimationFrame(() => {
-    document
-      .getElementById("theory")
-      ?.scrollIntoView({ behavior: "smooth", block: "start" });
-  });
-}
-
 export function PracticeWithHelp({
   topicId,
   generatedTemplate,
@@ -65,6 +57,7 @@ export function PracticeWithHelp({
   const defaultTarget = useMemo(() => getDefaultHelpTarget(topicId), [topicId]);
   const [currentTarget, setCurrentTarget] = useState(defaultTarget);
   const [helpOpen, setHelpOpen] = useState(false);
+  const helpButtonRef = useRef<HTMLButtonElement>(null);
 
   const updateTarget = useCallback((target: HelpTarget) => {
     setCurrentTarget((previous) => (sameTarget(previous, target) ? previous : target));
@@ -75,13 +68,31 @@ export function PracticeWithHelp({
       updateTarget(target);
     }
     setHelpOpen(true);
-    scrollTheoryIntoView();
+    window.requestAnimationFrame(() => {
+      if (!window.matchMedia("(min-width: 1180px)").matches) {
+        document
+          .getElementById("theory")
+          ?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    });
   }, [updateTarget]);
 
-  return (
-    <div className="flex flex-col gap-5">
-      <PracticeQuickBar onOpenHelp={() => openHelp(currentTarget)} helpOpen={helpOpen} />
+  const closeHelp = useCallback(() => {
+    setHelpOpen(false);
+    window.requestAnimationFrame(() => helpButtonRef.current?.focus());
+  }, []);
 
+  return (
+    <div
+      data-testid="practice-with-help"
+      data-help-layout={helpOpen ? "open" : "closed"}
+      className={cn(
+        "grid min-w-0 grid-cols-1 gap-5",
+        helpOpen
+          ? "min-[1180px]:grid-cols-[minmax(0,640px)_minmax(300px,380px)] min-[1180px]:items-start min-[1180px]:justify-center"
+          : null,
+      )}
+    >
       <QuizSession
         generatedTemplate={generatedTemplate}
         generatedTopic={generatedTopic}
@@ -89,7 +100,8 @@ export function PracticeWithHelp({
         topicId={topicId}
         onHelpTargetChange={updateTarget}
         onOpenHelpTarget={openHelp}
-        suppressCoachBubble={helpOpen}
+        helpOpen={helpOpen}
+        helpButtonRef={helpButtonRef}
         generatedCount={generatedCount}
         restartLabel={restartLabel}
         nextHref={nextHref}
@@ -103,9 +115,10 @@ export function PracticeWithHelp({
         accent={accent}
         subtopics={subtopics}
         open={helpOpen}
-        onOpenChange={setHelpOpen}
+        onOpenChange={(nextOpen) => (nextOpen ? setHelpOpen(true) : closeHelp())}
         activeSectionId={currentTarget.sectionId}
         highlightReason={currentTarget.reason}
+        presentation="responsive"
       >
         {children}
       </TopicTheoryDrawer>

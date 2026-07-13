@@ -52,7 +52,7 @@ test.describe("exam resume gate", () => {
       await answerCorrectly(page, tasks[index]);
       await page.getByTestId("next-task-button").click();
     }
-    await expect(page.getByText("4 / 10", { exact: true }).filter({ visible: true }).first()).toBeVisible();
+    await expect(page.getByTestId("practice-progress")).toHaveText("Задание 4 из 10");
 
     await page.reload({ waitUntil: "domcontentloaded" });
     const candidate = page.getByTestId("exam-resume-candidate");
@@ -62,7 +62,7 @@ test.describe("exam resume gate", () => {
     await expect(candidate.getByRole("button", { name: "Начать новый вариант" })).toBeVisible();
 
     await candidate.getByRole("button", { name: "Продолжить вариант" }).click();
-    await expect(page.getByText("4 / 10", { exact: true }).filter({ visible: true }).first()).toBeVisible();
+    await expect(page.getByTestId("practice-progress")).toHaveText("Задание 4 из 10");
 
     await answerCorrectly(page, tasks[3]);
     const xpAfterAnswer = await page.evaluate((key) => localStorage.getItem(key), XP_KEY);
@@ -83,7 +83,7 @@ test.describe("exam resume gate", () => {
       return raw ? (JSON.parse(raw) as { attemptId: string }).attemptId : null;
     }, SNAPSHOT_KEY);
     await page.getByRole("button", { name: "Начать новый вариант" }).click();
-    await expect(page.getByText("1 / 10", { exact: true }).filter({ visible: true }).first()).toBeVisible();
+    await expect(page.getByTestId("practice-progress")).toHaveText("Задание 1 из 10");
     const freshAttemptId = await expect
       .poll(() =>
         page.evaluate((key) => {
@@ -179,7 +179,7 @@ test.describe("exam resume gate", () => {
     await page.goto(EXAM_PATH, { waitUntil: "domcontentloaded" });
     await page.getByRole("button", { name: "Продолжить вариант" }).click();
     await expect(page.getByTestId("question-card")).toBeVisible({ timeout: 15000 });
-    await expect(page.getByText("1 / 10", { exact: true }).filter({ visible: true }).first()).toBeVisible();
+    await expect(page.getByTestId("practice-progress")).toHaveText("Задание 1 из 10");
     await expect(page.getByTestId("session-restored-notice")).toHaveCount(0);
   });
 

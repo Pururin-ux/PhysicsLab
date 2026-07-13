@@ -318,15 +318,19 @@ test.describe("session recovery", () => {
       await answerCorrectly(page, task);
       await page.getByTestId("next-task-button").click();
     }
-    await expect(page.getByText("4 / 10", { exact: true }).filter({ visible: true }).first()).toBeVisible();
+    await expect(page.getByTestId("practice-progress")).toHaveText("Задание 4 из 10");
 
     await page.reload({ waitUntil: "domcontentloaded" });
 
     await expect(page.getByTestId("session-restored-notice")).toContainText(
       "Тренировка восстановлена: задание 4 из 10",
     );
-    await expect(page.getByText("4 / 10", { exact: true }).filter({ visible: true }).first()).toBeVisible();
-    await expect(page.getByText("Серия: 3", { exact: true })).toBeVisible();
+    await expect(page.getByTestId("practice-progress")).toHaveText("Задание 4 из 10");
+    await expect(page.getByText("Серия: 3", { exact: true })).toHaveCount(0);
+    await expect.poll(() => page.evaluate((key) => {
+      const raw = sessionStorage.getItem(key);
+      return raw ? (JSON.parse(raw) as { session: { streak: number } }).session.streak : null;
+    }, SNAPSHOT_KEY)).toBe(3);
   });
 
   test("reload после ответа восстанавливает answered-состояние и фидбэк", async ({
@@ -346,7 +350,7 @@ test.describe("session recovery", () => {
 
     // Продолжение работает: Next ведёт к задаче 2.
     await page.getByTestId("next-task-button").click();
-    await expect(page.getByText("2 / 10", { exact: true }).filter({ visible: true }).first()).toBeVisible();
+    await expect(page.getByTestId("practice-progress")).toHaveText("Задание 2 из 10");
   });
 
   test("reload после numeric-ответа восстанавливает введённое значение", async ({
@@ -370,7 +374,7 @@ test.describe("session recovery", () => {
     const submitted = page.getByTestId("numeric-answer");
     await expect(submitted).toBeVisible();
     await expect(submitted).toHaveAttribute("data-state", "correct");
-    await expect(page.getByTestId("numeric-correct-answer")).toBeVisible();
+    await expect(page.getByTestId("numeric-correct-answer")).toHaveCount(0);
   });
 
   test("XP не начисляется повторно при восстановлении", async ({ page, request }) => {
@@ -579,7 +583,7 @@ test.describe("session recovery", () => {
     await page.goto(KINEMATICS, { waitUntil: "domcontentloaded" });
     await expect(page.getByTestId("question-card")).toBeVisible({ timeout: 15000 });
     await expect(page.getByTestId("session-restored-notice")).toHaveCount(0);
-    await expect(page.getByText("1 / 10", { exact: true }).filter({ visible: true }).first()).toBeVisible();
+    await expect(page.getByTestId("practice-progress")).toHaveText("Задание 1 из 10");
   });
 
   test("future-version снапшот не используется и не удаляется", async ({

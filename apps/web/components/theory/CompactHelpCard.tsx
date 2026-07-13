@@ -1,4 +1,3 @@
-import { Card } from "../ui/Card";
 import { MathText } from "../ui/MathText";
 import { renderFormulaToHtml } from "../../lib/formula-rendering";
 import { cn } from "../../lib/utils";
@@ -32,12 +31,11 @@ export function CompactHelpCard({
     : null;
 
   return (
-    <Card
+    <article
       data-testid="compact-help-card"
       data-help-card-section={sectionId}
       data-help-card-title={title}
-      variant="elevated"
-      className={cn("flex flex-col gap-3 border-l-2", accentClasses[accent])}
+      className={cn("flex flex-col gap-3 border-l-2 pl-4", accentClasses[accent])}
     >
       <p className="text-[11px] font-bold uppercase tracking-[.14em] text-white/50">
         Справка
@@ -59,6 +57,6 @@ export function CompactHelpCard({
           <MathText text={trap} />
         </p>
       ) : null}
-    </Card>
+    </article>
   );
 }

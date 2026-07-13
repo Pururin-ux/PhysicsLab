@@ -29,7 +29,7 @@ html {
 /* The fixed mobile nav must count as occupied viewport space when a focused
    control is scrolled into view. At 360px the labels make the bar taller than
    5rem, so 6.25rem includes the real bar plus an 8px visual gap. */
-@media (max-width: 1023px) {
+@media (max-width: 767px) {
   html {
     scroll-padding-block-end: calc(6.25rem + env(safe-area-inset-bottom));
   }

@@ -17,13 +17,12 @@ test("mixed API keeps topic and difficulty balance deterministically", async ({ 
   expect([...topicCounts.values()].sort()).toEqual([2, 2, 2, 2, 2]);
 });
 
-test("difficulty badge uses the generated variant value", async ({ page }) => {
+test("generated difficulty remains in the API but stays out of the core task UI", async ({ page }) => {
   const responsePromise = page.waitForResponse((response) =>
     response.url().includes("/api/tasks?template=optics-mixed"),
   );
   await page.goto("/practice/optics-demo");
   const payload = await (await responsePromise).json() as { tasks: Array<{ difficulty: 1 | 2 | 3 }> };
-  await expect(page.getByTestId("question-card")).toContainText(
-    `Сложность ${payload.tasks[0].difficulty}`,
-  );
+  expect([1, 2, 3]).toContain(payload.tasks[0].difficulty);
+  await expect(page.getByTestId("question-card")).not.toContainText("Сложность");
 });
