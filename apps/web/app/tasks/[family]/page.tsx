@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { ReferenceSolution } from "../../../components/tasks/ReferenceSolution";
 import { Button } from "../../../components/ui/Button";
+import { getReferenceSolution } from "../../../lib/learning/reference-solutions";
 import { getTaskCatalog, getTaskCatalogEntry } from "../../../lib/server/task-catalog";
 
 type TaskTypePageProps = {
@@ -28,6 +30,7 @@ export default async function TaskTypePage({ params }: TaskTypePageProps) {
   const { family } = await params;
   const entry = getTaskCatalogEntry(family);
   if (!entry) notFound();
+  const referenceSolution = getReferenceSolution(entry.id);
 
   const difficulty =
     entry.difficultyRange.min === entry.difficultyRange.max
@@ -46,7 +49,7 @@ export default async function TaskTypePage({ params }: TaskTypePageProps) {
 
       <section className="flex flex-col gap-4">
         <div>
-          <p className="text-[11px] font-bold uppercase tracking-[.14em] text-white/42">
+          <p className="text-[11px] font-bold uppercase tracking-[.14em] text-white/58">
             {entry.topicLabel}
           </p>
           <h1 className="mt-2 text-[34px] font-[800] leading-tight text-white sm:text-[42px]">
@@ -64,15 +67,19 @@ export default async function TaskTypePage({ params }: TaskTypePageProps) {
           {entry.visualKinds.includes("diagram") ? <span>Есть схема</span> : null}
         </div>
 
-        <div className="flex flex-col gap-3 sm:flex-row">
-          <Button asChild size="lg">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+          <Button asChild size="lg" className="sm:w-auto">
             <Link href={`/practice/family/${entry.slug}`}>Решить 5 похожих</Link>
           </Button>
-          <Button asChild size="lg" variant="ghost">
-            <Link href="/tasks">Назад к каталогу</Link>
-          </Button>
+          {referenceSolution ? (
+            <Button asChild size="lg" variant="ghost" className="sm:w-auto">
+              <Link href="#reference-example">Посмотреть пример</Link>
+            </Button>
+          ) : null}
         </div>
       </section>
+
+      {referenceSolution ? <ReferenceSolution solution={referenceSolution} /> : null}
 
       <section className="border-t border-white/[.08] pt-6" aria-labelledby="training-points-title">
         <h2 id="training-points-title" className="text-xl font-[800] text-white">

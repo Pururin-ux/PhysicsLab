@@ -211,6 +211,39 @@ test("@visual task catalog search and empty states are stable", async ({ page },
   }
 });
 
+const referenceVisualCases = [
+  { name: "reference-ohm-expanded", family: "ohm-law", expanded: true },
+  { name: "reference-vt-graph", family: "vt-area", expanded: true },
+  { name: "reference-lens-diagram", family: "thin-lens-image-distance", expanded: true },
+  { name: "reference-numeric", family: "average-speed-segments", expanded: true },
+  { name: "reference-non-pilot", family: "free-fall", expanded: false },
+] as const;
+
+for (const visualCase of referenceVisualCases) {
+  test(`@visual ${visualCase.name}: task detail remains legible`, async ({ page }, testInfo) => {
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.goto(`/tasks/${visualCase.family}`, { waitUntil: "domcontentloaded" });
+    await page.waitForLoadState("networkidle");
+    await page.evaluate(() => document.fonts.ready);
+    await page.addStyleTag({ content: "canvas { visibility: hidden !important; }" });
+
+    if (visualCase.expanded) {
+      await page.locator("summary").filter({ hasText: "Показать решение" }).click();
+      await expect(page.getByTestId("reference-solution-steps")).toBeVisible();
+    }
+
+    const viewport = page.viewportSize()!;
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(viewport.width + 1);
+
+    if (withSnapshots && SNAPSHOT_PROJECTS.includes(testInfo.project.name)) {
+      await expect(page.getByRole("main")).toHaveScreenshot(`${visualCase.name}.png`, {
+        animations: "disabled",
+        maxDiffPixelRatio: 0.02,
+      });
+    }
+  });
+}
+
 test("@visual focused numeric controls clear the fixed bottom navigation", async (
   { page },
   testInfo,

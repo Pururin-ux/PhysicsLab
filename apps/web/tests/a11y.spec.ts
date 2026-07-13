@@ -390,3 +390,26 @@ test("@a11y восстановленная сессия анонсируется
   const scan = await scanForBlockingViolations(page);
   expect(scan.map((violation) => violation.id)).toEqual([]);
 });
+
+test("@a11y reference solution pilots have no blocking violations", async ({ page }) => {
+  for (const family of ["ohm-law", "vt-area", "thin-lens-image-distance", "free-fall"] as const) {
+    await page.goto(`/tasks/${family}`, { waitUntil: "domcontentloaded" });
+    await page.waitForLoadState("networkidle");
+
+    const summary = page.locator("summary").filter({ hasText: "Показать решение" });
+    if (await summary.count()) {
+      await summary.focus();
+      await page.keyboard.press("Enter");
+      await expect(page.getByTestId("reference-solution-steps")).toBeVisible();
+    }
+
+    const scan = await scanForBlockingViolations(page);
+    expect(
+      scan.map((violation) => ({
+        id: violation.id,
+        nodes: violation.nodes.slice(0, 5).map((node) => node.html.slice(0, 160)),
+      })),
+      `${family} a11y`,
+    ).toEqual([]);
+  }
+});
