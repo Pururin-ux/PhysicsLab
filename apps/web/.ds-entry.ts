@@ -1,0 +1,33 @@
+// Generated DS entry for design-sync (see .design-sync/NOTES.md) — re-exports the curated component set.
+
+export { Badge } from "./components/ui/Badge";
+export { Button } from "./components/ui/Button";
+export { Card } from "./components/ui/Card";
+export { FormulaBox } from "./components/ui/FormulaBox";
+export { InlinePhysics } from "./components/ui/InlinePhysics";
+export { MathText } from "./components/ui/MathText";
+export { ProgressDots } from "./components/ui/ProgressDots";
+export { PhysicsGraph } from "./components/physics-graph/PhysicsGraph";
+export { CircuitDiagram } from "./components/diagrams/CircuitDiagram";
+export { OpticsDiagram } from "./components/diagrams/OpticsDiagram";
+export { VectorDiagram } from "./components/diagrams/VectorDiagram";
+export { AnswerFeedback } from "./components/quiz/AnswerFeedback";
+export { NumericAnswerInput } from "./components/quiz/NumericAnswerInput";
+export { OptionItem } from "./components/quiz/OptionItem";
+export { OptionList } from "./components/quiz/OptionList";
+export { PracticeToolbar } from "./components/quiz/PracticeToolbar";
+export { QuestionCard } from "./components/quiz/QuestionCard";
+export { QuizLoadingCard } from "./components/quiz/QuizLoadingCard";
+export { SolutionDisclosure } from "./components/quiz/SolutionDisclosure";
+export { CircuitVisual } from "./components/theory/CircuitVisual";
+export { CompactHelpCard } from "./components/theory/CompactHelpCard";
+export { ConceptReveal } from "./components/theory/ConceptReveal";
+export { TextConceptReveal } from "./components/theory/TextConceptReveal";
+export { ForceModel } from "./components/theory/ForceModel";
+export { FormulaDisplay } from "./components/theory/FormulaDisplay";
+export { GasVesselVisual } from "./components/theory/GasVesselVisual";
+export { ModelVisual } from "./components/theory/ModelVisual";
+export { TopicTheoryDrawer } from "./components/theory/TopicTheoryDrawer";
+export { TopicPageHeader } from "./components/layout/TopicPageHeader";
+export { TopicAmbientGlow } from "./components/layout/TopicAmbientGlow";
+export { StarField } from "./components/layout/StarField";

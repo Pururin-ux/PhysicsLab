@@ -29,3 +29,13 @@ legacy/**/.emergent/
 legacy/PhysLabProt-main/frontend/build/
 legacy/PhysLabProt-main/test_reports/
 legacy/**/*.pdf
+
+# Исходники арта (PNG-оригиналы вне деплоя; в public/ живут только webp)
+art-src/
+
+# design-sync machine state
+.ds-sync/
+ds-bundle/
+.design-sync/.cache/
+.design-sync/learnings/
+.design-sync/node_modules

@@ -1,0 +1,207 @@
+{
+  "projectId": "4929111d-2a66-4aed-b060-4f25faf07201",
+  "shape": "package",
+  "pkg": "web",
+  "globalName": "PhysicsLab",
+  "tsconfig": "tsconfig.json",
+  "cssEntry": ".ds-css/tailwind.css",
+  "extraFonts": [
+    "../../.design-sync/css/fonts.css"
+  ],
+  "componentSrcMap": {
+    "Badge": "components/ui/Badge.tsx",
+    "Button": "components/ui/Button.tsx",
+    "Card": "components/ui/Card.tsx",
+    "FormulaBox": "components/ui/FormulaBox.tsx",
+    "InlinePhysics": "components/ui/InlinePhysics.tsx",
+    "MathText": "components/ui/MathText.tsx",
+    "ProgressDots": "components/ui/ProgressDots.tsx",
+    "PhysicsGraph": "components/physics-graph/PhysicsGraph.tsx",
+    "CircuitDiagram": "components/diagrams/CircuitDiagram.tsx",
+    "OpticsDiagram": "components/diagrams/OpticsDiagram.tsx",
+    "VectorDiagram": "components/diagrams/VectorDiagram.tsx",
+    "AnswerFeedback": "components/quiz/AnswerFeedback.tsx",
+    "NumericAnswerInput": "components/quiz/NumericAnswerInput.tsx",
+    "OptionItem": "components/quiz/OptionItem.tsx",
+    "OptionList": "components/quiz/OptionList.tsx",
+    "PracticeToolbar": "components/quiz/PracticeToolbar.tsx",
+    "QuestionCard": "components/quiz/QuestionCard.tsx",
+    "QuizLoadingCard": "components/quiz/QuizLoadingCard.tsx",
+    "SolutionDisclosure": "components/quiz/SolutionDisclosure.tsx",
+    "CircuitVisual": "components/theory/CircuitVisual.tsx",
+    "CompactHelpCard": "components/theory/CompactHelpCard.tsx",
+    "ConceptReveal": "components/theory/ConceptReveal.tsx",
+    "TextConceptReveal": "components/theory/TextConceptReveal.tsx",
+    "ForceModel": "components/theory/ForceModel.tsx",
+    "FormulaDisplay": "components/theory/FormulaDisplay.tsx",
+    "GasVesselVisual": "components/theory/GasVesselVisual.tsx",
+    "ModelVisual": "components/theory/ModelVisual.tsx",
+    "TopicTheoryDrawer": "components/theory/TopicTheoryDrawer.tsx",
+    "CoachBubble": null,
+    "TopicPageHeader": "components/layout/TopicPageHeader.tsx",
+    "TopicAmbientGlow": "components/layout/TopicAmbientGlow.tsx",
+    "StarField": "components/layout/StarField.tsx",
+    "CoachAvatar": null,
+    "NovaReaction": null,
+    "NovaStage": null,
+    "ExamDemo": null,
+    "FormulaAccordionItem": null,
+    "FormulasBrowser": null,
+    "FormulaQuest": null,
+    "HomeLearningState": null,
+    "InteractivePreview": null,
+    "FormulaSignalFilm": null,
+    "FormulaSignalPlayer": null,
+    "Reveal": null,
+    "StudyCompanion": null,
+    "AppShell": null,
+    "ConditionalAppShell": null,
+    "NavBar": null,
+    "PersistenceHydrator": null,
+    "PersistenceNotice": null,
+    "XPBadge": null,
+    "MistakesList": null,
+    "SvgMathLabel": null,
+    "DataTransfer": null,
+    "ProfileOverview": null,
+    "PracticeWithHelp": null,
+    "QuizLoadErrorCard": null,
+    "QuizSession": null,
+    "SessionSummary": null,
+    "FocusedFamilyPractice": null,
+    "ReferenceSolution": null,
+    "TaskCatalogBrowser": null,
+    "TopicCards": null,
+    "TopicGlyph": null
+  },
+  "runtimeFontPrefixes": [
+    "STIX Two Math",
+    "Cambria Math",
+    "Latin Modern Math",
+    "Roboto Mono"
+  ],
+  "overrides": {
+    "CircuitDiagram": {
+      "cardMode": "column"
+    },
+    "OpticsDiagram": {
+      "cardMode": "column"
+    },
+    "VectorDiagram": {
+      "cardMode": "column"
+    },
+    "Button": {
+      "cardMode": "column"
+    },
+    "Card": {
+      "cardMode": "column"
+    },
+    "FormulaBox": {
+      "cardMode": "column"
+    },
+    "InlinePhysics": {
+      "cardMode": "column"
+    },
+    "MathText": {
+      "cardMode": "column"
+    },
+    "StarField": {
+      "cardMode": "single",
+      "primaryStory": "Backdrop"
+    },
+    "TopicAmbientGlow": {
+      "cardMode": "column"
+    },
+    "TopicPageHeader": {
+      "cardMode": "column"
+    },
+    "PhysicsGraph": {
+      "cardMode": "column"
+    },
+    "AnswerFeedback": {
+      "cardMode": "column"
+    },
+    "NumericAnswerInput": {
+      "cardMode": "column"
+    },
+    "OptionItem": {
+      "cardMode": "column"
+    },
+    "OptionList": {
+      "cardMode": "column"
+    },
+    "PracticeToolbar": {
+      "cardMode": "column"
+    },
+    "QuestionCard": {
+      "cardMode": "column"
+    },
+    "QuizLoadingCard": {
+      "cardMode": "column"
+    },
+    "SolutionDisclosure": {
+      "cardMode": "column"
+    },
+    "CompactHelpCard": {
+      "cardMode": "column"
+    },
+    "ConceptReveal": {
+      "cardMode": "column"
+    },
+    "ForceModel": {
+      "cardMode": "column"
+    },
+    "FormulaDisplay": {
+      "cardMode": "column"
+    },
+    "ModelVisual": {
+      "cardMode": "column"
+    },
+    "TextConceptReveal": {
+      "cardMode": "column"
+    },
+    "TopicTheoryDrawer": {
+      "cardMode": "column"
+    }
+  },
+  "extraEntries": [
+    "./.ds-surface.tsx"
+  ],
+  "provider": {
+    "component": "DsDarkSurface"
+  },
+  "dtsPropsFor": {
+    "Badge": "tone?: \"neutral\" | \"cyan\" | \"gold\" | \"blue\" | \"ember\";\nchildren: React.ReactNode;\nclassName?: string;\nid?: string;\ntitle?: string;",
+    "Button": "variant?: \"primary\" | \"ghost\";\nsize?: \"md\" | \"sm\" | \"lg\";\nasChild?: boolean;\nchildren: React.ReactNode;\nclassName?: string;\ndisabled?: boolean;\ntype?: \"button\" | \"submit\" | \"reset\";\nonClick?: React.MouseEventHandler<HTMLButtonElement>;",
+    "Card": "variant?: \"default\" | \"elevated\" | \"formula\";\nglow?: \"cyan\" | \"gold\" | null;\nchildren: React.ReactNode;\nclassName?: string;",
+    "FormulaBox": "children?: React.ReactNode;\nformula?: string;\ncaption?: string;\nlabel?: string;\nclassName?: string;",
+    "InlinePhysics": "children: React.ReactNode;\nclassName?: string;",
+    "MathText": "text: string;\nclassName?: string;",
+    "ProgressDots": "total?: number;\ncurrentStep?: number;\ncompleted?: number;\nclassName?: string;",
+    "PhysicsGraph": "spec: {\n  id?: string;\n  kind: \"cartesian-line\" | \"piecewise-line\" | \"cycle-pv\" | \"signed-axis-graph\";\n  axes: {\n    x: { label: string | { text?: string; prefix?: string; symbol?: string; unit?: string; subscript?: string; superscript?: string }; unit?: string; range: [number, number]; ticks?: Array<{ value: number; label?: string }>; arrow?: boolean };\n    y: { label: string | { text?: string; prefix?: string; symbol?: string; unit?: string; subscript?: string; superscript?: string }; unit?: string; range: [number, number]; ticks?: Array<{ value: number; label?: string }>; arrow?: boolean };\n  };\n  series: Array<{ id?: string; type: \"polyline\" | \"line\" | \"curve\"; points: Array<{ x: number; y: number; label?: string }>; closed?: boolean; direction?: \"forward\" | \"backward\" | \"cycle\" }>;\n  annotations?: Array<Record<string, unknown>>;\n  style?: { variant?: \"exam\" | \"app\"; accent?: \"cyan\" | \"gold\" };\n};\nclassName?: string;\ncompact?: boolean;\nariaLabel?: string;",
+    "CircuitDiagram": "spec: {\n  id?: string;\n  topology: \"single\" | \"series\" | \"parallel\" | \"source-internal\";\n  sourceLabel?: string;\n  internalResistanceLabel?: string;\n  resistorLabels: string[];\n  switch?: { state: \"open\" | \"closed\"; label?: string };\n  meter?: { kind: \"ammeter\" | \"voltmeter\"; label?: string };\n  tone?: \"cyan\" | \"gold\" | \"blue\" | \"ember\";\n};\nclassName?: string;\nariaLabel?: string;",
+    "OpticsDiagram": "spec:\n  | { scene: \"reflection\"; incidenceAngleDeg: number; reflectionAngleDeg: number; showLabels?: boolean }\n  | { scene: \"plane_mirror\"; objectDistance: number; imageDistance: number; unit: string }\n  | { scene: \"refraction\"; incidenceAngleDeg: number; refractionAngleDeg: number; medium1Label: string; medium2Label: string; refractedGiven?: boolean }\n  | { scene: \"thin_lens\"; lensType: \"converging\"; focalLength: number; objectDistance: number; objectHeight?: number; imageDistance?: number; imageHeight?: number; unit: string };\nshowSolution?: boolean;\nclassName?: string;",
+    "VectorDiagram": "spec: {\n  id?: string;\n  gridRange: number;\n  layout: \"concurrent\" | \"chain\";\n  vectors: Array<{ id: string; dx: number; dy: number; label?: string | { text?: string; prefix?: string; symbol?: string; unit?: string; subscript?: string; superscript?: string }; tone?: \"cyan\" | \"gold\" | \"blue\" | \"ember\" | \"muted\"; dashed?: boolean }>;\n  showResultant?: boolean;\n  resultantLabel?: string | { text?: string; prefix?: string; symbol?: string; unit?: string; subscript?: string; superscript?: string };\n  resultantTone?: \"cyan\" | \"gold\" | \"blue\" | \"ember\" | \"muted\";\n  angleMarks?: Array<{ between: [string, string]; label?: string; radius?: number }>;\n  showGrid?: boolean;\n};\nclassName?: string;\nariaLabel?: string;",
+    "AnswerFeedback": "isCorrect: boolean;\nfeedbackText: string;\ncorrectAnswer?: string;",
+    "NumericAnswerInput": "unit: string;\ndecimals: number;\nsign: \"positive\" | \"magnitude\" | \"signed\";\ndisabled: boolean;\nsubmitted?: { raw: string; isCorrect: boolean };\nonSubmit: (raw: string) => void;",
+    "OptionItem": "id: string;\ntext: string;\nstate: \"idle\" | \"correct\" | \"wrong\" | \"dimmed\";\ndisabled: boolean;\nonClick: () => void;",
+    "OptionList": "task: {\n  id: string;\n  blueprint: string;\n  skill?: string;\n  difficulty: 1 | 2 | 3;\n  text: string;\n  formula?: string;\n  explanation: string;\n  trap: string;\n  type: \"single_choice\";\n  options: Array<{ id: string; text: string; value?: number; correct?: boolean; misconception?: string }>;\n  answer: string;\n  [key: string]: unknown;\n};\noptions: Array<{ id: string; text: string; value?: number; correct?: boolean; misconception?: string }>;\nsession: { phase: \"active\" | \"answered\" | \"completed\"; currentIndex: number; selectedOptionId: string | null; answers: unknown[]; score: number; streak: number; total: number };\nonSelect: (optionId: string) => void;",
+    "PracticeToolbar": "progressLabel: string;\nonOpenHelp?: () => void;\nhelpOpen?: boolean;\nhelpButtonRef?: React.Ref<HTMLButtonElement>;",
+    "QuestionCard": "type: string;\ndifficulty: 1 | 2 | 3;\ntext: string;\ngraph?: { type: \"vt\" | \"xt\" | \"at\"; series: Array<{ t: number; v?: number; x?: number; a?: number }>; xLabel: string; yLabel: string; xRange: [number, number]; yRange: [number, number]; color?: \"cyan\" | \"gold\" } | null;\ndiagram?: { kind: \"vector\" | \"circuit\" | \"optics\"; spec: Record<string, unknown> } | null;\nfocus?: { title: string; check: string; visualPrompt?: string };\nshowSolutionContent?: boolean;\nshowMetadata?: boolean;\nclassName?: string;",
+    "QuizLoadingCard": "title: string;",
+    "SolutionDisclosure": "explanation: string;\nhelpTarget?: Record<string, unknown>;\nonOpenHelp?: () => void;",
+    "CircuitVisual": "title: string;\ncaption: string;",
+    "CompactHelpCard": "title: string;\nbody: string;\nformula?: string;\ntrap?: string;\naccent?: \"cyan\" | \"gold\" | \"blue\" | \"ember\";\nsectionId?: string;",
+    "ConceptReveal": "graph: { type: \"vt\" | \"xt\" | \"at\"; series: Array<{ t: number; v?: number; x?: number; a?: number }>; xLabel: string; yLabel: string; xRange: [number, number]; yRange: [number, number]; color: \"cyan\" | \"gold\" };\ntitle: string;\nmodelText: string;\nmeaningText: string;\ntrap: string;\nformula: string;\nformulaCaption: string;\nsymbols: Array<{ latex: string; description: string }>;\nlimitation: string;\naccentClass?: string;",
+    "TextConceptReveal": "visual: React.ReactNode;\nmeaningText: string;\ntrap: string;\nformula: string;\nformulaCaption: string;\nsymbols: Array<{ latex: string; description: string }>;\nlimitation: string;\naccentClass?: string;",
+    "ForceModel": "variant: \"resultant\" | \"lift\";\ntitle: string;\ncaption: string;",
+    "FormulaDisplay": "formula: string;\ncaption: string;\nsymbols: Array<{ latex: string; description: string }>;\nlimitation: string;\nclassName?: string;",
+    "GasVesselVisual": "title: string;\ncaption: string;",
+    "ModelVisual": "config: { type: \"vt\" | \"xt\" | \"at\"; series: Array<{ t: number; v?: number; x?: number; a?: number }>; xLabel: string; yLabel: string; xRange: [number, number]; yRange: [number, number]; color: \"cyan\" | \"gold\" };\ntitle: string;\ncaption?: string;\nclassName?: string;\nframed?: boolean;\nshowArea?: boolean;\ncompact?: boolean;",
+    "TopicTheoryDrawer": "title: string;\ndescription: string;\nchildren: React.ReactNode;\nlayout?: \"grid\" | \"stack\";\naccent?: \"cyan\" | \"gold\" | \"blue\" | \"ember\";\nclassName?: string;\nsubtopics?: Array<string | { id: string; label: string; shortHint: string; [key: string]: unknown }>;\nopen?: boolean;\nonOpenChange?: (open: boolean) => void;\nactiveSectionId?: string;\nhighlightReason?: string;\npresentation?: \"responsive\" | \"inline\" | \"aside\";",
+    "TopicPageHeader": "eyebrow: string;\ntitle: string;\ndescription: string;\naccent?: \"cyan\" | \"gold\" | \"blue\" | \"ember\";",
+    "TopicAmbientGlow": "accent: \"cyan\" | \"gold\" | \"blue\" | \"ember\";",
+    "StarField": "children?: never;"
+  },
+  "readmeHeader": ".design-sync/conventions.md"
+}
