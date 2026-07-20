@@ -1,3 +1,4 @@
+import { formatTickValue, niceTicks } from "../../lib/physics/graph-ticks.ts";
 import type {
   GraphAxisSpec,
   GraphPoint2D,
@@ -93,12 +94,8 @@ export function makeAutoTicks(axis: GraphAxisSpec, count = 4): GraphTick[] {
     return axis.ticks;
   }
 
-  const [min, max] = normalizeRange(axis.range);
-  const step = (max - min) / count;
-
-  return Array.from({ length: count + 1 }, (_, index) => ({
-    value: min + step * index,
-  }));
+  // Деления с «учебным» шагом 1–2–5·10ⁿ, а не слепое деление диапазона.
+  return niceTicks(normalizeRange(axis.range), count);
 }
 
 export function formatTickLabel(tick: GraphTick) {
@@ -106,7 +103,7 @@ export function formatTickLabel(tick: GraphTick) {
     return labelToText(tick.label);
   }
 
-  return Number.isInteger(tick.value) ? String(tick.value) : tick.value.toFixed(1);
+  return formatTickValue(tick.value);
 }
 
 function labelToText(label: MathLabelSpec) {

@@ -1,0 +1,91 @@
+- generic [active] [ref=f1e1]:
+  - generic [ref=f1e2]:
+    - link "К содержанию" [ref=f1e3] [cursor=pointer]:
+      - /url: "#design-lab-main"
+    - banner [ref=f1e4]:
+      - generic "PhysicsLab, лаборатория движения" [ref=f1e5]:
+        - generic [ref=f1e11]:
+          - strong [ref=f1e12]: PhysicsLab
+          - generic [ref=f1e13]: станция измерений
+      - tablist "Экраны прототипа" [ref=f1e14]:
+        - tab "01 Маршрут" [ref=f1e15] [cursor=pointer]:
+          - generic [ref=f1e16]: "01"
+          - strong [ref=f1e20]: Маршрут
+        - tab "02 Теория" [ref=f1e21] [cursor=pointer]:
+          - generic [ref=f1e22]: "02"
+          - strong [ref=f1e26]: Теория
+        - tab "03 Задача" [selected] [ref=f1e27] [cursor=pointer]:
+          - generic [ref=f1e28]: "03"
+          - strong [ref=f1e32]: Задача
+        - tab "04 Итог" [ref=f1e33] [cursor=pointer]:
+          - generic [ref=f1e34]: "04"
+          - strong [ref=f1e38]: Итог
+      - paragraph [ref=f1e39]:
+        - generic [ref=f1e40]: Тема 04
+        - text: Кинематика
+    - main [ref=f1e41]:
+      - region [ref=f1e207]:
+        - generic [ref=f1e208]:
+          - generic [ref=f1e209]:
+            - paragraph [ref=f1e210]: Лист 03 · практическая сессия
+            - heading "Прочитай движение" [level=1] [ref=f1e211]
+          - generic "Задача 2 из 4" [ref=f1e212]:
+            - generic [ref=f1e213]: "02"
+            - generic [ref=f1e214]: / 04
+        - generic [ref=f1e215]:
+          - generic [ref=f1e216]:
+            - paragraph [ref=f1e217]: Дано по графику
+            - paragraph [ref=f1e218]:
+              - text: Скорость тела изменяется по закону
+              - strong [ref=f1e219]: v = 4 + 2t
+              - text: ", где все величины выражены в СИ. Какова скорость тела через"
+              - strong [ref=f1e220]: 4 с
+              - text: после начала наблюдения?
+            - tablist "Формат ответа" [ref=f1e221]:
+              - tab "Числом" [selected] [ref=f1e222] [cursor=pointer]
+              - tab "Проверить идею" [ref=f1e223] [cursor=pointer]
+            - tabpanel [ref=f1e224]:
+              - generic [ref=f1e318]:
+                - generic [ref=f1e319]:
+                  - text: "Твой ответ: 12"
+                  - generic [ref=f1e320]: м/с
+                - generic [ref=f1e321]: Верно
+            - button "Нужна подсказка?" [ref=f1e231] [cursor=pointer]
+            - status [ref=f1e325]:
+              - paragraph [ref=f1e326]: Верно
+              - paragraph [ref=f1e327]: "Ты верно связал момент времени с точкой B на графике: v = 4 + 2 · 4 = 12 м/с."
+            - button "Попробовать ещё раз" [ref=f1e328] [cursor=pointer]
+          - generic [ref=f1e235]:
+            - figure "опыт 04—А Скорость растёт равномерно" [ref=f1e236]:
+              - generic [ref=f1e237]:
+                - generic [ref=f1e238]: опыт 04—А
+                - strong [ref=f1e239]: Скорость растёт равномерно
+              - 'img "График скорости: от 4 метров в секунду в начальный момент до 12 метров в секунду через 4 секунды" [ref=f1e241]':
+                - generic [ref=f1e244]:
+                  - generic [ref=f1e245]: "0"
+                  - generic [ref=f1e247]: "4"
+                  - generic [ref=f1e249]: "8"
+                  - generic [ref=f1e251]: "12"
+                  - generic [ref=f1e253]: "0"
+                  - generic [ref=f1e255]: "1"
+                  - generic [ref=f1e257]: "2"
+                  - generic [ref=f1e259]: "3"
+                  - generic [ref=f1e261]: "4"
+                - generic [ref=f1e264]: v, м/с
+                - generic [ref=f1e265]: t, с
+                - generic [ref=f1e278]:
+                  - generic [ref=f1e279]: A
+                  - generic [ref=f1e280]: B
+              - paragraph [ref=f1e281]:
+                - generic [ref=f1e282]: ↗
+                - text: За каждую секунду скорость увеличивается на 2 м/с.
+            - paragraph [ref=f1e287]:
+              - generic [ref=f1e288]: Проверь себя
+              - text: Точка B на графике должна совпасть с числом в ответе.
+        - generic [ref=f1e289]:
+          - button "К теории" [ref=f1e290] [cursor=pointer]
+          - button "Завершить серию" [ref=f1e293] [cursor=pointer]
+    - contentinfo [ref=f1e92]:
+      - generic [ref=f1e93]: PhysicsLab · интерактивный эскиз
+      - generic [ref=f1e94]: Скорость при равнопеременном движении · СИ
+  - alert [ref=f1e95]

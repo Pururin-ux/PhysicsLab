@@ -109,7 +109,7 @@ export function DataTransfer() {
 
       {pending ? (
         <div
-          className="flex flex-col gap-2.5 rounded-option border border-nova-gold/25 bg-nova-gold/[.05] px-4 py-3"
+          className="flex flex-col gap-2.5 rounded-option border border-nova-pink/25 bg-nova-pink/[.05] px-4 py-3"
           data-testid="import-confirm"
         >
           <p className="text-[13px] leading-[1.6] text-white/80">

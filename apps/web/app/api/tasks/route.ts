@@ -38,18 +38,47 @@ function difficultyForSlot(slot: number, batch: number): Difficulty {
   return difficultyPattern[(slot + batch * 3) % difficultyPattern.length];
 }
 
+// Порядок деградации, если в группе нет шаблона запрошенной сложности:
+// сначала соседняя ступень вниз, потом вверх. Сессия не должна падать в 500
+// из-за эволюции банка (так случилось, когда средняя скорость перешла на
+// целые ответы и у кинематики исчезла «сложность 3»).
+const difficultyFallback: Record<Difficulty, readonly Difficulty[]> = {
+  1: [1, 2, 3],
+  2: [2, 1, 3],
+  3: [3, 2, 1],
+};
+
 function templateForDifficulty(
   templates: readonly TemplateId[],
   difficulty: Difficulty,
   offset: number,
 ): TemplateId {
-  const supported = templates.filter((template) => supportsDifficulty(template, difficulty));
-  if (supported.length === 0) {
-    throw new Error(`No template supports difficulty ${difficulty}.`);
+  for (const candidateDifficulty of difficultyFallback[difficulty]) {
+    const supported = templates.filter((template) =>
+      supportsDifficulty(template, candidateDifficulty),
+    );
+    if (supported.length === 0) {
+      continue;
+    }
+    const native = supported.filter(
+      (template) => getBlueprint(template).difficulty === candidateDifficulty,
+    );
+    const candidates = native.length > 0 ? native : supported;
+    return candidates[offset % candidates.length];
   }
-  const native = supported.filter((template) => getBlueprint(template).difficulty === difficulty);
-  const candidates = native.length > 0 ? native : supported;
-  return candidates[offset % candidates.length];
+
+  throw new Error(`No template in group supports any difficulty near ${difficulty}.`);
+}
+
+// Для выбранного шаблона возвращает ближайшую поддерживаемую сложность по
+// той же лестнице деградации, что и выбор шаблона.
+function resolveDifficultyFor(template: TemplateId, difficulty: Difficulty): Difficulty {
+  for (const candidateDifficulty of difficultyFallback[difficulty]) {
+    if (supportsDifficulty(template, candidateDifficulty)) {
+      return candidateDifficulty;
+    }
+  }
+  return difficulty;
 }
 
 // Разные batch смещают выбор внутри группы, чтобы новые варианты
@@ -230,7 +259,9 @@ function generateMixedTasks(
     occurrences.set(template, occurrence + 1);
     const baseOffset = hashSeed(`${groupId}:${template}`) % 97;
     const offset = baseOffset + batch * count + occurrence;
-    const difficulty = balancedDifficulty ? difficultyForSlot(index, batch) : undefined;
+    const difficulty = balancedDifficulty
+      ? resolveDifficultyFor(template, difficultyForSlot(index, batch))
+      : undefined;
     const task = generateTasks(template, 1, { offset, difficulty })[0];
 
     if (!task) {

@@ -1,0 +1,79 @@
+- generic [ref=f2e1]:
+  - generic [ref=f2e2]:
+    - link "К содержанию" [ref=f2e3] [cursor=pointer]:
+      - /url: "#design-lab-main"
+    - banner [ref=f2e4]:
+      - generic "PhysicsLab, лаборатория движения" [ref=f2e5]:
+        - generic [ref=f2e11]:
+          - strong [ref=f2e12]: PhysicsLab
+          - generic [ref=f2e13]: станция измерений
+      - tablist "Экраны прототипа" [ref=f2e14]:
+        - tab [ref=f2e15] [cursor=pointer]:
+          - strong [ref=f2e16]: Маршрут
+        - tab [ref=f2e17] [cursor=pointer]:
+          - strong [ref=f2e18]: Теория
+        - tab [active] [selected] [ref=f2e19] [cursor=pointer]:
+          - strong [ref=f2e20]: Задача
+        - tab [ref=f2e21] [cursor=pointer]:
+          - strong [ref=f2e22]: Итог
+    - main [ref=f2e23]:
+      - region [ref=f2e187]:
+        - generic [ref=f2e188]:
+          - generic [ref=f2e189]:
+            - paragraph [ref=f2e190]: Лист 03 · практическая сессия
+            - heading "Прочитай движение" [level=1] [ref=f2e191]
+          - generic "Задача 2 из 4" [ref=f2e192]:
+            - generic [ref=f2e193]: "02"
+            - generic [ref=f2e194]: / 04
+        - generic [ref=f2e195]:
+          - generic [ref=f2e196]:
+            - paragraph [ref=f2e197]: Дано по графику
+            - paragraph [ref=f2e198]:
+              - text: Скорость тела изменяется по закону
+              - strong [ref=f2e199]: v = 4 + 2t
+              - text: ", где все величины выражены в СИ. Какова скорость тела через"
+              - strong [ref=f2e200]: 4 с
+              - text: после начала наблюдения?
+            - tablist "Формат ответа" [ref=f2e201]:
+              - tab "Числом" [selected] [ref=f2e202] [cursor=pointer]
+              - tab "Проверить идею" [ref=f2e203] [cursor=pointer]
+            - tabpanel "Числом" [ref=f2e204]:
+              - generic [ref=f2e206]:
+                - generic [ref=f2e207]:
+                  - 'textbox "Ответ в единицах: м/с" [ref=f2e208]':
+                    - /placeholder: например, 24
+                  - generic [ref=f2e209]: м/с
+                - button "Ответить" [disabled]
+              - paragraph [ref=f2e210]: Введите целое число без единицы измерения.
+            - button "Нужна подсказка?" [ref=f2e211] [cursor=pointer]
+          - generic [ref=f2e215]:
+            - figure "опыт 04—А Линейный рост скорости" [ref=f2e216]:
+              - generic [ref=f2e217]:
+                - generic [ref=f2e218]: опыт 04—А
+                - strong [ref=f2e219]: Линейный рост скорости
+              - 'img "График скорости: от 4 метров в секунду в начальный момент до 12 метров в секунду через 4 секунды" [ref=f2e221]':
+                - generic [ref=f2e224]:
+                  - generic [ref=f2e225]: "0"
+                  - generic [ref=f2e227]: "4"
+                  - generic [ref=f2e229]: "8"
+                  - generic [ref=f2e231]: "12"
+                  - generic [ref=f2e233]: "0"
+                  - generic [ref=f2e235]: "1"
+                  - generic [ref=f2e237]: "2"
+                  - generic [ref=f2e239]: "3"
+                  - generic [ref=f2e241]: "4"
+                - generic [ref=f2e244]: v, м/с
+                - generic [ref=f2e245]: t, с
+                - generic [ref=f2e258]:
+                  - generic [ref=f2e259]: A
+                  - generic [ref=f2e260]: B
+            - paragraph [ref=f2e265]:
+              - generic [ref=f2e266]: Проверь себя
+              - text: Точка B на графике должна совпасть с числом в ответе.
+        - generic [ref=f2e267]:
+          - button "К теории" [ref=f2e268] [cursor=pointer]
+          - button "Перейти к разбору" [disabled] [ref=f2e271]
+    - contentinfo [ref=f2e72]:
+      - generic [ref=f2e73]: PhysicsLab · интерактивный эскиз
+      - generic [ref=f2e74]: Скорость при равнопеременном движении · СИ
+  - alert [ref=f2e75]

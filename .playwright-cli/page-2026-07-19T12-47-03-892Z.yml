@@ -1,0 +1,67 @@
+- generic [ref=f1e1]:
+  - generic [ref=f1e2]:
+    - link "К содержанию" [ref=f1e3] [cursor=pointer]:
+      - /url: "#design-lab-main"
+    - banner [ref=f1e4]:
+      - generic "PhysicsLab, лаборатория движения" [ref=f1e5]:
+        - generic [ref=f1e11]:
+          - strong [ref=f1e12]: PhysicsLab
+          - generic [ref=f1e13]: станция измерений
+      - tablist "Экраны прототипа" [ref=f1e14]:
+        - tab "01 Маршрут" [ref=f1e15] [cursor=pointer]:
+          - generic [ref=f1e16]: "01"
+          - strong [ref=f1e20]: Маршрут
+        - tab "02 Теория" [ref=f1e21] [cursor=pointer]:
+          - generic [ref=f1e22]: "02"
+          - strong [ref=f1e26]: Теория
+        - tab "03 Задача" [ref=f1e27] [cursor=pointer]:
+          - generic [ref=f1e28]: "03"
+          - strong [ref=f1e32]: Задача
+        - tab "04 Итог" [active] [selected] [ref=f1e33] [cursor=pointer]:
+          - generic [ref=f1e34]: "04"
+          - strong [ref=f1e38]: Итог
+      - paragraph [ref=f1e39]:
+        - generic [ref=f1e40]: Тема 04
+        - text: Кинематика
+    - main [ref=f1e41]:
+      - region [ref=f1e334]:
+        - generic [ref=f1e335]:
+          - paragraph [ref=f1e336]: Лист 04 · разбор серии
+          - generic "Три верных ответа из четырёх" [ref=f1e337]:
+            - generic [ref=f1e343]:
+              - strong [ref=f1e344]: "3"
+              - generic [ref=f1e345]: из 4
+          - heading "Линию скорости ты читаешь уверенно" [level=1] [ref=f1e346]: Линию скороститы читаешь уверенно
+          - paragraph [ref=f1e347]: "В демонстрационной серии верно решены три задачи. Осталась одна связка: перейти от скорости к пути."
+        - generic [ref=f1e348]:
+          - generic [ref=f1e349]:
+            - generic [ref=f1e350]: Протокол наблюдений
+            - generic [ref=f1e351]: демонстрационная серия
+          - list [ref=f1e352]:
+            - listitem [ref=f1e353]:
+              - generic [ref=f1e354]: "01"
+              - paragraph [ref=f1e355]: Узнать равнопеременное движение
+              - generic [ref=f1e356]: верно
+            - listitem [ref=f1e359]:
+              - generic [ref=f1e360]: "02"
+              - paragraph [ref=f1e361]: Найти ускорение по наклону v(t)
+              - generic [ref=f1e362]: верно
+            - listitem [ref=f1e365]:
+              - generic [ref=f1e366]: "03"
+              - paragraph [ref=f1e367]: Вычислить скорость в момент времени
+              - generic [ref=f1e368]: верно
+            - listitem [ref=f1e371]:
+              - generic [ref=f1e372]: "04"
+              - paragraph [ref=f1e373]: Найти путь по площади под графиком
+              - generic [ref=f1e374]: вернуться
+          - generic [ref=f1e377]:
+            - text: Следующий опыт
+            - heading "Путь — это площадь под графиком v(t)" [level=2] [ref=f1e378]
+            - paragraph [ref=f1e379]: "Разложи фигуру под линией на прямоугольник и треугольник: 4 · 4 + (8 · 4) / 2 = 32 м."
+        - generic [ref=f1e380]:
+          - button "Повторить задачу" [ref=f1e381] [cursor=pointer]
+          - button "Вернуться к маршруту" [ref=f1e384] [cursor=pointer]
+    - contentinfo [ref=f1e92]:
+      - generic [ref=f1e93]: PhysicsLab · интерактивный эскиз
+      - generic [ref=f1e94]: Скорость при равнопеременном движении · СИ
+  - alert [ref=f1e95]

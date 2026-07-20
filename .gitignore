@@ -39,3 +39,6 @@ ds-bundle/
 .design-sync/.cache/
 .design-sync/learnings/
 .design-sync/node_modules
+
+# инструменты проверки текста
+.lang-tools/node_modules/

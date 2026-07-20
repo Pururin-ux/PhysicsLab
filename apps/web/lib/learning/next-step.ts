@@ -28,6 +28,29 @@ export function getLearningNextStep(
     };
   }
 
+  // Совсем новый ученик: сначала диагностика из 10 смешанных задач — она
+  // заполняет слабые места и даёт осмысленный маршрут вместо слепого старта.
+  const nothingStarted =
+    !hasBestExam &&
+    topics.every((topic) => {
+      const topicProgress = progress.topics[topic.id];
+      return (
+        !topicProgress ||
+        (topicProgress.completedSessions === 0 && topicProgress.solved === 0)
+      );
+    });
+
+  if (nothingStarted) {
+    return {
+      label: "Старт",
+      title: "Начни с диагностики",
+      body: "10 задач по пяти разделам — по две из каждого. После неё тренажёр покажет слабые места и соберёт план повторения.",
+      href: "/practice/exam-demo",
+      cta: "Пройти диагностику",
+      tone: "cyan",
+    };
+  }
+
   const firstUnstartedTopic = topics.find((topic) => {
     const topicProgress = progress.topics[topic.id];
 

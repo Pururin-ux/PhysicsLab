@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import Link from "next/link";
 import { formatWeakness } from "../../lib/learning/weakness-labels";
 import { Badge } from "../ui/Badge";
@@ -102,7 +102,7 @@ function getResultCopy(score: number, total: number, topic?: string) {
   if (ratio >= 0.5) {
     return {
       tone: "gold" as const,
-      scoreClass: "text-nova-gold",
+      scoreClass: "text-nova-pink",
       marker: "△",
       title: "Есть над чем поработать",
       body: bodies[2],
@@ -111,7 +111,7 @@ function getResultCopy(score: number, total: number, topic?: string) {
 
   return {
     tone: "gold" as const,
-    scoreClass: "text-nova-gold",
+    scoreClass: "text-nova-pink",
     marker: "○",
     title: "Повтори теорию и попробуй снова",
     body: bodies[3],
@@ -120,6 +120,7 @@ function getResultCopy(score: number, total: number, topic?: string) {
 
 type SummaryWeakness = {
   key: string;
+  dedupeKey: string;
   title: string;
   hint: string;
 };
@@ -137,6 +138,9 @@ function formatSummaryWeakness(value: string): SummaryWeakness | null {
     if (formatted) {
       return {
         key: formatted.key,
+        // Один навык — один пункт сводки, даже если ловушки внутри навыка
+        // разные: ученику нужен список тем для повторения, а не журнал.
+        dedupeKey: formatted.skillId,
         title: formatted.title,
         hint: formatted.hint,
       };
@@ -145,6 +149,7 @@ function formatSummaryWeakness(value: string): SummaryWeakness | null {
 
   return {
     key: trimmed,
+    dedupeKey: trimmed,
     title: "Типовая ошибка",
     hint: trimmed,
   };
@@ -157,11 +162,11 @@ function getUniqueSummaryWeaknesses(weakTraps: string[]) {
   for (const trap of weakTraps) {
     const weakness = formatSummaryWeakness(trap);
 
-    if (!weakness || seen.has(weakness.key)) {
+    if (!weakness || seen.has(weakness.dedupeKey)) {
       continue;
     }
 
-    seen.add(weakness.key);
+    seen.add(weakness.dedupeKey);
     weaknesses.push(weakness);
   }
 
@@ -220,7 +225,7 @@ export function SessionSummary({
             <ol className="space-y-3 text-[13px] font-normal leading-[1.6] text-white/75">
               {summaryWeaknesses.map((weakness, index) => (
                 <li key={weakness.key} className="grid grid-cols-[auto_1fr] gap-3">
-                  <span className="mt-0.5 shrink-0 text-nova-gold">
+                  <span className="mt-0.5 shrink-0 text-nova-pink">
                     {index + 1}.
                   </span>
                   <span className="flex min-w-0 flex-col gap-1">
@@ -234,7 +239,7 @@ export function SessionSummary({
             </ol>
             <Link
               href="/mistakes"
-              className="mt-4 inline-flex items-center gap-1 rounded-option text-[13px] font-semibold text-nova-cyan/85 transition-colors hover:text-nova-cyan focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/50"
+              className="mt-4 inline-flex items-center gap-1 rounded-option text-[13px] font-semibold text-nova-cyan/85 transition-colors hover:text-nova-cyan focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-blue/50"
             >
               Все мои слабые места →
             </Link>

@@ -11,6 +11,7 @@ import {
   buildShadedPolygonPath,
   collectPointLabels,
 } from "./graph-paths";
+import { formatTickValue } from "../../lib/physics/graph-ticks.ts";
 import {
   DEFAULT_GRAPH_FRAME,
   createGraphScale,
@@ -164,7 +165,7 @@ export function PhysicsGraph({ spec, className, compact = false, ariaLabel }: Ph
                   strokeWidth="1"
                 />
                 <SvgMathLabel
-                  label={tick.label ?? String(Number.isInteger(tick.value) ? tick.value : tick.value.toFixed(1))}
+                  label={tick.label ?? formatTickValue(tick.value)}
                   x={frame.left - 10}
                   y={y + 3}
                   textAnchor="end"
@@ -189,7 +190,7 @@ export function PhysicsGraph({ spec, className, compact = false, ariaLabel }: Ph
                   strokeWidth="1"
                 />
                 <SvgMathLabel
-                  label={tick.label ?? String(Number.isInteger(tick.value) ? tick.value : tick.value.toFixed(1))}
+                  label={tick.label ?? formatTickValue(tick.value)}
                   x={x}
                   y={plotBottom + 20}
                   textAnchor="middle"

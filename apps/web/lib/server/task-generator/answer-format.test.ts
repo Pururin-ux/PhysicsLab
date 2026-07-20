@@ -114,20 +114,23 @@ for (const pilot of NUMERIC_PILOTS) {
   });
 }
 
-test("average-speed-segments: numeric policy принимает полный пул до 3 знаков", () => {
+test("average-speed-segments: ответы целые, как в бланке ЦТ/ЦЭ", () => {
   const tasks = generateTasks("average-speed-segments", 500);
 
+  // РИКЗ принимает в бланк только целое число; тренажёр не должен требовать
+  // от ученика три знака после запятой (см. правила заполнения бланка ЦТ).
   for (const task of tasks) {
     assert.ok(
-      decimalsOf(task.answerValue) <= 3,
-      `${task.id}: ответ ${task.answerValue} вышел за точность генератора`,
+      Number.isInteger(task.answerValue),
+      `${task.id}: ответ ${task.answerValue} не целый — расходится с форматом ЦТ`,
     );
   }
 
-  assert.equal(
-    tasks.some((task) => decimalsOf(task.answerValue) >= 2),
-    true,
-    "numeric input не должен сужать разнообразие до целых и десятых",
+  // Разнообразие пула сохраняется за счёт параметров, а не дробной точности.
+  const uniqueAnswers = new Set(tasks.map((task) => task.answerValue));
+  assert.ok(
+    uniqueAnswers.size >= 8,
+    `слишком однообразные ответы: ${uniqueAnswers.size} уникальных`,
   );
 });
 

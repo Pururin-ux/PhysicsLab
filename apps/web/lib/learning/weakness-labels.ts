@@ -122,7 +122,7 @@ export const weaknessCopyBySkill: Partial<Record<SkillId, {
   },
   "gas-state-ratio": {
     title: "Параметры газа",
-    hint: "В отношении $pV/T$ температуру всегда подставляй в Кельвинах.",
+    hint: "В отношении $pV/T$ температуру всегда подставляй в кельвинах.",
   },
   "heat-balance-simple": {
     title: "Тепловой баланс",
@@ -146,11 +146,11 @@ export const weaknessCopyBySkill: Partial<Record<SkillId, {
   },
   "snell-index-ratio": {
     title: "Закон преломления",
-    hint: "Дели ==синусы углов==, а не сами углы: $\\frac{n_2}{n_1}=\\frac{\\sin i}{\\sin r}$.",
+    hint: "Дели ==синусы углов==, а не сами углы: $\\frac{\\sin\\alpha}{\\sin\\gamma}=\\frac{n_2}{n_1}$.",
   },
   "thin-lens-image-distance": {
     title: "Формула тонкой линзы",
-    hint: "В знаменателе ==разность==: $d_i=\\frac{Fd_o}{d_o-F}$.",
+    hint: "В знаменателе ==разность==: $f=\\frac{Fd}{d-F}$.",
   },
   "lens-optical-power": {
     title: "Оптическая сила",
@@ -158,7 +158,7 @@ export const weaknessCopyBySkill: Partial<Record<SkillId, {
   },
   "lens-image-height": {
     title: "Увеличение линзы",
-    hint: "Увеличение равно $\\frac{d_i}{d_o}$ — расстояние до изображения в ==числителе==.",
+    hint: "Увеличение равно $\\frac{f}{d}$ — расстояние до изображения в ==числителе==.",
   },
 };
 

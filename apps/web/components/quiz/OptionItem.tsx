@@ -16,9 +16,9 @@ const stateClasses: Record<OptionState, string> = {
   idle:
     "border-white/[.09] bg-white/[.025] text-white/85 hover:-translate-y-px hover:border-nova-blue/55 hover:bg-space-800 hover:shadow-[0_8px_26px_rgba(0,0,0,.22)]",
   correct:
-    "border-nova-cyan/55 bg-nova-cyan-10 text-white shadow-[inset_3px_0_0_#00E0FF]",
+    "border-nova-cyan/55 bg-nova-cyan-10 text-white shadow-[inset_3px_0_0_#79D9EE]",
   wrong:
-    "border-nova-gold/45 bg-nova-gold/[.07] text-white shadow-[inset_3px_0_0_#D4AF37]",
+    "border-nova-pink/45 bg-nova-pink/[.07] text-white shadow-[inset_3px_0_0_#E079C7]",
   dimmed: "border-white/[.06] bg-white/[.015] text-white/55",
 };
 
@@ -38,7 +38,7 @@ export function OptionItem({
       onClick={onClick}
       className={cn(
         "quiz-option flex min-h-14 w-full items-center gap-3 rounded-option border px-3.5 py-3 text-left transition-[border-color,background-color,box-shadow,transform] md:px-[18px] md:py-[15px]",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/60 focus-visible:ring-offset-2 focus-visible:ring-offset-space-950",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-blue/60 focus-visible:ring-offset-2 focus-visible:ring-offset-space-950",
         "disabled:cursor-default",
         stateClasses[state],
       )}
@@ -49,7 +49,7 @@ export function OptionItem({
           state === "correct"
             ? "border-nova-cyan/50 bg-nova-cyan-20 text-white"
             : state === "wrong"
-              ? "border-nova-gold/35 bg-nova-gold-20 text-white"
+              ? "border-nova-pink/35 bg-nova-pink-20 text-white"
               : "border-white/[.10] bg-white/[.03] text-white/60",
         )}
       >
@@ -63,7 +63,7 @@ export function OptionItem({
           верно
         </span>
       ) : state === "wrong" ? (
-        <span className="shrink-0 rounded-badge border border-nova-gold/25 bg-nova-gold/[.08] px-2 py-1 text-[11px] font-semibold leading-none text-nova-gold">
+        <span className="shrink-0 rounded-badge border border-nova-pink/25 bg-nova-pink/[.08] px-2 py-1 text-[11px] font-semibold leading-none text-nova-pink">
           выбрано
         </span>
       ) : null}

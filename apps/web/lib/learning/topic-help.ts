@@ -90,21 +90,21 @@ export const topicHelpSections: Record<TopicId, TopicHelpSection[]> = {
       id: "motion-graphs",
       label: "Графики v(t), x(t)",
       shortHint: "Наклон v(t) даёт ускорение, площадь под v(t) даёт перемещение.",
-      formula: "a=\\frac{\\Delta v}{\\Delta t},\\quad s=S_{v(t)}",
+      formula: "a=\\frac{\\Delta v}{\\Delta t},\\quad s=\\frac{v_0+v}{2}\\,t",
       mistake: "Не бери конечную скорость как путь: путь на v(t) даёт площадь под графиком.",
     },
     {
       id: "average-speed",
       label: "Средняя скорость",
       shortHint: "Средняя скорость считается через весь путь и всё время.",
-      formula: "v_{avg}=\\frac{s_{all}}{t_{all}}",
+      formula: "v_{\\text{ср}}=\\frac{s}{t}",
       mistake: "Не усредняй скорости без учёта времени или пройденного пути.",
     },
     {
       id: "units-conversion",
       label: "Единицы скорости",
       shortHint: "Перед расчетом пути приведи скорость и время к согласованным единицам.",
-      formula: "1\\ \\mathrm{km/h}=\\frac{1}{3.6}\\ \\mathrm{m/s}",
+      formula: "1\\ \\text{км/ч}=\\frac{1}{3{,}6}\\ \\text{м/с}",
       mistake: "Не умножай км/ч на секунды напрямую: сначала переведи скорость в м/с.",
     },
     {
@@ -259,7 +259,7 @@ export const topicHelpSections: Record<TopicId, TopicHelpSection[]> = {
       id: "reflection",
       label: "Отражение",
       shortHint: "Угол отражения равен углу падения; оба отсчитываются от нормали.",
-      formula: "\\theta_r=\\theta_i",
+      formula: "\\beta=\\alpha",
       mistake: "Не отсчитывай углы от поверхности зеркала: в законе отражения углы берутся от нормали.",
     },
     {
@@ -273,7 +273,7 @@ export const topicHelpSections: Record<TopicId, TopicHelpSection[]> = {
       id: "refraction",
       label: "Преломление",
       shortHint: "Отношение показателей преломления равно отношению синусов углов от нормали.",
-      formula: "\\frac{n_2}{n_1}=\\frac{\\sin i}{\\sin r}",
+      formula: "\\frac{\\sin\\alpha}{\\sin\\gamma}=\\frac{n_2}{n_1}",
       mistake: "Дели синусы углов, а не сами углы: закон преломления связывает именно синусы.",
     },
     {
@@ -287,8 +287,8 @@ export const topicHelpSections: Record<TopicId, TopicHelpSection[]> = {
       id: "thin-lens",
       label: "Тонкая линза",
       shortHint: "Формула линзы связывает фокусное расстояние с расстояниями до предмета и изображения.",
-      formula: "\\frac{1}{F}=\\frac{1}{d_o}+\\frac{1}{d_i}",
-      mistake: "Выражая d_i, следи за знаменателем: там разность d_o − F, а не сумма.",
+      formula: "\\frac{1}{F}=\\frac{1}{d}+\\frac{1}{f}",
+      mistake: "Выражая f, следи за знаменателем: там разность d − F, а не сумма.",
     },
     {
       id: "optical-power",
@@ -300,9 +300,9 @@ export const topicHelpSections: Record<TopicId, TopicHelpSection[]> = {
     {
       id: "magnification",
       label: "Увеличение",
-      shortHint: "Увеличение равно d_i/d_o; во столько же раз изображение выше или ниже предмета.",
-      formula: "|\\Gamma|=\\frac{d_i}{d_o}=\\frac{h_i}{h_o}",
-      mistake: "Не переворачивай отношение расстояний: в увеличении d_i делится на d_o.",
+      shortHint: "Увеличение равно f/d; во столько же раз изображение выше или ниже предмета.",
+      formula: "\\Gamma=\\frac{f}{d}=\\frac{H}{h}",
+      mistake: "Не переворачивай отношение расстояний: в увеличении f делится на d.",
     },
   ],
 };

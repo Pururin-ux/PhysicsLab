@@ -4,15 +4,21 @@ import { useStore } from "@nanostores/react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { $examLog, getBestAttempt } from "../../lib/stores/exam-log-store";
-import { Badge } from "../ui/Badge";
 import { Button } from "../ui/Button";
-import { Card } from "../ui/Card";
 import { QuizSession } from "../quiz/QuizSession";
 import {
   clearExamResumeCandidate,
   readExamResumeCandidate,
   type ExamResumeCandidate,
 } from "../../lib/quiz/active-session-snapshot";
+
+const ERROR_CATEGORIES = [
+  "Условие или модель",
+  "Формула",
+  "Знак или ось",
+  "Единицы СИ",
+  "Вычисление",
+] as const;
 
 function ExamHistoryLine() {
   const log = useStore($examLog);
@@ -31,27 +37,72 @@ function ExamHistoryLine() {
 
   return (
     <p className="text-[13px] font-semibold leading-[1.6] text-white/55">
-      Попыток:{" "}
-      <span className="physics-number text-white/80">{log.length}</span>
-      {best ? (
-        <>
-          {" "}
-          · лучший результат{" "}
-          <span className="physics-number text-nova-cyan">
-            {best.score}/{best.total}
-          </span>
-        </>
-      ) : null}
-      {last ? (
-        <>
-          {" "}
-          · последний{" "}
-          <span className="physics-number text-white/80">
-            {last.score}/{last.total}
-          </span>
-        </>
-      ) : null}
+      Твои сохранённые попытки: <span className="physics-number text-white/80">{log.length}</span>
+      {best ? <span> · лучший результат <span className="physics-number text-nova-cyan">{best.score}/{best.total}</span></span> : null}
+      {last ? <span> · последний <span className="physics-number text-white/80">{last.score}/{last.total}</span></span> : null}
     </p>
+  );
+}
+
+function ExamTools() {
+  const [scratch, setScratch] = useState("");
+  const [errorCategory, setErrorCategory] = useState<string | null>(null);
+
+  return (
+    <aside aria-label="Инструменты для решения" className="border-t border-white/[.1] pt-5 xl:border-l xl:border-t-0 xl:pl-6 xl:pt-0">
+      <p className="text-[11px] font-bold uppercase tracking-[.12em] text-white/42">Рядом с задачей</p>
+
+      <details className="group mt-3 border-t border-white/[.1] py-3">
+        <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between text-[13px] font-bold text-white/76 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-blue/70 [&::-webkit-details-marker]:hidden">
+          Черновик <span aria-hidden="true" className="text-white/40 group-open:rotate-45">＋</span>
+        </summary>
+        <label htmlFor="exam-scratch" className="sr-only">Черновик для решения задачи</label>
+        <textarea
+          id="exam-scratch"
+          value={scratch}
+          onChange={(event) => setScratch(event.target.value)}
+          rows={6}
+          placeholder="Запиши дано, формулу или промежуточный расчёт…"
+          className="mt-2 w-full resize-y rounded-option border border-white/[.14] bg-space-950 px-3 py-3 text-[13px] leading-[1.55] text-white placeholder:text-white/32 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-blue/70"
+        />
+        <p className="mt-2 text-[11px] leading-[1.5] text-white/42">Сохраняется только на этой странице и не отправляется с ответом.</p>
+      </details>
+
+      <details className="group border-t border-white/[.1] py-3">
+        <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between text-[13px] font-bold text-white/76 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-blue/70 [&::-webkit-details-marker]:hidden">
+          Подсказка по стратегии <span aria-hidden="true" className="text-white/40 group-open:rotate-45">＋</span>
+        </summary>
+        <ol className="mt-2 space-y-2 text-[12px] leading-[1.55] text-white/58">
+          <li>1. Назови величину, которую нужно найти.</li>
+          <li>2. Выбери направление, если в задаче есть векторы.</li>
+          <li>3. Проверь единицы до подстановки.</li>
+        </ol>
+      </details>
+
+      <details className="group border-y border-white/[.1] py-3">
+        <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between text-[13px] font-bold text-white/76 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-blue/70 [&::-webkit-details-marker]:hidden">
+          Классификация ошибки <span aria-hidden="true" className="text-white/40 group-open:rotate-45">＋</span>
+        </summary>
+        <fieldset className="mt-2">
+          <legend className="text-[12px] leading-[1.55] text-white/52">Если ответ не сошёлся, отметь, где сбился шаг.</legend>
+          <div className="mt-2 grid gap-1.5">
+            {ERROR_CATEGORIES.map((category) => (
+              <label key={category} className="flex min-h-9 cursor-pointer items-center gap-2 text-[12px] text-white/66">
+                <input
+                  type="radio"
+                  name="exam-error-category"
+                  checked={errorCategory === category}
+                  onChange={() => setErrorCategory(category)}
+                  className="size-4 accent-[#8d83f4]"
+                />
+                {category}
+              </label>
+            ))}
+          </div>
+          {errorCategory ? <p role="status" className="mt-2 text-[11px] leading-[1.5] text-nova-cyan/72">Отмечено: {errorCategory.toLowerCase()}.</p> : null}
+        </fieldset>
+      </details>
+    </aside>
   );
 }
 
@@ -66,106 +117,111 @@ export function ExamDemo() {
 
   if (started) {
     return (
-      <QuizSession
-        generatedTemplate="exam"
-        generatedTopic="Смешанная тренировка"
-        generatedTitle="Смешанная тренировка · открытые темы"
-        sessionKind="exam"
-        recoveryMode={started === "fresh" ? "fresh" : "auto"}
-        freshAttemptId={discardedAttemptId}
-      />
+      <section aria-label="Тренировочное решение" className="min-w-0">
+        <header className="mb-5 flex flex-wrap items-center justify-between gap-2 border-b border-white/[.1] pb-3">
+          <div>
+            <p className="text-[12px] font-bold text-white/76">Смешанная задача · тренировочный режим</p>
+            <p className="mt-1 text-[12px] text-white/44">Решение не ограничено по времени</p>
+          </div>
+          <p className="text-[12px] font-bold text-nova-cyan/70">Таймер выключен</p>
+        </header>
+
+        <div className="grid min-w-0 gap-6 xl:grid-cols-[minmax(0,1fr)_260px]">
+          <div className="min-w-0">
+            <QuizSession
+              generatedTemplate="exam"
+              generatedTopic="Смешанная тренировка"
+              generatedTitle="Смешанная тренировка · открытые темы"
+              sessionKind="exam"
+              recoveryMode={started === "fresh" ? "fresh" : "auto"}
+              freshAttemptId={discardedAttemptId}
+            />
+          </div>
+          <ExamTools />
+        </div>
+      </section>
     );
   }
 
   return (
-    <Card
-      variant="elevated"
-      className="mx-auto flex w-full max-w-[580px] flex-col gap-5 border-nova-gold/25 !p-6 md:!p-7"
-    >
-      <div className="flex items-center gap-2.5">
-        <Badge tone="gold">Открытые темы</Badge>
-        <span className="text-[11px] font-bold uppercase tracking-[.14em] text-white/60">
-          10 задач
-        </span>
+    <section aria-labelledby="exam-mode-title" className="mx-auto w-full max-w-[860px]">
+      <div className="grid gap-6 border-y border-white/[.11] py-6 md:grid-cols-[minmax(0,1fr)_260px] md:items-start md:gap-8">
+        <div>
+          <p className="text-[12px] font-bold text-nova-cyan/72">Спокойная тренировка</p>
+          <h2 id="exam-mode-title" className="mt-2 text-[28px] font-[800] leading-tight tracking-[-.025em] text-white sm:text-[34px]">
+            Смешанная тренировка
+          </h2>
+          <p className="mt-3 max-w-[58ch] text-[14px] leading-[1.65] text-white/66">
+            В этом наборе — 10 задач из уже открытых тем. Таймер не запускается: сначала можно понять тип задачи, сделать запись в черновике и только потом отвечать.
+          </p>
+          <p className="mt-3 text-[12px] leading-[1.6] text-white/48">
+            Это тренировочный набор, а не полный вариант ЦТ/ЦЭ: квантовая и атомно-ядерная физика пока не включены.
+          </p>
+        </div>
+
+        <div className="hidden border-l border-white/[.1] pl-5 md:block">
+          <p className="text-[11px] font-bold uppercase tracking-[.12em] text-white/42">Во время решения</p>
+          <ul className="mt-3 space-y-2 text-[13px] leading-[1.55] text-white/64">
+            <li>Черновик по желанию</li>
+            <li>Подсказка только по стратегии</li>
+            <li>Можно отметить, на каком шаге сбился</li>
+          </ul>
+          <Link href="/tasks#coverage" className="mt-4 inline-flex min-h-10 items-center text-[12px] font-bold text-nova-cyan/82 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-blue/70">
+            Что уже входит в тренировку
+          </Link>
+        </div>
+
+        <details className="group border-y border-white/[.1] py-2 md:hidden">
+          <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between text-[12px] font-bold text-white/66 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-blue/70 [&::-webkit-details-marker]:hidden">
+            Что доступно при решении <span aria-hidden="true" className="text-white/40 group-open:rotate-45">＋</span>
+          </summary>
+          <ul className="mt-2 space-y-2 text-[12px] leading-[1.55] text-white/60">
+            <li>Черновик по желанию</li>
+            <li>Подсказка только по стратегии</li>
+            <li>Можно отметить, на каком шаге сбился</li>
+          </ul>
+          <Link href="/tasks#coverage" className="mt-3 inline-flex min-h-10 items-center text-[12px] font-bold text-nova-cyan/82 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-blue/70">
+            Что уже входит в тренировку
+          </Link>
+        </details>
       </div>
 
-      <ul className="flex flex-col gap-2.5 text-[14px] leading-[1.65] text-white/72">
-        <li className="grid grid-cols-[auto_1fr] gap-2.5">
-          <span className="text-nova-gold">—</span>
-          Кинематика, динамика, электродинамика, термодинамика и оптика — по две задачи из каждой темы.
-        </li>
-        <li className="grid grid-cols-[auto_1fr] gap-2.5">
-          <span className="text-nova-gold">—</span>
-          После каждого ответа — разбор решения и ловушки.
-        </li>
-        <li className="grid grid-cols-[auto_1fr] gap-2.5">
-          <span className="text-nova-gold">—</span>
-          Ошибки попадут в твой список слабых мест.
-        </li>
-      </ul>
+      <div className="mt-5">
+        <ExamHistoryLine />
 
-      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[13px] leading-[1.55] text-white/55">
-        <span>Это тренировочный набор, а не полный вариант ЦТ/ЦЭ.</span>
-        <Link
-          href="/tasks#coverage"
-          className="font-semibold text-nova-cyan/85 transition-colors hover:text-nova-cyan focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/55"
-        >
-          Посмотреть покрытие программы
-        </Link>
-      </div>
-
-      <ExamHistoryLine />
-
-      {resumeCandidate === undefined ? (
-        <Button size="lg" disabled aria-label="Проверяем незавершённый вариант">
-          Проверяем сохранение…
-        </Button>
-      ) : resumeCandidate ? (
-        <section
-          aria-labelledby="exam-resume-title"
-          className="flex flex-col gap-3 border-t border-white/10 pt-5"
-          data-testid="exam-resume-candidate"
-        >
-          <div className="flex flex-col gap-1">
-            <h2 id="exam-resume-title" className="text-[17px] font-bold text-white">
-              Незавершённый вариант
-            </h2>
-            <p className="text-[14px] leading-[1.6] text-white/68">
+        {resumeCandidate === undefined ? (
+          <Button size="lg" disabled aria-label="Проверяем незавершённый вариант" className="mt-4 sm:w-auto">
+            Проверяем сохранение…
+          </Button>
+        ) : resumeCandidate ? (
+          <section aria-labelledby="exam-resume-title" className="mt-4 border-t border-white/10 pt-5" data-testid="exam-resume-candidate">
+            <h3 id="exam-resume-title" className="text-[17px] font-bold text-white">Незавершённый вариант</h3>
+            <p className="mt-1 text-[14px] leading-[1.6] text-white/68">
               {resumeCandidate.phase === "answered"
                 ? `Ответ на задание ${resumeCandidate.currentTaskNumber} уже сохранён — можно продолжить с разбора.`
                 : `Можно продолжить с задания ${resumeCandidate.currentTaskNumber} из ${resumeCandidate.total}.`}
             </p>
-          </div>
-          <div className="grid gap-2.5 sm:grid-cols-2">
-            <Button
-              size="lg"
-              className="border-nova-gold bg-nova-gold shadow-gold-glow focus-visible:ring-nova-gold/50"
-              onClick={() => setStarted("resume")}
-            >
-              Продолжить вариант
-            </Button>
-            <Button
-              size="lg"
-              variant="ghost"
-              onClick={() => {
-                setDiscardedAttemptId(resumeCandidate.attemptId);
-                clearExamResumeCandidate(resumeCandidate.attemptId);
-                setStarted("fresh");
-              }}
-            >
-              Начать новый вариант
-            </Button>
-          </div>
-        </section>
-      ) : (
-        <Button
-          size="lg"
-          className="border-nova-gold bg-nova-gold shadow-gold-glow focus-visible:ring-nova-gold/50"
-          onClick={() => setStarted("normal")}
-        >
-          Начать тренировку
-        </Button>
-      )}
-    </Card>
+            <div className="mt-3 grid gap-2.5 sm:grid-cols-2">
+              <Button size="lg" onClick={() => setStarted("resume")}>Продолжить вариант</Button>
+              <Button
+                size="lg"
+                variant="ghost"
+                onClick={() => {
+                  setDiscardedAttemptId(resumeCandidate.attemptId);
+                  clearExamResumeCandidate(resumeCandidate.attemptId);
+                  setStarted("fresh");
+                }}
+              >
+                Начать новый вариант
+              </Button>
+            </div>
+          </section>
+        ) : (
+          <Button size="lg" className="mt-4 sm:w-auto" onClick={() => setStarted("normal")}>
+            Начать тренировку
+          </Button>
+        )}
+      </div>
+    </section>
   );
 }

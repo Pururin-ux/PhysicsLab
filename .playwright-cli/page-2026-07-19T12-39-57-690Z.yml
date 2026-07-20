@@ -1,0 +1,65 @@
+- generic [ref=e2]:
+  - link "К содержанию" [ref=e3] [cursor=pointer]:
+    - /url: "#design-lab-main"
+  - banner [ref=e4]:
+    - generic "PhysicsLab, лаборатория движения" [ref=e5]:
+      - generic [ref=e11]:
+        - strong [ref=e12]: PhysicsLab
+        - generic [ref=e13]: станция измерений
+    - tablist "Экраны прототипа" [ref=e14]:
+      - tab "01 Маршрут" [selected] [ref=e15] [cursor=pointer]:
+        - generic [ref=e16]: "01"
+        - strong [ref=e20]: Маршрут
+      - tab "02 Теория" [ref=e21] [cursor=pointer]:
+        - generic [ref=e22]: "02"
+        - strong [ref=e26]: Теория
+      - tab "03 Задача" [ref=e27] [cursor=pointer]:
+        - generic [ref=e28]: "03"
+        - strong [ref=e32]: Задача
+      - tab "04 Итог" [ref=e33] [cursor=pointer]:
+        - generic [ref=e34]: "04"
+        - strong [ref=e38]: Итог
+    - paragraph [ref=e39]:
+      - generic [ref=e40]: Тема 04
+      - text: Кинематика
+  - main [ref=e41]:
+    - region "Равноускоренное" [ref=e43]:
+      - generic [ref=e44]:
+        - generic [ref=e45]:
+          - paragraph [ref=e46]: Учебный маршрут · кинематика
+          - heading "Равноускоренное движение" [level=1] [ref=e47]: Равноускоренноедвижение
+          - paragraph [ref=e48]: Одна линия на графике связывает наблюдение, формулу и расчёт. Пройдём путь от смысла ускорения до уверенного ответа.
+        - paragraph [ref=e51]: "Начинай не с формулы, а с вопроса: что именно меняется каждую секунду?"
+        - button "Начать с наблюдения" [ref=e52] [cursor=pointer]
+      - generic "Содержание темы" [ref=e55]:
+        - article [ref=e58]:
+          - generic [ref=e59]: "01"
+          - generic [ref=e60]:
+            - paragraph [ref=e61]: точка входа
+            - heading "Замечаем ускорение" [level=2] [ref=e62]
+            - paragraph [ref=e63]: Отличаем движение с постоянной скоростью от движения, где скорость меняется.
+            - button "Открыть теорию" [ref=e64] [cursor=pointer]
+        - article [ref=e67]:
+          - generic [ref=e68]: "02"
+          - generic [ref=e69]:
+            - paragraph [ref=e70]: следующий опыт
+            - heading "Читаем график v(t)" [level=2] [ref=e71]
+            - paragraph [ref=e72]: Связываем наклон прямой с ускорением и находим скорость в выбранный момент.
+            - button "К задаче" [ref=e73] [cursor=pointer]
+        - article [ref=e76]:
+          - generic [ref=e77]: "03"
+          - generic [ref=e78]:
+            - paragraph [ref=e79]: следующий опыт
+            - heading "Находим путь" [level=2] [ref=e80]
+            - paragraph [ref=e81]: Читаем площадь под графиком как перемещение за промежуток времени.
+            - generic [ref=e82]: Следом по маршруту
+        - article [ref=e83]:
+          - generic [ref=e84]: "04"
+          - generic [ref=e85]:
+            - paragraph [ref=e86]: после серии
+            - heading "Сверяем понимание" [level=2] [ref=e87]
+            - paragraph [ref=e88]: Разбираем серию и выбираем точку, к которой стоит вернуться.
+            - button "Посмотреть итог" [ref=e89] [cursor=pointer]
+  - contentinfo [ref=e92]:
+    - generic [ref=e93]: PhysicsLab · интерактивный эскиз
+    - generic [ref=e94]: Равноускоренное движение · СИ

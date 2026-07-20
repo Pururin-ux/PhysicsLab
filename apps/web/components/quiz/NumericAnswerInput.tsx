@@ -18,7 +18,8 @@ interface NumericAnswerInputProps {
 
 function roundingHint(decimals: number): string | null {
   if (decimals <= 0) {
-    return null;
+    // Формат ЦТ/ЦЭ: в бланк записывается целое число.
+    return "Ответ — целое число, как в бланке ЦТ/ЦЭ.";
   }
 
   if (decimals === 1) {
@@ -76,8 +77,8 @@ export function NumericAnswerInput({
         className={cn(
           "flex items-center justify-between gap-3 rounded-option border px-4 py-3",
           isCorrect
-            ? "border-nova-cyan/55 bg-nova-cyan-10 shadow-[inset_3px_0_0_#00E0FF]"
-            : "border-nova-gold/45 bg-nova-gold/[.07] shadow-[inset_3px_0_0_#D4AF37]",
+            ? "border-nova-cyan/55 bg-nova-cyan-10 shadow-[inset_3px_0_0_#79D9EE]"
+            : "border-nova-pink/45 bg-nova-pink/[.07] shadow-[inset_3px_0_0_#E079C7]",
         )}
       >
         <span className="min-w-0 text-[15px] font-semibold text-white">
@@ -90,7 +91,7 @@ export function NumericAnswerInput({
             "inline-flex shrink-0 items-center gap-1.5 rounded-badge border px-2.5 py-1 text-[12px] font-bold leading-none",
             isCorrect
               ? "border-nova-cyan/30 bg-nova-cyan/[.08] text-nova-cyan"
-              : "border-nova-gold/30 bg-nova-gold/[.08] text-nova-gold",
+              : "border-nova-pink/30 bg-nova-pink/[.08] text-nova-pink",
           )}
         >
           <svg
@@ -118,7 +119,7 @@ export function NumericAnswerInput({
           className={cn(
             "flex min-w-0 flex-1 items-center gap-2 rounded-option border bg-white/[.03] px-3.5 transition-colors",
             "focus-within:ring-2 focus-within:ring-nova-cyan/55",
-            showInvalid && !parsed.ok ? "border-nova-gold/55" : "border-white/[.12]",
+            showInvalid && !parsed.ok ? "border-nova-pink/55" : "border-white/[.12]",
           )}
         >
           <input
@@ -169,7 +170,7 @@ export function NumericAnswerInput({
       ) : null}
 
       {showInvalid && !parsed.ok ? (
-        <p id={errorId} role="alert" className="text-[12px] leading-[1.5] text-nova-gold/90">
+        <p id={errorId} role="alert" className="text-[12px] leading-[1.5] text-nova-pink/90">
           Введи число — можно с десятичной запятой и со знаком минус.
         </p>
       ) : null}

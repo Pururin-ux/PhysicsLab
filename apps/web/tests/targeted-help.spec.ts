@@ -85,7 +85,7 @@ test.skip("kinematics help targets accelerated first task and graph second task"
     page,
     "motion-graphs",
     "Графики v(t), x(t)",
-    "a=\\frac{\\Delta v}{\\Delta t},\\quad s=S_{v(t)}",
+    "a=\\frac{\\Delta v}{\\Delta t},\\quad s=\\frac{v_0+v}{2}\\,t",
   );
   await expect(drawer.getByTestId("compact-help-card")).toContainText("площадь под v(t)");
   await expect(page.getByTestId("help-section-selector")).toHaveValue("motion-graphs");

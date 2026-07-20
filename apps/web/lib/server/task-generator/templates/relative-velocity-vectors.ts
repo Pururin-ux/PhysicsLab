@@ -33,7 +33,10 @@ export const relativeVelocityVectorsBlueprint: TaskBlueprint = {
   skill: "Сложение перпендикулярных скоростей",
   topic: "Кинематика",
   group: "kinematics",
-  difficulty: 2,
+  // Самый многошаговый навык кинематики: вектора → треугольник → Пифагор,
+  // плюс чтение диаграммы. Держит «сложность 3» раздела после того, как
+  // средняя скорость перешла на целые ответы.
+  difficulty: 3,
   params: {
     v1: { min: 3, max: 16, step: 1, unit: "м/с" },
     v2: { min: 3, max: 16, step: 1, unit: "м/с" },

@@ -45,7 +45,7 @@ export default function DynamicsDemoPage() {
 
             <Card
               variant="elevated"
-              className="flex flex-col gap-3 border-l-2 border-l-nova-gold/55"
+              className="flex flex-col gap-3 border-l-2 border-l-nova-pink/55"
             >
               <p className="text-[11px] font-bold uppercase tracking-[.14em] text-white/50">
                 Главное
@@ -53,8 +53,8 @@ export default function DynamicsDemoPage() {
               <p className="text-[14px] font-normal leading-[1.7] text-white/80">
                 <MathText text="Ускорение создаёт ==сумма всех сил==, а не одна из них. Знак проекции — это направление, а не ошибка." />
               </p>
-              <div className="flex gap-2 rounded-option border border-white/[.09] border-l-2 border-l-nova-gold/70 bg-nova-gold/[.04] px-4 py-3 text-[13px] leading-[1.6] text-white/75">
-                <span className="shrink-0 text-nova-gold" aria-hidden="true">
+              <div className="flex gap-2 rounded-option border border-white/[.09] border-l-2 border-l-nova-pink/70 bg-nova-pink/[.04] px-4 py-3 text-[13px] leading-[1.6] text-white/75">
+                <span className="shrink-0 text-nova-pink" aria-hidden="true">
                   ⚠
                 </span>
                 <p>Ошибка: складывать силы, не проверив направления.</p>
@@ -112,7 +112,7 @@ export default function DynamicsDemoPage() {
 
             <Card
               variant="elevated"
-              className="flex flex-col gap-3 border-l-2 border-l-nova-gold/55"
+              className="flex flex-col gap-3 border-l-2 border-l-nova-pink/55"
             >
               <p className="text-[11px] font-bold uppercase tracking-[.14em] text-white/50">
                 Главное
@@ -120,8 +120,8 @@ export default function DynamicsDemoPage() {
               <p className="text-[14px] font-normal leading-[1.7] text-white/80">
                 <MathText text="Ускорение вверх — опора давит сильнее (==N больше mg==), вниз — вес **меньше**. Масса при этом не меняется." />
               </p>
-              <div className="flex gap-2 rounded-option border border-white/[.09] border-l-2 border-l-nova-gold/70 bg-nova-gold/[.04] px-4 py-3 text-[13px] leading-[1.6] text-white/75">
-                <span className="shrink-0 text-nova-gold" aria-hidden="true">
+              <div className="flex gap-2 rounded-option border border-white/[.09] border-l-2 border-l-nova-pink/70 bg-nova-pink/[.04] px-4 py-3 text-[13px] leading-[1.6] text-white/75">
+                <span className="shrink-0 text-nova-pink" aria-hidden="true">
                   ⚠
                 </span>
                 <p>Ошибка: выбирать знак по скорости лифта, а не по ускорению.</p>

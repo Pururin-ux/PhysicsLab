@@ -35,7 +35,7 @@ export const misconceptionMetadataById: Record<string, MisconceptionMetadata> = 
     id: "forgot-acceleration-term",
     label: "теряет член ускорения",
     helpSectionId: "accelerated-motion",
-    shortHint: "При постоянном ускорении путь содержит член at^2/2.",
+    shortHint: "При постоянном ускорении путь содержит член at²/2.",
   },
   "average-speed-arithmetic-mean": {
     id: "average-speed-arithmetic-mean",
@@ -59,13 +59,13 @@ export const misconceptionMetadataById: Record<string, MisconceptionMetadata> = 
     id: "friction-normal-force",
     label: "берет неверную реакцию опоры",
     helpSectionId: "friction",
-    shortHint: "Трение равно muN; сначала найди N для конкретной опоры.",
+    shortHint: "Трение равно μN; сначала найди N для конкретной опоры.",
   },
   "incline-projection-swap": {
     id: "incline-projection-swap",
     label: "путает sin и cos на наклонной",
     helpSectionId: "incline",
-    shortHint: "Вдоль плоскости работает mg sin alpha, к плоскости - mg cos alpha.",
+    shortHint: "Вдоль плоскости работает mg·sin α, поперёк — mg·cos α.",
   },
   "lift-acceleration-sign": {
     id: "lift-acceleration-sign",
@@ -107,7 +107,7 @@ export const misconceptionMetadataById: Record<string, MisconceptionMetadata> = 
     id: "capacitor-square-law",
     label: "теряет квадрат напряжения",
     helpSectionId: "capacitor-energy",
-    shortHint: "Энергия конденсатора пропорциональна U^2 и содержит коэффициент 1/2.",
+    shortHint: "Энергия конденсатора пропорциональна U² и содержит множитель 1/2.",
   },
   "electric-power-voltage-only": {
     id: "electric-power-voltage-only",
@@ -119,7 +119,7 @@ export const misconceptionMetadataById: Record<string, MisconceptionMetadata> = 
     id: "temperature-celsius-kelvin",
     label: "подставляет температуру в градусах Цельсия",
     helpSectionId: "gas-equation",
-    shortHint: "В pV = nRT температура всегда в кельвинах.",
+    shortHint: "В pV = νRT температура всегда в кельвинах.",
   },
   "heat-delta-temperature": {
     id: "heat-delta-temperature",
@@ -167,7 +167,7 @@ export const misconceptionMetadataById: Record<string, MisconceptionMetadata> = 
     id: "lens-equation-sign",
     label: "ошибается в знаменателе формулы линзы",
     helpSectionId: "thin-lens",
-    shortHint: "Для действительного изображения d_i = F·d_o/(d_o − F): в знаменателе разность.",
+    shortHint: "Для действительного изображения f = F·d/(d − F): в знаменателе разность.",
   },
   "diopter-unit-conversion": {
     id: "diopter-unit-conversion",
@@ -179,7 +179,7 @@ export const misconceptionMetadataById: Record<string, MisconceptionMetadata> = 
     id: "magnification-inverted",
     label: "переворачивает отношение расстояний",
     helpSectionId: "magnification",
-    shortHint: "Увеличение равно d_i/d_o — расстояние до изображения в числителе.",
+    shortHint: "Увеличение равно f/d — расстояние до изображения в числителе.",
   },
 };
 
@@ -190,7 +190,7 @@ export const taskLearningMetadataByTemplateId: Record<string, TaskLearningMetada
     helpSectionId: "accelerated-motion",
     skillId: "free-fall",
     focusLabel: "Свободное падение",
-    shortHint: "Свободное падение из покоя - это равноускоренное движение с g.",
+    shortHint: "Свободное падение из покоя — равноускоренное движение с ускорением g.",
     misconceptionIds: ["forgot-acceleration-term"],
   },
   "vt-slope": {
@@ -217,7 +217,7 @@ export const taskLearningMetadataByTemplateId: Record<string, TaskLearningMetada
     helpSectionId: "vectors-relative-motion",
     skillId: "relative-velocity-vectors",
     focusLabel: "Относительная скорость",
-    shortHint: "Скорости складываются по направлению; перпендикулярные - как векторы.",
+    shortHint: "Скорости складываются по направлению; перпендикулярные — как векторы.",
   },
   "average-speed-segments": {
     templateId: "average-speed-segments",
@@ -252,7 +252,7 @@ export const taskLearningMetadataByTemplateId: Record<string, TaskLearningMetada
     helpSectionId: "friction",
     skillId: "friction-force",
     focusLabel: "Сила трения",
-    shortHint: "Трение равно muN; сначала найди реакцию опоры.",
+    shortHint: "Трение равно μN; сначала найди реакцию опоры.",
     misconceptionIds: ["friction-normal-force"],
   },
   "incline-force": {
@@ -367,7 +367,7 @@ export const taskLearningMetadataByTemplateId: Record<string, TaskLearningMetada
     helpSectionId: "capacitor-energy",
     skillId: "capacitor-energy",
     focusLabel: "Энергия конденсатора",
-    shortHint: "Энергия конденсатора зависит от U^2 и коэффициента 1/2.",
+    shortHint: "Энергия конденсатора зависит от U² и множителя 1/2.",
     misconceptionIds: ["capacitor-square-law"],
   },
   "electric-power": {
@@ -394,7 +394,7 @@ export const taskLearningMetadataByTemplateId: Record<string, TaskLearningMetada
     helpSectionId: "gas-equation",
     skillId: "ideal-gas-state",
     focusLabel: "Уравнение состояния газа",
-    shortHint: "В pV = nRT температура всегда в кельвинах.",
+    shortHint: "В pV = νRT температура всегда в кельвинах.",
     misconceptionIds: ["temperature-celsius-kelvin"],
   },
   "gas-state-ratio": {
@@ -403,7 +403,7 @@ export const taskLearningMetadataByTemplateId: Record<string, TaskLearningMetada
     helpSectionId: "gas-equation",
     skillId: "gas-state-ratio",
     focusLabel: "Связь параметров газа",
-    shortHint: "Для одной массы газа используй pV/T = const и температуру в Кельвинах.",
+    shortHint: "Для одной массы газа используй pV/T = const и температуру в кельвинах.",
     misconceptionIds: ["temperature-celsius-kelvin"],
   },
   "heat-amount": {
@@ -421,7 +421,7 @@ export const taskLearningMetadataByTemplateId: Record<string, TaskLearningMetada
     helpSectionId: "heat-balance",
     skillId: "heat-balance-simple",
     focusLabel: "Тепловой баланс",
-    shortHint: "При смешивании вода обменивается теплотой: Q_отд = Q_пол.",
+    shortHint: "При смешивании отданная горячей водой теплота равна полученной холодной.",
     misconceptionIds: ["heat-balance-arithmetic-mean"],
   },
   "phase-change-heat": {
@@ -475,7 +475,7 @@ export const taskLearningMetadataByTemplateId: Record<string, TaskLearningMetada
     helpSectionId: "thin-lens",
     skillId: "thin-lens-image-distance",
     focusLabel: "Формула тонкой линзы",
-    shortHint: "Вырази d_i из 1/F = 1/d_o + 1/d_i, следи за разностью в знаменателе.",
+    shortHint: "Вырази f из 1/F = 1/d + 1/f, следи за разностью в знаменателе.",
     misconceptionIds: ["lens-equation-sign"],
   },
   "lens-optical-power": {
@@ -493,7 +493,7 @@ export const taskLearningMetadataByTemplateId: Record<string, TaskLearningMetada
     helpSectionId: "magnification",
     skillId: "lens-image-height",
     focusLabel: "Увеличение линзы",
-    shortHint: "Увеличение d_i/d_o умножь на высоту предмета.",
+    shortHint: "Увеличение f/d умножь на высоту предмета.",
     misconceptionIds: ["magnification-inverted"],
   },
 };

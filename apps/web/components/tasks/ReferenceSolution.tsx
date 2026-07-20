@@ -97,7 +97,7 @@ export function ReferenceSolution({ solution }: { solution: ReferenceSolutionCon
       </div>
 
       <details className="group border-t border-white/[.08]">
-        <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-4 px-4 py-4 text-[14px] font-bold text-white marker:hidden hover:bg-white/[.025] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-nova-cyan/55 sm:px-6 [&::-webkit-details-marker]:hidden">
+        <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-4 px-4 py-4 text-[14px] font-bold text-white marker:hidden hover:bg-white/[.025] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-nova-blue/55 sm:px-6 [&::-webkit-details-marker]:hidden">
           <span>Показать решение</span>
           <span aria-hidden="true" className="text-xl font-normal leading-none text-nova-cyan transition-transform group-open:rotate-45">+</span>
         </summary>

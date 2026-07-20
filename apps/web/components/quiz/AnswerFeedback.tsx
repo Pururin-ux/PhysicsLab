@@ -23,13 +23,13 @@ export function AnswerFeedback({
       aria-atomic="true"
       className={cn(
         "border-l-2 py-1 pl-4",
-        isCorrect ? "border-l-nova-cyan/70" : "border-l-nova-gold/70",
+        isCorrect ? "border-l-nova-cyan/70" : "border-l-nova-pink/70",
       )}
     >
       <p
         className={cn(
           "text-[13px] font-bold leading-none",
-          isCorrect ? "text-nova-cyan" : "text-nova-gold",
+          isCorrect ? "text-nova-cyan" : "text-nova-pink",
         )}
       >
         {statusLabel}

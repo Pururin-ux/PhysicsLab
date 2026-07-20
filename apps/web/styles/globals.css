@@ -3,24 +3,45 @@
 @config "../tailwind.config.ts";
 
 :root {
-  --bg: #0B0F17;
-  --font-physics-ui: var(--font-inter), system-ui, sans-serif;
-  --font-physics-math: "STIX Two Math", "Cambria Math", "Latin Modern Math", "Times New Roman", serif;
+  color-scheme: dark;
+  --bg: #07081e;
+  --surface-shell: #0a0b25;
+  --surface-base: #10112e;
+  --surface-raised: #17183a;
+  --surface-elevated: #202047;
+  --border-subtle: rgba(189, 153, 238, 0.18);
+  --action: #6558d8;
+  --brand: #e079c7;
+  --data: #79d9ee;
+  --font-physics-ui: var(--font-manrope), system-ui, sans-serif;
+  --font-physics-math: "KaTeX_Main", "Cambria Math", "Times New Roman", serif;
   --font-physics-numeric: "JetBrains Mono", "Roboto Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
 body {
   background-color: var(--bg);
+  background-image:
+    radial-gradient(circle at 7% 10%, rgba(113, 61, 170, 0.08), transparent 29rem),
+    radial-gradient(circle at 92% 2%, rgba(229, 105, 187, 0.055), transparent 25rem);
+  background-attachment: fixed;
   color: white;
-  font-family: var(--font-inter), system-ui, sans-serif;
+  font-family: var(--font-manrope), system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
   overflow-x: hidden;
+}
+
+h1,
+h2,
+.font-display {
+  font-family: var(--font-manrope), system-ui, sans-serif;
+  font-synthesis: none;
 }
 
 html {
   background-color: var(--bg);
   /* Тёмный скроллбар: системный светлый разрывает space-тему на Windows. */
-  scrollbar-color: #1E293B var(--bg);
+  scrollbar-color: #343060 var(--bg);
   /* НЕ включать здесь scroll-behavior: smooth — глобальный smooth ломает
      сброс прокрутки Next.js при переходах между страницами (новая страница
      открывалась не с начала, а с прокрученного места предыдущей). */
@@ -45,24 +66,51 @@ html {
 }
 
 *::-webkit-scrollbar-thumb {
-  background: #1E293B;
+  background: #343060;
   border-radius: 8px;
   border: 2px solid var(--bg);
 }
 
 *::-webkit-scrollbar-thumb:hover {
-  background: #2b3b52;
+  background: #4a4378;
 }
 
 ::selection {
-  background: rgba(0, 224, 255, 0.28);
+  background: rgba(169, 117, 240, 0.34);
   color: #fff;
+}
+
+.skip-link {
+  position: fixed;
+  top: calc(0.75rem + env(safe-area-inset-top));
+  left: 0.75rem;
+  z-index: 100;
+  transform: translateY(calc(-100% - 2rem));
+  border: 1px solid rgba(224, 121, 199, 0.72);
+  border-radius: 12px;
+  background: var(--surface-elevated);
+  color: #f2a2d7;
+  padding: 0.7rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 800;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.42);
+  transition: transform 0.16s ease;
+}
+
+.skip-link:focus-visible {
+  transform: translateY(0);
+  outline: 2px solid #a975f0;
+  outline-offset: 3px;
 }
 
 .app-shell-main {
   width: 100%;
-  max-width: min(1200px, 100%);
+  max-width: min(1220px, 100%);
   margin: 0 auto;
+}
+
+.app-shell-main:focus {
+  outline: none;
 }
 
 .physics-math {
@@ -82,25 +130,15 @@ html {
 }
 
 .formula-cyan .katex {
-  color: rgba(159, 234, 242, 0.94) !important;
-  font-family: var(--font-physics-math);
+  color: rgba(205, 174, 248, 0.96) !important;
   font-weight: 500;
   letter-spacing: 0;
 }
 
 .formula-white .katex {
   color: rgba(244, 247, 250, 0.9) !important;
-  font-family: var(--font-physics-math);
   font-weight: 500;
   letter-spacing: 0;
-}
-
-.formula-cyan .katex .mtext,
-.formula-cyan .katex .text,
-.formula-white .katex .mtext,
-.formula-white .katex .text {
-  font-family: var(--font-physics-ui) !important;
-  font-style: normal;
 }
 
 .katex-display { margin: 0 !important; }
@@ -325,6 +363,281 @@ mark.nova-highlight {
 
 .formula-row[data-open="true"] .formula-row-chevron {
   transform: rotate(90deg);
+}
+
+/* Коты-кураторы связывают большие разделы, а формулы читаются как отдельные
+   листы справочника — крупно и одинаково контрастно в обеих темах. */
+.formula-section-header {
+  --formula-section-accent: #8d83f4;
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--formula-section-accent) 34%, transparent);
+  border-left-width: 3px;
+  border-left-color: var(--formula-section-accent);
+  border-radius: 20px;
+  background:
+    linear-gradient(105deg, color-mix(in srgb, var(--formula-section-accent) 11%, transparent), transparent 48%),
+    rgba(16, 17, 46, 0.92);
+  padding: 0.85rem;
+  box-shadow: 0 16px 42px rgba(0, 0, 0, 0.2);
+}
+
+.formula-section-cyan { --formula-section-accent: #79d9ee; }
+.formula-section-gold { --formula-section-accent: #e8b66d; }
+.formula-section-blue { --formula-section-accent: #8d83f4; }
+.formula-section-pink { --formula-section-accent: #e079c7; }
+.formula-section-ember { --formula-section-accent: #f39a82; }
+.formula-section-neutral { --formula-section-accent: rgba(255, 255, 255, 0.45); }
+
+.formula-curator-portrait {
+  border: 1px solid color-mix(in srgb, var(--formula-section-accent) 42%, transparent);
+  background: #0a0b25;
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.28);
+}
+
+.formula-curator-note {
+  width: fit-content;
+  max-width: 100%;
+  border-top: 1px solid color-mix(in srgb, var(--formula-section-accent) 30%, transparent);
+  padding-top: 0.55rem;
+}
+
+.formula-row {
+  --formula-card-accent: #8d83f4;
+  border-top: 2px solid color-mix(in srgb, var(--formula-card-accent) 78%, transparent);
+}
+
+.formula-row[data-tone="cyan"] { --formula-card-accent: #79d9ee; }
+.formula-row[data-tone="gold"] { --formula-card-accent: #e8b66d; }
+.formula-row[data-tone="blue"] { --formula-card-accent: #8d83f4; }
+.formula-row[data-tone="pink"] { --formula-card-accent: #e079c7; }
+.formula-row[data-tone="ember"] { --formula-card-accent: #f39a82; }
+.formula-row[data-tone="neutral"] { --formula-card-accent: rgba(255, 255, 255, 0.45); }
+
+.formula-paper {
+  border: 1px solid rgba(68, 49, 83, 0.18);
+  background-color: #f4efe8;
+  background-image:
+    linear-gradient(rgba(244, 239, 232, 0.78), rgba(244, 239, 232, 0.78)),
+    url("/art/production/paper-texture.webp");
+  background-size: auto, 560px auto;
+  color: #2b2438;
+  box-shadow:
+    inset 3px 0 0 color-mix(in srgb, var(--formula-card-accent) 72%, transparent),
+    0 8px 18px rgba(0, 0, 0, 0.14);
+}
+
+.formula-paper .katex {
+  color: #2b2438 !important;
+  font-weight: 520;
+  letter-spacing: 0;
+}
+
+@media (max-width: 639px) {
+  .formula-section-header {
+    align-items: flex-start;
+    gap: 0.8rem;
+    padding: 0.75rem;
+  }
+}
+
+/* Учебные страницы должны оставаться читаемыми в классе и на проекторе.
+   Светлая тема меняет системные поверхности, а художественные секции лендинга
+   с data-theme-preserve="dark" сохраняют исходную режиссуру арта. */
+html[data-theme="light"] {
+  color-scheme: light;
+  --bg: #f1eef6;
+  scrollbar-color: #a99db8 #f1eef6;
+}
+
+html[data-theme="light"] body {
+  background-color: #f1eef6;
+  background-image:
+    url("/art/production/paper-texture.webp"),
+    radial-gradient(circle at 8% 5%, rgba(101, 88, 216, 0.12), transparent 29rem),
+    radial-gradient(circle at 94% 1%, rgba(224, 121, 199, 0.075), transparent 25rem);
+  background-size: 760px auto, auto, auto;
+  background-blend-mode: multiply, normal, normal;
+  color: #241d33;
+}
+
+html[data-theme="light"] .app-shell {
+  color: #241d33;
+}
+
+html[data-theme="light"] .app-shell > header {
+  border-color: rgba(49, 39, 78, 0.14) !important;
+  background: rgba(249, 247, 252, 0.95) !important;
+  box-shadow: 0 12px 32px rgba(41, 31, 72, 0.1) !important;
+}
+
+html[data-theme="light"] .app-shell > header [class*="text-white"] {
+  color: #30263b !important;
+}
+
+html[data-theme="light"] .app-shell > header [class*="border-white"] {
+  border-color: rgba(61, 40, 76, 0.14) !important;
+}
+
+html[data-theme="light"] .app-shell > header [class*="bg-white"] {
+  background-color: rgba(78, 57, 92, 0.055) !important;
+}
+
+html[data-theme="light"] .app-shell > header [class*="text-nova-cyan"] {
+  color: #176f87 !important;
+}
+
+html[data-theme="light"] .app-shell .app-shell-main [class*="bg-space-950"] {
+  background-color: #eee9f3 !important;
+}
+
+html[data-theme="light"] .app-shell .app-shell-main [class*="bg-space-925"] {
+  background-color: #f8f5fb !important;
+}
+
+html[data-theme="light"] .app-shell .app-shell-main [class*="bg-space-900"] {
+  background-color: #fffefe !important;
+}
+
+html[data-theme="light"] .app-shell .app-shell-main [class*="bg-space-850"],
+html[data-theme="light"] .app-shell .app-shell-main [class*="bg-space-800"] {
+  background-color: #e9e4ef !important;
+}
+
+html[data-theme="light"] .app-shell .app-shell-main [class*="text-white"] {
+  color: #30263b !important;
+}
+
+html[data-theme="light"] .app-shell .app-shell-main [class*="border-white"] {
+  border-color: rgba(55, 42, 81, 0.18) !important;
+}
+
+html[data-theme="light"] .app-shell .app-shell-main [class*="text-nova-cyan"] {
+  color: #23697a !important;
+}
+
+html[data-theme="light"] .app-shell .app-shell-main [class*="text-nova-pink"] {
+  color: #a8438d !important;
+}
+
+html[data-theme="light"] .app-shell .app-shell-main [class*="text-nova-blue"],
+html[data-theme="light"] .app-shell .app-shell-main [class*="text-nova-indigo"] {
+  color: #5146b7 !important;
+}
+
+html[data-theme="light"] .app-shell .app-shell-main [class*="text-nova-gold"] {
+  color: #875817 !important;
+}
+
+html[data-theme="light"] .app-shell .app-shell-main input::placeholder,
+html[data-theme="light"] .app-shell .app-shell-main textarea::placeholder {
+  color: #766b7d !important;
+  opacity: 1;
+}
+
+html[data-theme="light"] .app-shell .app-shell-main [class*="shadow-"] {
+  --tw-shadow-color: rgba(45, 34, 73, 0.14);
+}
+
+html[data-theme="light"] .app-shell .app-shell-main [class*="bg-nova-indigo"][class*="text-white"],
+html[data-theme="light"] .app-shell .app-shell-main [class*="bg-nova-blue"][class*="text-white"] {
+  color: #ffffff !important;
+}
+
+html[data-theme="light"] .app-shell .app-shell-main .formula-white .katex,
+html[data-theme="light"] .app-shell .app-shell-main .katex {
+  color: #2b2235 !important;
+}
+
+html[data-theme="light"] .app-shell .app-shell-main .formula-section-header {
+  background:
+    linear-gradient(105deg, color-mix(in srgb, var(--formula-section-accent) 12%, transparent), transparent 48%),
+    rgba(255, 254, 254, 0.94);
+  box-shadow: 0 14px 32px rgba(45, 34, 73, 0.1);
+}
+
+html[data-theme="light"] .app-shell .app-shell-main .formula-paper,
+html[data-theme="light"] .app-shell .app-shell-main .formula-paper .katex {
+  color: #2b2438 !important;
+}
+
+html[data-theme="light"] .app-shell .app-shell-main .formula-cyan .katex {
+  color: #286779 !important;
+}
+
+html[data-theme="light"] .app-shell .app-shell-main :is([data-theme-preserve="dark"], [data-theme-preserve="dark"] *)[class*="bg-space-950"] {
+  background-color: #07081e !important;
+}
+
+html[data-theme="light"] .app-shell .app-shell-main :is([data-theme-preserve="dark"], [data-theme-preserve="dark"] *)[class*="bg-space-925"] {
+  background-color: #0a0b25 !important;
+}
+
+html[data-theme="light"] .app-shell .app-shell-main :is([data-theme-preserve="dark"], [data-theme-preserve="dark"] *)[class*="bg-space-900"] {
+  background-color: #10112e !important;
+}
+
+html[data-theme="light"] .app-shell .app-shell-main :is([data-theme-preserve="dark"], [data-theme-preserve="dark"] *)[class*="bg-space-850"] {
+  background-color: #17183a !important;
+}
+
+html[data-theme="light"] .app-shell .app-shell-main :is([data-theme-preserve="dark"], [data-theme-preserve="dark"] *)[class*="bg-space-800"] {
+  background-color: #202047 !important;
+}
+
+html[data-theme="light"] .app-shell .app-shell-main :is([data-theme-preserve="dark"], [data-theme-preserve="dark"] *)[class*="text-white"] {
+  color: white !important;
+}
+
+html[data-theme="light"] .app-shell .app-shell-main :is([data-theme-preserve="dark"], [data-theme-preserve="dark"] *)[class*="border-white"] {
+  border-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+html[data-theme="light"] .app-shell .app-shell-main :is([data-theme-preserve="dark"], [data-theme-preserve="dark"] *)[class*="text-nova-cyan"] {
+  color: #79d9ee !important;
+}
+
+html[data-theme="light"] .app-shell .app-shell-main :is([data-theme-preserve="dark"], [data-theme-preserve="dark"] *)[class*="text-nova-blue"],
+html[data-theme="light"] .app-shell .app-shell-main :is([data-theme-preserve="dark"], [data-theme-preserve="dark"] *)[class*="text-nova-indigo"] {
+  color: #8d83f4 !important;
+}
+
+html[data-theme="light"] .app-shell .app-shell-main :is([data-theme-preserve="dark"], [data-theme-preserve="dark"] *)[class*="text-nova-gold"] {
+  color: #e8b66d !important;
+}
+
+html[data-theme="light"] .app-shell .app-shell-main :is([data-theme-preserve="dark"], [data-theme-preserve="dark"] *)[class*="text-nova-pink"] {
+  color: #e079c7 !important;
+}
+
+html[data-theme="light"] .app-shell .app-shell-main :is([data-theme-preserve="dark"], [data-theme-preserve="dark"] *) .formula-white .katex,
+html[data-theme="light"] .app-shell .app-shell-main :is([data-theme-preserve="dark"], [data-theme-preserve="dark"] *) .katex {
+  color: rgba(244, 247, 250, 0.92) !important;
+}
+
+html[data-theme="light"] .app-shell .app-shell-main [data-theme-preserve="dark"] .dark-ghost-control {
+  background-color: rgba(23, 24, 58, 0.9) !important;
+  color: rgba(255, 255, 255, 0.88) !important;
+}
+
+html[data-theme="light"] [data-testid="quiz-session"] [data-testid="question-card"] {
+  background: #fffefe !important;
+  border-color: rgba(55, 42, 81, 0.2) !important;
+  box-shadow: 0 18px 42px rgba(45, 34, 73, 0.13) !important;
+}
+
+html[data-theme="light"] [data-testid="quiz-session"] .quiz-option[data-state="idle"] {
+  background: #eee9f3 !important;
+  border-color: rgba(55, 42, 81, 0.18) !important;
+  box-shadow: 0 8px 20px rgba(45, 34, 73, 0.06);
+}
+
+html[data-theme="light"] [data-testid="quiz-session"] .quiz-option[data-state="idle"]:hover {
+  background: #e5def0 !important;
+  border-color: rgba(101, 88, 216, 0.5) !important;
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -229,7 +229,7 @@ test.describe("optics desktop flows", () => {
     await expect(drawer).toHaveAttribute("data-active-section", "reflection");
     await expect(drawer.getByTestId("compact-help-formula")).toHaveAttribute(
       "data-help-card-formula",
-      "\\theta_r=\\theta_i",
+      "\\beta=\\alpha",
     );
   });
 

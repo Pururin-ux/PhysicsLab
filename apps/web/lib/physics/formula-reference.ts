@@ -17,7 +17,7 @@ export type FormulaReferenceGroup = {
   id: string;
   title: string;
   intro: string;
-  badgeTone: "cyan" | "gold" | "blue" | "ember" | "neutral";
+  badgeTone: "cyan" | "gold" | "blue" | "pink" | "ember" | "neutral";
   // "soon": задач по разделу ещё нет, формулы уже доступны в справочнике.
   status: "active" | "soon";
   entries: FormulaReferenceEntry[];
@@ -28,7 +28,7 @@ export const formulaReference: FormulaReferenceGroup[] = [
     id: "kinematics",
     title: "Кинематика",
     intro: "Движение по прямой и чтение графиков.",
-    badgeTone: "cyan",
+    badgeTone: "ember",
     status: "active",
     entries: [
       {
@@ -124,10 +124,10 @@ export const formulaReference: FormulaReferenceGroup[] = [
         id: "average-speed-segments",
         relatedSkillIds: ["average-speed-segments"],
         title: "Средняя скорость на участках",
-        formula: "v_{avg}=\\frac{s_1+s_2+\\ldots}{t_1+t_2+\\ldots}",
+        formula: "v_{\\text{ср}}=\\frac{s_1+s_2+\\ldots}{t_1+t_2+\\ldots}",
         caption: "весь путь делится на всё время движения",
         symbols: [
-          { latex: "v_{\\mathrm{avg}}", description: "средняя скорость, м/с" },
+          { latex: "v_{\\text{ср}}", description: "средняя скорость, м/с" },
           { latex: "s_1, s_2", description: "пути на отдельных участках, м" },
           { latex: "t_1, t_2", description: "время на отдельных участках, с" },
         ],
@@ -138,7 +138,7 @@ export const formulaReference: FormulaReferenceGroup[] = [
         id: "unit-conversion-speed",
         relatedSkillIds: ["unit-conversion-speed"],
         title: "Перевод скорости",
-        formula: "1\\ \\mathrm{km/h}=\\frac{1}{3.6}\\ \\mathrm{m/s}",
+        formula: "1\\ \\text{км/ч}=\\frac{1}{3{,}6}\\ \\text{м/с}",
         caption: "перед расчетом пути скорость и время должны быть в согласованных единицах",
         symbols: [
           { latex: "\\text{км/ч}", description: "километры в час" },
@@ -167,7 +167,7 @@ export const formulaReference: FormulaReferenceGroup[] = [
     id: "dynamics",
     title: "Динамика",
     intro: "Силы и их связь с движением.",
-    badgeTone: "gold",
+    badgeTone: "blue",
     status: "active",
     entries: [
       {
@@ -332,7 +332,7 @@ export const formulaReference: FormulaReferenceGroup[] = [
     id: "electrodynamics",
     title: "Электродинамика",
     intro: "Постоянный ток в участке цепи.",
-    badgeTone: "blue",
+    badgeTone: "cyan",
     status: "active",
     entries: [
       {
@@ -441,7 +441,7 @@ export const formulaReference: FormulaReferenceGroup[] = [
     id: "thermodynamics",
     title: "Молекулярная физика и термодинамика",
     intro: "Уравнение состояния газа и количество теплоты при нагревании.",
-    badgeTone: "ember",
+    badgeTone: "gold",
     status: "active",
     entries: [
       {
@@ -517,7 +517,7 @@ export const formulaReference: FormulaReferenceGroup[] = [
           { latex: "T_1, T_2", description: "абсолютная температура, К" },
         ],
         limitation:
-          "Температуру обязательно переводят в Кельвины.",
+          "Температуру обязательно переводят в кельвины.",
       },
       {
         id: "heat-balance-simple",
@@ -539,18 +539,18 @@ export const formulaReference: FormulaReferenceGroup[] = [
     id: "optics",
     title: "Оптика",
     intro: "Отражение, преломление, плоское зеркало и собирающая тонкая линза.",
-    badgeTone: "cyan",
+    badgeTone: "pink",
     status: "active",
     entries: [
       {
         id: "reflection-angle",
         relatedSkillIds: ["reflection-angle"],
         title: "Закон отражения света",
-        formula: "\\theta_r=\\theta_i",
+        formula: "\\beta=\\alpha",
         caption: "угол отражения равен углу падения",
         symbols: [
-          { latex: "\\theta_i", description: "угол падения, от нормали" },
-          { latex: "\\theta_r", description: "угол отражения, от нормали" },
+          { latex: "\\alpha", description: "угол падения, от нормали" },
+          { latex: "\\beta", description: "угол отражения, от нормали" },
         ],
         limitation:
           "Оба угла отсчитываются от нормали — перпендикуляра к зеркалу, а не от его поверхности.",
@@ -586,29 +586,29 @@ export const formulaReference: FormulaReferenceGroup[] = [
         id: "snell-index-ratio",
         relatedSkillIds: ["snell-index-ratio"],
         title: "Закон преломления света",
-        formula: "\\frac{n_2}{n_1}=\\frac{\\sin i}{\\sin r}",
+        formula: "\\frac{\\sin\\alpha}{\\sin\\gamma}=\\frac{n_2}{n_1}",
         caption: "на границе двух сред луч меняет направление",
         symbols: [
           { latex: "n_1, n_2", description: "показатели преломления сред" },
-          { latex: "i", description: "угол падения, от нормали" },
-          { latex: "r", description: "угол преломления, от нормали" },
+          { latex: "\\alpha", description: "угол падения, от нормали" },
+          { latex: "\\gamma", description: "угол преломления, от нормали" },
         ],
         limitation:
-          "Углы отсчитываются от нормали к границе; при переходе в оптически более плотную среду r < i.",
+          "Углы отсчитываются от нормали к границе; при переходе в оптически более плотную среду γ < α.",
       },
       {
         id: "thin-lens-image-distance",
         relatedSkillIds: ["thin-lens-image-distance"],
         title: "Формула тонкой линзы",
-        formula: "\\frac{1}{F}=\\frac{1}{d_o}+\\frac{1}{d_i}",
+        formula: "\\frac{1}{F}=\\frac{1}{d}+\\frac{1}{f}",
         caption: "связь фокусного расстояния с положением предмета и изображения",
         symbols: [
           { latex: "F", description: "фокусное расстояние линзы" },
-          { latex: "d_o", description: "расстояние от предмета до линзы" },
-          { latex: "d_i", description: "расстояние от линзы до изображения" },
+          { latex: "d", description: "расстояние от предмета до линзы" },
+          { latex: "f", description: "расстояние от линзы до изображения" },
         ],
         limitation:
-          "В таком виде — для собирающей линзы и действительного изображения (d_o > F); иначе слагаемые берут со знаками.",
+          "В таком виде — для собирающей линзы и действительного изображения (d > F); иначе слагаемые берут со знаками.",
       },
       {
         id: "lens-optical-power",
@@ -627,15 +627,15 @@ export const formulaReference: FormulaReferenceGroup[] = [
         id: "lens-image-height",
         relatedSkillIds: ["lens-image-height"],
         title: "Линейное увеличение линзы",
-        formula: "|\\Gamma|=\\frac{d_i}{d_o}=\\frac{h_i}{h_o}",
+        formula: "\\Gamma=\\frac{f}{d}=\\frac{H}{h}",
         caption: "во сколько раз изображение больше или меньше предмета",
         symbols: [
-          { latex: "|\\Gamma|", description: "модуль линейного увеличения" },
-          { latex: "d_o, d_i", description: "расстояния до предмета и изображения" },
-          { latex: "h_o, h_i", description: "высоты предмета и изображения" },
+          { latex: "\\Gamma", description: "линейное увеличение (по модулю)" },
+          { latex: "d, f", description: "расстояния до предмета и до изображения" },
+          { latex: "h, H", description: "высоты предмета и изображения" },
         ],
         limitation:
-          "Формула записана по модулю: правила знаков v1 намеренно не использует, ориентация изображения оговаривается отдельно.",
+          "Формула записана по модулю: у действительного изображения собирающей линзы оно перевёрнуто.",
       },
     ],
   },

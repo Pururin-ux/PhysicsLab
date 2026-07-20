@@ -1,6 +1,6 @@
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion } from "motion/react";
 import Image from "next/image";
 import type { CoachState } from "../../lib/coach-engine";
 import { cn } from "../../lib/utils";
@@ -11,11 +11,11 @@ interface CoachAvatarProps {
 }
 
 const avatarByState: Record<CoachState, string> = {
-  calm: "/mascot/nova-calm.png",
-  thinking: "/mascot/nova-thinking.png",
-  warning: "/mascot/nova-warning.png",
-  encouraging: "/mascot/nova-encouraging.png",
-  surprised: "/mascot/nova-surprised.png",
+  calm: "/art/production/tutor-calm.webp",
+  thinking: "/art/production/tutor-thinking.webp",
+  warning: "/art/production/tutor-warning.webp",
+  encouraging: "/art/production/tutor-encouraging.webp",
+  surprised: "/art/production/tutor-surprised.webp",
 };
 
 export function CoachAvatar({ state, className }: CoachAvatarProps) {
@@ -37,10 +37,10 @@ export function CoachAvatar({ state, className }: CoachAvatarProps) {
         >
           <Image
             src={avatarByState[state]}
-            alt="Nova"
-            width={52}
-            height={52}
-            className="h-[52px] w-[52px] object-cover object-top"
+            alt="Помощник"
+            fill
+            sizes="52px"
+            className="object-cover object-top"
             priority={false}
           />
         </motion.div>

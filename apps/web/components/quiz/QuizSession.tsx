@@ -44,6 +44,7 @@ import {
   type HelpTarget,
 } from "../../lib/learning/topic-help";
 import type { TopicId } from "../../lib/stores/progress-store";
+import { calcXP } from "../../lib/xp";
 import { addXP, resetSessionProgress } from "../../lib/stores/session-store";
 import { useSessionRecording } from "./useSessionRecording";
 import type { GeneratedQuizCount } from "../../lib/quiz/generated-quiz-count";
@@ -192,7 +193,12 @@ export function QuizSession({
     () =>
       session.answers
         .filter((answer) => !answer.isCorrect)
-        .map((answer) => answer.selectedMisconception || answer.taskTrap)
+        // Префикс blueprint даёт сводке название навыка («Свободное падение»)
+        // вместо безликого «Типовая ошибка» на каждом пункте.
+        .map((answer) => {
+          const trap = answer.selectedMisconception || answer.taskTrap;
+          return trap.length > 0 ? `${answer.blueprint}:${trap}` : "";
+        })
         .filter((trap) => trap.length > 0),
     [session.answers],
   );
@@ -352,7 +358,9 @@ export function QuizSession({
     hideCoach();
 
     if (result.isCorrect) {
-      addXP(10);
+      // Правила XP живут в lib/xp.ts (база за попытку + разовые бонусы за
+      // серию) — начисление и цифры в профиле ссылаются на один источник.
+      addXP(calcXP({ correct: true, attempt: result.attempt, streak: result.streak }));
       emitCoachEvent(
         {
           type: "correct_answer",
@@ -375,11 +383,15 @@ export function QuizSession({
       },
       {
         ...task.coach_lines,
-        // Называем конкретную ошибку прямой речью; без определённого
-        // misconception берём авторскую реплику задачи (она уже конкретна).
+        // Называем конкретную ошибку прямой речью. Числовому ответу без
+        // распознанного misconception нельзя показывать запечённую реплику
+        // про «а не N» — она ссылается на дистрактор, которого ученик не
+        // вводил. Там честнее общее правило-ловушка задачи.
         wrong: selectedMisconception
-          ? `Похоже, ты ${selectedMisconception}.`
-          : task.coach_lines.wrong,
+          ? `Похоже на типовую ловушку: ${selectedMisconception}.`
+          : task.type === "numeric_input"
+            ? task.trap
+            : task.coach_lines.wrong,
         hint: taskFocus.check,
       },
     );
@@ -513,12 +525,17 @@ export function QuizSession({
         )
       : currentHelpTarget;
   const latestIsCorrect = latestAnswer?.isCorrect ?? false;
+  // Для числового ввода без распознанного misconception показываем
+  // правило-ловушку задачи: реплика «а не N» называла бы дистрактор,
+  // которого ученик не вводил (правильный ответ выводится отдельной строкой).
   const feedbackText =
     latestIsCorrect
       ? currentTask.coach_lines.correct
       : latestAnswer?.selectedMisconception
-        ? `Похоже, ты ${latestAnswer.selectedMisconception}.`
-        : currentTask.coach_lines.wrong;
+        ? `Похоже на типовую ловушку: ${latestAnswer.selectedMisconception}.`
+        : latestAnswer?.format === "numeric_input"
+          ? currentTask.trap
+          : currentTask.coach_lines.wrong;
   const mistakeHelpTarget =
     latestAnswer && !latestAnswer.isCorrect ? answerHelpTarget : null;
 

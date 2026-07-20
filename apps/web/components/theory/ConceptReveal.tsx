@@ -1,6 +1,6 @@
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
 import { ModelVisual } from "./ModelVisual";
 import { FormulaDisplay } from "./FormulaDisplay";
@@ -66,8 +66,8 @@ export function ConceptReveal({
               <p className="text-[14px] font-normal leading-[1.7] text-white/80">
                 <MathText text={meaningText} />
               </p>
-              <div className="rounded-option border border-nova-gold/25 bg-nova-gold-10 px-4 py-3 text-[13px] font-normal leading-[1.6] text-white/75">
-                <span className="mr-1.5 text-nova-gold" aria-hidden="true">
+              <div className="rounded-option border border-nova-pink/25 bg-nova-pink-10 px-4 py-3 text-[13px] font-normal leading-[1.6] text-white/75">
+                <span className="mr-1.5 text-nova-pink" aria-hidden="true">
                   ⚠
                 </span>
                 <MathText text={trap} />

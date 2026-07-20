@@ -150,7 +150,7 @@ export function TopicTheoryDrawer({
           onClick={() => onOpenChange?.(false)}
           aria-label="Закрыть справку"
           title="Закрыть справку"
-          className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-option border border-white/[.09] bg-white/[.025] text-white/62 transition-colors hover:border-white/[.18] hover:bg-white/[.05] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/55"
+          className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-option border border-white/[.09] bg-white/[.025] text-white/62 transition-colors hover:border-white/[.18] hover:bg-white/[.05] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-blue/55"
         >
           <svg
             viewBox="0 0 24 24"
@@ -177,7 +177,7 @@ export function TopicTheoryDrawer({
             data-testid="help-section-selector"
             value={effectiveSectionId}
             onChange={(event) => setSelectedSectionId(event.target.value as HelpSectionId)}
-            className="min-h-10 w-full rounded-option border border-white/[.11] bg-space-950/70 px-3 text-[13px] font-semibold normal-case tracking-normal text-white/78 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/55"
+            className="min-h-10 w-full rounded-option border border-white/[.11] bg-space-950/70 px-3 text-[13px] font-semibold normal-case tracking-normal text-white/78 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-blue/55"
           >
             {normalizedSubtopics.map((subtopic) => (
               <option key={subtopic.id} value={subtopic.id}>

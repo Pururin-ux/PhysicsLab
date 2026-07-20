@@ -30,7 +30,7 @@ export default async function FocusedPracticePage({ params }: FocusedPracticePag
       <section className="mx-auto flex w-full max-w-[580px] flex-col gap-2">
         <Link
           href={`/tasks/${entry.slug}`}
-          className="mb-1 w-fit rounded-option text-[12px] font-semibold text-nova-cyan/80 hover:text-nova-cyan focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/55"
+          className="mb-1 w-fit rounded-option text-[12px] font-semibold text-nova-cyan/80 hover:text-nova-cyan focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-blue/55"
         >
           К типу задачи
         </Link>

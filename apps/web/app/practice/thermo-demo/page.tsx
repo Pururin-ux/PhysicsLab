@@ -45,12 +45,12 @@ export default function ThermoDemoPage() {
               }
               meaningText="Давление, объём и температура связаны одним уравнением — но только с температурой в **кельвинах**, не в °C."
               trap="Ошибка: подставить °C, не переведя в кельвины."
-              formula="pV=nRT"
+              formula={"pV=\\nu RT"}
               formulaCaption="уравнение состояния идеального газа"
               symbols={[
                 { latex: "p", description: "давление газа, кПа (при V в литрах)" },
                 { latex: "V", description: "объём газа, л" },
-                { latex: "n", description: "количество вещества, моль" },
+                { latex: "\\nu", description: "количество вещества, моль" },
                 { latex: "R", description: "универсальная газовая постоянная, 8,31 Дж/(моль·К)" },
                 { latex: "T", description: "абсолютная температура, К" },
               ]}

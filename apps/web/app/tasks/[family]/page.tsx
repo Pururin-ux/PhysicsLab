@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ReferenceSolution } from "../../../components/tasks/ReferenceSolution";
 import { Button } from "../../../components/ui/Button";
+import { FormulaBox } from "../../../components/ui/FormulaBox";
 import { getReferenceSolution } from "../../../lib/learning/reference-solutions";
 import {
   buildFormulaHref,
@@ -50,7 +51,7 @@ export default async function TaskTypePage({ params }: TaskTypePageProps) {
   return (
     <div className="mx-auto flex w-full max-w-[760px] flex-col gap-7">
       <nav aria-label="Хлебные крошки" className="flex flex-wrap items-center gap-2 text-[13px] font-semibold text-white/48">
-        <Link className="rounded-option hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/55" href="/tasks">
+        <Link className="rounded-option hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-blue/55" href="/tasks">
           Задачи
         </Link>
         <span aria-hidden="true">/</span>
@@ -94,19 +95,27 @@ export default async function TaskTypePage({ params }: TaskTypePageProps) {
           <h2 id="related-formulas-title" className="text-xl font-[800] text-white">
             Связанные формулы
           </h2>
-          <p className="mt-2 text-[13px] leading-[1.6] text-white/58">
-            Открой формулу, обозначения и условия применения для этого типа задач.
-          </p>
-          <ul className="mt-4 flex flex-col gap-2">
+          {/* Формула видна сразу — страница типа задачи должна отвечать на
+              вопрос «что применять» без лишнего перехода. */}
+          <div className={`mt-4 grid gap-3 ${relatedFormulas.length > 1 ? "sm:grid-cols-2" : ""}`}>
+            {relatedFormulas.map((formula) => (
+              <FormulaBox
+                key={formula.id}
+                formula={formula.formula}
+                caption={formula.title}
+              />
+            ))}
+          </div>
+          <ul className="mt-3 flex flex-wrap gap-2">
             {relatedFormulas.map((formula) => (
               <li key={formula.id}>
                 <Link
                   href={buildFormulaHref(formula.id)}
-                  className="inline-flex min-h-10 items-center rounded-option border border-white/[.12] bg-white/[.025] px-3.5 text-[13px] font-semibold text-nova-cyan/85 transition-colors hover:border-nova-cyan/45 hover:text-nova-cyan focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/55"
+                  className="inline-flex min-h-10 items-center rounded-option border border-white/[.12] bg-white/[.025] px-3.5 text-[13px] font-semibold text-nova-cyan/85 transition-colors hover:border-nova-cyan/45 hover:text-nova-cyan focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-blue/55"
                 >
                   {relatedFormulas.length === 1
-                    ? "Открыть формулу и условия применения"
-                    : formula.title}
+                    ? "Обозначения и условия применения"
+                    : `${formula.title}: обозначения и условия`}
                 </Link>
               </li>
             ))}

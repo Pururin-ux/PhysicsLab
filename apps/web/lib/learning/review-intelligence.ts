@@ -153,6 +153,10 @@ export function buildReviewDashboard(
     const topicLater = countByUrgency(topicPlan, "later");
     const status = topicStatus(topicWeaknesses, topicDueToday);
     const skillsCount = topicSkillCount[topic.id] ?? topic.skillsCount;
+    // Ловушек может быть больше, чем навыков (несколько разных ошибок в одном
+    // навыке), поэтому в бейдже считаем именно затронутые навыки — «7/6» на
+    // карточке читалось как ошибка вёрстки.
+    const affectedSkills = new Set(topicPlan.map((item) => item.skillId)).size;
     const intensity =
       topicWeaknesses === 0
         ? 0
@@ -168,7 +172,7 @@ export function buildReviewDashboard(
       dueToday: topicDueToday,
       nextSession: topicNextSession,
       later: topicLater,
-      skillCoverageLabel: `${topicWeaknesses}/${skillsCount}`,
+      skillCoverageLabel: `${Math.min(affectedSkills, skillsCount)} из ${skillsCount}`,
       topSkillTitles: uniqueSkillTitles(topicPlan),
       summary: topicSummary(topicWeaknesses, topicDueToday, topicNextSession),
       intensity,

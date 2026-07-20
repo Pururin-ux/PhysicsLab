@@ -13,7 +13,7 @@ interface CompactHelpCardProps {
 
 const accentClasses: Record<NonNullable<CompactHelpCardProps["accent"]>, string> = {
   cyan: "border-l-nova-cyan/55 text-nova-cyan",
-  gold: "border-l-nova-gold/55 text-nova-gold",
+  gold: "border-l-nova-pink/55 text-nova-pink",
   blue: "border-l-nova-blue/55 text-nova-blue",
   ember: "border-l-nova-ember/55 text-nova-ember",
 };

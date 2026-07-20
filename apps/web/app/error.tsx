@@ -25,7 +25,7 @@ export default function RouteError({
       <Card
         data-testid="route-error-card"
         role="alert"
-        className="flex flex-col gap-4 border-l-2 border-l-nova-gold/60"
+        className="flex flex-col gap-4 border-l-2 border-l-nova-pink/60"
       >
         <div className="flex flex-col gap-2">
           <h1 className="text-[22px] font-[800] leading-tight text-white">

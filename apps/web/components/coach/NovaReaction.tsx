@@ -1,6 +1,6 @@
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion } from "motion/react";
 import Image from "next/image";
 import type { CoachState } from "../../lib/coach-engine";
 import { cn } from "../../lib/utils";
@@ -14,11 +14,11 @@ interface NovaReactionProps {
 }
 
 const bustByState: Record<CoachState, string> = {
-  calm: "/mascot/nova-calm.png",
-  thinking: "/mascot/nova-thinking.png",
-  warning: "/mascot/nova-warning.png",
-  encouraging: "/mascot/nova-encouraging.png",
-  surprised: "/mascot/nova-surprised.png",
+  calm: "/art/production/tutor-calm.webp",
+  thinking: "/art/production/tutor-thinking.webp",
+  warning: "/art/production/tutor-warning.webp",
+  encouraging: "/art/production/tutor-encouraging.webp",
+  surprised: "/art/production/tutor-surprised.webp",
 };
 
 // Тёплый золотой тон — для предупреждений/ошибок, иначе фирменный cyan.
@@ -27,7 +27,7 @@ const isWarm = (state: CoachState) => state === "warning";
 const ringByState: Record<CoachState, string> = {
   calm: "ring-nova-cyan/45 shadow-cyan-glow",
   thinking: "ring-nova-blue/50 shadow-cyan-glow",
-  warning: "ring-nova-gold/50 shadow-gold-glow",
+  warning: "ring-nova-pink/50 shadow-pink-glow",
   encouraging: "ring-nova-cyan/55 shadow-cyan-glow",
   surprised: "ring-nova-cyan/60 shadow-cyan-glow",
 };
@@ -52,7 +52,7 @@ export function NovaReaction({ state, text, visible }: NovaReactionProps) {
           className={cn(
             "relative flex items-end gap-3 rounded-card border p-3 backdrop-blur-sm sm:gap-4 sm:p-4",
             warm
-              ? "border-nova-gold/30 bg-nova-gold/[.06]"
+              ? "border-nova-pink/30 bg-nova-pink/[.06]"
               : "border-nova-cyan/25 bg-nova-cyan/[.05]",
           )}
         >
@@ -73,7 +73,7 @@ export function NovaReaction({ state, text, visible }: NovaReactionProps) {
               >
                 <Image
                   src={bustByState[state]}
-                  alt="Nova"
+                  alt="Помощник"
                   fill
                   sizes="88px"
                   className="object-cover object-top"
@@ -95,10 +95,10 @@ export function NovaReaction({ state, text, visible }: NovaReactionProps) {
                   warm ? "text-[#a9791b]" : "text-[#0089b3]",
                 )}
               >
-                Nova
+                Подсказка
               </span>
               <span className="rounded-[5px] bg-space-950/[.08] px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-[.12em] text-space-950/45">
-                коуч по физике
+                по задаче
               </span>
             </div>
             <p className="text-[13px] font-semibold leading-[1.55] text-space-950 sm:text-[14px]">

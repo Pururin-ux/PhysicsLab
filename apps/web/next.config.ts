@@ -14,12 +14,15 @@ const isProduction = process.env.NODE_ENV === "production";
 const nextConfig: NextConfig = {
   devIndicators: false,
   poweredByHeader: false,
+  experimental: {
+    optimizePackageImports: ["@phosphor-icons/react"],
+  },
   pageExtensions: isProduction ? ["tsx", "ts"] : ["dev.tsx", "dev.ts", "tsx", "ts"],
   turbopack: {
     root: projectRoot,
   },
   // Базовые security headers. CSP сознательно НЕ добавлен: непроверенный CSP
-  // ломает KaTeX/inline-styles/Next-скрипты/Framer Motion — задокументирован
+  // ломает KaTeX/inline-styles/Next-скрипты/Motion — задокументирован
   // как follow-up в docs/quality/public-beta-hardening-v1.md.
   async headers() {
     return [

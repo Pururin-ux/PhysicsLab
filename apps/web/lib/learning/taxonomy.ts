@@ -322,7 +322,7 @@ export const skillMetadata: Record<SkillId, SkillMetadata> = {
     sectionId: "optics",
     title: "Формула тонкой линзы",
     shortTitle: "Тонкая линза",
-    description: "Расстояние до действительного изображения собирающей линзы из формулы 1/F = 1/d_o + 1/d_i.",
+    description: "Расстояние до действительного изображения собирающей линзы из формулы 1/F = 1/d + 1/f.",
   },
   "lens-optical-power": {
     id: "lens-optical-power",
@@ -338,6 +338,6 @@ export const skillMetadata: Record<SkillId, SkillMetadata> = {
     sectionId: "optics",
     title: "Линейное увеличение линзы",
     shortTitle: "Увеличение линзы",
-    description: "Модуль высоты изображения через отношение расстояний d_i/d_o и высоту предмета.",
+    description: "Модуль высоты изображения через увеличение Γ = f/d и высоту предмета.",
   },
 };

@@ -76,7 +76,7 @@ export function ForceModel({ variant, title, caption }: ForceModelProps) {
                   m
                 </text>
 
-                <g className="text-nova-gold">
+                <g className="text-nova-pink">
                   <line
                     x1="139"
                     x2="58"
@@ -173,7 +173,7 @@ export function ForceModel({ variant, title, caption }: ForceModelProps) {
                   </text>
                 </g>
 
-                <g className="text-nova-gold">
+                <g className="text-nova-pink">
                   <line
                     x1="210"
                     x2="210"

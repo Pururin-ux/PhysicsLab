@@ -35,7 +35,7 @@ export const phaseChangeHeatBlueprint: TaskBlueprint = {
   solver: phaseChangeHeat,
   distractors: phaseChangeHeatDistractors,
   textTemplate: (p) =>
-    `${contextFor(p)}. Масса льда ${formatAnswerValue(p.m)} кг, начальная температура ${p.temp0} °C. Сколько теплоты нужно, чтобы нагреть лёд до 0 °C и полностью расплавить? $c_{\\text{льда}} = 2{,}1$ кДж/(кг·°C), $\\lambda = 334$ кДж/кг.`,
+    `${contextFor(p)}. Масса льда ${formatAnswerValue(p.m)} кг, начальная температура ${p.temp0} °C. Сколько теплоты нужно, чтобы нагреть лёд до 0 °C и полностью расплавить? $c_{\\text{льда}} = 2{,}1$ кДж/(кг·°C), $\\lambda = ${ICE_FUSION_HEAT_KJ}$ кДж/кг.`,
   explanationTemplate: (p, answer) =>
     `Есть две стадии: нагрев до 0 °C и плавление. $Q = cm\\Delta T + \\lambda m = ${formatMathValue(p.m)}\\cdot(${formatMathValue(ICE_SPECIFIC_HEAT_KJ)}\\cdot${Math.abs(p.temp0)} + ${ICE_FUSION_HEAT_KJ}) = ${formatMathValue(answer)}$ кДж.`,
   trap: "Если вещество сначала нагревается, а потом плавится, нужно сложить две теплоты: $cm\\Delta T$ и $\\lambda m$.",

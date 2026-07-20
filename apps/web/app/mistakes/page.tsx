@@ -12,7 +12,7 @@ export default function MistakesPage() {
           Ошибки
         </h1>
         <p className="text-[15px] leading-[1.7] text-white/68">
-          Ловушки, на которых ты ошибался. Каждую можно потренировать отдельно.
+          Ловушки из твоих ответов. Каждую можно потренировать отдельно.
         </p>
       </section>
 

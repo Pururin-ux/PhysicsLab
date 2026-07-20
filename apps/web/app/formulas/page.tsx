@@ -8,15 +8,11 @@ export const metadata = {
 
 export default function FormulasPage() {
   return (
-    <div className="flex min-w-0 flex-col gap-8">
-      <section className="flex max-w-[680px] flex-col gap-2">
-        <h1 className="text-[34px] font-[800] leading-tight tracking-tight text-white sm:text-[42px]">
-          Формулы
-        </h1>
-        <p className="text-[15px] leading-[1.7] text-white/68">
-          Справочник по доступным формулам: открытые темы и оптика. Разверни
-          строку — внутри обозначения и условия применения.
-        </p>
+    <div className="mx-auto flex w-full max-w-[1220px] min-w-0 flex-col gap-8">
+      <section className="flex max-w-[760px] flex-col gap-2 pt-2">
+        <p className="text-[11px] font-extrabold uppercase tracking-[.15em] text-nova-pink">Связи между величинами</p>
+        <h1 className="text-[38px] font-[800] leading-tight tracking-[-.04em] text-white sm:text-[48px]">Проводник по формулам</h1>
+        <p className="text-[15px] leading-[1.7] text-white/62">Открой карточку, чтобы проверить обозначения, условия применения и перейти к задачам.</p>
       </section>
 
       <Suspense

@@ -44,13 +44,13 @@ export function QuizLoadErrorCard({ error, onRetry }: QuizLoadErrorCardProps) {
       <Card
         data-testid="quiz-load-error-card"
         role="alert"
-        className="flex flex-col gap-4 border-l-2 border-l-nova-gold/60"
+        className="flex flex-col gap-4 border-l-2 border-l-nova-pink/60"
       >
         <div className="flex flex-col gap-2">
           <h2
             ref={headingRef}
             tabIndex={-1}
-            className="text-[19px] font-[800] leading-tight text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/50"
+            className="text-[19px] font-[800] leading-tight text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-blue/50"
           >
             {heading}
           </h2>

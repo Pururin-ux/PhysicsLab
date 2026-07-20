@@ -14,9 +14,9 @@ interface ButtonProps extends ComponentPropsWithoutRef<"button"> {
 
 const variantClasses: Record<ButtonVariant, string> = {
   primary:
-    "border-nova-cyan bg-nova-cyan text-space-950 shadow-cyan-glow hover:brightness-110 disabled:hover:brightness-100",
+    "border-nova-indigo bg-nova-indigo text-white shadow-indigo-glow hover:border-nova-blue hover:bg-nova-blue disabled:hover:border-nova-indigo disabled:hover:bg-nova-indigo",
   ghost:
-    "border-white/20 bg-transparent text-white/80 hover:border-white/40 hover:text-white",
+    "border-white/[.15] bg-space-850/85 text-white/82 shadow-[inset_0_1px_0_rgba(255,255,255,.035)] hover:border-nova-blue/55 hover:bg-space-800 hover:text-white",
 };
 
 const sizeClasses: Record<ButtonSize, string> = {
@@ -38,9 +38,9 @@ export function Button({
   return (
     <Comp
       className={cn(
-        "inline-flex items-center justify-center rounded-option border font-semibold transition-colors",
+        "inline-flex items-center justify-center rounded-option border font-bold transition-colors",
         "transition-all duration-150 active:scale-[0.98]",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/50 focus-visible:ring-offset-2 focus-visible:ring-offset-space-950",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-blue/65 focus-visible:ring-offset-2 focus-visible:ring-offset-space-950",
         "disabled:pointer-events-none disabled:opacity-40",
         variantClasses[variant],
         sizeClasses[size],

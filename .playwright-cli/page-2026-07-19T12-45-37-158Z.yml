@@ -1,0 +1,90 @@
+- generic [ref=e1]:
+  - generic [ref=e2]:
+    - link "К содержанию" [ref=e3] [cursor=pointer]:
+      - /url: "#design-lab-main"
+    - banner [ref=e4]:
+      - generic "PhysicsLab, лаборатория движения" [ref=e5]:
+        - generic [ref=e11]:
+          - strong [ref=e12]: PhysicsLab
+          - generic [ref=e13]: станция измерений
+      - tablist "Экраны прототипа" [ref=e14]:
+        - tab "01 Маршрут" [ref=e15] [cursor=pointer]:
+          - generic [ref=e16]: "01"
+          - strong [ref=e20]: Маршрут
+        - tab "02 Теория" [ref=e21] [cursor=pointer]:
+          - generic [ref=e22]: "02"
+          - strong [ref=e26]: Теория
+        - tab "03 Задача" [active] [selected] [ref=e27] [cursor=pointer]:
+          - generic [ref=e28]: "03"
+          - strong [ref=e32]: Задача
+        - tab "04 Итог" [ref=e33] [cursor=pointer]:
+          - generic [ref=e34]: "04"
+          - strong [ref=e38]: Итог
+      - paragraph [ref=e93]:
+        - generic [ref=e94]: Тема 04
+        - text: Кинематика
+    - main [ref=e39]:
+      - region [ref=e207]:
+        - generic [ref=e208]:
+          - generic [ref=e209]:
+            - paragraph [ref=e210]: Лист 03 · практическая сессия
+            - heading "Прочитай движение" [level=1] [ref=e211]
+          - generic "Задача 2 из 4" [ref=e212]:
+            - generic [ref=e213]: "02"
+            - generic [ref=e214]: / 04
+        - generic [ref=e215]:
+          - generic [ref=e216]:
+            - paragraph [ref=e217]: Дано по графику
+            - paragraph [ref=e218]:
+              - text: Скорость тела изменяется по закону
+              - strong [ref=e219]: v = 4 + 2t
+              - text: ", где все величины выражены в СИ. Какова скорость тела через"
+              - strong [ref=e220]: 4 с
+              - text: после начала наблюдения?
+            - tablist "Формат ответа" [ref=e221]:
+              - tab "Числом" [selected] [ref=e222] [cursor=pointer]
+              - tab "Проверить идею" [ref=e223] [cursor=pointer]
+            - tabpanel [ref=e224]:
+              - generic [ref=e225]:
+                - generic [ref=e226]:
+                  - generic [ref=e227]:
+                    - 'textbox "Ответ в единицах: м/с" [ref=e228]':
+                      - /placeholder: например, 24
+                    - generic [ref=e229]: м/с
+                  - button "Ответить" [disabled]
+                - paragraph [ref=e230]: Ответ — целое число, как в бланке ЦТ/ЦЭ.
+            - button "Нужна подсказка?" [ref=e231] [cursor=pointer]
+          - generic [ref=e235]:
+            - figure "опыт 04—А Скорость растёт равномерно" [ref=e236]:
+              - generic [ref=e237]:
+                - generic [ref=e238]: опыт 04—А
+                - strong [ref=e239]: Скорость растёт равномерно
+              - 'img "График скорости: от 4 метров в секунду в начальный момент до 12 метров в секунду через 4 секунды" [ref=e241]':
+                - generic [ref=e244]:
+                  - generic [ref=e245]: "0"
+                  - generic [ref=e247]: "4"
+                  - generic [ref=e249]: "8"
+                  - generic [ref=e251]: "12"
+                  - generic [ref=e253]: "0"
+                  - generic [ref=e255]: "1"
+                  - generic [ref=e257]: "2"
+                  - generic [ref=e259]: "3"
+                  - generic [ref=e261]: "4"
+                - generic [ref=e264]: v, м/с
+                - generic [ref=e265]: t, с
+                - generic [ref=e278]:
+                  - generic [ref=e279]: A
+                  - generic [ref=e280]: B
+              - paragraph [ref=e281]:
+                - generic [ref=e282]: ↗
+                - text: За каждую секунду скорость увеличивается на 2 м/с.
+            - paragraph [ref=e287]:
+              - generic [ref=e288]: Проверь себя
+              - text: Точка B на графике должна совпасть с числом в ответе.
+        - generic [ref=e289]:
+          - button "К теории" [ref=e290] [cursor=pointer]
+          - button "Завершить серию" [ref=e293] [cursor=pointer]
+    - contentinfo [ref=e90]:
+      - generic [ref=e91]: PhysicsLab · интерактивный эскиз
+      - generic [ref=e92]: Скорость при равнопеременном движении · СИ
+  - alert [ref=e95]

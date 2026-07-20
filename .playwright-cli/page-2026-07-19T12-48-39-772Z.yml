@@ -1,0 +1,94 @@
+- generic [ref=e1]:
+  - generic [ref=e2]:
+    - link "К содержанию" [ref=e3] [cursor=pointer]:
+      - /url: "#design-lab-main"
+    - banner [ref=e4]:
+      - generic "PhysicsLab, лаборатория движения" [ref=e5]:
+        - generic [ref=e11]:
+          - strong [ref=e12]: PhysicsLab
+          - generic [ref=e13]: станция измерений
+      - tablist "Экраны прототипа" [ref=e14]:
+        - tab [ref=e350] [cursor=pointer]:
+          - strong [ref=e20]: Маршрут
+        - tab [active] [selected] [ref=e351] [cursor=pointer]:
+          - strong [ref=e26]: Теория
+        - tab [ref=e352] [cursor=pointer]:
+          - strong [ref=e32]: Задача
+        - tab [ref=e353] [cursor=pointer]:
+          - strong [ref=e38]: Итог
+    - main [ref=e39]:
+      - region "Ускорение видно" [ref=e403]:
+        - generic [ref=e404]:
+          - generic [ref=e405]:
+            - paragraph [ref=e406]: Лист 02 · скорость при равнопеременном движении
+            - heading "Ускорение видно по наклону" [level=1] [ref=e407]: Ускорение виднопо наклону
+            - paragraph [ref=e408]: "Если за равные промежутки времени скорость меняется одинаково, ускорение постоянно. В нашем опыте движение равноускоренное: скорость и ускорение сонаправлены."
+          - generic [ref=e409]:
+            - generic [ref=e410]: "1"
+            - generic [ref=e411]:
+              - paragraph [ref=e412]: Наблюдение
+              - strong [ref=e413]: Линия идёт вверх — скорость растёт. При одинаковом масштабе осей большему наклону соответствует больший модуль ускорения.
+          - generic [ref=e414]:
+            - generic [ref=e415]:
+              - paragraph [ref=e416]: закон скорости
+              - generic [ref=e420]:
+                - math [ref=e422]:
+                  - generic [ref=e424]:
+                    - generic [ref=e425]: v
+                    - generic [ref=e426]: =
+                    - generic [ref=e427]:
+                      - generic [ref=e428]: v
+                      - generic [ref=e429]: "0"
+                    - generic [ref=e430]: +
+                    - generic [ref=e431]: a
+                    - generic [ref=e432]: t
+                - generic [ref=e433]:
+                  - generic [ref=e434]: v =
+                  - generic [ref=e435]:
+                    - generic [ref=e436]:
+                      - text: v
+                      - generic [ref=e437]: "0"
+                    - text: +
+                  - generic [ref=e445]: at
+              - paragraph [ref=e446]: Скорость v в момент t при постоянном ускорении a и начальной скорости v₀.
+            - generic "Пояснение к формуле" [ref=e447]:
+              - generic [ref=e448]: v₀
+              - paragraph [ref=e449]: с чего начали
+              - generic [ref=e450]: a·t
+              - paragraph [ref=e451]: что прибавилось
+        - generic [ref=e452]:
+          - figure "опыт 04—А Скорость растёт равномерно" [ref=e453]:
+            - generic [ref=e454]:
+              - generic [ref=e455]: опыт 04—А
+              - strong [ref=e456]: Скорость растёт равномерно
+            - 'img "График скорости: от 4 метров в секунду в начальный момент до 12 метров в секунду через 4 секунды" [ref=e458]':
+              - generic [ref=e461]:
+                - generic [ref=e462]: "0"
+                - generic [ref=e464]: "4"
+                - generic [ref=e466]: "8"
+                - generic [ref=e468]: "12"
+                - generic [ref=e470]: "0"
+                - generic [ref=e472]: "1"
+                - generic [ref=e474]: "2"
+                - generic [ref=e476]: "3"
+                - generic [ref=e478]: "4"
+              - generic [ref=e481]: v, м/с
+              - generic [ref=e482]: t, с
+              - generic [ref=e495]:
+                - generic [ref=e496]: A
+                - generic [ref=e497]: B
+            - paragraph [ref=e498]:
+              - generic [ref=e499]: ↗
+              - text: За каждую секунду скорость увеличивается на 2 м/с.
+          - generic [ref=e500]:
+            - generic [ref=e501]: Считываем наклон
+            - generic [ref=e502]:
+              - strong [ref=e503]: a = Δv / Δt
+              - strong [ref=e504]: a = (12 − 4) / 4 = 2 м/с²
+        - generic [ref=e505]:
+          - button "К маршруту" [ref=e506] [cursor=pointer]
+          - button "Проверить на задаче" [ref=e509] [cursor=pointer]
+    - contentinfo [ref=e90]:
+      - generic [ref=e91]: PhysicsLab · интерактивный эскиз
+      - generic [ref=e92]: Скорость при равнопеременном движении · СИ
+  - alert [ref=e95]
