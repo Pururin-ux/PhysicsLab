@@ -2,7 +2,7 @@ import { AccelerationLesson } from "../../../components/learning/AccelerationLes
 
 export const metadata = {
   title: "Что такое ускорение | PhysicsLab",
-  description: "Урок про ускорение: от толчка в троллейбусе до формулы. Спидометр, стрелка оси и первая своя задача.",
+  description: "Урок про ускорение: от толчка в троллейбусе до формулы. Метки на дороге, спидометр и первая своя задача.",
 };
 
 export default function KinematicsDemoPage() {

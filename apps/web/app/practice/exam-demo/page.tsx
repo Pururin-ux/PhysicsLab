@@ -2,7 +2,7 @@ import { ExamDemo } from "../../../components/exam/ExamDemo";
 
 export const metadata = {
   title: "Подготовиться к ЦТ/ЦЭ | PhysicsLab",
-  description: "Спокойный тренировочный режим по физике без обязательного таймера.",
+  description: "Тренировочный режим по физике без обязательного таймера.",
 };
 
 export default function ExamDemoPage() {
@@ -13,8 +13,8 @@ export default function ExamDemoPage() {
           <span className="sm:hidden">Подготовка к ЦТ/ЦЭ</span><span className="hidden sm:inline">Подготовиться к ЦТ/ЦЭ</span>
         </h1>
         <p className="mt-2 max-w-[64ch] text-[14px] leading-[1.65] text-white/62">
-          <span className="sm:hidden">Спокойный режим: узнай тип задачи, реши своим способом и разбери конкретную ошибку.</span>
-          <span className="hidden sm:inline">Здесь не объясняем тему с нуля. Это отдельный режим, чтобы спокойно узнать тип задачи, решить её своим способом и разобрать конкретную ошибку.</span>
+          <span className="sm:hidden">Узнай тип задачи, реши своим способом и посмотри, где сбился.</span>
+          <span className="hidden sm:inline">Здесь не объясняем тему с нуля. Это отдельный режим: узнать тип задачи, решить её своим способом и увидеть, где именно сбился шаг.</span>
         </p>
       </header>
 

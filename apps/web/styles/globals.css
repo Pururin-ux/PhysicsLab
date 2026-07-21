@@ -47,6 +47,26 @@ html {
      открывалась не с начала, а с прокрученного места предыдущей). */
 }
 
+/* Контент страницы мягко поднимается при открытии — один общий вдох вместо
+   резкого появления. Только transform/opacity (без layout-работы) и только
+   когда пользователь не просил убрать анимации. */
+@media (prefers-reduced-motion: no-preference) {
+  .app-shell-main > * {
+    animation: page-rise 0.4s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+  }
+}
+
+@keyframes page-rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* The fixed mobile nav must count as occupied viewport space when a focused
    control is scrolled into view. At 360px the labels make the bar taller than
    5rem, so 6.25rem includes the real bar plus an 8px visual gap. */
@@ -417,22 +437,23 @@ mark.nova-highlight {
 .formula-row[data-tone="ember"] { --formula-card-accent: #f39a82; }
 .formula-row[data-tone="neutral"] { --formula-card-accent: rgba(255, 255, 255, 0.45); }
 
+/* Формула лежит на тёмной сливово-индиговой поверхности из палитры сайта:
+   белый лист на тёмном фоне слепил и выбивался из цветогаммы. Акцент раздела
+   подсвечивает левую кромку и лёгкий градиент. */
 .formula-paper {
-  border: 1px solid rgba(68, 49, 83, 0.18);
-  background-color: #f4efe8;
-  background-image:
-    linear-gradient(rgba(244, 239, 232, 0.78), rgba(244, 239, 232, 0.78)),
-    url("/art/production/paper-texture.webp");
-  background-size: auto, 560px auto;
-  color: #2b2438;
+  border: 1px solid color-mix(in srgb, var(--formula-card-accent, #8d83f4) 26%, transparent);
+  background:
+    linear-gradient(120deg, color-mix(in srgb, var(--formula-card-accent, #8d83f4) 9%, transparent), transparent 55%),
+    linear-gradient(145deg, #221a3d 0%, #171531 60%, #10142d 100%);
+  color: #fff;
   box-shadow:
-    inset 3px 0 0 color-mix(in srgb, var(--formula-card-accent) 72%, transparent),
-    0 8px 18px rgba(0, 0, 0, 0.14);
+    inset 3px 0 0 color-mix(in srgb, var(--formula-card-accent, #8d83f4) 72%, transparent),
+    0 8px 18px rgba(0, 0, 0, 0.22);
 }
 
 .formula-paper .katex {
-  color: #2b2438 !important;
-  font-weight: 520;
+  color: #fff !important;
+  font-weight: 460;
   letter-spacing: 0;
 }
 
@@ -557,6 +578,16 @@ html[data-theme="light"] .app-shell .app-shell-main .formula-section-header {
     linear-gradient(105deg, color-mix(in srgb, var(--formula-section-accent) 12%, transparent), transparent 48%),
     rgba(255, 254, 254, 0.94);
   box-shadow: 0 14px 32px rgba(45, 34, 73, 0.1);
+}
+
+html[data-theme="light"] .app-shell .app-shell-main .formula-paper {
+  background:
+    linear-gradient(120deg, color-mix(in srgb, var(--formula-card-accent, #8d83f4) 10%, transparent), transparent 55%),
+    #fdfcfa;
+  border-color: color-mix(in srgb, var(--formula-card-accent, #8d83f4) 30%, transparent);
+  box-shadow:
+    inset 3px 0 0 color-mix(in srgb, var(--formula-card-accent, #8d83f4) 72%, transparent),
+    0 8px 18px rgba(45, 34, 73, 0.1);
 }
 
 html[data-theme="light"] .app-shell .app-shell-main .formula-paper,

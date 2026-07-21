@@ -44,7 +44,7 @@ type Readiness = {
   note: string;
 };
 
-// Честная эвристика по собранным данным, не прогноз балла на экзамене.
+// Честная эвристика по собранным данным, без обещаний балла на экзамене.
 function readinessFor(solved: number, correct: number): Readiness {
   if (solved === 0) {
     return {
@@ -329,7 +329,7 @@ export function ProfileOverview() {
                   XP
                 </span>
               </div>
-              <p className="text-right text-[10px] leading-[1.4] text-white/45">
+              <p className="text-right text-[10px] leading-[1.4] text-white/64">
                 +{XP_RULES.correct_first_attempt} за верный ответ · бонусы за серию из 3 и 5
               </p>
             </div>
@@ -387,7 +387,7 @@ export function ProfileOverview() {
                 </button>
               );
             })}
-            <span className="text-[11px] leading-[1.4] text-white/40">
+            <span className="text-[11px] leading-[1.4] text-white/64">
               влияет на подписи плана — задачи одни и те же
             </span>
           </div>
@@ -399,7 +399,7 @@ export function ProfileOverview() {
                   До первой оценки:{" "}
                   <span className="physics-number text-white/85">{totalSolved}</span> из 10 задач
                 </p>
-                <p className="text-[11px] text-white/45">
+                <p className="text-[11px] text-white/64">
                   после десятого ответа появятся точность и слабые места
                 </p>
               </div>
@@ -412,8 +412,8 @@ export function ProfileOverview() {
             </div>
           ) : null}
           <p className="text-[11px] leading-[1.5] text-white/58">
-            Оценка построена только на твоих ответах в тренажёре — это не
-            прогноз балла на ЦЭ/ЦТ.
+            Считаем только по твоим ответам в тренажёре. Балл на ЦЭ/ЦТ по этому
+            угадать нельзя.
           </p>
         </Card>
       </section>
@@ -502,7 +502,7 @@ export function ProfileOverview() {
                       href={item.taskHref}
                       className="rounded-option px-1 text-[12px] font-semibold text-nova-cyan/80 transition-colors hover:text-nova-cyan focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-blue/55"
                     >
-                      {item.hasReferenceSolution ? "Открыть разбор" : "Открыть тип"}
+                      {item.hasReferenceSolution ? "Открыть решение" : "Открыть тип"}
                     </Link>
                   ) : null}
                 </div>

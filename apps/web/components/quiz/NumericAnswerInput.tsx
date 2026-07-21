@@ -164,7 +164,7 @@ export function NumericAnswerInput({
       </div>
 
       {hint ? (
-        <p id={hintId} className="text-[12px] leading-[1.5] text-white/45">
+        <p id={hintId} className="text-[12px] leading-[1.5] text-white/58">
           {hint}
         </p>
       ) : null}

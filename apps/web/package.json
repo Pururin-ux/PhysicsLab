@@ -37,12 +37,10 @@
   "devDependencies": {
     "@axe-core/playwright": "^4.12.1",
     "@playwright/test": "^1.60.0",
-    "@remotion/cli": "4.0.489",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "remotion": "4.0.489",
     "tailwindcss": "^4",
     "typescript": "^5"
   },

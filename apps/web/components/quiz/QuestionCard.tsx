@@ -108,7 +108,7 @@ export function QuestionCard({
 
       {visualActivityLabel && focus?.visualPrompt && !showSolutionContent ? (
         <div className="rounded-option border border-white/[.08] bg-white/[.025] px-3.5 py-3 text-[13px] leading-[1.6] text-white/68">
-          <p className="mb-1.5 text-[11px] font-bold uppercase tracking-[.13em] text-white/45">
+          <p className="mb-1.5 text-[11px] font-bold uppercase tracking-[.13em] text-white/58">
             {visualActivityLabel}
           </p>
           <MathText text={focus.visualPrompt} />

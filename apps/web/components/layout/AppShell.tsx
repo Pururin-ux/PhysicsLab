@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
 import { cn } from "../../lib/utils";
+import { StarField } from "./StarField";
 
 const navigation = [
   { label: "Главная", href: "/", match: (path: string) => path === "/" },
@@ -15,12 +16,12 @@ const navigation = [
 
 const mobilePrimaryNavigation = [
   { label: "Главная", href: "/", match: (path: string) => path === "/" },
-  { label: "Учиться", href: "/practice/kinematics-demo", match: (path: string) => path === "/practice/kinematics-demo" },
+  // «Учиться» ведёт к выбору темы, а не сразу в один конкретный урок.
+  { label: "Учиться", href: "/topics", match: (path: string) => path.startsWith("/topics") || path === "/practice/kinematics-demo" },
   { label: "ЦТ/ЦЭ", href: "/practice/exam-demo", match: (path: string) => path === "/practice/exam-demo" },
 ] as const;
 
 const mobileMoreNavigation = [
-  { label: "Все темы", href: "/topics", match: (path: string) => path.startsWith("/topics") },
   { label: "Формулы", href: "/formulas", match: (path: string) => path.startsWith("/formulas") },
   { label: "Задачи", href: "/tasks", match: (path: string) => path.startsWith("/tasks") || (path.startsWith("/practice/") && path !== "/practice/kinematics-demo" && path !== "/practice/exam-demo") },
   { label: "Прогресс", href: "/profile", match: (path: string) => path.startsWith("/profile") },
@@ -39,9 +40,6 @@ function Brand() {
       <span className="min-w-0">
         <span className="block text-[20px] font-[800] leading-none tracking-[-.04em] text-white">
           Physics<span className="text-nova-pink">Lab</span>
-        </span>
-        <span className="mt-1 block text-[9px] font-bold uppercase tracking-[.15em] text-white/64">
-          физика в действии
         </span>
       </span>
     </Link>
@@ -187,9 +185,10 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   return (
     <div className={cn("app-shell relative z-10 min-h-screen", theme === "light" && "content-light")}>
+      {theme === "dark" ? <StarField /> : null}
       <a href="#main-content" className="skip-link">Перейти к содержимому</a>
       <Header theme={theme} onToggleTheme={() => setTheme((current) => current === "dark" ? "light" : "dark")} />
-      <main id="main-content" tabIndex={-1} className="app-shell-main min-w-0 px-4 py-5 sm:px-6 sm:py-7 lg:px-8 lg:py-8">
+      <main id="main-content" tabIndex={-1} className="app-shell-main relative min-w-0 px-4 py-5 sm:px-6 sm:py-7 lg:px-8 lg:py-8">
         <ContextBack />
         {children}
       </main>

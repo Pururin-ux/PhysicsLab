@@ -50,7 +50,7 @@ function ExamTools() {
 
   return (
     <aside aria-label="Инструменты для решения" className="border-t border-white/[.1] pt-5 xl:border-l xl:border-t-0 xl:pl-6 xl:pt-0">
-      <p className="text-[11px] font-bold uppercase tracking-[.12em] text-white/42">Рядом с задачей</p>
+      <p className="text-[11px] font-bold uppercase tracking-[.12em] text-white/58">Рядом с задачей</p>
 
       <details className="group mt-3 border-t border-white/[.1] py-3">
         <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between text-[13px] font-bold text-white/76 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-blue/70 [&::-webkit-details-marker]:hidden">
@@ -65,7 +65,7 @@ function ExamTools() {
           placeholder="Запиши дано, формулу или промежуточный расчёт…"
           className="mt-2 w-full resize-y rounded-option border border-white/[.14] bg-space-950 px-3 py-3 text-[13px] leading-[1.55] text-white placeholder:text-white/32 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-blue/70"
         />
-        <p className="mt-2 text-[11px] leading-[1.5] text-white/42">Сохраняется только на этой странице и не отправляется с ответом.</p>
+        <p className="mt-2 text-[11px] leading-[1.5] text-white/58">Сохраняется только на этой странице и не отправляется с ответом.</p>
       </details>
 
       <details className="group border-t border-white/[.1] py-3">
@@ -121,7 +121,7 @@ export function ExamDemo() {
         <header className="mb-5 flex flex-wrap items-center justify-between gap-2 border-b border-white/[.1] pb-3">
           <div>
             <p className="text-[12px] font-bold text-white/76">Смешанная задача · тренировочный режим</p>
-            <p className="mt-1 text-[12px] text-white/44">Решение не ограничено по времени</p>
+            <p className="mt-1 text-[12px] text-white/60">Решение не ограничено по времени</p>
           </div>
           <p className="text-[12px] font-bold text-nova-cyan/70">Таймер выключен</p>
         </header>
@@ -147,20 +147,20 @@ export function ExamDemo() {
     <section aria-labelledby="exam-mode-title" className="mx-auto w-full max-w-[860px]">
       <div className="grid gap-6 border-y border-white/[.11] py-6 md:grid-cols-[minmax(0,1fr)_260px] md:items-start md:gap-8">
         <div>
-          <p className="text-[12px] font-bold text-nova-cyan/72">Спокойная тренировка</p>
+          <p className="text-[12px] font-bold text-nova-cyan/82">Тренировка без таймера</p>
           <h2 id="exam-mode-title" className="mt-2 text-[28px] font-[800] leading-tight tracking-[-.025em] text-white sm:text-[34px]">
             Смешанная тренировка
           </h2>
           <p className="mt-3 max-w-[58ch] text-[14px] leading-[1.65] text-white/66">
             В этом наборе — 10 задач из уже открытых тем. Таймер не запускается: сначала можно понять тип задачи, сделать запись в черновике и только потом отвечать.
           </p>
-          <p className="mt-3 text-[12px] leading-[1.6] text-white/48">
+          <p className="mt-3 text-[12px] leading-[1.6] text-white/60">
             Это тренировочный набор, а не полный вариант ЦТ/ЦЭ: квантовая и атомно-ядерная физика пока не включены.
           </p>
         </div>
 
         <div className="hidden border-l border-white/[.1] pl-5 md:block">
-          <p className="text-[11px] font-bold uppercase tracking-[.12em] text-white/42">Во время решения</p>
+          <p className="text-[11px] font-bold uppercase tracking-[.12em] text-white/58">Во время решения</p>
           <ul className="mt-3 space-y-2 text-[13px] leading-[1.55] text-white/64">
             <li>Черновик по желанию</li>
             <li>Подсказка только по стратегии</li>

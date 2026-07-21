@@ -112,11 +112,14 @@ test("@a11y simplified navigation and practice disclosures", async ({
   } else if (testInfo.project.name === "tablet") {
     await expect(page.getByTestId("tablet-quick-actions").getByRole("link")).toHaveCount(4);
   } else {
+    // Мобильная шапка: три первичных таба, «Задачи» живут в меню «Ещё».
     const navigation = page.getByTestId("mobile-bottom-nav");
-    await expect(navigation.getByRole("link")).toHaveCount(4);
+    await expect(navigation.getByRole("link")).toHaveCount(3);
+    await navigation.locator("summary").click();
     await expect(
       navigation.getByRole("link", { name: "Задачи", exact: true }),
     ).toHaveAttribute("aria-current", "page");
+    await navigation.locator("summary").click();
   }
 
   const helpTrigger = page.getByTestId("practice-open-help");
@@ -178,14 +181,16 @@ test("@a11y exam resume gate after an answered task", async ({ page }) => {
   expect(await scanForBlockingViolations(page)).toEqual([]);
 });
 
+// /practice/kinematics-demo стал уроком без тренажёра, поэтому карточку
+// разбора сканируем на живой тренировке динамики (тот же QuizScreen).
 test("@a11y карточка разбора после ошибки — без serious/critical", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   const taskResponse = page.waitForResponse((response) => {
     const url = new URL(response.url());
-    return url.pathname === "/api/tasks" && url.searchParams.get("template") === "mixed";
+    return url.pathname === "/api/tasks" && url.searchParams.get("template") === "dynamics-mixed";
   });
 
-  await page.goto("/practice/kinematics-demo", { waitUntil: "domcontentloaded" });
+  await page.goto("/practice/dynamics-demo", { waitUntil: "domcontentloaded" });
   const payload = (await (await taskResponse).json()) as {
     tasks: { options: { correct?: boolean; text: string }[] }[];
   };
@@ -247,7 +252,7 @@ test("@a11y числовой ввод и его разбор — без serious/
   });
   await page.route("**/api/tasks?*", async (route) => {
     const template = new URL(route.request().url()).searchParams.get("template");
-    if (template !== "mixed") {
+    if (template !== "dynamics-mixed") {
       await route.continue();
       return;
     }
@@ -258,7 +263,7 @@ test("@a11y числовой ввод и его разбор — без serious/
     });
   });
 
-  await page.goto("/practice/kinematics-demo", { waitUntil: "domcontentloaded" });
+  await page.goto("/practice/dynamics-demo", { waitUntil: "domcontentloaded" });
   await page.waitForLoadState("networkidle");
 
   const input = page.getByTestId("numeric-answer-input");
@@ -401,12 +406,12 @@ test("@a11y карточки загрузки и ошибки, notice и 404 —
     window.localStorage.setItem("physicslab-v3-progress-v1", "{broken");
   });
   await page.route("**/api/tasks?*", (route) =>
-    new URL(route.request().url()).searchParams.get("template") === "mixed"
+    new URL(route.request().url()).searchParams.get("template") === "dynamics-mixed"
       ? route.fulfill({ status: 500, contentType: "application/json", body: "{}" })
       : route.continue(),
   );
 
-  await page.goto("/practice/kinematics-demo", { waitUntil: "domcontentloaded" });
+  await page.goto("/practice/dynamics-demo", { waitUntil: "domcontentloaded" });
   await expect(page.getByTestId("quiz-load-error-card")).toBeVisible({ timeout: 10000 });
   await expect(page.getByTestId("persistence-notice")).toBeVisible();
 
@@ -423,14 +428,14 @@ test("@a11y карточки загрузки и ошибки, notice и 404 —
 
 test("@a11y восстановленная сессия анонсируется без дублей", async ({ page, request }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
-  const response = await request.get("/api/tasks?template=mixed&count=10&batch=0");
+  const response = await request.get("/api/tasks?template=dynamics-mixed&count=10&batch=0");
   expect(response.ok()).toBe(true);
   const payload = (await response.json()) as {
     tasks: { type: string; options?: { correct?: boolean }[]; answer: unknown }[];
   };
 
   await page.route("**/api/tasks?*", (route) =>
-    new URL(route.request().url()).searchParams.get("template") === "mixed"
+    new URL(route.request().url()).searchParams.get("template") === "dynamics-mixed"
       ? route.fulfill({
           status: 200,
           contentType: "application/json",
@@ -438,7 +443,7 @@ test("@a11y восстановленная сессия анонсируется
         })
       : route.continue(),
   );
-  await page.goto("/practice/kinematics-demo", { waitUntil: "domcontentloaded" });
+  await page.goto("/practice/dynamics-demo", { waitUntil: "domcontentloaded" });
   await page.waitForLoadState("networkidle");
 
   // Один ответ → reload → восстановленное answered-состояние.

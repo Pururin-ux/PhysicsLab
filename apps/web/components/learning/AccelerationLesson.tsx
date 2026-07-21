@@ -23,13 +23,10 @@ const SCREENS = [
   "Метки на дороге",
   "Стрелка спидометра",
   "Откуда м/с²",
-  "Куда смотрит ось",
   "Как это пишут",
   "Считаем вместе",
   "Теперь ты",
 ] as const;
-
-const FIRST_HINT = "Не считай. Просто вспомни, как тебя качнуло назад.";
 
 function TrolleybusScene() {
   return (
@@ -55,27 +52,31 @@ function TrolleybusScene() {
   );
 }
 
+// Метки стоят там, где троллейбус был в конце каждой секунды. Расстояния
+// между ними взяты из тех же чисел, что и весь урок (скорость 2→8 м/с):
+// за первую секунду 3 м, за вторую 5 м, за третью 7 м. Позиции на шкале
+// пропорциональны этим метрам, поэтому рост промежутков виден без слов.
 function PositionTimeline() {
   const moments = [
-    { time: "1 секунда", position: "left-[8%]" },
-    { time: "2 секунда", position: "left-[35%]" },
-    { time: "3 секунда", position: "left-[82%]" },
+    { time: "старт", position: "left-[4%]" },
+    { time: "1 с", position: "left-[22%]" },   // 3 из 15 м
+    { time: "2 с", position: "left-[52%]" },   // 8 из 15 м
+    { time: "3 с", position: "left-[94%]" },   // 15 из 15 м
+  ];
+  const gaps = [
+    { label: "3 м", position: "left-[13%]" },
+    { label: "5 м", position: "left-[37%]" },
+    { label: "7 м", position: "left-[73%]" },
   ];
 
   return (
     <figure className="py-4" aria-labelledby="position-timeline-caption">
       <div
         role="img"
-        aria-label="Метки троллейбуса через каждую секунду. Промежутки между ними всё длиннее."
-        className="relative h-28 min-w-0"
+        aria-label="Метки троллейбуса в конце каждой секунды. За первую секунду 3 метра, за вторую 5, за третью 7."
+        className="relative h-32 min-w-0"
       >
         <div className="absolute inset-x-3 top-[58px] h-px bg-white/28" aria-hidden="true" />
-        <ArrowRight
-          size={24}
-          weight="bold"
-          className="absolute right-0 top-[46px] text-nova-blue"
-          aria-hidden="true"
-        />
         {moments.map((moment) => (
           <div
             key={moment.time}
@@ -89,9 +90,21 @@ function PositionTimeline() {
             <span className="mx-auto -mt-1 block size-3 rounded-full border-2 border-nova-cyan bg-space-950 shadow-[0_0_14px_rgba(121,217,238,.45)]" />
           </div>
         ))}
+        {gaps.map((gap) => (
+          <span
+            key={gap.label}
+            aria-hidden="true"
+            className={cn(
+              "absolute top-[76px] -translate-x-1/2 whitespace-nowrap text-[13px] font-bold text-nova-cyan",
+              gap.position,
+            )}
+          >
+            {gap.label}
+          </span>
+        ))}
       </div>
       <figcaption id="position-timeline-caption" className="max-w-[64ch] text-[13px] leading-[1.6] text-white/58">
-        Каждая метка — это ещё одна секунда пути. Промежутки между ними растут.
+        Секунды одинаковые, а метры разные: 3, потом 5, потом 7.
       </figcaption>
     </figure>
   );
@@ -158,41 +171,21 @@ function ChoiceButton({
   );
 }
 
-function CatHint({ text }: { text: string }) {
-  return (
-    <aside className="pointer-events-none absolute inset-x-0 bottom-0 z-20 h-0" aria-label="Кот подсказывает">
-      <div className="absolute bottom-[-10px] right-1 h-[158px] w-[143px] sm:bottom-[-13px] sm:right-5 sm:h-[246px] sm:w-[223px]">
-        <Image
-          src="/art/production/curator-mechanics-helper.webp"
-          alt="Чёрный кот в фиолетовом платке показывает лапой на троллейбус"
-          fill
-          sizes="(max-width: 640px) 143px, 223px"
-          className="object-contain object-bottom drop-shadow-[0_14px_20px_rgba(232,182,109,.12)]"
-        />
-      </div>
-      <div className="absolute bottom-4 right-[132px] w-[154px] border-l-2 border-[#e8b66d]/65 pl-3 sm:bottom-7 sm:right-[215px] sm:w-[230px]">
-        <p className="text-[11px] font-bold uppercase tracking-[.1em] text-[#f0c98d]">Кот шепчет</p>
-        <p className="mt-1 text-[11px] leading-[1.45] text-white/80 sm:text-[12px] sm:leading-[1.55]">{text}</p>
-      </div>
-    </aside>
-  );
-}
-
 function FormulaCatHint() {
   return (
-    <aside className="pointer-events-none absolute inset-0 z-10" aria-label="Кот подсказывает, как читать запись">
-      <div className="absolute bottom-0 right-1 h-[187px] w-[116px] sm:right-4 sm:h-[235px] sm:w-[145px]">
+    <aside className="mt-4 flex items-end gap-3" aria-label="Кот подсказывает, как читать запись">
+      <div className="relative h-[132px] w-[82px] shrink-0 sm:h-[164px] sm:w-[102px]">
         <Image
           src="/art/production/curator-mechanics-thinking.webp"
-          alt="Чёрный кот задумался у нижнего края листа с формулой"
+          alt="Чёрный кот задумался"
           fill
-          sizes="(max-width: 640px) 116px, 145px"
-          className="object-contain object-bottom drop-shadow-[0_12px_18px_rgba(232,182,109,.1)]"
+          sizes="(max-width: 640px) 82px, 102px"
+          className="object-contain object-bottom"
         />
       </div>
-      <div className="absolute bottom-5 left-5 right-[128px] border-l-2 border-[#e8b66d]/55 pl-3 sm:left-7 sm:right-[195px] sm:max-w-[420px]">
-        <p className="text-[10px] font-bold uppercase tracking-[.1em] text-[#f0c98d]">Прочитай вслух</p>
-        <p className="mt-1 text-[11px] leading-[1.5] text-white/68 sm:text-[12px]">
+      <div className="border-l-2 border-[#e8b66d]/55 pl-3">
+        <p className="text-[11px] font-bold uppercase tracking-[.1em] text-[#f0c98d]">Прочитай вслух</p>
+        <p className="mt-1 text-[13px] leading-[1.55] text-white/72 sm:text-[14px]">
           «Сколько скорости прибавилось, делим на то, за сколько секунд».
         </p>
       </div>
@@ -202,11 +195,9 @@ function FormulaCatHint() {
 
 function CatStateHint({
   state,
-  label,
   text,
 }: {
   state: "thinking" | "support";
-  label: string;
   text: string;
 }) {
   const alt = state === "thinking"
@@ -214,7 +205,7 @@ function CatStateHint({
     : "Чёрный кот сидит рядом и поддерживает";
 
   return (
-    <aside className="flex max-w-[470px] items-end gap-3" aria-label={`Кот говорит: ${label}`}>
+    <aside className="flex max-w-[470px] items-end gap-3" aria-label="Кот рядом">
       <div className="relative h-[180px] w-[132px] shrink-0 sm:h-[200px] sm:w-[148px]">
         <Image
           src={`/art/production/curator-mechanics-${state}.webp`}
@@ -225,8 +216,7 @@ function CatStateHint({
         />
       </div>
       <div className="mb-3 border-l-2 border-[#e8b66d]/55 pl-3">
-        <p className="text-[11px] font-bold uppercase tracking-[.1em] text-[#f0c98d]">{label}</p>
-        <p className="mt-1 text-[13px] leading-[1.55] text-white/68">{text}</p>
+        <p className="text-[13px] leading-[1.55] text-white/68">{text}</p>
       </div>
     </aside>
   );
@@ -244,7 +234,7 @@ function parseNumber(raw: string) {
 function hintForWrongAnswer(raw: string) {
   const value = parseNumber(raw);
   if (value === null) return "Впиши одно число. Единицы уже стоят справа от поля.";
-  if (value === -3) return "Минус здесь не нужен: троллейбус едет туда же, куда смотрит стрелка оси, и скорость растёт.";
+  if (value === -3) return "Минус здесь не нужен: скорость выросла, а не упала.";
   if (value === 5) return "Похоже, ты взял только последнюю скорость. А прибавилось всего 10 − 4 = 6 м/с.";
   if (value === 7) return "Это середина между 4 и 10. А нужна разница: на сколько скорость выросла.";
   if (value === 12) return "Скорости не складывают. Смотрим, насколько выросла: 10 − 4.";
@@ -256,7 +246,6 @@ export function AccelerationLesson() {
   const [screen, setScreen] = useState(0);
   const [feeling, setFeeling] = useState<"grows" | "same" | null>(null);
   const [unitGuess, setUnitGuess] = useState<"two" | "six" | null>(null);
-  const [direction, setDirection] = useState<"right" | "left" | null>(null);
   const [workedAnswer, setWorkedAnswer] = useState("");
   const [workedChecked, setWorkedChecked] = useState(false);
   const [ownWords, setOwnWords] = useState("");
@@ -266,17 +255,14 @@ export function AccelerationLesson() {
 
   const workedCorrect = parseNumber(workedAnswer) === 2;
   const finalCorrect = parseNumber(finalAnswer) === 3;
-  const axisReady = direction === "right";
   const canContinue =
     screen === 0
       ? feeling !== null
       : screen === 3
         ? unitGuess !== null
-        : screen === 4
-          ? axisReady
-          : screen === 6
-            ? workedChecked && workedCorrect && ownWords.trim().length >= 8
-            : true;
+        : screen === 5
+          ? workedChecked && workedCorrect && ownWords.trim().length >= 8
+          : true;
 
   function goToScreen(next: number) {
     setScreen(next);
@@ -291,20 +277,14 @@ export function AccelerationLesson() {
             Троллейбус отходит от остановки
           </h2>
           <div className="relative isolate overflow-hidden rounded-[18px] border border-[#d6a6c9]/24 bg-[linear-gradient(145deg,#2b193f_0%,#17152f_58%,#10142d_100%)] shadow-[0_26px_70px_rgba(3,4,22,.32)]">
-            <div className="relative">
-              <TrolleybusScene />
-              <CatHint text={FIRST_HINT} />
-            </div>
+            <TrolleybusScene />
             <fieldset className="relative isolate border-t border-[#d6a6c9]/22 px-5 py-5 text-white sm:px-7 sm:py-6">
               <div className="pointer-events-none absolute inset-0 -z-10 bg-[url('/art/production/paper-texture.webp')] bg-[length:540px_auto] opacity-[.045] mix-blend-screen" aria-hidden="true" />
               <legend className="sr-only">Что происходит со скоростью троллейбуса</legend>
               <p className="text-[24px] font-[800] leading-[1.08] tracking-[-.025em] sm:text-[30px]">
                 Ты стоишь в салоне. Что со скоростью?
               </p>
-              <p className="mt-2 max-w-[64ch] text-[13px] leading-[1.55] text-white/62">
-                Отвечай как чувствуешь. Правильного ответа тут пока никто не требует.
-              </p>
-              <div className="mt-3 grid gap-x-6 sm:grid-cols-2">
+              <div className="mt-4 grid gap-x-6 sm:grid-cols-2">
                 <SceneChoice selected={feeling === "grows"} onClick={() => setFeeling("grows")}>
                   Растёт каждую секунду
                 </SceneChoice>
@@ -410,44 +390,6 @@ export function AccelerationLesson() {
 
     if (screen === 4) {
       return (
-        <div className="mx-auto max-w-[860px] py-2">
-          <h2 ref={headingRef} tabIndex={-1} className="text-[30px] font-[800] leading-tight tracking-[-.025em] text-white focus:outline-none sm:text-[40px]">
-            Куда смотрит стрелка
-          </h2>
-          <p className="mt-3 max-w-[64ch] text-[15px] leading-[1.7] text-white/70">
-            Физики рисуют вдоль дороги стрелку. Движение в её сторону считают плюсом, в обратную — минусом.
-            Троллейбус едет вправо. Куда направим стрелку?
-          </p>
-          <div className="mt-5 flex items-center gap-3 border-y border-white/[.12] py-5" aria-hidden="true">
-            <span className="text-[12px] font-bold text-white/50">остановка</span>
-            <span className="h-[3px] flex-1 bg-nova-indigo" />
-            <ArrowRight size={30} weight="bold" className="text-nova-blue" />
-          </div>
-          <fieldset className="mt-5">
-            <legend className="sr-only">Куда направить стрелку</legend>
-            <div className="grid gap-3 sm:grid-cols-2">
-              <ChoiceButton selected={direction === "right"} onClick={() => setDirection("right")}>Вправо, куда едем</ChoiceButton>
-              <ChoiceButton selected={direction === "left"} onClick={() => setDirection("left")}>Влево, назад к остановке</ChoiceButton>
-            </div>
-          </fieldset>
-          {direction ? (
-            <div role="status" className={cn("mt-5 max-w-[64ch] border-l-2 pl-4 text-[14px] leading-[1.65] text-white/76", axisReady ? "border-nova-cyan/60" : "border-nova-pink/60")}>
-              {axisReady ? (
-                <p>Удобно: троллейбус едет туда же, куда смотрит стрелка, и все числа выйдут с плюсом.</p>
-              ) : (
-                <p>
-                  Так тоже можно, физика не сломается. Но тогда и скорость, и разгон запишутся с минусом.
-                  Давай возьмём стрелку вправо, чтобы числа были попроще.
-                </p>
-              )}
-            </div>
-          ) : null}
-        </div>
-      );
-    }
-
-    if (screen === 5) {
-      return (
         <div className="mx-auto max-w-[900px] py-2">
           <h2 ref={headingRef} tabIndex={-1} className="text-[30px] font-[800] leading-tight tracking-[-.025em] text-white focus:outline-none sm:text-[40px]">
             Та же мысль, только короче
@@ -489,13 +431,12 @@ export function AccelerationLesson() {
               <p className="text-[11px] font-bold uppercase tracking-[.1em] text-[#f0c98d]">Словами</p>
               <p className="mt-1 text-[15px] leading-[1.6] text-white/78">на сколько выросла скорость ÷ за сколько секунд</p>
             </li>
-            <li className="relative">
+            <li>
               <FormulaBox
                 label="То же значками"
                 formula={"a=\\frac{\\Delta v}{\\Delta t}=\\frac{v-v_0}{\\Delta t}"}
                 caption="У троллейбуса: (8 − 2) ÷ 3 = 2 м/с²."
                 surface="lesson"
-                className="min-h-[350px] pb-[188px] sm:min-h-[280px] sm:pb-[100px] sm:pr-[205px]"
               />
               <FormulaCatHint />
             </li>
@@ -504,13 +445,13 @@ export function AccelerationLesson() {
       );
     }
 
-    if (screen === 6) {
+    if (screen === 5) {
       return (
         <div className="mx-auto max-w-[900px] py-2">
           <h2 ref={headingRef} tabIndex={-1} className="text-[30px] font-[800] leading-tight tracking-[-.025em] text-white focus:outline-none sm:text-[40px]">
             Первую половину сделаю я
           </h2>
-          <p className="mt-3 max-w-[64ch] text-[15px] leading-[1.7] text-white/70">Троллейбус разогнался с 2 до 8 м/с за 3 секунды. Стрелка оси смотрит вперёд, куда он едет.</p>
+          <p className="mt-3 max-w-[64ch] text-[15px] leading-[1.7] text-white/70">Троллейбус разогнался с 2 до 8 м/с за 3 секунды.</p>
           <ol className="mt-5 space-y-4 border-y border-white/[.12] py-4">
             <li className="grid gap-1 sm:grid-cols-[28px_1fr]">
               <span className="font-bold text-nova-cyan">1.</span>
@@ -567,7 +508,7 @@ export function AccelerationLesson() {
     return (
       <div className="mx-auto max-w-[900px] py-2">
         <h2 ref={headingRef} tabIndex={-1} className="text-[30px] font-[800] leading-tight tracking-[-.025em] text-white focus:outline-none sm:text-[40px]">Теперь целиком сам</h2>
-        <p className="mt-3 max-w-[64ch] text-[15px] leading-[1.7] text-white/70">Другой троллейбус разогнался с 4 до 10 м/с за 2 секунды. Стрелка оси смотрит вперёд. На сколько он прибавлял скорость каждую секунду?</p>
+        <p className="mt-3 max-w-[64ch] text-[15px] leading-[1.7] text-white/70">Другой троллейбус разогнался с 4 до 10 м/с за 2 секунды. На сколько он прибавлял скорость каждую секунду?</p>
         <div className="mt-5 max-w-[430px] border-y border-white/[.12] py-5">
           <label htmlFor="final-answer" className="text-[14px] font-bold text-white">Твой ответ</label>
           <div className="mt-2 flex items-center gap-2">
@@ -597,7 +538,6 @@ export function AccelerationLesson() {
           <div className="mt-5">
             <CatStateHint
               state="support"
-              label={finalCorrect ? "Кот доволен" : "Кот рядом"}
               text={finalCorrect ? "Ты дошёл от «меня качнуло в троллейбусе» до настоящей формулы. Это и есть ускорение." : "Ошибка не про тебя, а про один шаг в решении. Мы его уже нашли."}
             />
           </div>

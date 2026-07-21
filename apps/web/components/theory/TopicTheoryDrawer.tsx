@@ -171,7 +171,7 @@ export function TopicTheoryDrawer({
       ) : null}
 
       {normalizedSubtopics.length > 1 ? (
-        <label className="mt-4 flex flex-col gap-1.5 text-[11px] font-bold uppercase tracking-[.12em] text-white/45">
+        <label className="mt-4 flex flex-col gap-1.5 text-[11px] font-bold uppercase tracking-[.12em] text-white/58">
           Другой раздел
           <select
             data-testid="help-section-selector"

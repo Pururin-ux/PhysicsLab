@@ -20,14 +20,6 @@ const topicArt = {
   optics: "/art/production/topic-optics-cozy.webp",
 } as const;
 
-const topicArtPosition = {
-  kinematics: "object-[center_45%]",
-  dynamics: "object-[center_55%]",
-  electrodynamics: "object-[center_35%]",
-  thermodynamics: "object-[center_52%]",
-  optics: "object-[center_40%]",
-} as const;
-
 const routeTopics = [topics[0], topics[1], topics[2], topics[4], topics[3]] as const;
 
 const topicTone = {
@@ -73,18 +65,6 @@ export function TopicCards() {
           </p>
         </div>
 
-        <div className="relative mb-7 hidden lg:block" aria-hidden="true">
-          <div className="absolute left-[8%] right-[8%] top-5 h-px bg-[linear-gradient(90deg,#F39A82_0%,#8D83F4_25%,#79D9EE_50%,#E079C7_75%,#E8B66D_100%)] opacity-65" />
-          <div className="relative grid grid-cols-5 gap-3">
-            {routeTopics.map((topic, index) => (
-              <div key={topic.id} className="flex flex-col items-center text-center">
-                <span className="grid size-10 place-items-center rounded-full border border-nova-blue/48 bg-space-950 text-[12px] font-extrabold text-nova-blue shadow-[0_0_18px_rgba(101,88,216,.16)]">{index + 1}</span>
-                <span className="mt-2 text-[11px] font-bold text-white/58">{topic.title}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-
         <ol className="relative grid gap-5 md:grid-cols-2 xl:grid-cols-3">
           {routeTopics.map((topic, index) => {
             const topicProgress = mounted ? progress.topics[topic.id] : null;
@@ -97,8 +77,8 @@ export function TopicCards() {
                   href={topic.href}
                   className={`group block overflow-hidden rounded-card border border-t-2 border-white/[.12] bg-space-900 shadow-[0_18px_46px_rgba(0,0,0,.25)] transition-[transform,border-color,box-shadow] hover:-translate-y-1 hover:border-nova-blue/55 hover:shadow-[0_24px_58px_rgba(0,0,0,.28),0_0_22px_rgba(101,88,216,.12)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-blue/70 ${topicTone[topic.id].border}`}
                 >
-                  <div className="relative h-[158px] overflow-hidden bg-space-950">
-                    <Image src={topicArt[topic.id]} alt="" fill priority={index === 0} sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw" className={`object-cover transition-transform duration-500 group-hover:scale-[1.035] ${topicArtPosition[topic.id]}`} />
+                  <div className="relative aspect-square overflow-hidden bg-space-950">
+                    <Image src={topicArt[topic.id]} alt="" fill priority={index === 0} sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw" className="object-cover transition-[transform,filter] duration-500 group-hover:scale-[1.03] group-hover:brightness-[1.07]" />
                     <div className="flex items-start justify-between gap-3">
                       <span className="absolute left-4 top-4 grid size-9 place-items-center rounded-full border border-nova-pink/34 bg-space-950/75 text-[12px] font-extrabold text-nova-pink backdrop-blur-sm">{index + 1}</span>
                       <span className="absolute right-4 top-4 rounded-full border border-white/[.12] bg-space-950/72 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[.1em] text-white/70 backdrop-blur-sm">{hasProgress ? "в процессе" : index === 0 ? "начни здесь" : "не начато"}</span>
@@ -136,9 +116,9 @@ export function TopicCards() {
 
         {upcomingTopics.map((topic) => (
           <div key={topic.id} className="rounded-card border border-white/[.09] bg-space-900/72 p-5 sm:p-6">
-            <p className="flex items-center gap-2 text-[11px] font-extrabold uppercase tracking-[.13em] text-white/46"><CheckCircle size={16} weight="duotone" />Следующий раздел</p>
+            <p className="flex items-center gap-2 text-[11px] font-extrabold uppercase tracking-[.13em] text-white/58"><CheckCircle size={16} weight="duotone" />Следующий раздел</p>
             <h3 className="mt-2 text-[19px] font-[800] text-white/84">{topic.title}</h3>
-            <p className="mt-2 text-[13px] leading-[1.6] text-white/52">{topic.description}</p>
+            <p className="mt-2 text-[13px] leading-[1.6] text-white/60">{topic.description}</p>
             <p className="mt-4 text-[11px] font-bold uppercase tracking-[.1em] text-nova-pink/72">готовится</p>
           </div>
         ))}

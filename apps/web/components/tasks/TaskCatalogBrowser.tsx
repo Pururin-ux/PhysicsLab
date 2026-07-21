@@ -310,7 +310,7 @@ export function TaskCatalogBrowser({ entries, coverage }: TaskCatalogBrowserProp
           <p className="mt-2 text-[12px] font-semibold text-white/50">
             4 раздела с задачами · 2 раздела без задач
           </p>
-          <p className="mt-1 text-[12px] leading-[1.55] text-white/45">
+          <p className="mt-1 text-[12px] leading-[1.55] text-white/58">
             Количество типов относится ко всему каталогу, а не к текущему фильтру.
           </p>
 
@@ -325,7 +325,7 @@ export function TaskCatalogBrowser({ entries, coverage }: TaskCatalogBrowserProp
                   </span>
                 </div>
                 <p className="mt-1 text-[12px] leading-[1.55] text-white/55">{section.summary}</p>
-                <ul className="mt-2 space-y-1 text-[12px] leading-[1.5] text-white/45">
+                <ul className="mt-2 space-y-1 text-[12px] leading-[1.5] text-white/58">
                   {section.knownGaps.map((gap) => (
                     <li key={gap}>Не покрыто: {gap}</li>
                   ))}

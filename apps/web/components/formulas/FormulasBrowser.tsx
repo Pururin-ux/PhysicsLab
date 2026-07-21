@@ -191,25 +191,28 @@ export function FormulasBrowser({ groups }: FormulasBrowserProps) {
           </p>
         ) : null}
 
-        {!isFiltering && !selectedEntry ? (
-          <nav aria-label="Разделы справочника" className="flex flex-wrap gap-2">
-            {groups.map((group) => (
-              <a
-                key={group.id}
-                href={`#${group.id}`}
-                className={`inline-flex min-h-9 items-center gap-2 rounded-option border px-3.5 text-[13px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-blue/65 focus-visible:ring-offset-2 focus-visible:ring-offset-space-950 ${
-                  group.status === "soon"
-                    ? "border-white/[.11] bg-white/[.025] text-white/68 hover:border-white/24 hover:text-white"
-                    : "border-white/[.12] bg-white/[.03] text-white/75 hover:border-nova-blue/50 hover:text-white"
-                }`}
-              >
-                <span aria-hidden="true" className={`h-1.5 w-1.5 rounded-full ${dotClassByTone[group.badgeTone]}`} />
-                {group.title}
-              </a>
-            ))}
-          </nav>
-        ) : null}
       </div>
+
+      {!isFiltering && !selectedEntry ? (
+        // Липкая полоса разделов: живёт на верхнем уровне компонента, поэтому
+        // «прилипает» на всю высоту справочника — до любой группы один клик.
+        <nav aria-label="Разделы справочника" className="sticky top-[64px] z-20 -mx-2 -my-4 flex flex-nowrap gap-2 overflow-x-auto rounded-[14px] bg-space-950/88 px-2 py-2 backdrop-blur-md [scrollbar-width:none] md:top-[68px] md:flex-wrap md:overflow-visible [&::-webkit-scrollbar]:hidden">
+          {groups.map((group) => (
+            <a
+              key={group.id}
+              href={`#${group.id}`}
+              className={`inline-flex min-h-9 shrink-0 items-center gap-2 rounded-option border px-3.5 text-[13px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-blue/65 focus-visible:ring-offset-2 focus-visible:ring-offset-space-950 ${
+                group.status === "soon"
+                  ? "border-white/[.11] bg-white/[.025] text-white/68 hover:border-white/24 hover:text-white"
+                  : "border-white/[.12] bg-white/[.03] text-white/75 hover:border-nova-blue/50 hover:text-white"
+              }`}
+            >
+              <span aria-hidden="true" className={`h-1.5 w-1.5 rounded-full ${dotClassByTone[group.badgeTone]}`} />
+              {group.title}
+            </a>
+          ))}
+        </nav>
+      ) : null}
 
       {!hasResults && (isFiltering || formulaFromUrl) ? (
         <Card className="border-white/[.08] !p-6 text-center">
@@ -239,7 +242,7 @@ export function FormulasBrowser({ groups }: FormulasBrowserProps) {
             aria-label={`Формулы: ${group.title}`}
           >
             <div className={`formula-section-header ${headerClassByTone[group.badgeTone]}`}>
-              <div className="formula-curator-portrait relative size-[86px] shrink-0 overflow-hidden rounded-[17px] sm:size-[104px]">
+              <div className="formula-curator-portrait relative size-[124px] shrink-0 overflow-hidden rounded-[19px] sm:size-[168px]">
                 {curator ? (
                   <Image
                     src={curator.src}
