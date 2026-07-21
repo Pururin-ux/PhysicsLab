@@ -70,7 +70,7 @@ interface QuizSessionProps {
 }
 
 const nextStepByTopic: Record<string, { href: string; label: string }> = {
-  kinematics: { href: "/practice/dynamics-demo", label: "Дальше: Динамика" },
+  kinematics: { href: "/practice/dynamics-lesson", label: "Дальше: Динамика" },
   dynamics: { href: "/practice/exam-demo", label: "Дальше: смешанная тренировка" },
   electrodynamics: { href: "/practice/thermo-demo", label: "Дальше: Термодинамика" },
   thermodynamics: { href: "/practice/optics-demo", label: "Дальше: Оптика" },

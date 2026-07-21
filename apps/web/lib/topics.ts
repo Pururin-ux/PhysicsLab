@@ -27,7 +27,7 @@ export const topics = [
     id: "dynamics",
     title: "Динамика",
     description: "Силы, трение, наклонная плоскость, импульс и плотность тел.",
-    href: "/practice/dynamics-demo",
+    href: "/practice/dynamics-lesson",
     skillsCount: getSkillsCount("dynamics"),
     modeLabel: "силы и движение",
   },

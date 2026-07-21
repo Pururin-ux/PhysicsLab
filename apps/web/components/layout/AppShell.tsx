@@ -7,23 +7,29 @@ import { useEffect, useState, type ReactNode } from "react";
 import { cn } from "../../lib/utils";
 import { StarField } from "./StarField";
 
+// Пошаговые уроки (не тренажёры): в навигации они относятся к «Темам/Учиться»,
+// а не к «Задачам». Держим список в одном месте, чтобы все match-и совпадали.
+const LESSON_PATHS = ["/practice/kinematics-demo", "/practice/dynamics-lesson"];
+const isLessonPath = (path: string) => LESSON_PATHS.includes(path);
+const isPracticePath = (path: string) => path.startsWith("/practice/") && !isLessonPath(path);
+
 const navigation = [
   { label: "Главная", href: "/", match: (path: string) => path === "/" },
-  { label: "Темы", href: "/topics", match: (path: string) => path.startsWith("/topics") || path === "/practice/kinematics-demo" },
+  { label: "Темы", href: "/topics", match: (path: string) => path.startsWith("/topics") || isLessonPath(path) },
   { label: "Формулы", href: "/formulas", match: (path: string) => path.startsWith("/formulas") },
-  { label: "Задачи", href: "/tasks", match: (path: string) => path.startsWith("/tasks") || (path.startsWith("/practice/") && path !== "/practice/kinematics-demo") },
+  { label: "Задачи", href: "/tasks", match: (path: string) => path.startsWith("/tasks") || isPracticePath(path) },
 ] as const;
 
 const mobilePrimaryNavigation = [
   { label: "Главная", href: "/", match: (path: string) => path === "/" },
   // «Учиться» ведёт к выбору темы, а не сразу в один конкретный урок.
-  { label: "Учиться", href: "/topics", match: (path: string) => path.startsWith("/topics") || path === "/practice/kinematics-demo" },
+  { label: "Учиться", href: "/topics", match: (path: string) => path.startsWith("/topics") || isLessonPath(path) },
   { label: "ЦТ/ЦЭ", href: "/practice/exam-demo", match: (path: string) => path === "/practice/exam-demo" },
 ] as const;
 
 const mobileMoreNavigation = [
   { label: "Формулы", href: "/formulas", match: (path: string) => path.startsWith("/formulas") },
-  { label: "Задачи", href: "/tasks", match: (path: string) => path.startsWith("/tasks") || (path.startsWith("/practice/") && path !== "/practice/kinematics-demo" && path !== "/practice/exam-demo") },
+  { label: "Задачи", href: "/tasks", match: (path: string) => path.startsWith("/tasks") || (isPracticePath(path) && path !== "/practice/exam-demo") },
   { label: "Прогресс", href: "/profile", match: (path: string) => path.startsWith("/profile") },
 ] as const;
 
