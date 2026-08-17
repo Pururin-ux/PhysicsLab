@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "types": ["node"]
+  },
+  "include": [],
+  "exclude": [
+    "apps/web/node_modules/**",
+    "apps/web/.next/**",
+    "artifacts/**",
+    "dist/**",
+    "legacy/**",
+    "node_modules/**",
+    "output/**",
+    "prototypes/**"
+  ]
+}

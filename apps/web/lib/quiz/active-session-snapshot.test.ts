@@ -1,0 +1,485 @@
+import assert from "node:assert/strict";
+import test from "node:test";
+import {
+  ACTIVE_QUIZ_SNAPSHOT_KEY,
+  ACTIVE_QUIZ_SNAPSHOT_MAX_AGE_MS,
+  ACTIVE_QUIZ_SNAPSHOT_VERSION,
+  buildSnapshot,
+  clearExamResumeCandidate,
+  clearActiveQuizSnapshot,
+  readActiveQuizSnapshot,
+  readExamResumeCandidate,
+  snapshotMatches,
+  writeActiveQuizSnapshot,
+  type ActiveQuizSnapshot,
+} from "./active-session-snapshot.ts";
+import type { QuizSessionState } from "../../components/quiz/quiz-session-store.ts";
+
+// sessionStorage-стаб для node-тестов.
+function installSessionStorage(overrides: Partial<Storage> = {}) {
+  const data = new Map<string, string>();
+  const storage = {
+    getItem: (key: string) => data.get(key) ?? null,
+    setItem: (key: string, value: string) => void data.set(key, value),
+    removeItem: (key: string) => void data.delete(key),
+    clear: () => data.clear(),
+    key: () => null,
+    get length() {
+      return data.size;
+    },
+    ...overrides,
+  } as Storage;
+
+  (globalThis as { window?: unknown }).window = { sessionStorage: storage };
+  return data;
+}
+
+function uninstall() {
+  delete (globalThis as { window?: unknown }).window;
+}
+
+const activeSession: QuizSessionState = {
+  phase: "active",
+  currentIndex: 3,
+  selectedOptionId: null,
+  answers: [
+    {
+      format: "single_choice",
+      taskId: "t-1",
+      blueprint: "free-fall",
+      isCorrect: true,
+      attempt: 1,
+      taskTrap: "ловушка",
+      response: { kind: "single_choice", optionId: "a" },
+      selectedOptionId: "a",
+      correctOptionId: "a",
+    },
+    {
+      format: "numeric_input",
+      taskId: "t-2",
+      blueprint: "plane-mirror-separation",
+      isCorrect: false,
+      attempt: 1,
+      taskTrap: "ловушка",
+      selectedMisconception: "взял d",
+      response: { kind: "numeric_input", raw: "40", value: 40 },
+      correctValue: 80,
+      unit: "см",
+    },
+    {
+      format: "single_choice",
+      taskId: "t-3",
+      blueprint: "vt-slope",
+      isCorrect: true,
+      attempt: 1,
+      taskTrap: "",
+      response: { kind: "single_choice", optionId: "b" },
+      selectedOptionId: "b",
+      correctOptionId: "b",
+    },
+  ],
+  score: 2,
+  streak: 1,
+  total: 10,
+};
+
+const taskIds = ["t-1", "t-2", "t-3", "t-4", "t-5", "t-6", "t-7", "t-8", "t-9", "t-10"];
+
+function makeSnapshot(now = Date.now()): ActiveQuizSnapshot {
+  const snapshot = buildSnapshot({
+    attemptId: "attempt-test-0001",
+    template: "mixed",
+    topic: "Кинематика",
+    title: "Кинематика",
+    sessionKind: "practice",
+    batch: 2,
+    taskIds,
+    session: activeSession,
+    now,
+  });
+  assert.ok(snapshot);
+  return snapshot!;
+}
+
+function makeExamSnapshot(
+  phase: "active" | "answered" = "active",
+  now = Date.now(),
+): ActiveQuizSnapshot {
+  const snapshot = buildSnapshot({
+    attemptId: "exam-attempt-0001",
+    template: "exam",
+    topic: "Смешанная тренировка",
+    title: "Смешанная тренировка · открытые темы",
+    sessionKind: "exam",
+    batch: 4,
+    taskIds,
+    session: {
+      ...activeSession,
+      phase,
+      currentIndex: phase === "answered" ? 2 : 3,
+    },
+    now,
+  });
+  assert.ok(snapshot);
+  return snapshot;
+}
+
+test("exam resume candidate: active and answered snapshots expose compact metadata", () => {
+  installSessionStorage();
+  try {
+    writeActiveQuizSnapshot(makeExamSnapshot("active"));
+    assert.deepEqual(readExamResumeCandidate(), {
+      attemptId: "exam-attempt-0001",
+      batch: 4,
+      currentTaskNumber: 4,
+      total: 10,
+      phase: "active",
+      savedAt: readExamResumeCandidate()?.savedAt,
+    });
+
+    writeActiveQuizSnapshot(makeExamSnapshot("answered"));
+    const answered = readExamResumeCandidate();
+    assert.equal(answered?.phase, "answered");
+    assert.equal(answered?.currentTaskNumber, 3);
+  } finally {
+    uninstall();
+  }
+});
+
+test("exam resume candidate ignores and preserves practice or another template", () => {
+  const data = installSessionStorage();
+  try {
+    const practice = makeSnapshot();
+    writeActiveQuizSnapshot(practice);
+    assert.equal(readExamResumeCandidate(), null);
+    assert.equal(data.has(ACTIVE_QUIZ_SNAPSHOT_KEY), true);
+
+    const otherTemplate = { ...makeExamSnapshot(), template: "mixed" };
+    writeActiveQuizSnapshot(otherTemplate);
+    assert.equal(readExamResumeCandidate(), null);
+    assert.equal(data.has(ACTIVE_QUIZ_SNAPSHOT_KEY), true);
+  } finally {
+    uninstall();
+  }
+});
+
+test("exam resume candidate follows corrupt, expired and future-version policy", () => {
+  const data = installSessionStorage();
+  try {
+    data.set(ACTIVE_QUIZ_SNAPSHOT_KEY, "{broken");
+    assert.equal(readExamResumeCandidate(), null);
+    assert.equal(data.has(ACTIVE_QUIZ_SNAPSHOT_KEY), false);
+
+    writeActiveQuizSnapshot(
+      makeExamSnapshot("active", Date.now() - ACTIVE_QUIZ_SNAPSHOT_MAX_AGE_MS - 1),
+    );
+    assert.equal(readExamResumeCandidate(), null);
+    assert.equal(data.has(ACTIVE_QUIZ_SNAPSHOT_KEY), false);
+
+    data.set(
+      ACTIVE_QUIZ_SNAPSHOT_KEY,
+      JSON.stringify({ ...makeExamSnapshot(), version: ACTIVE_QUIZ_SNAPSHOT_VERSION + 1 }),
+    );
+    assert.equal(readExamResumeCandidate(), null);
+    assert.equal(data.has(ACTIVE_QUIZ_SNAPSHOT_KEY), true);
+  } finally {
+    uninstall();
+  }
+});
+
+test("clearExamResumeCandidate clears only the matching exam attempt", () => {
+  const data = installSessionStorage();
+  try {
+    writeActiveQuizSnapshot(makeExamSnapshot());
+    assert.equal(clearExamResumeCandidate("another-attempt"), false);
+    assert.equal(data.has(ACTIVE_QUIZ_SNAPSHOT_KEY), true);
+    assert.equal(clearExamResumeCandidate("exam-attempt-0001"), true);
+    assert.equal(data.has(ACTIVE_QUIZ_SNAPSHOT_KEY), false);
+
+    writeActiveQuizSnapshot(makeSnapshot());
+    assert.equal(clearExamResumeCandidate("attempt-test-0001"), false);
+    assert.equal(data.has(ACTIVE_QUIZ_SNAPSHOT_KEY), true);
+  } finally {
+    uninstall();
+  }
+});
+
+test("exam resume candidate handles unavailable sessionStorage", () => {
+  installSessionStorage({
+    getItem: () => {
+      throw new Error("blocked");
+    },
+  });
+  try {
+    assert.doesNotThrow(() => readExamResumeCandidate());
+    assert.equal(readExamResumeCandidate(), null);
+  } finally {
+    uninstall();
+  }
+});
+
+test("focused five-task practice snapshot remains strictly recoverable", () => {
+  const focusedTaskIds = ["ohm-1", "ohm-2", "ohm-3", "ohm-4", "ohm-5"];
+  const focusedSession: QuizSessionState = {
+    phase: "active",
+    currentIndex: 2,
+    selectedOptionId: null,
+    answers: activeSession.answers.slice(0, 2).map((answer, index) => ({
+      ...answer,
+      taskId: focusedTaskIds[index],
+      blueprint: "ohm-law",
+    })),
+    score: 1,
+    streak: 0,
+    total: 5,
+  };
+  const snapshot = buildSnapshot({
+    attemptId: "focused-attempt-0001",
+    template: "ohm-law",
+    topic: "Электродинамика",
+    title: "Закон Ома",
+    topicId: "electrodynamics",
+    sessionKind: "practice",
+    batch: 3,
+    taskIds: focusedTaskIds,
+    session: focusedSession,
+  });
+
+  assert.ok(snapshot);
+  assert.equal(snapshot.session.total, 5);
+  assert.equal(
+    snapshotMatches(snapshot, {
+      attemptId: "focused-attempt-0001",
+      template: "ohm-law",
+      topic: "Электродинамика",
+      topicId: "electrodynamics",
+      sessionKind: "practice",
+      taskIds: focusedTaskIds,
+    }),
+    true,
+  );
+  assert.equal(
+    snapshotMatches(snapshot, {
+      attemptId: "focused-attempt-0001",
+      template: "ohm-law",
+      topic: "Электродинамика",
+      topicId: "electrodynamics",
+      sessionKind: "practice",
+      taskIds: [...focusedTaskIds, "ohm-6"],
+    }),
+    false,
+  );
+});
+
+
+test("round-trip: снапшот пишется и читается", () => {
+  installSessionStorage();
+  try {
+    writeActiveQuizSnapshot(makeSnapshot());
+    const result = readActiveQuizSnapshot();
+    assert.equal(result.ok, true);
+    if (result.ok) {
+      assert.equal(result.snapshot.batch, 2);
+      assert.equal(result.snapshot.attemptId, "attempt-test-0001");
+      assert.equal(result.snapshot.title, "Кинематика");
+      assert.equal(result.snapshot.session.currentIndex, 3);
+      assert.equal(result.snapshot.session.answers.length, 3);
+      assert.equal(result.snapshot.version, ACTIVE_QUIZ_SNAPSHOT_VERSION);
+    }
+  } finally {
+    uninstall();
+  }
+});
+
+test("answered-фаза: ответов на один больше индекса", () => {
+  installSessionStorage();
+  try {
+    const answered = buildSnapshot({
+      attemptId: "attempt-test-0002",
+      template: "mixed",
+      topic: "Кинематика",
+      title: "Кинематика",
+      sessionKind: "practice",
+      batch: 0,
+      taskIds,
+      session: { ...activeSession, phase: "answered", currentIndex: 2 },
+    });
+    assert.ok(answered);
+    writeActiveQuizSnapshot(answered!);
+    const result = readActiveQuizSnapshot();
+    assert.equal(result.ok, true);
+  } finally {
+    uninstall();
+  }
+});
+
+test("completed не сохраняется", () => {
+  const snapshot = buildSnapshot({
+    attemptId: "attempt-test-0002",
+    template: "mixed",
+    topic: "Кинематика",
+    title: "Кинематика",
+    sessionKind: "practice",
+    batch: 0,
+    taskIds,
+    session: { ...activeSession, phase: "completed" as never },
+  });
+  assert.equal(snapshot, null);
+});
+
+test("повреждённый JSON сбрасывается в corrupt и очищается", () => {
+  const data = installSessionStorage();
+  try {
+    data.set(ACTIVE_QUIZ_SNAPSHOT_KEY, "{broken json");
+    const result = readActiveQuizSnapshot();
+    assert.equal(result.ok === false && result.reason, "corrupt");
+    assert.equal(data.has(ACTIVE_QUIZ_SNAPSHOT_KEY), false, "битый снапшот удалён");
+  } finally {
+    uninstall();
+  }
+});
+
+test("несогласованное состояние (answers != index) — corrupt", () => {
+  const data = installSessionStorage();
+  try {
+    const broken = makeSnapshot();
+    broken.session.answers = broken.session.answers.slice(0, 1);
+    data.set(ACTIVE_QUIZ_SNAPSHOT_KEY, JSON.stringify(broken));
+    const result = readActiveQuizSnapshot();
+    assert.equal(result.ok === false && result.reason, "corrupt");
+  } finally {
+    uninstall();
+  }
+});
+
+test("ответы с чужими taskId — corrupt", () => {
+  const data = installSessionStorage();
+  try {
+    const broken = makeSnapshot();
+    broken.session.answers[1] = { ...broken.session.answers[1], taskId: "other" };
+    data.set(ACTIVE_QUIZ_SNAPSHOT_KEY, JSON.stringify(broken));
+    const result = readActiveQuizSnapshot();
+    assert.equal(result.ok === false && result.reason, "corrupt");
+  } finally {
+    uninstall();
+  }
+});
+
+test("просроченный снапшот отбрасывается и очищается", () => {
+  const data = installSessionStorage();
+  try {
+    const old = makeSnapshot(Date.now() - ACTIVE_QUIZ_SNAPSHOT_MAX_AGE_MS - 1000);
+    data.set(ACTIVE_QUIZ_SNAPSHOT_KEY, JSON.stringify(old));
+    const result = readActiveQuizSnapshot();
+    assert.equal(result.ok === false && result.reason, "expired");
+    assert.equal(data.has(ACTIVE_QUIZ_SNAPSHOT_KEY), false);
+  } finally {
+    uninstall();
+  }
+});
+
+test("future-version не используется и НЕ удаляется", () => {
+  const data = installSessionStorage();
+  try {
+    const future = { ...makeSnapshot(), version: ACTIVE_QUIZ_SNAPSHOT_VERSION + 1 };
+    data.set(ACTIVE_QUIZ_SNAPSHOT_KEY, JSON.stringify(future));
+    const result = readActiveQuizSnapshot();
+    assert.equal(result.ok === false && result.reason, "future-version");
+    assert.equal(data.has(ACTIVE_QUIZ_SNAPSHOT_KEY), true, "данные из будущего не тронуты");
+  } finally {
+    uninstall();
+  }
+});
+
+test("snapshotMatches: другой template/набор задач не совпадает", () => {
+  const snapshot = makeSnapshot();
+  assert.equal(
+    snapshotMatches(snapshot, { attemptId: "attempt-test-0001", template: "mixed", topic: "Кинематика", sessionKind: "practice", taskIds }),
+    true,
+  );
+  assert.equal(
+    snapshotMatches(snapshot, { attemptId: "attempt-test-0001", template: "exam", topic: "Кинематика", sessionKind: "practice", taskIds }),
+    false,
+  );
+  assert.equal(
+    snapshotMatches(snapshot, { attemptId: "attempt-test-0001", template: "mixed", topic: "Кинематика", sessionKind: "exam", taskIds }),
+    false,
+  );
+  assert.equal(
+    snapshotMatches(snapshot, {
+      template: "mixed",
+      attemptId: "attempt-test-0001",
+      topic: "Кинематика",
+      sessionKind: "practice",
+      taskIds: [...taskIds.slice(0, 9), "other"],
+    }),
+    false,
+  );
+});
+
+test("бросающий sessionStorage не роняет чтение/запись/очистку", () => {
+  installSessionStorage({
+    getItem: () => {
+      throw new Error("blocked");
+    },
+    setItem: () => {
+      throw new Error("blocked");
+    },
+    removeItem: () => {
+      throw new Error("blocked");
+    },
+  });
+  try {
+    assert.equal(readActiveQuizSnapshot().ok, false);
+    assert.doesNotThrow(() => writeActiveQuizSnapshot(makeSnapshot()));
+    assert.doesNotThrow(() => clearActiveQuizSnapshot());
+  } finally {
+    uninstall();
+  }
+});
+
+test("malformed attemptId делает снапшот corrupt", () => {
+  const data = installSessionStorage();
+  try {
+    for (const badId of ["", "short", 42, null]) {
+      const broken = { ...makeSnapshot(), attemptId: badId };
+      data.set(ACTIVE_QUIZ_SNAPSHOT_KEY, JSON.stringify(broken));
+      const result = readActiveQuizSnapshot();
+      assert.equal(
+        result.ok === false && result.reason,
+        "corrupt",
+        `attemptId=${JSON.stringify(badId)} должен быть отвергнут`,
+      );
+    }
+  } finally {
+    uninstall();
+  }
+});
+
+test("legacy v1-снапшот (sessionId без attemptId) безопасно отбрасывается", () => {
+  const data = installSessionStorage();
+  try {
+    const { attemptId: _dropped, ...rest } = makeSnapshot();
+    const legacyV1 = { ...rest, version: 1, sessionId: "mixed:2:kin-1|kin-2" };
+    data.set(ACTIVE_QUIZ_SNAPSHOT_KEY, JSON.stringify(legacyV1));
+    const result = readActiveQuizSnapshot();
+    assert.equal(result.ok === false && result.reason, "corrupt");
+    assert.equal(data.has(ACTIVE_QUIZ_SNAPSHOT_KEY), false, "v1 отброшен (это не прогресс)");
+  } finally {
+    uninstall();
+  }
+});
+
+test("snapshotMatches: чужой attemptId не совпадает", () => {
+  const snapshot = makeSnapshot();
+  assert.equal(
+    snapshotMatches(snapshot, {
+      attemptId: "another-attempt-id",
+      template: "mixed",
+      topic: "Кинематика",
+      sessionKind: "practice",
+      taskIds,
+    }),
+    false,
+  );
+});

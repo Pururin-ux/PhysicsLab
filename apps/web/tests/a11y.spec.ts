@@ -1,0 +1,487 @@
+import AxeBuilder from "@axe-core/playwright";
+import { expect, test } from "@playwright/test";
+
+// Доступность: axe-прогон ключевых страниц. Порог — ноль нарушений
+// с impact serious/critical (minor/moderate не блокируют, но видны
+// в выводе при падении). Запускается во всех viewport-проектах
+// playwright.config.ts, так что desktop и mobile покрыты одним спеком.
+
+const routes = [
+  "/",
+  "/topics",
+  "/profile",
+  "/mistakes",
+  "/formulas",
+  "/tasks",
+  "/tasks/ohm-law",
+  "/practice/family/ohm-law",
+  "/practice/kinematics-demo",
+  "/practice/optics-demo",
+  "/practice/exam-demo",
+] as const;
+
+async function scanForBlockingViolations(page: import("@playwright/test").Page) {
+  const results = await new AxeBuilder({ page }).exclude("canvas").analyze();
+  return results.violations.filter((violation) =>
+    ["serious", "critical"].includes(violation.impact ?? ""),
+  );
+}
+
+for (const route of routes) {
+  test(`@a11y ${route}: без serious/critical нарушений`, async ({ page }) => {
+    // Скан посреди анимации появления видит полупрозрачный текст и даёт
+    // ложный провал контраста (ловилось на холодном лендинге). Просим
+    // reduced-motion и дополнительно замораживаем CSS-анимации.
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.goto(route, { waitUntil: "domcontentloaded" });
+    await page.addStyleTag({
+      content: "*, *::before, *::after { transition: none !important; animation: none !important; }",
+    });
+    await expect(page.getByRole("main")).toBeVisible();
+    // KaTeX и весь клиентский контент должны догрузиться до скана.
+    await page.waitForLoadState("networkidle");
+
+    // Reveal-секции (framer-motion, whileInView once) стоят в opacity:0,
+    // пока не попадут во viewport, и анимируются инлайн-стилями — CSS-
+    // заморозка их не берёт. Прокатываем страницу до низа (триггерим все
+    // once-анимации), возвращаемся и ждём, пока непрозрачность дойдёт до 1.
+    await page.evaluate(async () => {
+      const step = window.innerHeight;
+      for (let y = 0; y <= document.body.scrollHeight; y += step) {
+        window.scrollTo(0, y);
+        await new Promise((resolve) => setTimeout(resolve, 40));
+      }
+      window.scrollTo(0, 0);
+    });
+    await page
+      .waitForFunction(
+        () =>
+          [...document.querySelectorAll<HTMLElement>('main [style*="opacity"]')].every(
+            (element) => Number(getComputedStyle(element).opacity) >= 0.99,
+          ),
+        undefined,
+        { timeout: 5000 },
+      )
+      .catch(() => {
+        // Если какой-то блок так и не доанимировался — сканируем как есть:
+        // axe упадёт с конкретикой, а не молча.
+      });
+
+    const blocking = await scanForBlockingViolations(page);
+
+    expect(
+      blocking.map((violation) => ({
+        id: violation.id,
+        impact: violation.impact,
+        nodes: violation.nodes.slice(0, 5).map((node) => node.html.slice(0, 120)),
+      })),
+    ).toEqual([]);
+  });
+}
+
+test("@a11y simplified navigation and practice disclosures", async ({
+  page,
+  request,
+}, testInfo) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  const response = await request.get("/api/tasks?template=ohm-law&count=5&batch=0");
+  expect(response.ok()).toBe(true);
+  const payload = (await response.json()) as {
+    tasks: { options: { correct?: boolean }[] }[];
+  };
+  await page.route("**/api/tasks?*", (route) => {
+    const template = new URL(route.request().url()).searchParams.get("template");
+    return template === "ohm-law"
+      ? route.fulfill({
+          status: 200,
+          contentType: "application/json",
+          body: JSON.stringify(payload),
+        })
+      : route.continue();
+  });
+
+  await page.goto("/practice/family/ohm-law", { waitUntil: "domcontentloaded" });
+  await page.waitForLoadState("networkidle");
+
+  if (testInfo.project.name === "desktop") {
+    const navigation = page.getByTestId("desktop-sidebar-nav");
+    await expect(navigation.getByRole("link")).toHaveCount(5);
+    await expect(
+      navigation.getByRole("link", { name: "Задачи", exact: true }),
+    ).toHaveAttribute("aria-current", "page");
+  } else if (testInfo.project.name === "tablet") {
+    await expect(page.getByTestId("tablet-quick-actions").getByRole("link")).toHaveCount(4);
+  } else {
+    const navigation = page.getByTestId("mobile-bottom-nav");
+    await expect(navigation.getByRole("link")).toHaveCount(4);
+    await expect(
+      navigation.getByRole("link", { name: "Задачи", exact: true }),
+    ).toHaveAttribute("aria-current", "page");
+  }
+
+  const helpTrigger = page.getByTestId("practice-open-help");
+  await expect(helpTrigger).toHaveAttribute("aria-expanded", "false");
+  await expect(helpTrigger).toHaveAttribute("aria-controls", "theory");
+  await helpTrigger.click();
+  await expect(helpTrigger).toHaveAttribute("aria-expanded", "true");
+  await expect(page.getByTestId("topic-theory-drawer")).toBeVisible();
+  await page.getByTestId("close-topic-help").click();
+  await expect(helpTrigger).toBeFocused();
+
+  const wrongIndex = payload.tasks[0].options.findIndex((option) => !option.correct);
+  expect(wrongIndex).toBeGreaterThanOrEqual(0);
+  await page.locator(".quiz-option").nth(wrongIndex).click();
+  await expect(page.getByTestId("next-task-button")).toBeVisible();
+  await expect(page.locator('[role="status"]')).toHaveCount(1);
+  await expect(page.getByRole("img", { name: "Nova" })).toHaveCount(0);
+  await expect(page.getByTestId("solution-toggle")).toHaveAttribute(
+    "aria-expanded",
+    "false",
+  );
+  await page.getByTestId("solution-toggle").click();
+  await expect(page.getByTestId("solution-content")).toBeVisible();
+
+  expect(
+    (await scanForBlockingViolations(page)).map((violation) => ({
+      id: violation.id,
+      nodes: violation.nodes.slice(0, 5).map((node) => node.html.slice(0, 160)),
+    })),
+  ).toEqual([]);
+});
+
+// Карточка разбора после ответа — новая поверхность и отдельный класс
+// контраста (Nova-заголовок, свёрнутый разбор). Сканируем её обе ветки.
+test("@a11y exam resume gate after an answered task", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/practice/exam-demo", { waitUntil: "domcontentloaded" });
+  await page.getByRole("button", { name: "Начать тренировку" }).click();
+  await expect(page.getByTestId("question-card")).toBeVisible({ timeout: 15000 });
+
+  const numericInput = page.getByTestId("numeric-answer-input");
+  if (await numericInput.isVisible().catch(() => false)) {
+    await numericInput.fill("0");
+    await page.getByTestId("numeric-submit").click();
+  } else {
+    await page.locator(".quiz-option").first().click();
+  }
+  await expect(page.getByTestId("next-task-button")).toBeVisible();
+  await page.reload({ waitUntil: "domcontentloaded" });
+
+  const candidate = page.getByTestId("exam-resume-candidate");
+  await expect(candidate).toContainText("Ответ на задание 1 уже сохранён");
+  const continueButton = candidate.getByRole("button", { name: "Продолжить вариант" });
+  const freshButton = candidate.getByRole("button", { name: "Начать новый вариант" });
+  await continueButton.focus();
+  await expect(continueButton).toBeFocused();
+  await freshButton.focus();
+  await expect(freshButton).toBeFocused();
+  expect(await scanForBlockingViolations(page)).toEqual([]);
+});
+
+test("@a11y карточка разбора после ошибки — без serious/critical", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  const taskResponse = page.waitForResponse((response) => {
+    const url = new URL(response.url());
+    return url.pathname === "/api/tasks" && url.searchParams.get("template") === "mixed";
+  });
+
+  await page.goto("/practice/kinematics-demo", { waitUntil: "domcontentloaded" });
+  const payload = (await (await taskResponse).json()) as {
+    tasks: { options: { correct?: boolean; text: string }[] }[];
+  };
+
+  // Тяжёлый desktop-shell гидратируется дольше: клик сразу после появления
+  // вариантов может опередить навешивание обработчика. Ждём готовности и
+  // ретраим ответ, пока не появится карточка разбора.
+  await page.waitForLoadState("networkidle");
+  const options = page.getByRole("list", { name: "Варианты ответа" });
+  await expect(options).toBeVisible();
+  const wrongAnswer = payload.tasks[0]?.options.find((option) => !option.correct);
+  expect(wrongAnswer, "generated kinematics task must expose a wrong option").toBeDefined();
+  const wrongOption = options
+    .getByRole("button")
+    .filter({ hasText: wrongAnswer!.text });
+  await expect(async () => {
+    await wrongOption.click();
+    // Compact-first: на ошибке полное решение закрыто, пока ученик его не попросит.
+    await expect(page.getByRole("button", { name: "Показать решение" })).toBeVisible({
+      timeout: 2000,
+    });
+  }).toPass({ timeout: 15000 });
+  await expect(page.getByTestId("solution-content")).toHaveCount(0);
+
+  await page.getByRole("button", { name: "Показать решение" }).click();
+  await expect(page.getByTestId("solution-content")).toBeVisible();
+  await expect(page.getByTestId("solution-formula")).toHaveCount(0);
+
+  const blocking = await scanForBlockingViolations(page);
+  expect(
+    blocking.map((violation) => ({
+      id: violation.id,
+      nodes: violation.nodes.slice(0, 5).map((node) => node.html.slice(0, 120)),
+    })),
+  ).toEqual([]);
+});
+
+// Числовой ввод — новая интерактивная поверхность: у поля должно быть имя,
+// единица понятна SR, статус верно/неверно не только цветом. Сканируем поле
+// до ответа и карточку разбора после ответа.
+test("@a11y числовой ввод и его разбор — без serious/critical", async ({
+  page,
+  request,
+}) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  const response = await request.get(
+    "/api/tasks?template=average-speed-segments&count=1&batch=0",
+  );
+  expect(response.ok()).toBe(true);
+  const payload = (await response.json()) as {
+    tasks: {
+      type: "numeric_input";
+      answer: { value: number; unit: string };
+    }[];
+  };
+
+  await page.addInitScript(() => {
+    window.__physlabQuizExpectedCount = 1;
+  });
+  await page.route("**/api/tasks?*", async (route) => {
+    const template = new URL(route.request().url()).searchParams.get("template");
+    if (template !== "mixed") {
+      await route.continue();
+      return;
+    }
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify(payload),
+    });
+  });
+
+  await page.goto("/practice/kinematics-demo", { waitUntil: "domcontentloaded" });
+  await page.waitForLoadState("networkidle");
+
+  const input = page.getByTestId("numeric-answer-input");
+  await expect(input).toBeVisible();
+  await expect(input).toHaveAttribute(
+    "aria-label",
+    `Ответ в единицах: ${payload.tasks[0].answer.unit}`,
+  );
+
+  const beforeSubmit = await scanForBlockingViolations(page);
+  expect(beforeSubmit.map((violation) => violation.id)).toEqual([]);
+
+  const answer = payload.tasks[0].answer;
+  await input.fill(String(answer.value).replace(".", ","));
+  await page.getByTestId("numeric-submit").click();
+  await expect(page.getByTestId("numeric-answer")).toHaveAttribute("data-state", "correct");
+  await expect(page.getByTestId("numeric-answer")).toContainText("Верно");
+  await expect(page.locator('[role="status"]')).toHaveCount(1);
+  await expect(page.getByTestId("next-task-button")).toBeFocused();
+
+  const afterSubmit = await scanForBlockingViolations(page);
+  expect(
+    afterSubmit.map((violation) => ({
+      id: violation.id,
+      nodes: violation.nodes.slice(0, 5).map((node) => node.html.slice(0, 120)),
+    })),
+  ).toEqual([]);
+});
+
+// Оптическая диаграмма — новая визуальная поверхность: сканируем prompt-
+// и solution-состояния. До ответа решения нет в accessibility tree.
+test("@a11y оптическая диаграмма до и после ответа — без serious/critical", async ({
+  page,
+  request,
+}) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  const response = await request.get("/api/tasks?template=reflection-angle&count=1&batch=0");
+  expect(response.ok()).toBe(true);
+  const payload = (await response.json()) as {
+    tasks: { options: { text: string; correct?: boolean }[] }[];
+  };
+
+  await page.addInitScript(() => {
+    window.__physlabQuizExpectedCount = 1;
+  });
+  await page.route("**/api/tasks?*", async (route) => {
+    const template = new URL(route.request().url()).searchParams.get("template");
+    if (template !== "optics-mixed") {
+      await route.continue();
+      return;
+    }
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify(payload),
+    });
+  });
+
+  await page.goto("/practice/optics-demo", { waitUntil: "domcontentloaded" });
+  await page.waitForLoadState("networkidle");
+
+  await expect(page.getByTestId("optics-diagram")).toBeVisible();
+  // SVG имеет доступное имя (title + desc) и не выдаёт решение до ответа.
+  await expect(page.getByRole("img", { name: /зеркал/i })).toBeVisible();
+  await expect(page.getByTestId("optics-solution")).toHaveCount(0);
+
+  const beforeSubmit = await scanForBlockingViolations(page);
+  expect(beforeSubmit.map((violation) => violation.id)).toEqual([]);
+
+  const correctIndex = payload.tasks[0].options.findIndex((option) => option.correct);
+  expect(correctIndex).toBeGreaterThanOrEqual(0);
+  await page.locator(".quiz-option").nth(correctIndex).click();
+  await expect(page.getByTestId("optics-solution")).toBeVisible();
+
+  const afterSubmit = await scanForBlockingViolations(page);
+  expect(
+    afterSubmit.map((violation) => ({
+      id: violation.id,
+      nodes: violation.nodes.slice(0, 5).map((node) => node.html.slice(0, 120)),
+    })),
+  ).toEqual([]);
+});
+
+test("@a11y безразмерный числовой ответ оптики — без пустой единицы", async ({
+  page,
+  request,
+}) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  const response = await request.get(
+    "/api/tasks?template=refractive-index-speed&count=1&batch=0",
+  );
+  expect(response.ok()).toBe(true);
+  const payload = (await response.json()) as {
+    tasks: { answer: { value: number; unit: string } }[];
+  };
+
+  await page.addInitScript(() => {
+    window.__physlabQuizExpectedCount = 1;
+  });
+  await page.route("**/api/tasks?*", async (route) => {
+    const template = new URL(route.request().url()).searchParams.get("template");
+    if (template !== "optics-mixed") {
+      await route.continue();
+      return;
+    }
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify(payload),
+    });
+  });
+
+  await page.goto("/practice/optics-demo", { waitUntil: "domcontentloaded" });
+  await page.waitForLoadState("networkidle");
+
+  const input = page.getByTestId("numeric-answer-input");
+  await expect(input).toHaveAttribute("aria-label", "Ответ (число без единиц)");
+  await expect(page.getByTestId("numeric-answer-unit")).toHaveCount(0);
+  expect((await scanForBlockingViolations(page)).map((violation) => violation.id)).toEqual([]);
+
+  await input.fill(String(payload.tasks[0].answer.value).replace(".", ","));
+  await page.getByTestId("numeric-submit").click();
+  await expect(page.getByTestId("numeric-answer")).toHaveAttribute("data-state", "correct");
+  await expect(page.getByTestId("numeric-answer")).toContainText(
+    String(payload.tasks[0].answer.value).replace(".", ","),
+  );
+  await expect(page.getByTestId("numeric-correct-answer")).toHaveCount(0);
+  expect((await scanForBlockingViolations(page)).map((violation) => violation.id)).toEqual([]);
+});
+
+// Hardening-поверхности: загрузка, ошибка, восстановленная сессия,
+// уведомление о персистентности и 404 — без serious/critical нарушений.
+test("@a11y карточки загрузки и ошибки, notice и 404 — без serious/critical", async ({
+  page,
+}) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.addInitScript(() => {
+    window.__physlabQuizTimeoutMs = 10000;
+    // Битый progress → notice о сбросе + скан вместе с карточкой ошибки.
+    window.localStorage.setItem("physicslab-v3-progress-v1", "{broken");
+  });
+  await page.route("**/api/tasks?*", (route) =>
+    new URL(route.request().url()).searchParams.get("template") === "mixed"
+      ? route.fulfill({ status: 500, contentType: "application/json", body: "{}" })
+      : route.continue(),
+  );
+
+  await page.goto("/practice/kinematics-demo", { waitUntil: "domcontentloaded" });
+  await expect(page.getByTestId("quiz-load-error-card")).toBeVisible({ timeout: 10000 });
+  await expect(page.getByTestId("persistence-notice")).toBeVisible();
+
+  // Ошибка — role=alert, фокус на заголовке, retry доступен с клавиатуры.
+  await expect(page.getByTestId("quiz-load-error-card")).toHaveAttribute("role", "alert");
+  const errorScan = await scanForBlockingViolations(page);
+  expect(errorScan.map((violation) => violation.id)).toEqual([]);
+
+  await page.goto("/definitely-not-a-page", { waitUntil: "domcontentloaded" });
+  await expect(page.getByTestId("not-found-card")).toBeVisible();
+  const notFoundScan = await scanForBlockingViolations(page);
+  expect(notFoundScan.map((violation) => violation.id)).toEqual([]);
+});
+
+test("@a11y восстановленная сессия анонсируется без дублей", async ({ page, request }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  const response = await request.get("/api/tasks?template=mixed&count=10&batch=0");
+  expect(response.ok()).toBe(true);
+  const payload = (await response.json()) as {
+    tasks: { type: string; options?: { correct?: boolean }[]; answer: unknown }[];
+  };
+
+  await page.route("**/api/tasks?*", (route) =>
+    new URL(route.request().url()).searchParams.get("template") === "mixed"
+      ? route.fulfill({
+          status: 200,
+          contentType: "application/json",
+          body: JSON.stringify(payload),
+        })
+      : route.continue(),
+  );
+  await page.goto("/practice/kinematics-demo", { waitUntil: "domcontentloaded" });
+  await page.waitForLoadState("networkidle");
+
+  // Один ответ → reload → восстановленное answered-состояние.
+  const first = payload.tasks[0];
+  if (first.type === "single_choice") {
+    const index = first.options!.findIndex((option) => option.correct);
+    await page.locator(".quiz-option").nth(index).click();
+  } else {
+    const answer = first.answer as { value: number };
+    await page
+      .getByTestId("numeric-answer-input")
+      .fill(String(answer.value).replace(".", ","));
+    await page.getByTestId("numeric-submit").click();
+  }
+  await expect(page.getByTestId("next-task-button")).toBeVisible();
+
+  await page.reload({ waitUntil: "domcontentloaded" });
+  await page.waitForLoadState("networkidle");
+  await expect(page.getByTestId("session-restored-notice")).toBeVisible();
+
+  const scan = await scanForBlockingViolations(page);
+  expect(scan.map((violation) => violation.id)).toEqual([]);
+});
+
+test("@a11y reference solution pilots have no blocking violations", async ({ page }) => {
+  for (const family of ["ohm-law", "vt-area", "thin-lens-image-distance", "free-fall"] as const) {
+    await page.goto(`/tasks/${family}`, { waitUntil: "domcontentloaded" });
+    await page.waitForLoadState("networkidle");
+
+    const summary = page.locator("summary").filter({ hasText: "Показать решение" });
+    if (await summary.count()) {
+      await summary.focus();
+      await page.keyboard.press("Enter");
+      await expect(page.getByTestId("reference-solution-steps")).toBeVisible();
+    }
+
+    const scan = await scanForBlockingViolations(page);
+    expect(
+      scan.map((violation) => ({
+        id: violation.id,
+        nodes: violation.nodes.slice(0, 5).map((node) => node.html.slice(0, 160)),
+      })),
+      `${family} a11y`,
+    ).toEqual([]);
+  }
+});
