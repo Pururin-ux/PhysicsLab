@@ -11,6 +11,23 @@ const projectRoot = dirname(fileURLToPath(import.meta.url));
 // иначе исчезнут route.ts API-обработчики.
 const isProduction = process.env.NODE_ENV === "production";
 
+// Опциональный режим live-preview: только для sandboxed-предпросмотра.
+// По умолчанию выключен, поэтому production-заголовки не меняются.
+const allowPreviewEmbed = process.env.PHYSICSLAB_PREVIEW_EMBED === "1";
+
+const securityHeaders = [
+  { key: "X-Content-Type-Options", value: "nosniff" },
+  { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+  {
+    key: "Permissions-Policy",
+    value: "camera=(), microphone=(), geolocation=()",
+  },
+];
+
+if (!allowPreviewEmbed) {
+  securityHeaders.push({ key: "X-Frame-Options", value: "DENY" });
+}
+
 const nextConfig: NextConfig = {
   devIndicators: false,
   poweredByHeader: false,
@@ -18,6 +35,9 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: projectRoot,
   },
+  // Разрешаем dev-серверу принимать запросы с внешнего preview-хоста,
+  // иначе Next 15.x отклоняет cross-origin обращения в разработке.
+  allowedDevOrigins: ["*.e2b.app", "*.arena.ai"],
   // Базовые security headers. CSP сознательно НЕ добавлен: непроверенный CSP
   // ломает KaTeX/inline-styles/Next-скрипты/Framer Motion — задокументирован
   // как follow-up в docs/quality/public-beta-hardening-v1.md.
@@ -25,15 +45,7 @@ const nextConfig: NextConfig = {
     return [
       {
         source: "/:path*",
-        headers: [
-          { key: "X-Content-Type-Options", value: "nosniff" },
-          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
-          { key: "X-Frame-Options", value: "DENY" },
-          {
-            key: "Permissions-Policy",
-            value: "camera=(), microphone=(), geolocation=()",
-          },
-        ],
+        headers: securityHeaders,
       },
     ];
   },
