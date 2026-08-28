@@ -1,7 +1,10 @@
 import { MistakesList } from "../../components/mistakes/MistakesList";
 
 export const metadata = {
-  title: "Ошибки | PhysicsLab",
+  title: "Ошибки",
+  description: "Разбор собственных ошибок в тренировках по физике.",
+  // Персональная страница с локальным состоянием — см. комментарий в app/profile/page.tsx.
+  robots: { index: false, follow: true },
 };
 
 export default function MistakesPage() {

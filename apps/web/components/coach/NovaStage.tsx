@@ -18,11 +18,11 @@ interface NovaStageProps {
 }
 
 const mascotByState: Record<CoachState, string> = {
-  calm: "/mascot-anime/calm.png",
-  thinking: "/mascot-anime/thinking.png",
-  warning: "/mascot-anime/warning.png",
-  encouraging: "/mascot-anime/encouraging.png",
-  surprised: "/mascot-anime/surprised.png",
+  calm: "/mascot-anime/calm.webp",
+  thinking: "/mascot-anime/thinking.webp",
+  warning: "/mascot-anime/warning.webp",
+  encouraging: "/mascot-anime/encouraging.webp",
+  surprised: "/mascot-anime/surprised.webp",
 };
 
 const auraByState: Record<CoachState, string> = {

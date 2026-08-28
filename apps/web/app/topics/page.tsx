@@ -1,7 +1,9 @@
 import { TopicCards } from "../../components/topics/TopicCards";
 
 export const metadata = {
-  title: "Темы | PhysicsLab",
+  title: "Темы",
+  description:
+    "Все темы курса физики для целевого повторения перед ЦЭ/ЦТ: выбери раздел и перейди к тренировке по нему.",
 };
 
 export default function TopicsPage() {

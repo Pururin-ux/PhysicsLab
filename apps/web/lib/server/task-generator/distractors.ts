@@ -120,11 +120,20 @@ function frictionAddsMassAndGravity(p: Params): number {
 }
 
 function inclineUsesWrongTrigFunction(p: Params): number {
-  if (p.angle === 45) {
-    return p.m * GRAVITY * 0.5;
-  }
-
-  return p.m * GRAVITY * Math.cos((p.angle * Math.PI) / 180);
+  // При угле 45° sin(45°) = cos(45°), поэтому этот дистрактор физически
+  // не отличим от правильного ответа (mg sin α) — раньше здесь подставлялось
+  // произвольное число mg×0,5 под той же меткой «перепутал sin и cos», что
+  // выдавало ученику ложный диагноз.
+  //
+  // Правильное решение — не маскировать коллизию, а дать isValidCandidate()
+  // (generate.ts) её обнаружить и отбраковать такой набор параметров. Но это
+  // работает только если дистрактор и правильный ответ (solver.ts, inclineForce)
+  // округляются ДО ОДНОЙ И ТОЙ ЖЕ точности перед сравнением — иначе на 45°
+  // они разойдутся из-за артефакта округления (28,3 против 28,284), а не из-за
+  // реальной физической разницы, и подставной вариант всё равно попадёт в задачу.
+  // Поэтому здесь то же округление до 1 знака, что и в inclineForce.
+  const raw = p.m * GRAVITY * Math.cos((p.angle * Math.PI) / 180);
+  return Math.round(raw * 10) / 10;
 }
 
 function inclineIgnoresAngle(p: Params): number {

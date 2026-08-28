@@ -3,7 +3,9 @@ import { FormulasBrowser } from "../../components/formulas/FormulasBrowser";
 import { getFormulaReferenceView } from "../../lib/learning/learning-links";
 
 export const metadata = {
-  title: "Формулы | PhysicsLab",
+  title: "Формулы",
+  description:
+    "Справочник формул по физике для подготовки к ЦЭ/ЦТ: механика, электродинамика, термодинамика и оптика в одном месте.",
 };
 
 export default function FormulasPage() {

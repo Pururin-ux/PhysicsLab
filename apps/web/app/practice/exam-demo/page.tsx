@@ -1,7 +1,8 @@
 import { ExamDemo } from "../../../components/exam/ExamDemo";
 
 export const metadata = {
-  title: "Смешанная тренировка | PhysicsLab",
+  title: "Смешанная тренировка",
+  description: "Смешанная тренировка по всем разделам физики: сбалансированный набор задач для комплексной подготовки к ЦЭ/ЦТ.",
 };
 
 export default function ExamDemoPage() {

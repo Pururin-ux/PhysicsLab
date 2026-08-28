@@ -14,11 +14,11 @@ interface NovaReactionProps {
 }
 
 const bustByState: Record<CoachState, string> = {
-  calm: "/mascot/nova-calm.png",
-  thinking: "/mascot/nova-thinking.png",
-  warning: "/mascot/nova-warning.png",
-  encouraging: "/mascot/nova-encouraging.png",
-  surprised: "/mascot/nova-surprised.png",
+  calm: "/mascot/nova-calm.webp",
+  thinking: "/mascot/nova-thinking.webp",
+  warning: "/mascot/nova-warning.webp",
+  encouraging: "/mascot/nova-encouraging.webp",
+  surprised: "/mascot/nova-surprised.webp",
 };
 
 // Тёплый золотой тон — для предупреждений/ошибок, иначе фирменный cyan.

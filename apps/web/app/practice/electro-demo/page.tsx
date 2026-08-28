@@ -7,7 +7,8 @@ import { TopicPageHeader } from "../../../components/layout/TopicPageHeader";
 import { topicHelpSections } from "../../../lib/learning/topic-help";
 
 export const metadata = {
-  title: "Электродинамика | PhysicsLab",
+  title: "Электродинамика",
+  description: "Тренировка по электродинамике: закон Ома, электрические цепи, конденсаторы — задачи с разбором для подготовки к ЦЭ/ЦТ.",
 };
 
 export default function ElectroDemoPage() {

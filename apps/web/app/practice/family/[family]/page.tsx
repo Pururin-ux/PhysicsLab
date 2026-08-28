@@ -16,8 +16,11 @@ export async function generateMetadata({ params }: FocusedPracticePageProps): Pr
   const { family } = await params;
   const entry = getTaskCatalogEntry(family);
   return entry
-    ? { title: `${entry.title} · 5 похожих | PhysicsLab` }
-    : { title: "Тренировка не найдена | PhysicsLab" };
+    ? {
+        title: `${entry.title} · 5 похожих`,
+        description: `5 подобранных задач по теме «${entry.title}»: ${entry.shortDescription}`,
+      }
+    : { title: "Тренировка не найдена" };
 }
 
 export default async function FocusedPracticePage({ params }: FocusedPracticePageProps) {

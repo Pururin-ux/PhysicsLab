@@ -27,8 +27,11 @@ export async function generateMetadata({ params }: TaskTypePageProps): Promise<M
   const { family } = await params;
   const entry = getTaskCatalogEntry(family);
   return entry
-    ? { title: `${entry.title} | Типы задач | PhysicsLab` }
-    : { title: "Тип задачи не найден | PhysicsLab" };
+    ? {
+        title: `${entry.title} | Типы задач`,
+        description: entry.shortDescription,
+      }
+    : { title: "Тип задачи не найден" };
 }
 
 export default async function TaskTypePage({ params }: TaskTypePageProps) {

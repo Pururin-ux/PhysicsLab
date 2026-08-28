@@ -11,7 +11,8 @@ import {
 import { FORMULAS } from "../../../lib/physics/formulas";
 
 export const metadata = {
-  title: "Кинематика | PhysicsLab",
+  title: "Кинематика",
+  description: "Тренировка по кинематике: равномерное и равноускоренное движение, свободное падение — задачи с разбором для подготовки к ЦЭ/ЦТ.",
 };
 
 export default function KinematicsDemoPage() {

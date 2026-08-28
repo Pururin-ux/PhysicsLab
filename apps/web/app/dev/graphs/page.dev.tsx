@@ -8,7 +8,7 @@ import {
 } from "../../../lib/physics/physics-graph-examples";
 
 export const metadata = {
-  title: "PhysicsGraph dev | PhysicsLab",
+  title: "PhysicsGraph dev",
 };
 
 const captions: Record<string, { notation: string; text: string }> = {

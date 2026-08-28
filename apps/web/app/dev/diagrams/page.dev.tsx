@@ -5,7 +5,7 @@ import { vectorDiagramExamples } from "../../../lib/physics/vector-diagram-examp
 import { circuitDiagramExamples } from "../../../lib/physics/circuit-diagram-examples";
 
 export const metadata = {
-  title: "Diagram primitives dev | PhysicsLab",
+  title: "Diagram primitives dev",
 };
 
 const vectorCaptions: Record<string, string> = {

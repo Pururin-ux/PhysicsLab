@@ -5,7 +5,8 @@ import { TopicPageHeader } from "../../../components/layout/TopicPageHeader";
 import { topicHelpSections } from "../../../lib/learning/topic-help";
 
 export const metadata = {
-  title: "Оптика | PhysicsLab",
+  title: "Оптика",
+  description: "Тренировка по оптике: линзы, преломление света, оптические приборы — задачи с разбором для подготовки к ЦЭ/ЦТ.",
 };
 
 export default function OpticsDemoPage() {

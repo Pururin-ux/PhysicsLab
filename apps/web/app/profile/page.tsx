@@ -1,7 +1,12 @@
 import { ProfileOverview } from "../../components/profile/ProfileOverview";
 
 export const metadata = {
-  title: "Прогресс | PhysicsLab",
+  title: "Прогресс",
+  description: "Личный прогресс в тренировках по физике.",
+  // Страница с персональным локальным состоянием — не имеет самостоятельной публичной
+  // ценности для выдачи: у каждого посетителя свои данные, поисковики будут
+  // индексировать пустую/чужую страницу.
+  robots: { index: false, follow: true },
 };
 
 export default function ProfilePage() {

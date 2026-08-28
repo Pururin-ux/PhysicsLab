@@ -48,7 +48,12 @@ export function frictionForce(p: Params): number {
 }
 
 export function inclineForce(p: Params): number {
-  return p.m * GRAVITY * Math.sin((p.angle * Math.PI) / 180);
+  // Синусы углов 30/45/60° иррациональны (кроме 30°), поэтому без округления
+  // ответ выглядит как «70,711 Н» — нереалистичная точность для ответа в стиле
+  // централизованного экзамена. Округляем 1 знаком после запятой (как в реальных
+  // ответах РИКЗ — например «70,7 Н»), а не оставляем все значащие цифры.
+  const raw = p.m * GRAVITY * Math.sin((p.angle * Math.PI) / 180);
+  return Math.round(raw * 10) / 10;
 }
 
 export function resultantForce(p: Params): number {
@@ -137,12 +142,14 @@ export function kineticEnergy(p: Params): number {
   return (p.m * p.v * p.v) / 2;
 }
 
-// Энергия конденсатора в мДж, если C задана в мкФ: W = CU²/2.
+// Работа постоянной силы F на перемещении s вдоль (или против) направления
+// движения: A = F·s, знак зависит от варианта (сонаправлены/противонаправлены).
 export function workForceDistance(p: Params): number {
   const sign = variantIndex(p, 2) === 0 ? 1 : -1;
   return sign * p.F * p.s;
 }
 
+// Энергия конденсатора в мДж, если C задана в мкФ: W = CU²/2.
 export function capacitorEnergyMilliJoules(p: Params): number {
   return (p.C * p.U * p.U) / 2000;
 }

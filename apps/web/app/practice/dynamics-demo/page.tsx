@@ -9,7 +9,8 @@ import { MathText } from "../../../components/ui/MathText";
 import { topicHelpSections } from "../../../lib/learning/topic-help";
 
 export const metadata = {
-  title: "Динамика | PhysicsLab",
+  title: "Динамика",
+  description: "Тренировка по динамике: законы Ньютона, силы трения и наклонная плоскость — задачи с разбором для подготовки к ЦЭ/ЦТ.",
 };
 
 export default function DynamicsDemoPage() {

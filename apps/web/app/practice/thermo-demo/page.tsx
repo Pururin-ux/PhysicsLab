@@ -7,7 +7,8 @@ import { TopicPageHeader } from "../../../components/layout/TopicPageHeader";
 import { topicHelpSections } from "../../../lib/learning/topic-help";
 
 export const metadata = {
-  title: "Термодинамика | PhysicsLab",
+  title: "Термодинамика",
+  description: "Тренировка по термодинамике: теплообмен, фазовые переходы, газовые законы — задачи с разбором для подготовки к ЦЭ/ЦТ.",
 };
 
 export default function ThermoDemoPage() {

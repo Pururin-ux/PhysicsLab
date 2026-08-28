@@ -5,8 +5,11 @@ import { Reveal } from "../components/landing/Reveal";
 import { Badge } from "../components/ui/Badge";
 import { Button } from "../components/ui/Button";
 
+// Заголовок здесь не задаётся намеренно: он совершенно совпадает с title.default
+// в корневом layout.tsx; если задать его здесь как обычную строку, Next
+// дважды добавит бренд через title.template ("... | PhysicsLab | PhysicsLab").
+// Description шаблон не касается — оставляем своё, оно конкретнее корневого.
 export const metadata = {
-  title: "PhysicsLab — подготовка к ЦЭ/ЦТ по физике",
   description:
     "Тренажёр по физике для ЦЭ/ЦТ: короткие тренировки, разбор типичных ошибок и честный прогресс.",
 };

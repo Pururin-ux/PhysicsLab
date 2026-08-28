@@ -4,7 +4,9 @@ import { buildCoverageSections } from "../../lib/learning/coverage";
 import { getTaskCatalog } from "../../lib/server/task-catalog";
 
 export const metadata = {
-  title: "Типы задач | PhysicsLab",
+  title: "Типы задач",
+  description:
+    "Полный каталог типов задач по физике с покрытием программы ЦЭ/ЦТ: найди свои слабые места и потренируйся целенаправленно.",
 };
 
 export default function TasksPage() {

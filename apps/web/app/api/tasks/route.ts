@@ -34,6 +34,17 @@ const examGroups: readonly (readonly TemplateId[])[] = [
 ];
 const difficultyPattern: readonly Difficulty[] = [1, 1, 1, 1, 1, 2, 2, 2, 3, 3];
 
+// Смешанные шаблоны-агрегаторы ("...-mixed") сопоставлены со своей группой
+// задач; каждый ключ ниже обрабатывается одинаково через generateMixedTasks,
+// поэтому явный switch/if-цепочка не нужна.
+const mixedTemplateGroups: Readonly<Record<string, readonly TemplateId[]>> = {
+  mixed: kinematicsTemplates,
+  "dynamics-mixed": dynamicsTemplates,
+  "electro-mixed": electrodynamicsTemplates,
+  "thermo-mixed": thermodynamicsTemplates,
+  "optics-mixed": opticsTemplates,
+};
+
 function difficultyForSlot(slot: number, batch: number): Difficulty {
   return difficultyPattern[(slot + batch * 3) % difficultyPattern.length];
 }
@@ -282,19 +293,11 @@ export async function GET(req: Request) {
   }
 
   try {
-    const generatedTasks =
-      template === "mixed"
-        ? generateMixedTasks(buildTopicMix(kinematicsTemplates, count, batch), "mixed", count, batch, count === 10)
-        : template === "dynamics-mixed"
-          ? generateMixedTasks(buildTopicMix(dynamicsTemplates, count, batch), "dynamics-mixed", count, batch, count === 10)
-        : template === "electro-mixed"
-          ? generateMixedTasks(buildTopicMix(electrodynamicsTemplates, count, batch), "electro-mixed", count, batch, count === 10)
-        : template === "thermo-mixed"
-          ? generateMixedTasks(buildTopicMix(thermodynamicsTemplates, count, batch), "thermo-mixed", count, batch, count === 10)
-        : template === "optics-mixed"
-          ? generateMixedTasks(buildTopicMix(opticsTemplates, count, batch), "optics-mixed", count, batch, count === 10)
-        : template === "exam"
-          ? generateExamTasks(count, batch)
+    const mixedGroup = mixedTemplateGroups[template];
+    const generatedTasks: GeneratedTask[] | null = mixedGroup
+      ? generateMixedTasks(buildTopicMix(mixedGroup, count, batch), template, count, batch, count === 10)
+      : template === "exam"
+        ? generateExamTasks(count, batch)
         : isTemplateId(template)
           ? generateRandomizedTasks(template, count, batch, difficulty ?? undefined)
           : null;
