@@ -14,12 +14,12 @@ interface OptionItemProps {
 
 const stateClasses: Record<OptionState, string> = {
   idle:
-    "border-white/[.09] bg-white/[.025] text-white/85 hover:-translate-y-px hover:border-nova-blue/55 hover:bg-space-800 hover:shadow-[0_8px_26px_rgba(0,0,0,.22)]",
+    "border-line bg-surface-1 text-white/85 hover:-translate-y-px hover:border-nova-blue/55 hover:bg-space-800 hover:shadow-[0_8px_26px_rgba(0,0,0,.22)]",
   correct:
     "border-nova-cyan/55 bg-nova-cyan-10 text-white shadow-[inset_3px_0_0_#00E0FF]",
   wrong:
     "border-nova-gold/45 bg-nova-gold/[.07] text-white shadow-[inset_3px_0_0_#D4AF37]",
-  dimmed: "border-white/[.06] bg-white/[.015] text-white/55",
+  dimmed: "border-line-subtle bg-white/[.015] text-ink-soft",
 };
 
 export function OptionItem({
@@ -50,7 +50,7 @@ export function OptionItem({
             ? "border-nova-cyan/50 bg-nova-cyan-20 text-white"
             : state === "wrong"
               ? "border-nova-gold/35 bg-nova-gold-20 text-white"
-              : "border-white/[.10] bg-white/[.03] text-white/60",
+              : "border-white/[.10] bg-surface-1 text-ink-soft",
         )}
       >
         {id}

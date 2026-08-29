@@ -13,16 +13,10 @@ export function TopicPageHeader({
   description,
 }: TopicPageHeaderProps) {
   return (
-    <section className="flex min-w-0 flex-col gap-1.5">
-      <p className="text-[11px] font-bold uppercase tracking-[.14em] text-white/50">
-        {eyebrow}
-      </p>
-      <h1 className="text-[30px] font-[800] leading-tight tracking-tight text-white sm:text-[36px]">
-        {title}
-      </h1>
-      <p className="max-w-[620px] text-[14px] leading-[1.65] text-white/68 sm:text-[15px]">
-        {description}
-      </p>
+    <section className="flex min-w-0 flex-col gap-2.5">
+      <p className="pl-eyebrow">{eyebrow}</p>
+      <h1 className="pl-h1 max-w-[22ch]">{title}</h1>
+      <p className="pl-body pl-measure text-[15px]">{description}</p>
     </section>
   );
 }

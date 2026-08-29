@@ -65,18 +65,20 @@ export function QuestionCard({
   return (
     <Card
       data-testid="question-card"
+      variant="raised"
+      padding="none"
       className={cn("flex flex-col gap-4 p-4 md:gap-5 md:p-6", className)}
     >
       {showMetadata ? (
         <div className="flex flex-wrap items-center gap-2">
-          <Badge>{typeLabels[type] ?? type}</Badge>
-          <Badge tone="blue">{difficultyLabels[difficulty]}</Badge>
+          <Badge size="sm">{typeLabels[type] ?? type}</Badge>
+          <Badge size="sm" tone="blue">
+            {difficultyLabels[difficulty]}
+          </Badge>
         </div>
       ) : null}
 
-      <p className="text-[14px] font-normal leading-[1.8] text-white/80 md:text-[15px]">
-        {text}
-      </p>
+      <p className="text-[15px] leading-[1.8] text-white/90 md:text-[16px]">{text}</p>
 
       {diagram?.kind === "vector" ? (
         <div className="rounded-option border border-nova-cyan/[.10] bg-space-950/50 p-2">

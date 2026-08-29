@@ -18,19 +18,19 @@ export default function TasksPage() {
         <h1 className="text-[34px] font-[800] leading-tight text-white sm:text-[42px]">
           Типы задач
         </h1>
-        <p className="text-[15px] leading-[1.7] text-white/68">
+        <p className="pl-body pl-measure">
           Выбери конкретный навык и решай только похожие задачи. Если тема
           незнакома, начни с{" "}
           <Link
             href="/topics"
-            className="rounded-option font-semibold text-nova-cyan/85 transition-colors hover:text-nova-cyan focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/55"
+            className="pl-link"
           >
             урока
           </Link>
           , а проверить себя вперемешку можно в{" "}
           <Link
             href="/exam"
-            className="rounded-option font-semibold text-nova-cyan/85 transition-colors hover:text-nova-cyan focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/55"
+            className="pl-link"
           >
             диагностике
           </Link>

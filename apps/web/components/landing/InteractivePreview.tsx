@@ -58,7 +58,7 @@ export function InteractivePreview() {
     >
       <div className="flex items-center justify-between gap-3">
         <Badge tone="cyan">Кинематика</Badge>
-        <span className="text-[11px] font-bold uppercase tracking-[.14em] text-white/60">
+        <span className="text-[11px] font-bold uppercase tracking-[.14em] text-ink-soft">
           попробуй прямо здесь
         </span>
       </div>
@@ -103,13 +103,13 @@ export function InteractivePreview() {
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/60 focus-visible:ring-offset-2 focus-visible:ring-offset-space-950",
                   "disabled:cursor-default",
                   state === "idle" &&
-                    "border-white/[.09] bg-white/[.02] text-white/75 hover:-translate-y-px hover:border-nova-blue/55 hover:bg-space-800",
+                    "border-line bg-surface-1 text-ink-base hover:-translate-y-px hover:border-nova-blue/55 hover:bg-space-800",
                   state === "correct" &&
                     "border-nova-cyan/55 bg-nova-cyan-10 text-white",
                   state === "wrong" &&
                     "border-nova-gold/45 bg-nova-gold/[.07] text-white",
                   state === "dimmed" &&
-                    "border-white/[.06] bg-white/[.015] text-white/45",
+                    "border-line-subtle bg-white/[.015] text-ink-faint",
                 )}
               >
                 <span className="physics-number">{option.value}</span>
@@ -145,7 +145,7 @@ export function InteractivePreview() {
               aria-live="polite"
             >
               <CoachAvatar state={isCorrect ? "encouraging" : "warning"} />
-              <p className="text-[13px] leading-[1.7] text-white/75">
+              <p className="text-[13px] leading-[1.7] text-ink-base">
                 <span className="font-bold text-white">Nova:</span>{" "}
                 <MathText text={options[selected].novaLine} />
               </p>

@@ -27,22 +27,16 @@ export default async function FocusedPracticePage({ params }: FocusedPracticePag
 
   return (
     <div className="flex min-w-0 flex-col gap-7">
-      <section className="mx-auto flex w-full max-w-[580px] flex-col gap-2">
+      <section className="mx-auto flex w-full max-w-[620px] flex-col gap-3">
         <Link
           href={`/tasks/${entry.slug}`}
-          className="mb-1 w-fit rounded-option text-[12px] font-semibold text-nova-cyan/80 hover:text-nova-cyan focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/55"
+          className="pl-link mb-1 w-fit text-[12px]"
         >
-          К типу задачи
+          ← К типу задачи
         </Link>
-        <p className="text-[11px] font-bold uppercase tracking-[.14em] text-white/58">
-          Пять похожих задач
-        </p>
-        <h1 className="text-[32px] font-[800] leading-tight text-white sm:text-[40px]">
-          {entry.title}
-        </h1>
-        <p className="text-[14px] leading-[1.65] text-white/62">
-          {entry.shortDescription}
-        </p>
+        <p className="pl-eyebrow">Пять похожих задач</p>
+        <h1 className="pl-h1 max-w-[24ch]">{entry.title}</h1>
+        <p className="pl-body pl-measure">{entry.shortDescription}</p>
       </section>
 
       <FocusedFamilyPractice entry={entry} />

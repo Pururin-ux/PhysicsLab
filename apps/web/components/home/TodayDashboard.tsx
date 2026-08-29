@@ -18,9 +18,13 @@ import { TopicGlyph } from "../topics/TopicGlyph";
 import { Badge } from "../ui/Badge";
 import { Button } from "../ui/Button";
 import { Card } from "../ui/Card";
+import { ProgressBar } from "../ui/ProgressBar";
+import { SectionHeading } from "../ui/SectionHeading";
+import { StatTile } from "../ui/StatTile";
 import { MathText } from "../ui/MathText";
+import { cn } from "../../lib/utils";
 
-// Шаблон смешанной тренировки по разделу живёт на своей страницеpractice;
+// Шаблон смешанной тренировки по разделу живёт на своей странице;
 // одиночные шаблоны — на странице серии из пяти задач.
 const mixRoutes: Record<string, string> = {
   mixed: "/practice/kinematics-demo",
@@ -46,11 +50,6 @@ function pluralDays(count: number) {
   if (mod10 >= 2 && mod10 <= 4) return "дня";
   return "дней";
 }
-
-// Серверный (и первый клиентский) рендер — онбординг: он же полезен
-// поиску и первому визиту. После монтирования, когда localStorage прочитан,
-// компонент сам заменяет онбординг на дашборд — данные в effect, поэтому
-// расхождения гидрации нет.
 
 export function TodayDashboard() {
   const progress = useStore($appProgress);
@@ -83,13 +82,16 @@ export function TodayDashboard() {
     return { solved, correct, sessions, traps };
   }, [progress]);
 
+  // Серверный (и первый клиентский) рендер — онбординг: он же полезен
+  // поиску и первому визиту. После монтирования, когда localStorage прочитан,
+  // компонент сам заменяет онбординг на дашборд — данные в effect, поэтому
+  // расхождения гидрации нет.
   if (!mounted) {
     return <StartHere />;
   }
 
   const hasHistory = totals.solved > 0 || xp > 0 || examLog.length > 0;
 
-  // Первый визит: вместо пустых цифр показываем, с чего начать.
   if (!hasHistory) {
     return <StartHere />;
   }
@@ -100,160 +102,188 @@ export function TodayDashboard() {
   const streak = calcStreak(practiceLog, today);
   const last14 = getLastDays(practiceLog, today, 14);
   const accuracy = totals.solved > 0 ? Math.round((totals.correct / totals.solved) * 100) : null;
-  const startedTopics = topics.filter((topic) => (progress.topics[topic.id]?.solved ?? 0) > 0);
+  const activeDays = last14.filter((day) => day.practiced).length;
 
   return (
     <div className="flex flex-col gap-8">
-      <section aria-label="Сводка дня">
-        <Card className="flex flex-col gap-5 !p-5 md:!p-6">
+      <section aria-label="Сводка дня" className="pl-rise">
+        <Card variant="raised" padding="lg" className="flex flex-col gap-6">
           <div className="flex flex-wrap items-start justify-between gap-4">
-            <div className="flex flex-col gap-1.5">
-              <p className="text-[11px] font-bold uppercase tracking-[.14em] text-nova-cyan/80">
-                Сегодня
-              </p>
-              <h2 className="text-[22px] font-[800] leading-tight text-white">
+            <div className="flex min-w-0 flex-col gap-1.5">
+              <p className="pl-eyebrow text-nova-cyan/80">Сегодня</p>
+              <h2 className="pl-h2">
                 {streak > 1 ? `${streak} ${pluralDays(streak)} подряд` : "Пора вернуться к задачам"}
               </h2>
-              <p className="text-[13px] leading-[1.6] text-white/60">
+              <p className="text-[13px] leading-[1.6] text-ink-soft">
                 {streak > 1
-                  ? "Серия держится, пока день заканчивается хотя бы одной тренировкой."
+                  ? "Серия держится, пока каждый день заканчивается хотя бы одной тренировкой."
                   : "Одна тренировка в день — и серия снова растёт."}
               </p>
             </div>
-            <div className="flex items-center gap-2">
-              <Badge tone="gold">{xp} XP</Badge>
-              <Link
-                href="/profile"
-                className="rounded-option px-1 text-[12px] font-semibold text-nova-cyan/85 transition-colors hover:text-nova-cyan focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/55"
-              >
+            <div className="flex items-center gap-3">
+              <Badge tone="gold" dot>
+                {xp} XP
+              </Badge>
+              <Link href="/profile" className="pl-link text-[13px]">
                 Весь прогресс
               </Link>
             </div>
           </div>
 
-          <dl className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-            <div className="rounded-option border border-white/[.08] bg-white/[.025] px-3 py-3">
-              <dt className="text-[10px] font-bold uppercase tracking-[.1em] text-white/45">Решено</dt>
-              <dd className="physics-number mt-1 text-[22px] font-bold leading-none text-white">
-                {totals.solved}
-              </dd>
-            </div>
-            <div className="rounded-option border border-white/[.08] bg-white/[.025] px-3 py-3">
-              <dt className="text-[10px] font-bold uppercase tracking-[.1em] text-white/45">Точность</dt>
-              <dd className="physics-number mt-1 text-[22px] font-bold leading-none text-white">
-                {accuracy === null ? "—" : `${accuracy}%`}
-              </dd>
-            </div>
-            <div className="rounded-option border border-white/[.08] bg-white/[.025] px-3 py-3">
-              <dt className="text-[10px] font-bold uppercase tracking-[.1em] text-white/45">Тренировок</dt>
-              <dd className="physics-number mt-1 text-[22px] font-bold leading-none text-white">
-                {totals.sessions}
-              </dd>
-            </div>
-            <div className="rounded-option border border-white/[.08] bg-white/[.025] px-3 py-3">
-              <dt className="text-[10px] font-bold uppercase tracking-[.1em] text-white/45">Слабых мест</dt>
-              <dd
-                className={`physics-number mt-1 text-[22px] font-bold leading-none ${
-                  totals.traps > 0 ? "text-nova-gold" : "text-white"
-                }`}
-              >
-                {totals.traps}
-              </dd>
-            </div>
-          </dl>
+          <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+            <StatTile label="Решено" value={totals.solved} />
+            <StatTile label="Точность" value={accuracy === null ? "—" : `${accuracy}%`} />
+            <StatTile label="Тренировок" value={totals.sessions} />
+            <StatTile
+              label="Слабых мест"
+              value={totals.traps}
+              tone={totals.traps > 0 ? "gold" : "neutral"}
+            />
+          </div>
 
-          <div className="flex flex-col gap-2">
-            <p className="text-[11px] font-bold uppercase tracking-[.12em] text-white/45">
-              Последние 14 дней
-            </p>
+          <div className="flex flex-col gap-2.5 border-t border-line-subtle pt-5">
+            <div className="flex items-baseline justify-between gap-3">
+              <p className="pl-eyebrow">Последние 14 дней</p>
+              <p className="text-caption font-semibold text-ink-soft">
+                занятий: <span className="physics-number text-white">{activeDays}</span> из 14
+              </p>
+            </div>
             <div className="flex gap-1.5" aria-hidden="true">
               {last14.map((day) => (
                 <span
                   key={day.key}
-                  className={`h-2.5 flex-1 rounded-full ${
-                    day.practiced ? "bg-nova-cyan" : "bg-white/[.08]"
-                  }`}
+                  className={cn(
+                    "h-7 flex-1 rounded-[5px] border transition-colors",
+                    day.practiced
+                      ? "border-nova-cyan/40 bg-nova-cyan/70"
+                      : "border-line-subtle bg-white/[.03]",
+                  )}
                 />
               ))}
             </div>
-            <p className="sr-only">
-              Занятий за последние 14 дней: {last14.filter((day) => day.practiced).length}
-            </p>
           </div>
         </Card>
       </section>
 
-      {snapshot ? (
-        <section aria-labelledby="resume-title">
-          <Card className="flex flex-col gap-4 border-nova-cyan/25 bg-nova-cyan/[.045] !p-5 sm:flex-row sm:items-center sm:justify-between md:!p-6">
-            <div className="flex flex-col gap-1.5">
-              <p className="text-[11px] font-bold uppercase tracking-[.14em] text-nova-cyan/80">
-                Незавершённая тренировка
+      <div className="grid gap-5 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)] lg:items-start">
+        <div className="flex min-w-0 flex-col gap-5">
+          {snapshot ? (
+            <Card
+              padding="md"
+              className="flex flex-col gap-4 border-nova-cyan/30 bg-nova-cyan/[.05] sm:flex-row sm:items-center sm:justify-between"
+            >
+              <div className="flex min-w-0 flex-col gap-1.5">
+                <p className="pl-eyebrow text-nova-cyan/85">Незавершённая тренировка</p>
+                <h3 className="pl-h3 truncate">{snapshot.title}</h3>
+                <p className="text-[13px] leading-[1.6] text-ink-muted">
+                  Остановился на задании {snapshot.session.currentIndex + 1} из{" "}
+                  {snapshot.session.total} — ответы сохранены.
+                </p>
+              </div>
+              <Button asChild size="sm" className="shrink-0">
+                <Link href={resumeHref(snapshot)}>Продолжить</Link>
+              </Button>
+            </Card>
+          ) : null}
+
+          <Card
+            padding="lg"
+            className={cn(
+              "flex flex-col gap-5",
+              nextStep.tone === "gold"
+                ? "border-nova-gold/30 bg-nova-gold/[.05]"
+                : "border-nova-cyan/25 bg-nova-cyan/[.04]",
+            )}
+            aria-labelledby="next-step-title"
+          >
+            <div className="flex flex-col gap-2">
+              <p
+                className={cn(
+                  "pl-eyebrow",
+                  nextStep.tone === "gold" ? "text-nova-gold/85" : "text-nova-cyan/85",
+                )}
+              >
+                {nextStep.label}
               </p>
-              <h2 id="resume-title" className="text-[18px] font-[800] leading-snug text-white">
-                {snapshot.title}
+              <h2 id="next-step-title" className="pl-h2">
+                {nextStep.title}
               </h2>
-              <p className="text-[13px] leading-[1.6] text-white/65">
-                Остановился на задании {snapshot.session.currentIndex + 1} из {snapshot.session.total} —
-                ответы сохранены, можно продолжить.
+              <p className="pl-body max-w-[60ch] text-[14px]">
+                <MathText text={nextStep.body} />
               </p>
             </div>
-            <Button asChild size="sm" className="shrink-0">
-              <Link href={resumeHref(snapshot)}>Продолжить</Link>
+            <Button
+              asChild
+              variant={nextStep.tone === "gold" ? "gold" : "primary"}
+              className="w-fit"
+            >
+              <Link href={nextStep.href}>{nextStep.cta}</Link>
             </Button>
           </Card>
-        </section>
-      ) : null}
-
-      <section aria-labelledby="next-step-title">
-        <Card
-          className={`flex flex-col gap-4 !p-5 md:!p-6 ${
-            nextStep.tone === "gold"
-              ? "border-nova-gold/25 bg-nova-gold/[.05]"
-              : "border-nova-cyan/22 bg-nova-cyan/[.04]"
-          }`}
-        >
-          <div className="flex flex-col gap-2">
-            <p
-              className={`text-[11px] font-bold uppercase tracking-[.14em] ${
-                nextStep.tone === "gold" ? "text-nova-gold/80" : "text-nova-cyan/80"
-              }`}
-            >
-              {nextStep.label}
-            </p>
-            <h2 id="next-step-title" className="text-[20px] font-[800] leading-tight text-white">
-              {nextStep.title}
-            </h2>
-            <p className="max-w-[640px] text-[13px] leading-[1.65] text-white/68">
-              <MathText text={nextStep.body} />
-            </p>
-          </div>
-          <Button
-            asChild
-            size="sm"
-            className={
-              nextStep.tone === "gold"
-                ? "w-fit border-nova-gold bg-nova-gold shadow-gold-glow focus-visible:ring-nova-gold/50"
-                : "w-fit"
-            }
-          >
-            <Link href={nextStep.href}>{nextStep.cta}</Link>
-          </Button>
-        </Card>
-      </section>
-
-      <section aria-labelledby="topics-progress-title" className="flex flex-col gap-3">
-        <div className="flex flex-wrap items-end justify-between gap-3">
-          <h2 id="topics-progress-title" className="text-[13px] font-bold uppercase tracking-[.14em] text-white/45">
-            Темы
-          </h2>
-          <Link
-            href="/topics"
-            className="rounded-option text-[12px] font-semibold text-nova-cyan/85 transition-colors hover:text-nova-cyan focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/55"
-          >
-            Все уроки
-          </Link>
         </div>
+
+        <Card padding="lg" className="flex flex-col gap-4" aria-labelledby="review-title">
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex flex-col gap-1">
+              <p className="pl-eyebrow">Повторение</p>
+              <h2 id="review-title" className="pl-h3">
+                {review.plan.length === 0
+                  ? "Ловушек пока нет"
+                  : `${review.dueToday} сегодня · ${review.nextSession} дальше`}
+              </h2>
+            </div>
+            <Link href="/mistakes" className="pl-link shrink-0 text-[13px]">
+              Все
+            </Link>
+          </div>
+
+          {review.plan.length === 0 ? (
+            <p className="text-[13px] leading-[1.65] text-ink-muted">
+              {totals.solved > 0
+                ? "Повторяющихся ловушек пока нет: после нескольких тренировок здесь появится очередь возврата."
+                : "Реши первую тренировку — после неё ошибки превратятся в план повторения."}
+            </p>
+          ) : (
+            <ul className="flex flex-col gap-3.5">
+              {review.plan.slice(0, 3).map((item) => (
+                <li key={item.key} className="flex flex-col gap-1.5">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Badge
+                      size="sm"
+                      dot
+                      tone={item.urgency === "today" ? "gold" : "cyan"}
+                    >
+                      {item.dueLabel}
+                    </Badge>
+                    <span className="text-[13px] font-bold text-white">{item.skillTitle}</span>
+                  </div>
+                  <p className="text-[12px] leading-[1.6] text-ink-soft">
+                    <MathText text={item.hint} />
+                  </p>
+                  {item.practiceHref ? (
+                    <Link href={item.practiceHref} className="pl-link w-fit text-[12px]">
+                      Решить 5 похожих
+                    </Link>
+                  ) : null}
+                </li>
+              ))}
+            </ul>
+          )}
+        </Card>
+      </div>
+
+      <section aria-labelledby="topics-progress-title" className="flex flex-col gap-4">
+        <SectionHeading
+          id="topics-progress-title"
+          eyebrow="Прогресс"
+          title="Темы"
+          description="Точность считается по решённым задачам темы: полоса растёт вместе с ней."
+          actions={
+            <Link href="/topics" className="pl-link text-[13px]">
+              Все уроки
+            </Link>
+          }
+        />
 
         <div className="grid gap-3 sm:grid-cols-2">
           {topics.map((topic) => {
@@ -261,139 +291,91 @@ export function TodayDashboard() {
             const topicProgress = progress.topics[topic.id];
             const solved = topicProgress?.solved ?? 0;
             const correct = topicProgress?.correct ?? 0;
-            const topicAccuracy = solved > 0 ? Math.round((correct / solved) * 100) : null;
+            const topicAccuracy = solved > 0 ? Math.round((correct / solved) * 100) : 0;
 
             return (
-              <Card key={topic.id} className="flex flex-col gap-3 border-white/[.08] !p-4">
+              <Card key={topic.id} padding="sm" interactive className="flex flex-col gap-3">
                 <div className="flex items-center gap-3">
-                  <span className={`grid h-10 w-10 shrink-0 place-items-center rounded-option border ${accent.tile}`}>
+                  <span
+                    className={cn(
+                      "grid h-10 w-10 shrink-0 place-items-center rounded-option border",
+                      accent.tile,
+                    )}
+                  >
                     <TopicGlyph topic={topic.id} className="h-6 w-6" />
                   </span>
                   <div className="flex min-w-0 flex-1 flex-col">
                     <Link
                       href={`/topics/${topic.id}`}
-                      className="truncate rounded-option text-[15px] font-[800] text-white transition-colors hover:text-nova-cyan focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/55"
+                      className="pl-focus truncate rounded-option text-[15px] font-[800] text-white transition-colors hover:text-nova-cyan"
                     >
                       {topic.title}
                     </Link>
-                    <p className="text-[12px] font-semibold text-white/55">
+                    <p className="text-caption font-semibold text-ink-soft">
                       {solved > 0 ? (
                         <>
-                          <span className="physics-number">{solved}</span> решено
-                          {topicAccuracy !== null ? (
-                            <>
-                              {" · "}
-                              <span className="physics-number">{topicAccuracy}%</span> верно
-                            </>
-                          ) : null}
+                          <span className="physics-number text-white/85">{solved}</span> решено ·{" "}
+                          <span className="physics-number text-white/85">{topicAccuracy}%</span>{" "}
+                          верно
                         </>
                       ) : (
                         "ещё не начато"
                       )}
                     </p>
                   </div>
-                  <Button asChild size="sm" variant="ghost" className="shrink-0">
+                  <Button asChild size="sm" variant="secondary" className="shrink-0">
                     <Link href={topic.href}>10 задач</Link>
                   </Button>
                 </div>
-                <div className="h-1.5 w-full overflow-hidden rounded-full bg-white/[.06]">
-                  <div
-                    className={`h-full rounded-full ${accent.bar}`}
-                    style={{ width: `${topicAccuracy ?? 0}%` }}
-                  />
-                </div>
+                <ProgressBar
+                  value={topicAccuracy}
+                  size="sm"
+                  tone={accent.badge === "neutral" ? "neutral" : accent.badge}
+                  label={`Точность по теме ${topic.title}`}
+                />
               </Card>
             );
           })}
         </div>
       </section>
 
-      <div className="grid gap-5 lg:grid-cols-2">
-        <section aria-labelledby="review-title" className="flex flex-col gap-3">
-          <div className="flex flex-wrap items-end justify-between gap-3">
-            <h2 id="review-title" className="text-[13px] font-bold uppercase tracking-[.14em] text-white/45">
-              Что повторить
-            </h2>
-            <Link
-              href="/mistakes"
-              className="rounded-option text-[12px] font-semibold text-nova-cyan/85 transition-colors hover:text-nova-cyan focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/55"
-            >
-              Все ошибки
-            </Link>
-          </div>
-
-          <Card className="flex flex-col gap-3 border-white/[.08] !p-4">
-            {review.plan.length === 0 ? (
-              <p className="text-[13px] leading-[1.65] text-white/60">
-                {totals.solved > 0
-                  ? "Повторяющихся ловушек пока нет: после нескольких тренировок здесь появится очередь возврата."
-                  : "Реши первую тренировку — после неё ошибки превратятся в план повторения."}
-              </p>
-            ) : (
-              <ul className="flex flex-col gap-3">
-                {review.plan.slice(0, 3).map((item) => (
-                  <li key={item.key} className="flex flex-col gap-1.5">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <Badge tone={item.urgency === "today" ? "gold" : "cyan"}>{item.dueLabel}</Badge>
-                      <span className="text-[13px] font-[800] text-white">{item.skillTitle}</span>
-                    </div>
-                    <p className="text-[12px] leading-[1.55] text-white/58">
-                      <MathText text={item.hint} />
-                    </p>
-                    {item.practiceHref ? (
-                      <Link
-                        href={item.practiceHref}
-                        className="w-fit rounded-option text-[12px] font-semibold text-nova-cyan/85 transition-colors hover:text-nova-cyan focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/55"
-                      >
-                        Решить 5 похожих
-                      </Link>
-                    ) : null}
-                  </li>
-                ))}
-              </ul>
-            )}
-          </Card>
-        </section>
-
-        <section aria-labelledby="exam-title" className="flex flex-col gap-3">
-          <div className="flex flex-wrap items-end justify-between gap-3">
-            <h2 id="exam-title" className="text-[13px] font-bold uppercase tracking-[.14em] text-white/45">
-              Диагностика
-            </h2>
-            <Link
-              href="/formulas"
-              className="rounded-option text-[12px] font-semibold text-nova-cyan/85 transition-colors hover:text-nova-cyan focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/55"
-            >
-              Справочник формул
-            </Link>
-          </div>
-
-          <Card className="flex flex-col gap-3 border-white/[.08] !p-4">
-            <p className="text-[13px] leading-[1.65] text-white/62">
-              10 задач по пяти открытым темам вперемешку. Результат показывает не балл на
-              экзамене, а то, какие навыки держатся без подсказок.
-            </p>
-            <p className="text-[13px] font-semibold text-white/70">
-              {bestExam ? (
-                <>
-                  Лучший результат:{" "}
-                  <span className="physics-number text-nova-cyan">
-                    {bestExam.score}/{bestExam.total}
-                  </span>{" "}
-                  · попыток: <span className="physics-number">{examLog.length}</span>
-                </>
-              ) : startedTopics.length > 0 ? (
-                "Диагностика ещё не пройдена — самое время проверить себя вперемешку."
-              ) : (
-                "Сначала пройди урок темы, потом приходи за проверкой."
-              )}
-            </p>
-            <Button asChild size="sm" className="w-fit">
+      <section aria-labelledby="exam-title" className="flex flex-col gap-4">
+        <SectionHeading
+          id="exam-title"
+          eyebrow="Проверка"
+          title="Диагностика"
+          description="10 задач по пяти открытым темам вперемешку. Результат показывает не балл на экзамене, а то, какие навыки держатся без подсказок."
+          actions={
+            <Button asChild variant={bestExam ? "secondary" : "gold"} size="sm">
               <Link href="/exam">{bestExam ? "Пройти снова" : "Пройти диагностику"}</Link>
             </Button>
-          </Card>
-        </section>
-      </div>
+          }
+        />
+
+        <Card padding="md" className="flex flex-wrap items-center gap-x-8 gap-y-3">
+          <div className="flex flex-col gap-0.5">
+            <p className="pl-eyebrow">Лучший результат</p>
+            <p className="physics-number text-[22px] font-bold leading-none text-nova-cyan">
+              {bestExam ? `${bestExam.score}/${bestExam.total}` : "—"}
+            </p>
+          </div>
+          <div className="flex flex-col gap-0.5">
+            <p className="pl-eyebrow">Попыток</p>
+            <p className="physics-number text-[22px] font-bold leading-none text-white">
+              {examLog.length}
+            </p>
+          </div>
+          <div className="flex flex-col gap-0.5">
+            <p className="pl-eyebrow">Слабых мест</p>
+            <p className="physics-number text-[22px] font-bold leading-none text-white">
+              {review.totalWeaknesses}
+            </p>
+          </div>
+          <Link href="/formulas" className="pl-link ml-auto text-[13px]">
+            Справочник формул
+          </Link>
+        </Card>
+      </section>
     </div>
   );
 }

@@ -189,20 +189,20 @@ export function SessionSummary({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, ease: "easeOut" }}
     >
-      <Card className="flex flex-col items-center gap-6 text-center">
-        <Badge tone={copy.tone}>Итог тренировки</Badge>
+      <Card variant="raised" padding="lg" className="flex flex-col items-center gap-6 text-center">
+        <Badge tone={copy.tone} size="sm" dot>
+          Итог тренировки
+        </Badge>
 
         <div className="flex flex-col items-center gap-3">
           <p className={`${copy.scoreClass} text-[48px] font-[800] leading-none tracking-tight`}>
             {copy.marker} {score} / {total} {copy.marker}
           </p>
           <div className="flex flex-col gap-2">
-            <h2 className="text-xl font-bold text-white">{copy.title}</h2>
-            <p className="text-[14px] font-normal leading-[1.7] text-white/70">
-              {copy.body}
-            </p>
+            <h2 className="pl-h2">{copy.title}</h2>
+            <p className="max-w-[46ch] text-[14px] leading-[1.7] text-ink-muted">{copy.body}</p>
           </div>
-          <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-white/10">
+          <div className="mt-2 h-2.5 w-full overflow-hidden rounded-full bg-white/[.08]">
             <motion.div
               className="h-full rounded-full bg-nova-cyan"
               initial={{ width: 0 }}
@@ -213,18 +213,16 @@ export function SessionSummary({
         </div>
 
         {summaryWeaknesses.length > 0 ? (
-          <div className="w-full rounded-card border border-white/[.08] bg-space-900 p-6 text-left">
-            <p className="mb-4 text-[11px] font-bold uppercase tracking-[.14em] text-white/50">
-              На что обратить внимание
-            </p>
-            <ol className="space-y-3 text-[13px] font-normal leading-[1.6] text-white/75">
+          <div className="pl-panel w-full rounded-card p-5 text-left">
+            <p className="pl-eyebrow mb-4">На что обратить внимание</p>
+            <ol className="space-y-3 text-[13px] leading-[1.65] text-ink-muted">
               {summaryWeaknesses.map((weakness, index) => (
                 <li key={weakness.key} className="grid grid-cols-[auto_1fr] gap-3">
                   <span className="mt-0.5 shrink-0 text-nova-gold">
                     {index + 1}.
                   </span>
                   <span className="flex min-w-0 flex-col gap-1">
-                    <span className="font-semibold text-white/85">
+                    <span className="font-semibold text-white">
                       {weakness.title}
                     </span>
                     <MathText text={weakness.hint} />
@@ -234,7 +232,7 @@ export function SessionSummary({
             </ol>
             <Link
               href="/mistakes"
-              className="mt-4 inline-flex items-center gap-1 rounded-option text-[13px] font-semibold text-nova-cyan/85 transition-colors hover:text-nova-cyan focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/50"
+              className="pl-link mt-4 inline-flex items-center gap-1 text-[13px]"
             >
               Все мои слабые места →
             </Link>

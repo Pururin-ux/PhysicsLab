@@ -13,14 +13,14 @@ function SidebarItem({ item, mobile = false }: { item: NavItem; mobile?: boolean
   const pathname = usePathname();
   const active = item.match?.(pathname) ?? false;
   const baseClass = cn(
-    "group flex items-center rounded-option border font-semibold transition-colors",
+    "pl-focus group flex items-center rounded-option border font-semibold transition-colors",
     mobile
       ? "min-h-[52px] flex-col justify-center gap-1 px-1 py-1.5 text-[10px]"
       : "min-h-11 gap-3 px-3 text-[13px]",
   );
   const stateClass = active
-    ? "border-nova-cyan/50 bg-nova-cyan/[.12] text-white shadow-[inset_2px_0_0_rgba(0,224,255,.85),0_0_22px_rgba(0,224,255,.08)]"
-    : "border-transparent text-white/62 hover:border-white/[.08] hover:bg-white/[.035] hover:text-white/88";
+    ? "border-nova-cyan/45 bg-nova-cyan/[.10] text-white pl-accent-cyan"
+    : "border-transparent text-ink-muted hover:border-line hover:bg-surface-1 hover:text-white";
 
   const content = (
     <>
@@ -63,7 +63,7 @@ function SidebarNav() {
     >
       {sidebarGroups.map((group) => (
         <section key={group.title} className="flex flex-col gap-2">
-          <p className="px-3 text-[10px] font-bold uppercase tracking-[.16em] text-white/42">
+          <p className="px-3 text-[10px] font-bold uppercase tracking-[.16em] text-ink-faint">
             {group.title}
           </p>
           <div className="flex flex-col gap-1.5">
@@ -95,31 +95,27 @@ function AppSidebar() {
   return (
     <aside
       data-testid="app-sidebar"
-      className="sticky top-6 hidden self-start flex-col rounded-card border border-white/[.08] bg-space-900/82 p-4 shadow-card backdrop-blur-md lg:flex"
+      className="pl-panel sticky top-[76px] hidden self-start flex-col rounded-card p-4 backdrop-blur-md lg:flex"
     >
-      <Link
-        href="/"
-        className="mb-5 shrink-0 rounded-option focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/55 focus-visible:ring-offset-2 focus-visible:ring-offset-space-950"
-        aria-label="PhysicsLab — на главную"
-      >
-        <span className="block text-[18px] font-black leading-none tracking-tight text-white">
+      <div className="mb-5 flex shrink-0 flex-col">
+        <p className="text-[18px] font-black leading-none tracking-tight text-white">
           Physics<span className="text-nova-cyan">Lab</span>
-        </span>
-        <span className="mt-1 block text-[10px] font-bold uppercase tracking-[.18em] text-white/42">
+        </p>
+        <p className="mt-1.5 text-[10px] font-bold uppercase tracking-[.18em] text-ink-faint">
           ЦЭ/ЦТ · физика
-        </span>
-      </Link>
+        </p>
+      </div>
 
       <SidebarNav />
 
-      <div className="mt-6 flex flex-col gap-2 border-t border-white/[.08] pt-4">
+      <div className="mt-6 flex flex-col gap-2 border-t border-line-subtle pt-4">
         <Link
           href="/about"
-          className="rounded-option px-3 text-[12px] font-semibold text-white/48 transition-colors hover:text-white/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/55"
+          className="pl-focus rounded-option px-3 text-[12px] font-semibold text-ink-soft transition-colors hover:text-white"
         >
           О проекте
         </Link>
-        <p className="px-3 text-[11px] leading-[1.55] text-white/35">
+        <p className="px-3 text-[11px] leading-[1.55] text-white/45">
           Прогресс хранится только в этом браузере.
         </p>
       </div>
@@ -217,14 +213,19 @@ interface AppShellProps {
 export function AppShell({ children }: AppShellProps) {
   return (
     <div className="app-shell-v1 relative z-10 min-h-screen">
-      <div className="lg:hidden">
-        <NavBar />
-      </div>
+      <a
+        href="#main"
+        className="pl-focus sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-option focus:border focus:border-nova-cyan/50 focus:bg-space-900 focus:px-4 focus:py-2 focus:text-[13px] focus:font-semibold focus:text-white"
+      >
+        Перейти к содержанию
+      </a>
 
-      <div className="mx-auto grid w-full max-w-[1400px] grid-cols-1 gap-5 px-4 pb-28 pt-5 sm:px-6 sm:pt-6 md:pb-10 lg:grid-cols-[224px_minmax(0,1fr)] lg:gap-5 lg:px-4 lg:pb-10 2xl:grid-cols-[232px_minmax(0,1fr)]">
+      <NavBar />
+
+      <div className="mx-auto grid w-full max-w-[1400px] grid-cols-1 gap-5 px-4 pb-28 pt-6 sm:px-6 md:pb-12 lg:grid-cols-[236px_minmax(0,1fr)] lg:gap-7 lg:px-6 2xl:grid-cols-[244px_minmax(0,1fr)]">
         <AppSidebar />
 
-        <main className="app-shell-main min-w-0">
+        <main id="main" className="app-shell-main min-w-0 scroll-mt-24">
           <ShellTopBar />
           {children}
         </main>

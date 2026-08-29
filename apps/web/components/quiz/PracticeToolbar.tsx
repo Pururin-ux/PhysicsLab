@@ -21,7 +21,7 @@ export function PracticeToolbar({
     >
       <p
         data-testid="practice-progress"
-        className="text-[13px] font-semibold text-white/62"
+        className="text-[13px] font-semibold text-ink-muted"
       >
         {progressLabel}
       </p>
@@ -34,7 +34,7 @@ export function PracticeToolbar({
           onClick={onOpenHelp}
           aria-controls="theory"
           aria-expanded={helpOpen}
-          className="inline-flex min-h-10 shrink-0 items-center gap-2 rounded-option border border-white/[.09] bg-white/[.025] px-3 text-[12px] font-semibold text-white/68 transition-colors hover:border-white/[.18] hover:bg-white/[.045] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/55 focus-visible:ring-offset-2 focus-visible:ring-offset-space-950"
+          className="inline-flex min-h-10 shrink-0 items-center gap-2 rounded-option border border-line bg-surface-1 px-3 text-[12px] font-semibold text-ink-muted transition-colors hover:border-line-strong hover:bg-surface-2 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/55 focus-visible:ring-offset-2 focus-visible:ring-offset-space-950"
         >
           <svg
             viewBox="0 0 24 24"

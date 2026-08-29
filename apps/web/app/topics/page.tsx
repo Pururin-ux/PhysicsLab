@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { TopicCards } from "../../components/topics/TopicCards";
 import { Card } from "../../components/ui/Card";
+import { SectionHeading } from "../../components/ui/SectionHeading";
 
 export const metadata = {
   title: "Учиться | PhysicsLab",
@@ -30,31 +31,32 @@ const steps = [
 export default function TopicsPage() {
   return (
     <div className="flex min-w-0 flex-col gap-8">
-      <section className="flex max-w-[680px] flex-col gap-3">
-        <p className="text-[11px] font-bold uppercase tracking-[.14em] text-nova-cyan/75">
-          Учиться
-        </p>
-        <h1 className="text-[34px] font-[800] leading-tight tracking-tight text-white sm:text-[42px]">
+      <section className="flex max-w-[720px] flex-col gap-4">
+        <p className="pl-eyebrow text-nova-cyan/80">Учиться</p>
+        <h1 className="pl-h1 max-w-[24ch]">
           Пять тем ЦЭ/ЦТ — от идеи до устойчивого навыка
         </h1>
-        <p className="text-[15px] leading-[1.7] text-white/68">
-          Каждая тема открывается уроком: зачем она нужна, что в ней спрашивают, как решать и
-          где ошибаются. Дальше — короткая тренировка, и ошибки сами собирают план повторения.
+        <p className="pl-body pl-measure">
+          Каждая тема открывается уроком: зачем она нужна, что в ней спрашивают, как решать и где
+          ошибаются. Дальше — короткая тренировка, и ошибки сами собирают план повторения.
         </p>
       </section>
 
-      <section aria-labelledby="how-title" className="flex flex-col gap-3">
-        <h2 id="how-title" className="text-[13px] font-bold uppercase tracking-[.14em] text-white/45">
-          Как здесь учат
-        </h2>
+      <section aria-labelledby="how-title" className="flex flex-col gap-5">
+        <SectionHeading
+          id="how-title"
+          eyebrow="Методика"
+          title="Как здесь учат"
+          description="Один и тот же цикл для каждой темы: разобрать, закрепить, проверить, вернуться к слабому."
+        />
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {steps.map((step, index) => (
-            <Card key={step.title} className="flex flex-col gap-2 border-white/[.08] !p-4">
-              <span className="physics-number text-[12px] font-bold text-nova-cyan/80">
+            <Card key={step.title} padding="sm" interactive className="flex flex-col gap-2">
+              <span className="physics-number text-[12px] font-bold text-nova-cyan/85">
                 Шаг {index + 1}
               </span>
-              <h3 className="text-[15px] font-[800] leading-snug text-white">{step.title}</h3>
-              <p className="text-[13px] leading-[1.6] text-white/60">{step.body}</p>
+              <h3 className="pl-h3">{step.title}</h3>
+              <p className="text-[13px] leading-[1.6] text-ink-muted">{step.body}</p>
             </Card>
           ))}
         </div>
@@ -63,12 +65,12 @@ export default function TopicsPage() {
       <TopicCards />
 
       <section className="flex flex-col gap-3 border-t border-white/[.08] pt-6">
-        <p className="text-[13px] leading-[1.7] text-white/55">
+        <p className="text-[13px] leading-[1.7] text-ink-soft">
           Тренажёр покрывает не всю программу: квантовая и атомная физика, колебания и волны,
           магнитное поле пока без задач. Текущее покрытие и известные пробелы —{" "}
           <Link
             href="/about"
-            className="rounded-option font-semibold text-nova-cyan/85 transition-colors hover:text-nova-cyan focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/55"
+            className="pl-link"
           >
             на странице «О проекте»
           </Link>

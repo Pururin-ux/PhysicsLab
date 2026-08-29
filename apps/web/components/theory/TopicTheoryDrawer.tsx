@@ -125,7 +125,7 @@ export function TopicTheoryDrawer({
       data-presentation={presentation}
       aria-labelledby={headingId}
       className={cn(
-        "min-w-0 scroll-mt-24 rounded-card border border-white/[.09] bg-space-900/92 p-4 shadow-card backdrop-blur-md sm:p-5",
+        "min-w-0 scroll-mt-24 rounded-card border border-line bg-space-900/92 p-4 shadow-card backdrop-blur-md sm:p-5",
         presentation === "aside"
           ? "sticky top-6"
           : presentation === "responsive"
@@ -139,7 +139,7 @@ export function TopicTheoryDrawer({
           <h2 id={headingId} className="text-[20px] font-[800] leading-tight text-white">
             {title}
           </h2>
-          <p className="mt-1.5 text-[13px] leading-[1.6] text-white/58">
+          <p className="mt-1.5 text-[13px] leading-[1.6] text-ink-soft">
             {description}
           </p>
         </div>
@@ -150,7 +150,7 @@ export function TopicTheoryDrawer({
           onClick={() => onOpenChange?.(false)}
           aria-label="Закрыть справку"
           title="Закрыть справку"
-          className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-option border border-white/[.09] bg-white/[.025] text-white/62 transition-colors hover:border-white/[.18] hover:bg-white/[.05] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/55"
+          className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-option border border-line bg-surface-1 text-ink-muted transition-colors hover:border-line-strong hover:bg-surface-2 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/55"
         >
           <svg
             viewBox="0 0 24 24"
@@ -167,17 +167,17 @@ export function TopicTheoryDrawer({
       </div>
 
       {reasonLabel ? (
-        <p className="mt-3 text-[12px] leading-[1.5] text-white/48">{reasonLabel}</p>
+        <p className="mt-3 text-[12px] leading-[1.5] text-ink-faint">{reasonLabel}</p>
       ) : null}
 
       {normalizedSubtopics.length > 1 ? (
-        <label className="mt-4 flex flex-col gap-1.5 text-[11px] font-bold uppercase tracking-[.12em] text-white/45">
+        <label className="mt-4 flex flex-col gap-1.5 text-[11px] font-bold uppercase tracking-[.12em] text-ink-faint">
           Другой раздел
           <select
             data-testid="help-section-selector"
             value={effectiveSectionId}
             onChange={(event) => setSelectedSectionId(event.target.value as HelpSectionId)}
-            className="min-h-10 w-full rounded-option border border-white/[.11] bg-space-950/70 px-3 text-[13px] font-semibold normal-case tracking-normal text-white/78 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/55"
+            className="min-h-10 w-full rounded-option border border-white/[.11] bg-space-950/70 px-3 text-[13px] font-semibold normal-case tracking-normal text-ink-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/55"
           >
             {normalizedSubtopics.map((subtopic) => (
               <option key={subtopic.id} value={subtopic.id}>
@@ -210,11 +210,11 @@ export function TopicTheoryDrawer({
         ) : visibleChildren.length > 0 ? (
           visibleChildren
         ) : (
-          <div className="border-l-2 border-white/[.12] pl-4">
+          <div className="border-l-2 border-line-strong pl-4">
             <h3 className="text-[17px] font-bold text-white/82">
               {activeSubtopic?.label ?? "Разбор темы"}
             </h3>
-            <p className="mt-2 text-[13px] leading-[1.65] text-white/62">
+            <p className="mt-2 text-[13px] leading-[1.65] text-ink-muted">
               {activeSubtopic?.shortHint ??
                 "Открой подробное решение задачи — там будет нужный шаг."}
             </p>

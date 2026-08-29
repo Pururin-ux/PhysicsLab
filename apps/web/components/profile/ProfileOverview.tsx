@@ -27,6 +27,7 @@ import { Badge } from "../ui/Badge";
 import { Button } from "../ui/Button";
 import { Card } from "../ui/Card";
 import { MathText } from "../ui/MathText";
+import { ProgressBar } from "../ui/ProgressBar";
 import { DataTransfer } from "./DataTransfer";
 
 type Readiness = {
@@ -114,15 +115,15 @@ function StatCard({
   className?: string;
 }) {
   return (
-    <Card className={`flex flex-col gap-1 border-white/[.08] !p-4 ${className ?? ""}`}>
-      <p className="text-[10px] font-bold uppercase tracking-[.12em] text-white/45">
+    <Card className={`flex flex-col gap-1 border-line !p-4 ${className ?? ""}`}>
+      <p className="text-[10px] font-bold uppercase tracking-[.12em] text-ink-faint">
         {label}
       </p>
       <p className="physics-number text-[24px] font-bold leading-none text-white sm:text-[26px]">
         {value}
       </p>
       {hint ? (
-        <p className="text-[11px] leading-[1.45] text-white/48">{hint}</p>
+        <p className="text-[11px] leading-[1.45] text-ink-faint">{hint}</p>
       ) : null}
       {children}
     </Card>
@@ -195,7 +196,10 @@ export function ProfileOverview() {
   const accuracy =
     totalSolved > 0 ? Math.round((totalCorrect / totalSolved) * 100) : null;
   const overall = readinessFor(totalSolved, totalCorrect);
-  const streak = calcStreak(practiceLog, toDayKey(new Date()));
+  const today = toDayKey(new Date());
+  const streak = calcStreak(practiceLog, today);
+  const last30 = getLastDays(practiceLog, today, 30);
+  const activeDays = last30.filter((day) => day.practiced).length;
   const bestExam = getBestAttempt(examLog);
   const nextStep = getLearningNextStep(progress, Boolean(bestExam));
   const reviewPlan = buildReviewPlan(progress, 3);
@@ -239,7 +243,7 @@ export function ProfileOverview() {
               <span className="physics-number text-[20px] font-bold leading-none text-nova-gold">
                 {xp}
               </span>
-              <span className="text-[10px] font-bold uppercase tracking-[.12em] text-white/45">
+              <span className="text-[10px] font-bold uppercase tracking-[.12em] text-ink-faint">
                 XP
               </span>
             </div>
@@ -249,12 +253,12 @@ export function ProfileOverview() {
             <h2 className="text-[20px] font-[800] leading-tight text-white">
               {nextStep.title}
             </h2>
-            <p className="max-w-[640px] text-[13px] leading-[1.65] text-white/68">
+            <p className="max-w-[640px] text-[13px] leading-[1.65] text-ink-muted">
               <MathText text={nextStep.body} />
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center justify-between gap-3 border-t border-white/[.08] pt-3.5">
+          <div className="flex flex-wrap items-center justify-between gap-3 border-t border-line pt-3.5">
             <div className="flex min-w-0 flex-wrap items-center gap-2">
               <Badge tone={overall.tone}>{overall.label}</Badge>
               {dueReviews > 0 ? (
@@ -262,7 +266,7 @@ export function ProfileOverview() {
                   {dueReviews === 1 ? "1 повторение сегодня" : `${dueReviews} повторения сегодня`}
                 </Badge>
               ) : null}
-              <p className="min-w-0 text-[12px] leading-[1.5] text-white/50">
+              <p className="min-w-0 text-[12px] leading-[1.5] text-ink-soft">
                 <MathText text={overall.note} />
               </p>
             </div>
@@ -278,7 +282,7 @@ export function ProfileOverview() {
               <Link href={nextStep.href}>{nextStep.cta}</Link>
             </Button>
           </div>
-          <p className="text-[11px] leading-[1.5] text-white/48">
+          <p className="text-[11px] leading-[1.5] text-ink-faint">
             Оценка построена только на твоих ответах в тренажёре — это не
             прогноз балла на ЦЭ/ЦТ.
           </p>
@@ -322,23 +326,56 @@ export function ProfileOverview() {
         </StatCard>
       </section>
 
+      <section aria-labelledby="activity-title" className="flex flex-col gap-3">
+        <div className="flex flex-wrap items-end justify-between gap-2">
+          <h2
+            id="activity-title"
+            className="text-[13px] font-bold uppercase tracking-[.14em] text-ink-faint"
+          >
+            Активность · 30 дней
+          </h2>
+          <p className="text-caption font-semibold text-ink-soft">
+            занятий: <span className="physics-number text-white/85">{activeDays}</span> из 30 ·
+            серия сейчас: <span className="physics-number text-white/85">{streak}</span>
+          </p>
+        </div>
+        <Card className="flex flex-col gap-3 !p-4">
+          <div className="grid grid-cols-10 gap-1.5" aria-hidden="true">
+            {last30.map((day) => (
+              <span
+                key={day.key}
+                title={day.key}
+                className={`h-6 rounded-[5px] border ${
+                  day.practiced
+                    ? "border-nova-cyan/40 bg-nova-cyan/70"
+                    : "border-line-subtle bg-surface-1"
+                }`}
+              />
+            ))}
+          </div>
+          <p className="text-[11px] leading-[1.5] text-ink-faint">
+            Клетка — день: закрашена, если в этот день была завершённая тренировка.
+          </p>
+        </Card>
+      </section>
+
       {reviewPlan.length > 0 ? (
         <section className="flex flex-col gap-3" aria-label="План повторения">
-          <h2 className="text-[13px] font-bold uppercase tracking-[.14em] text-white/45">
+          <h2 className="text-[13px] font-bold uppercase tracking-[.14em] text-ink-faint">
             Что повторить
           </h2>
           <div className="grid gap-3 md:grid-cols-3">
             {reviewPlan.map((item) => (
               <Card
                 key={item.key}
-                className="flex flex-col gap-3 border-white/[.08] !p-4"
+                className="flex flex-col gap-3 border-line !p-4"
               >
                 <div className="flex flex-wrap items-center gap-2">
                   <Badge tone={item.urgency === "today" ? "gold" : "cyan"}>
                     {item.dueLabel}
                   </Badge>
                   {item.topicTitle ? (
-                    <span className="text-[10px] font-bold uppercase tracking-[.12em] text-white/48">
+                    <span className="text-[10px] font-bold uppercase tracking-[.12em] text-ink-faint">
                       {item.topicTitle}
                     </span>
                   ) : null}
@@ -347,10 +384,10 @@ export function ProfileOverview() {
                   <h3 className="text-[15px] font-[800] leading-snug text-white">
                     {item.skillTitle}
                   </h3>
-                  <p className="text-[12px] leading-[1.55] text-white/58">
+                  <p className="text-[12px] leading-[1.55] text-ink-soft">
                     <MathText text={item.hint} />
                   </p>
-                  <p className="text-[11px] font-semibold leading-[1.45] text-white/42">
+                  <p className="text-[11px] font-semibold leading-[1.45] text-ink-faint">
                     {item.reason}
                   </p>
                 </div>
@@ -376,7 +413,7 @@ export function ProfileOverview() {
       ) : null}
 
       <section className="flex flex-col gap-3" aria-label="Прогресс по темам">
-        <h2 className="text-[13px] font-bold uppercase tracking-[.14em] text-white/45">
+        <h2 className="text-[13px] font-bold uppercase tracking-[.14em] text-ink-faint">
           По темам
         </h2>
         <div className="grid gap-3 sm:grid-cols-2">
@@ -392,10 +429,7 @@ export function ProfileOverview() {
               solved > 0 ? Math.round((correct / solved) * 100) : null;
 
             return (
-              <Card
-                key={topic.id}
-                className="flex flex-col gap-2.5 border-white/[.08] !p-4"
-              >
+              <Card key={topic.id} padding="sm" className="flex flex-col gap-2.5">
                 <div className="flex items-center justify-between gap-2">
                   <h3 className="line-clamp-1 text-[15px] font-[800] text-white">
                     {topic.title}
@@ -405,8 +439,15 @@ export function ProfileOverview() {
                   </Badge>
                 </div>
 
+                <ProgressBar
+                  value={topicAccuracy ?? 0}
+                  size="sm"
+                  tone={topicAccuracy === null ? "neutral" : topicAccuracy >= 70 ? "cyan" : "gold"}
+                  label={`Точность по теме ${topic.title}`}
+                />
+
                 <div className="flex items-center justify-between gap-3">
-                  <p className="min-w-0 text-[12px] font-semibold leading-[1.5] text-white/55">
+                  <p className="min-w-0 text-[12px] font-semibold leading-[1.5] text-ink-soft">
                     Решено{" "}
                     <span className="physics-number text-white/80">{solved}</span>
                     {topicAccuracy !== null ? (
@@ -422,7 +463,7 @@ export function ProfileOverview() {
                     <span className="physics-number text-white/80">{sessions}</span>{" "}
                     трен.
                     {lastPracticed ? (
-                      <span className="block text-white/40">
+                      <span className="block text-ink-faint">
                         последняя {lastPracticed}
                       </span>
                     ) : null}
@@ -443,23 +484,23 @@ export function ProfileOverview() {
         <section className="flex flex-col gap-3" aria-labelledby="exam-history-title">
           <h2
             id="exam-history-title"
-            className="text-[13px] font-bold uppercase tracking-[.14em] text-white/45"
+            className="text-[13px] font-bold uppercase tracking-[.14em] text-ink-faint"
           >
             История диагностик
           </h2>
-          <Card className="flex flex-col gap-3 border-white/[.08] !p-4">
+          <Card className="flex flex-col gap-3 border-line !p-4">
             <ul className="flex flex-col gap-2">
               {[...examLog].reverse().slice(0, 5).map((attempt) => (
                 <li
                   key={attempt.completedAt}
-                  className="flex items-center justify-between gap-3 border-b border-white/[.06] pb-2 last:border-b-0 last:pb-0 text-[13px]"
+                  className="flex items-center justify-between gap-3 border-b border-line-subtle pb-2 last:border-b-0 last:pb-0 text-[13px]"
                 >
-                  <span className="text-white/60">{formatAttemptDate(attempt.completedAt)}</span>
+                  <span className="text-ink-soft">{formatAttemptDate(attempt.completedAt)}</span>
                   <span className="flex items-center gap-2">
                     <span className="physics-number font-bold text-white/85">
                       {attempt.score}/{attempt.total}
                     </span>
-                    <span className="text-[11px] font-semibold text-white/40">
+                    <span className="text-[11px] font-semibold text-ink-faint">
                       {Math.round((attempt.score / attempt.total) * 100)}%
                     </span>
                   </span>
@@ -477,11 +518,11 @@ export function ProfileOverview() {
       ) : null}
 
       <section
-        className="flex flex-col gap-3 rounded-card border border-white/[.06] bg-space-900/50 px-5 py-4"
+        className="flex flex-col gap-3 rounded-card border border-line-subtle bg-space-900/50 px-5 py-4"
         aria-label="Управление данными"
       >
         <div className="flex items-center justify-between gap-4">
-          <p className="text-[12px] leading-[1.6] text-white/45">
+          <p className="text-[12px] leading-[1.6] text-ink-faint">
             Все данные хранятся только в этом браузере. Скачай файл прогресса,
             чтобы не потерять его при очистке или сменить устройство.
           </p>

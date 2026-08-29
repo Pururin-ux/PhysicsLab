@@ -49,28 +49,27 @@ export default async function TaskTypePage({ params }: TaskTypePageProps) {
 
   return (
     <div className="mx-auto flex w-full max-w-[760px] flex-col gap-7">
-      <nav aria-label="Хлебные крошки" className="flex flex-wrap items-center gap-2 text-[13px] font-semibold text-white/48">
-        <Link className="rounded-option hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/55" href="/tasks">
+      <nav
+        aria-label="Хлебные крошки"
+        className="flex flex-wrap items-center gap-2 text-[13px] font-semibold text-ink-soft"
+      >
+        <Link href="/tasks" className="pl-focus rounded-option hover:text-white">
           Задачи
         </Link>
-        <span aria-hidden="true">/</span>
+        <span aria-hidden="true" className="text-white/30">
+          /
+        </span>
         <span>{entry.topicLabel}</span>
       </nav>
 
       <section className="flex flex-col gap-4">
         <div>
-          <p className="text-[11px] font-bold uppercase tracking-[.14em] text-white/58">
-            {entry.topicLabel}
-          </p>
-          <h1 className="mt-2 text-[34px] font-[800] leading-tight text-white sm:text-[42px]">
-            {entry.title}
-          </h1>
-          <p className="mt-3 max-w-[680px] text-[15px] leading-[1.7] text-white/68">
-            {entry.shortDescription}
-          </p>
+          <p className="pl-eyebrow">{entry.topicLabel}</p>
+          <h1 className="pl-h1 mt-2 max-w-[26ch]">{entry.title}</h1>
+          <p className="pl-body pl-measure mt-3">{entry.shortDescription}</p>
         </div>
 
-        <div className="flex flex-wrap gap-x-4 gap-y-2 text-[12px] font-semibold text-white/52">
+        <div className="flex flex-wrap gap-x-4 gap-y-2 text-[12px] font-semibold text-ink-soft">
           <span>{answerFormatLabel(entry.answerFormat)}</span>
           <span>Сложность внутри тренажёра: {difficulty}</span>
           {entry.visualKinds.includes("graph") ? <span>Есть график</span> : null}
@@ -91,10 +90,10 @@ export default async function TaskTypePage({ params }: TaskTypePageProps) {
 
       {relatedFormulas.length > 0 ? (
         <section className="border-t border-white/[.08] pt-6" aria-labelledby="related-formulas-title">
-          <h2 id="related-formulas-title" className="text-xl font-[800] text-white">
+          <h2 id="related-formulas-title" className="pl-h2">
             Связанные формулы
           </h2>
-          <p className="mt-2 text-[13px] leading-[1.6] text-white/58">
+          <p className="mt-2 text-[13px] leading-[1.6] text-ink-soft">
             Открой формулу, обозначения и условия применения для этого типа задач.
           </p>
           <ul className="mt-4 flex flex-col gap-2">
@@ -102,7 +101,7 @@ export default async function TaskTypePage({ params }: TaskTypePageProps) {
               <li key={formula.id}>
                 <Link
                   href={buildFormulaHref(formula.id)}
-                  className="inline-flex min-h-10 items-center rounded-option border border-white/[.12] bg-white/[.025] px-3.5 text-[13px] font-semibold text-nova-cyan/85 transition-colors hover:border-nova-cyan/45 hover:text-nova-cyan focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/55"
+                  className="pl-focus inline-flex min-h-10 items-center rounded-option border border-line bg-surface-1 px-3.5 text-[13px] font-semibold text-nova-cyan/90 transition-colors hover:border-nova-cyan/45 hover:bg-surface-2 hover:text-nova-cyan"
                 >
                   {relatedFormulas.length === 1
                     ? "Открыть формулу и условия применения"

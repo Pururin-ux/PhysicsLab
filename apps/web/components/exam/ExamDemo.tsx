@@ -44,7 +44,7 @@ function ExamHistoryLine() {
   const last = log[log.length - 1];
 
   return (
-    <p className="text-[13px] font-semibold leading-[1.6] text-white/55">
+    <p className="text-[13px] font-semibold leading-[1.6] text-ink-soft">
       Попыток: <span className="physics-number text-white/80">{log.length}</span>
       {best ? (
         <>
@@ -87,30 +87,39 @@ function ExamCoverageMap({
         <h2 id="exam-coverage-title" className="text-[15px] font-[800] text-white">
           Что внутри варианта
         </h2>
-        <p className="text-[12px] leading-[1.6] text-white/55">
+        <p className="text-[12px] leading-[1.6] text-ink-soft">
           По две задачи из каждой открытой темы: всего 10 заданий из {totalTaskTypes} доступных
           типов.
         </p>
       </div>
 
-      <ul className="flex flex-col gap-2">
+      <ul className="flex flex-col gap-2.5">
         {sections.map((section) => (
           <li
             key={section.id}
-            className="flex items-center justify-between gap-3 rounded-option border border-white/[.08] bg-white/[.025] px-3.5 py-2.5"
+            className="flex flex-col gap-1.5 rounded-option border border-line bg-surface-1 px-3.5 py-2.5"
           >
-            <span className="min-w-0 text-[13px] font-semibold text-white/78">{section.title}</span>
-            <span className="shrink-0 text-[12px] font-semibold text-white/50">
-              <span className="physics-number text-white/80">{section.familyCount}</span> типов · 2
-              задачи
-            </span>
+            <div className="flex items-center justify-between gap-3">
+              <span className="min-w-0 truncate text-[13px] font-bold text-white">
+                {section.title}
+              </span>
+              <span className="shrink-0 text-[12px] font-semibold text-ink-soft">
+                <span className="physics-number text-white/85">{section.familyCount}</span> типов ·
+                2 задачи
+              </span>
+            </div>
+            <div className="flex gap-1" aria-hidden="true">
+              {[0, 1].map((slot) => (
+                <span key={slot} className="h-1.5 flex-1 rounded-full bg-nova-gold/70" />
+              ))}
+            </div>
           </li>
         ))}
       </ul>
 
       {missing.length > 0 ? (
-        <div className="flex flex-col gap-1.5 rounded-option border border-white/[.08] bg-space-950/40 px-3.5 py-3">
-          <p className="text-[11px] font-bold uppercase tracking-[.12em] text-white/45">
+        <div className="flex flex-col gap-1.5 rounded-option border border-line bg-surface-1 px-3.5 py-3">
+          <p className="pl-eyebrow">
             Чего в варианте нет
           </p>
           <ul className="flex flex-col gap-1">
@@ -150,8 +159,9 @@ export function ExamDemo({ sections, missing, totalTaskTypes }: ExamDemoProps) {
 
   return (
     <Card
-      variant="elevated"
-      className="mx-auto flex w-full max-w-[620px] flex-col gap-5 border-nova-gold/25 !p-5 md:!p-7"
+      variant="raised"
+      padding="lg"
+      className="mx-auto flex w-full max-w-[640px] flex-col gap-6 border-nova-gold/25"
     >
       <div className="flex items-center gap-2.5">
         <Badge tone="gold">Открытые темы</Badge>
@@ -162,7 +172,7 @@ export function ExamDemo({ sections, missing, totalTaskTypes }: ExamDemoProps) {
 
       <ExamCoverageMap sections={sections} missing={missing} totalTaskTypes={totalTaskTypes} />
 
-      <ul className="flex flex-col gap-2.5 text-[14px] leading-[1.65] text-white/72">
+      <ul className="flex flex-col gap-2.5 text-[14px] leading-[1.65] text-ink-muted">
         <li className="grid grid-cols-[auto_1fr] gap-2.5">
           <span className="text-nova-gold">—</span>
           Темы идут вперемешку: как на экзамене, а не блоками по разделу.
@@ -177,7 +187,7 @@ export function ExamDemo({ sections, missing, totalTaskTypes }: ExamDemoProps) {
         </li>
       </ul>
 
-      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[13px] leading-[1.55] text-white/55">
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[13px] leading-[1.55] text-ink-soft">
         <span>Это тренировочный набор, а не полный вариант ЦТ/ЦЭ.</span>
         <Link
           href="/tasks#coverage"
@@ -210,11 +220,7 @@ export function ExamDemo({ sections, missing, totalTaskTypes }: ExamDemoProps) {
             </p>
           </div>
           <div className="grid gap-2.5 sm:grid-cols-2">
-            <Button
-              size="lg"
-              className="border-nova-gold bg-nova-gold shadow-gold-glow focus-visible:ring-nova-gold/50"
-              onClick={() => setStarted("resume")}
-            >
+            <Button size="lg" variant="gold" onClick={() => setStarted("resume")}>
               Продолжить вариант
             </Button>
             <Button
@@ -231,11 +237,7 @@ export function ExamDemo({ sections, missing, totalTaskTypes }: ExamDemoProps) {
           </div>
         </section>
       ) : (
-        <Button
-          size="lg"
-          className="border-nova-gold bg-nova-gold shadow-gold-glow focus-visible:ring-nova-gold/50"
-          onClick={() => setStarted("normal")}
-        >
+        <Button size="lg" variant="gold" fullWidth onClick={() => setStarted("normal")}>
           Начать тренировку
         </Button>
       )}

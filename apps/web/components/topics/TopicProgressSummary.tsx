@@ -49,19 +49,20 @@ export function TopicProgressSummary({
 
   return (
     <Card
-      className={`flex flex-col gap-4 border-l-2 ${accent.border} !p-5`}
+      padding="md"
+      className={`flex flex-col gap-4 border-l-2 ${accent.border}`}
       aria-label="Твой прогресс по теме"
     >
       <div className="flex items-start justify-between gap-3">
         <div className="flex flex-col gap-1.5">
-          <p className="text-[11px] font-bold uppercase tracking-[.14em] text-white/50">
+          <p className="pl-eyebrow">
             Твой прогресс
           </p>
           <p className="flex items-baseline gap-1.5">
             <span className="physics-number text-[26px] font-bold leading-none text-white">
               {mounted ? solved : "—"}
             </span>
-            <span className="text-[12px] font-semibold text-white/55">задач решено</span>
+            <span className="text-[12px] font-semibold text-ink-soft">задач решено</span>
           </p>
         </div>
         <Badge tone={sessions > 0 ? accent.badge : "neutral"} className="shrink-0">
@@ -70,24 +71,24 @@ export function TopicProgressSummary({
       </div>
 
       <dl className="grid grid-cols-3 gap-2 text-center">
-        <div className="rounded-option border border-white/[.08] bg-white/[.025] px-2 py-2.5">
-          <dt className="text-[10px] font-bold uppercase tracking-[.1em] text-white/45">
+        <div className="rounded-option border border-line bg-surface-1 px-2 py-2.5">
+          <dt className="text-[10px] font-bold uppercase tracking-[.1em] text-ink-faint">
             Тренировок
           </dt>
           <dd className="physics-number mt-1 text-[17px] font-bold leading-none text-white">
             {mounted ? sessions : "—"}
           </dd>
         </div>
-        <div className="rounded-option border border-white/[.08] bg-white/[.025] px-2 py-2.5">
-          <dt className="text-[10px] font-bold uppercase tracking-[.1em] text-white/45">
+        <div className="rounded-option border border-line bg-surface-1 px-2 py-2.5">
+          <dt className="text-[10px] font-bold uppercase tracking-[.1em] text-ink-faint">
             Точность
           </dt>
           <dd className="physics-number mt-1 text-[17px] font-bold leading-none text-white">
             {mounted && accuracy !== null ? `${accuracy}%` : "—"}
           </dd>
         </div>
-        <div className="rounded-option border border-white/[.08] bg-white/[.025] px-2 py-2.5">
-          <dt className="text-[10px] font-bold uppercase tracking-[.1em] text-white/45">
+        <div className="rounded-option border border-line bg-surface-1 px-2 py-2.5">
+          <dt className="text-[10px] font-bold uppercase tracking-[.1em] text-ink-faint">
             Ловушек
           </dt>
           <dd
@@ -108,23 +109,23 @@ export function TopicProgressSummary({
           <p className="text-[13px] font-semibold leading-snug text-white">
             {topWeakness.skillTitle}
           </p>
-          <p className="text-[12px] leading-[1.55] text-white/62">
+          <p className="text-[12px] leading-[1.55] text-ink-soft">
             <MathText text={topWeakness.hint} />
           </p>
         </div>
       ) : null}
 
       {mounted && reviewItem ? (
-        <p className="text-[12px] font-semibold leading-[1.55] text-white/58">
+        <p className="text-[12px] font-semibold leading-[1.55] text-ink-soft">
           План повторения: {reviewItem.dueLabel.toLowerCase()} — {reviewItem.reason}.
         </p>
       ) : null}
 
       <div className="mt-auto flex flex-col gap-2">
-        <Button asChild size="lg" className="!w-full">
+        <Button asChild size="lg" fullWidth>
           <Link href={practiceHref}>{sessions > 0 ? "Продолжить тренировку" : practiceLabel}</Link>
         </Button>
-        <p className="text-[11px] leading-[1.5] text-white/45">
+        <p className="text-[11px] leading-[1.5] text-ink-faint">
           Одна тренировка — 10 задач по {skillsCount}{" "}
           {skillsCount === 1 ? "навыку" : "навыкам"} темы.
         </p>

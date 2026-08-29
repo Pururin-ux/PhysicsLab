@@ -79,10 +79,10 @@ function Metric({
   return (
     <div
       className={cn(
-        "rounded-option border bg-white/[.025] p-3",
+        "rounded-option border bg-surface-1 p-3",
         tone === "gold" && "border-nova-gold/25 bg-nova-gold/[.06]",
         tone === "cyan" && "border-nova-cyan/25 bg-nova-cyan/[.06]",
-        tone === "neutral" && "border-white/[.08]",
+        tone === "neutral" && "border-line",
       )}
     >
       <p
@@ -94,7 +94,7 @@ function Metric({
       >
         {value}
       </p>
-      <p className="mt-1 text-[12px] font-semibold leading-tight text-white/55">
+      <p className="mt-1 text-[12px] font-semibold leading-tight text-ink-soft">
         {label}
       </p>
     </div>
@@ -110,7 +110,7 @@ function EmptyState({ totalSolved }: { totalSolved: number }) {
           <h2 className="text-lg font-[800] text-white">
             Записанных ловушек нет
           </h2>
-          <p className="max-w-[560px] text-[14px] leading-[1.7] text-white/65">
+          <p className="max-w-[560px] text-[14px] leading-[1.7] text-ink-muted">
             Решено задач: <span className="physics-number">{totalSolved}</span>.
             Повторяющиеся слабые места пока не проявились. Когда ошибка
             повторится или станет старой, здесь появится конкретный план
@@ -123,7 +123,7 @@ function EmptyState({ totalSolved }: { totalSolved: number }) {
           <h2 className="text-lg font-[800] text-white">
             Здесь появится очередь повторения
           </h2>
-          <p className="max-w-[560px] text-[14px] leading-[1.7] text-white/65">
+          <p className="max-w-[560px] text-[14px] leading-[1.7] text-ink-muted">
             После первой тренировки PhysicsLab сохранит ловушки, сгруппирует их
             по навыкам и покажет, что стоит вернуть сегодня, а что можно
             оставить на следующую сессию.
@@ -143,12 +143,12 @@ function TopicInsightCard({ insight }: { insight: ReviewTopicInsight }) {
 
   return (
     <Card
-      className="card-lift flex min-h-[220px] flex-col gap-4 border-white/[.08] !p-5"
+      className="card-lift flex min-h-[220px] flex-col gap-4 border-line !p-5"
       aria-label={`${insight.topicTitle}: ${insight.summary}`}
     >
       <div className="flex flex-wrap items-center justify-between gap-2">
         <Badge tone={topicBadgeTone(insight.tone)}>{insight.statusLabel}</Badge>
-        <span className="rounded-badge border border-white/[.08] bg-white/[.03] px-2 py-1 text-[11px] font-semibold leading-none text-white/60">
+        <span className="rounded-badge border border-line bg-surface-1 px-2 py-1 text-[11px] font-semibold leading-none text-ink-soft">
           <span className="physics-number">{insight.skillCoverageLabel}</span>{" "}
           навыков
         </span>
@@ -158,13 +158,13 @@ function TopicInsightCard({ insight }: { insight: ReviewTopicInsight }) {
         <h3 className="text-[15px] font-[800] leading-snug text-white">
           {insight.topicTitle}
         </h3>
-        <p className="mt-2 text-[13px] leading-[1.55] text-white/58">
+        <p className="mt-2 text-[13px] leading-[1.55] text-ink-soft">
           {insight.summary}
         </p>
       </div>
 
       <div
-        className="h-2 overflow-hidden rounded-badge bg-white/[.06]"
+        className="h-2 overflow-hidden rounded-badge bg-surface-2"
         aria-hidden="true"
       >
         <div
@@ -183,13 +183,13 @@ function TopicInsightCard({ insight }: { insight: ReviewTopicInsight }) {
           insight.topSkillTitles.map((skillTitle) => (
             <span
               key={skillTitle}
-              className="rounded-badge border border-white/[.08] bg-white/[.03] px-2 py-1 text-[11px] font-semibold leading-none text-white/68"
+              className="rounded-badge border border-line bg-surface-1 px-2 py-1 text-[11px] font-semibold leading-none text-ink-muted"
             >
               {skillTitle}
             </span>
           ))
         ) : (
-          <span className="text-[12px] font-semibold text-white/40">
+          <span className="text-[12px] font-semibold text-ink-faint">
             Нет активных ловушек
           </span>
         )}
@@ -204,14 +204,14 @@ function TopicInsightCard({ insight }: { insight: ReviewTopicInsight }) {
 
 function ReviewQueueCard({ weakness }: { weakness: ReviewPlanItem }) {
   return (
-    <Card className="card-lift flex flex-col gap-4 border-white/[.08] !p-5 sm:flex-row sm:items-center sm:justify-between">
+    <Card className="card-lift flex flex-col gap-4 border-line !p-5 sm:flex-row sm:items-center sm:justify-between">
       <div className="flex min-w-0 flex-col gap-2">
         <div className="flex flex-wrap items-center gap-2">
           <Badge tone={weakness.topicId === "dynamics" ? "gold" : "cyan"}>
             {weakness.skillTitle}
           </Badge>
           {weakness.topicTitle ? (
-            <span className="text-[11px] font-bold uppercase tracking-[.12em] text-white/40">
+            <span className="text-[11px] font-bold uppercase tracking-[.12em] text-ink-faint">
               {weakness.topicTitle}
             </span>
           ) : null}
@@ -219,7 +219,7 @@ function ReviewQueueCard({ weakness }: { weakness: ReviewPlanItem }) {
             {weakness.dueLabel}
           </Badge>
           <span
-            className="physics-number text-[12px] font-semibold text-white/45"
+            className="physics-number text-[12px] font-semibold text-ink-faint"
             title="Сколько раз встретилась эта ошибка"
           >
             ×{weakness.count}
@@ -228,10 +228,10 @@ function ReviewQueueCard({ weakness }: { weakness: ReviewPlanItem }) {
         <h3 className="text-[16px] font-[800] leading-snug text-white">
           {weakness.title}
         </h3>
-        <p className="text-[13px] leading-[1.65] text-white/62">
+        <p className="text-[13px] leading-[1.65] text-ink-muted">
           <MathText text={weakness.hint} />
         </p>
-        <p className="text-[12px] font-semibold leading-[1.5] text-white/45">
+        <p className="text-[12px] font-semibold leading-[1.5] text-ink-faint">
           {weakness.reason}
         </p>
       </div>
@@ -295,14 +295,14 @@ export function MistakesList() {
               <Badge tone={dashboard.dueToday > 0 ? "gold" : "cyan"}>
                 План повторения
               </Badge>
-              <span className="text-[11px] font-bold uppercase tracking-[.12em] text-white/40">
+              <span className="text-[11px] font-bold uppercase tracking-[.12em] text-ink-faint">
                 ловушки · срочность · темы
               </span>
             </div>
             <h2 className="mt-4 text-[26px] font-[900] leading-tight text-white sm:text-[32px]">
               План восстановления
             </h2>
-            <p className="mt-3 max-w-[680px] text-[14px] leading-[1.7] text-white/65">
+            <p className="mt-3 max-w-[680px] text-[14px] leading-[1.7] text-ink-muted">
               {dashboard.recoveryNote}
             </p>
           </div>
@@ -341,7 +341,7 @@ export function MistakesList() {
           <Metric value={dashboard.activeTopics} label="темы затронуты" />
         </div>
 
-        <p className="mt-4 text-[12px] font-semibold leading-[1.6] text-white/45">
+        <p className="mt-4 text-[12px] font-semibold leading-[1.6] text-ink-faint">
           {dashboard.recoveryLabel}
         </p>
       </Card>
@@ -355,7 +355,7 @@ export function MistakesList() {
             >
               Карта тем
             </h2>
-            <p className="mt-1 text-[13px] leading-[1.6] text-white/50">
+            <p className="mt-1 text-[13px] leading-[1.6] text-ink-soft">
               Где ошибки уже требуют возврата, а где пока чисто.
             </p>
           </div>
@@ -377,13 +377,13 @@ export function MistakesList() {
             >
               Очередь повторения
             </h2>
-            <p className="mt-1 text-[13px] leading-[1.6] text-white/50">
+            <p className="mt-1 text-[13px] leading-[1.6] text-ink-soft">
               Сначала старые и повторяющиеся ловушки, затем свежие одиночные.
             </p>
           </div>
 
           <div
-            className="flex flex-wrap gap-1 rounded-option border border-white/[.08] bg-white/[.025] p-1"
+            className="flex flex-wrap gap-1 rounded-option border border-line bg-surface-1 p-1"
             role="group"
             aria-label="Фильтр очереди повторения"
           >
@@ -403,7 +403,7 @@ export function MistakesList() {
                     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/50",
                     selected
                       ? "bg-nova-cyan text-space-950"
-                      : "text-white/62 hover:bg-white/[.06] hover:text-white",
+                      : "text-ink-muted hover:bg-surface-2 hover:text-white",
                     count === 0 && "cursor-not-allowed opacity-35 hover:bg-transparent",
                   )}
                 >

@@ -5,6 +5,7 @@ import { topics } from "../../lib/topics";
 import { XP_RULES } from "../../lib/xp";
 import { Badge } from "../../components/ui/Badge";
 import { Card } from "../../components/ui/Card";
+import { SectionHeading } from "../../components/ui/SectionHeading";
 
 export const metadata = {
   title: "О проекте | PhysicsLab",
@@ -27,7 +28,7 @@ const principles = [
   },
   {
     title: "Честные цифры",
-    body: "Мы показываем решенные задачи, точность и серию дней. Никаких «готовность 73%» и прогнозов балла — их нельзя честно посчитать по тренажёру.",
+    body: "Мы показываем решённые задачи, точность и серию дней. Никаких «готовность 73%» и прогнозов балла — их нельзя честно посчитать по тренажёру.",
   },
 ];
 
@@ -61,48 +62,62 @@ export default function AboutPage() {
   const uncovered = coverage.filter((section) => section.familyCount === 0);
 
   return (
-    <div className="flex min-w-0 flex-col gap-9">
-      <section className="flex max-w-[680px] flex-col gap-3">
-        <p className="text-[11px] font-bold uppercase tracking-[.14em] text-nova-cyan/80">
-          О проекте
-        </p>
-        <h1 className="text-[34px] font-[800] leading-tight tracking-tight text-white sm:text-[42px]">
+    <div className="flex min-w-0 flex-col gap-10">
+      <section className="flex max-w-[720px] flex-col gap-4">
+        <p className="pl-eyebrow text-nova-cyan/80">О проекте</p>
+        <h1 className="pl-h1 max-w-[24ch]">
           Тренажёр, который честно говорит, чего в нём нет
         </h1>
-        <p className="text-[15px] leading-[1.7] text-white/68">
+        <p className="pl-body pl-measure">
           PhysicsLab — тренажёр по физике для подготовки к ЦЭ/ЦТ в Беларуси. Он не имитирует
           экзамен целиком: он закрывает те разделы, где задачи уже разобраны и проверены, и прямо
           показывает остальные.
         </p>
-        <div className="flex flex-wrap gap-3 pt-1">
-          <Badge tone="cyan">{entries.length} типов задач</Badge>
-          <Badge tone="cyan">{topics.length} тем</Badge>
-          <Badge tone="neutral">без регистрации</Badge>
+        <div className="flex flex-wrap gap-2 pt-1">
+          <Badge tone="cyan" size="sm" dot>
+            {entries.length} типов задач
+          </Badge>
+          <Badge tone="cyan" size="sm" dot>
+            {topics.length} тем
+          </Badge>
+          <Badge size="sm">без регистрации</Badge>
         </div>
       </section>
 
-      <section aria-labelledby="principles-title" className="flex flex-col gap-4">
-        <h2 id="principles-title" className="text-[22px] font-[800] text-white">
-          Как здесь учат
-        </h2>
+      <section aria-labelledby="principles-title" className="flex flex-col gap-5">
+        <SectionHeading
+          id="principles-title"
+          eyebrow="Методика"
+          title="Как здесь учат"
+          description="Четыре принципа, из которых следует всё остальное: от структуры урока до формулировок в разборе ошибок."
+        />
         <div className="grid gap-3 md:grid-cols-2">
           {principles.map((item) => (
-            <Card key={item.title} className="flex flex-col gap-2 border-white/[.08] !p-5">
-              <h3 className="text-[16px] font-[800] leading-snug text-white">{item.title}</h3>
-              <p className="text-[13px] leading-[1.65] text-white/62">{item.body}</p>
+            <Card key={item.title} padding="md" interactive className="flex flex-col gap-2.5">
+              <h3 className="pl-h3">{item.title}</h3>
+              <p className="text-[13px] leading-[1.7] text-ink-muted">{item.body}</p>
             </Card>
           ))}
         </div>
       </section>
 
-      <section aria-labelledby="limits-title" className="flex flex-col gap-4">
-        <h2 id="limits-title" className="text-[22px] font-[800] text-white">
-          Честные ограничения
-        </h2>
-        <Card className="flex flex-col gap-3 border-nova-gold/20 bg-nova-gold/[.04] !p-5">
-          <ul className="flex flex-col gap-2.5">
+      <section aria-labelledby="limits-title" className="flex flex-col gap-5">
+        <SectionHeading
+          id="limits-title"
+          eyebrow="Границы"
+          title="Честные ограничения"
+          description="Лучше сразу сказать, где тренажёр не поможет, чем создать ощущение полной готовности."
+        />
+        <Card
+          padding="lg"
+          className="border-nova-gold/25 bg-nova-gold/[.045]"
+        >
+          <ul className="flex flex-col gap-3">
             {limits.map((item) => (
-              <li key={item} className="grid grid-cols-[auto_1fr] gap-3 text-[14px] leading-[1.65] text-white/72">
+              <li
+                key={item}
+                className="grid grid-cols-[auto_1fr] gap-3 text-[14px] leading-[1.7] text-ink-muted"
+              >
                 <span aria-hidden="true" className="text-nova-gold">
                   —
                 </span>
@@ -113,28 +128,26 @@ export default function AboutPage() {
         </Card>
       </section>
 
-      <section aria-labelledby="coverage-title" className="flex flex-col gap-4">
-        <div className="flex flex-col gap-1.5">
-          <h2 id="coverage-title" className="text-[22px] font-[800] text-white">
-            Покрытие программы
-          </h2>
-          <p className="text-[13px] leading-[1.6] text-white/58">
-            Цифра — сколько типов задач каталога приходится на раздел. Открытых разделов:{" "}
-            {covered.length}, без задач: {uncovered.length}.
-          </p>
-        </div>
-
+      <section aria-labelledby="coverage-title" className="flex flex-col gap-5">
+        <SectionHeading
+          id="coverage-title"
+          eyebrow="Программа"
+          title="Покрытие программы"
+          description={`Цифра — сколько типов задач каталога приходится на раздел. Открытых разделов: ${covered.length}, без задач: ${uncovered.length}.`}
+        />
         <div className="grid gap-3 md:grid-cols-2">
           {covered.map((section) => (
-            <Card key={section.id} className="flex flex-col gap-2.5 border-white/[.08] !p-4">
+            <Card key={section.id} padding="sm" className="flex flex-col gap-2.5">
               <div className="flex items-center justify-between gap-3">
-                <h3 className="text-[15px] font-[800] text-white">{section.title}</h3>
-                <Badge tone="cyan">{section.familyCount} типов</Badge>
+                <h3 className="pl-h3">{section.title}</h3>
+                <Badge tone="cyan" size="sm">
+                  {section.familyCount} типов
+                </Badge>
               </div>
-              <p className="text-[13px] leading-[1.6] text-white/62">{section.summary}</p>
+              <p className="text-[13px] leading-[1.65] text-ink-muted">{section.summary}</p>
               <ul className="flex flex-col gap-1.5">
                 {section.knownGaps.map((gap) => (
-                  <li key={gap} className="text-[12px] leading-[1.55] text-white/45">
+                  <li key={gap} className="text-[12px] leading-[1.55] text-ink-faint">
                     • {gap}
                   </li>
                 ))}
@@ -143,15 +156,15 @@ export default function AboutPage() {
           ))}
 
           {uncovered.map((section) => (
-            <Card key={section.id} className="flex flex-col gap-2.5 border-white/[.08] !p-4">
+            <Card key={section.id} padding="sm" className="flex flex-col gap-2.5">
               <div className="flex items-center justify-between gap-3">
-                <h3 className="text-[15px] font-[800] text-white/80">{section.title}</h3>
-                <Badge tone="neutral">скоро</Badge>
+                <h3 className="pl-h3 text-white/85">{section.title}</h3>
+                <Badge size="sm">скоро</Badge>
               </div>
-              <p className="text-[13px] leading-[1.6] text-white/55">{section.summary}</p>
+              <p className="text-[13px] leading-[1.65] text-ink-soft">{section.summary}</p>
               <ul className="flex flex-col gap-1.5">
                 {section.knownGaps.map((gap) => (
-                  <li key={gap} className="text-[12px] leading-[1.55] text-white/45">
+                  <li key={gap} className="text-[12px] leading-[1.55] text-ink-faint">
                     • {gap}
                   </li>
                 ))}
@@ -161,91 +174,106 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <section aria-labelledby="progress-title" className="flex flex-col gap-4">
-        <h2 id="progress-title" className="text-[22px] font-[800] text-white">
-          Как считается прогресс
-        </h2>
+      <section aria-labelledby="progress-title" className="flex flex-col gap-5">
+        <SectionHeading
+          id="progress-title"
+          eyebrow="Цифры"
+          title="Как считается прогресс"
+          description="Никаких скрытых коэффициентов: правила ниже полностью описывают каждый балл XP и каждый приоритет повторения."
+        />
         <div className="grid gap-3 md:grid-cols-2">
-          <Card className="flex flex-col gap-2.5 border-white/[.08] !p-4">
-            <h3 className="text-[15px] font-[800] text-white">XP и серии</h3>
-            <ul className="flex flex-col gap-1.5 text-[13px] leading-[1.6] text-white/62">
+          <Card padding="md" className="flex flex-col gap-2.5">
+            <h3 className="pl-h3">XP и серии</h3>
+            <ul className="flex flex-col gap-2 text-[13px] leading-[1.65] text-ink-muted">
               <li>
-                Верный ответ с первой попытки — <span className="physics-number text-white/80">{XP_RULES.correct_first_attempt}</span> XP,
-                со второй — <span className="physics-number text-white/80">{XP_RULES.correct_second_attempt}</span> XP.
+                Верный ответ с первой попытки —{" "}
+                <span className="physics-number text-white/85">
+                  {XP_RULES.correct_first_attempt}
+                </span>{" "}
+                XP, со второй —{" "}
+                <span className="physics-number text-white/85">
+                  {XP_RULES.correct_second_attempt}
+                </span>{" "}
+                XP.
               </li>
               <li>
                 Серия из 3 и 5 верных ответов подряд даёт бонусы{" "}
-                <span className="physics-number text-white/80">+{XP_RULES.streak_bonus_3}</span> и{" "}
-                <span className="physics-number text-white/80">+{XP_RULES.streak_bonus_5}</span> XP.
+                <span className="physics-number text-white/85">+{XP_RULES.streak_bonus_3}</span> и{" "}
+                <span className="physics-number text-white/85">+{XP_RULES.streak_bonus_5}</span> XP.
               </li>
               <li>Отдельный счётчик дней: серия идёт, пока каждый день есть тренировка.</li>
             </ul>
           </Card>
 
-          <Card className="flex flex-col gap-2.5 border-white/[.08] !p-4">
-            <h3 className="text-[15px] font-[800] text-white">Слабые места</h3>
-            <ul className="flex flex-col gap-1.5 text-[13px] leading-[1.6] text-white/62">
+          <Card padding="md" className="flex flex-col gap-2.5">
+            <h3 className="pl-h3">Слабые места</h3>
+            <ul className="flex flex-col gap-2 text-[13px] leading-[1.65] text-ink-muted">
               <li>У каждой ошибки есть причина — конкретная ловушка, а не просто «неверно».</li>
-              <li>Ловушка считается по паре «навык + причина»: повторы и давность растят приоритет.</li>
+              <li>
+                Ловушка считается по паре «навык + причина»: повторы и давность растят приоритет.
+              </li>
               <li>Всё это собирается в план повторения на странице «Ошибки».</li>
             </ul>
           </Card>
         </div>
       </section>
 
-      <section aria-labelledby="data-title" className="flex flex-col gap-4">
-        <h2 id="data-title" className="text-[22px] font-[800] text-white">
-          Где лежат данные
-        </h2>
-        <Card className="flex flex-col gap-2.5 border-white/[.08] !p-5">
-          <p className="text-[14px] leading-[1.7] text-white/68">
+      <section aria-labelledby="data-title" className="flex flex-col gap-5">
+        <SectionHeading
+          id="data-title"
+          eyebrow="Приватность"
+          title="Где лежат данные"
+          description="Никаких аккаунтов и серверов: прогресс существует только в браузере на этом устройстве."
+        />
+        <Card padding="lg" className="flex flex-col gap-3">
+          <p className="text-[14px] leading-[1.7] text-ink-muted">
             Весь прогресс — в браузере на этом устройстве: без аккаунта, сервера и передачи
-            куда-либо. Очистка истории браузера удаляет прогресс, поэтому на странице
-            «Прогресс» есть экспорт в файл и импорт обратно.
+            куда-либо. Очистка истории браузера удаляет прогресс, поэтому на странице «Прогресс»
+            есть экспорт в файл и импорт обратно.
           </p>
-          <p className="text-[13px] leading-[1.65] text-white/55">
+          <p className="text-[13px] leading-[1.7] text-ink-soft">
             Тренировки, диагностика, ошибки и XP хранятся отдельными ключами, каждый со своей
             версией формата: старые данные читаются и дополняются, а не стираются.
           </p>
-          <Link
-            href="/profile"
-            className="w-fit rounded-option pt-1 text-[13px] font-semibold text-nova-cyan/85 transition-colors hover:text-nova-cyan focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/55"
-          >
+          <Link href="/profile" className="pl-link w-fit pt-1 text-[13px]">
             Открыть прогресс и экспорт данных
           </Link>
         </Card>
       </section>
 
-      <section aria-labelledby="constants-title" className="flex flex-col gap-4">
-        <div className="flex flex-col gap-1.5">
-          <h2 id="constants-title" className="text-[22px] font-[800] text-white">
-            Справочные значения
-          </h2>
-          <p className="text-[13px] leading-[1.6] text-white/58">
-            Константы, которые используются в задачах тренажёра. На экзамене ориентируйся на
-            значения из официального справочного материала.
-          </p>
-        </div>
+      <section aria-labelledby="constants-title" className="flex flex-col gap-5">
+        <SectionHeading
+          id="constants-title"
+          eyebrow="Справка"
+          title="Справочные значения"
+          description="Константы, которые используются в задачах тренажёра. На экзамене ориентируйся на значения из официального справочного материала."
+        />
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {constants.map((item) => (
             <div
               key={item.value}
-              className="flex flex-col gap-1.5 rounded-card border border-white/[.08] bg-space-900/60 px-4 py-3.5"
+              className="flex flex-col gap-1.5 rounded-card border border-line bg-surface-1 px-4 py-3.5"
             >
               <p className="formula-white text-[15px] leading-[1.5]">${item.value}$</p>
-              <p className="text-[12px] leading-[1.5] text-white/50">{item.note}</p>
+              <p className="text-[12px] leading-[1.5] text-ink-faint">{item.note}</p>
             </div>
           ))}
         </div>
       </section>
 
-      <section aria-labelledby="roadmap-title" className="flex flex-col gap-4">
-        <h2 id="roadmap-title" className="text-[22px] font-[800] text-white">
-          Что дальше
-        </h2>
-        <ul className="flex flex-col gap-2.5">
+      <section aria-labelledby="roadmap-title" className="flex flex-col gap-5">
+        <SectionHeading
+          id="roadmap-title"
+          eyebrow="Планы"
+          title="Что дальше"
+          description="Порядок определяется покрытием программы: сначала разделы, которых нет совсем."
+        />
+        <ul className="flex flex-col gap-3">
           {roadmap.map((item) => (
-            <li key={item} className="grid grid-cols-[auto_1fr] gap-3 text-[14px] leading-[1.65] text-white/68">
+            <li
+              key={item}
+              className="grid grid-cols-[auto_1fr] gap-3 text-[14px] leading-[1.7] text-ink-muted"
+            >
               <span aria-hidden="true" className="text-nova-cyan">
                 →
               </span>
@@ -253,19 +281,13 @@ export default function AboutPage() {
             </li>
           ))}
         </ul>
-        <p className="text-[13px] leading-[1.7] text-white/55">
+        <p className="text-[13px] leading-[1.7] text-ink-soft">
           Хочешь начать сейчас — открой{" "}
-          <Link
-            href="/topics"
-            className="rounded-option font-semibold text-nova-cyan/85 transition-colors hover:text-nova-cyan focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/55"
-          >
+          <Link href="/topics" className="pl-link">
             уроки по темам
           </Link>{" "}
           или{" "}
-          <Link
-            href="/exam"
-            className="rounded-option font-semibold text-nova-cyan/85 transition-colors hover:text-nova-cyan focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/55"
-          >
+          <Link href="/exam" className="pl-link">
             пройди диагностику
           </Link>
           .

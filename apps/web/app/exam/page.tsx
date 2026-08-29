@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { ExamDemo } from "../../components/exam/ExamDemo";
 import { getExamMixInfo } from "../../lib/learning/exam-mix";
+import { Badge } from "../../components/ui/Badge";
 import { Card } from "../../components/ui/Card";
+import { SectionHeading } from "../../components/ui/SectionHeading";
 
 export const metadata = {
   title: "Диагностика | PhysicsLab",
@@ -11,16 +13,35 @@ export const metadata = {
 
 const interpretation = [
   {
-    title: "8–10 из 10",
+    range: "8–10",
     body: "Тема держится без подсказок. Стоит взять задачи посложнее и следить за единицами и знаками.",
   },
   {
-    title: "5–7 из 10",
+    range: "5–7",
     body: "Нормальная рабочая зона: ошибки приходят из конкретных ловушек, а не из незнания темы целиком.",
   },
   {
-    title: "до 5 из 10",
+    range: "до 5",
     body: "Не повод паниковать: открой уроки тем, где ошибки повторились, и реши по пять задач на каждый навык.",
+  },
+];
+
+const rules = [
+  {
+    title: "Без подсказок темы",
+    body: "Задачи идут вперемешку, поэтому тренируется именно узнавание типа, а не повтор пройденного.",
+  },
+  {
+    title: "Разбор сразу",
+    body: "После каждого ответа открывается решение и ловушка — не нужно дожидаться конца варианта.",
+  },
+  {
+    title: "Пауза разрешена",
+    body: "Закрыл вкладку — вернёшься к тому же заданию: ответы и счёт хранятся локально.",
+  },
+  {
+    title: "Ошибки в работу",
+    body: "Каждая ошибка привязывается к навыку и уходит в план повторения со своим приоритетом.",
   },
 ];
 
@@ -28,48 +49,75 @@ export default function ExamPage() {
   const mix = getExamMixInfo();
 
   return (
-    <div className="flex min-w-0 flex-col gap-8">
-      <section className="flex max-w-[680px] flex-col gap-3">
-        <p className="text-[11px] font-bold uppercase tracking-[.14em] text-nova-gold/80">
+    <div className="flex min-w-0 flex-col gap-10">
+      <section className="flex flex-col gap-5">
+        <Badge tone="gold" size="sm" dot className="w-fit">
           ЦЭ/ЦТ · проверка
-        </p>
-        <h1 className="text-[34px] font-[800] leading-tight tracking-tight text-white sm:text-[42px]">
-          Диагностика: 10 задач по 5 открытым темам
-        </h1>
-        <p className="text-[15px] leading-[1.7] text-white/68">
+        </Badge>
+        <h1 className="pl-h1 max-w-[26ch]">Диагностика: 10 задач по 5 открытым темам</h1>
+        <p className="pl-body pl-measure">
           Задачи идут вперемешку, как на экзамене: нельзя заранее знать, какой раздел сейчас
           попадётся. Считаем не балл ЦТ/ЦЭ, а то, какие навыки держатся в смешанном порядке.
         </p>
       </section>
 
-      <ExamDemo
-        sections={mix.sections}
-        missing={mix.missing}
-        totalTaskTypes={mix.totalTaskTypes}
-      />
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start">
+        <ExamDemo
+          sections={mix.sections}
+          missing={mix.missing}
+          totalTaskTypes={mix.totalTaskTypes}
+        />
 
-      <section aria-labelledby="how-to-read-title" className="flex flex-col gap-3">
-        <h2 id="how-to-read-title" className="text-[13px] font-bold uppercase tracking-[.14em] text-white/45">
-          Как читать результат
-        </h2>
-        <div className="grid gap-3 md:grid-cols-3">
-          {interpretation.map((item) => (
-            <Card key={item.title} className="flex flex-col gap-2 border-white/[.08] !p-4">
-              <p className="physics-number text-[15px] font-bold text-nova-gold">{item.title}</p>
-              <p className="text-[13px] leading-[1.6] text-white/62">{item.body}</p>
+        <div className="flex min-w-0 flex-col gap-4">
+          <Card padding="md" className="flex flex-col gap-3">
+            <p className="pl-eyebrow">Как читать результат</p>
+            <ul className="flex flex-col gap-3.5">
+              {interpretation.map((item) => (
+                <li key={item.range} className="flex flex-col gap-1">
+                  <p className="physics-number text-[15px] font-bold text-nova-gold">
+                    {item.range} из 10
+                  </p>
+                  <p className="text-[13px] leading-[1.6] text-ink-muted">{item.body}</p>
+                </li>
+              ))}
+            </ul>
+          </Card>
+
+          <Card padding="md" className="flex flex-col gap-2.5">
+            <p className="pl-eyebrow">После диагностики</p>
+            <p className="text-[13px] leading-[1.65] text-ink-muted">
+              Ошибки попадают в{" "}
+              <Link href="/mistakes" className="pl-link">
+                план повторения
+              </Link>{" "}
+              с конкретными темами и ловушками. История попыток и лучший результат — в{" "}
+              <Link href="/profile" className="pl-link">
+                прогрессе
+              </Link>
+              .
+            </p>
+          </Card>
+        </div>
+      </div>
+
+      <section
+        aria-labelledby="exam-rules-title"
+        className="flex flex-col gap-5 border-t border-line-subtle pt-7"
+      >
+        <SectionHeading
+          id="exam-rules-title"
+          eyebrow="Правила"
+          title="Как проходит попытка"
+          description="Можно прерваться и вернуться: ответы и прогресс сохраняются в этой вкладке."
+        />
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          {rules.map((rule) => (
+            <Card key={rule.title} padding="sm" className="flex flex-col gap-2">
+              <h3 className="pl-h3">{rule.title}</h3>
+              <p className="text-[13px] leading-[1.6] text-ink-muted">{rule.body}</p>
             </Card>
           ))}
         </div>
-        <p className="text-[13px] leading-[1.7] text-white/55">
-          После диагностики ошибки попадают в{" "}
-          <Link
-            href="/mistakes"
-            className="rounded-option font-semibold text-nova-cyan/85 transition-colors hover:text-nova-cyan focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/55"
-          >
-            план повторения
-          </Link>{" "}
-          — с конкретными темами и ловушками.
-        </p>
       </section>
     </div>
   );

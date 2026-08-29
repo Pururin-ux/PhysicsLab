@@ -47,7 +47,7 @@ export function FormulaAccordionItem({
         aria-expanded={isOpen}
         aria-controls={panelId}
         onClick={() => setOpen((current) => !current)}
-        className="grid min-h-[72px] w-full grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-3 gap-y-2 px-1 py-3 text-left transition-colors hover:bg-white/[.025] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/50 sm:min-h-14 sm:grid-cols-[auto_minmax(160px,1fr)_minmax(180px,.8fr)_auto] sm:py-2.5"
+        className="grid min-h-[72px] w-full grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-3 gap-y-2 px-1 py-3 text-left transition-colors hover:bg-surface-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/50 sm:min-h-14 sm:grid-cols-[auto_minmax(160px,1fr)_minmax(180px,.8fr)_auto] sm:py-2.5"
       >
         <span
           aria-hidden="true"
@@ -69,7 +69,7 @@ export function FormulaAccordionItem({
           strokeWidth={2}
           strokeLinecap="round"
           strokeLinejoin="round"
-          className="formula-row-chevron col-start-3 row-start-1 h-4 w-4 shrink-0 text-white/40 sm:col-auto sm:row-auto"
+          className="formula-row-chevron col-start-3 row-start-1 h-4 w-4 shrink-0 text-ink-faint sm:col-auto sm:row-auto"
         >
           <path d="M9 6l6 6-6 6" />
         </svg>
@@ -77,12 +77,12 @@ export function FormulaAccordionItem({
 
       {isOpen ? (
         <div id={panelId} className="flex flex-col gap-3 px-5 pb-5 pt-1 sm:px-6">
-          <p className="max-w-[760px] text-[12px] leading-[1.6] text-white/55">
+          <p className="max-w-[760px] text-[12px] leading-[1.6] text-ink-soft">
             <MathText text={entry.caption} />
           </p>
           <FormulaDetails symbols={entry.symbols} limitation={entry.limitation} />
           {entry.relatedTasks.length > 0 ? (
-            <section className="border-t border-white/[.08] pt-3" aria-labelledby={`${panelId}-tasks`}>
+            <section className="border-t border-line pt-3" aria-labelledby={`${panelId}-tasks`}>
               <h3 id={`${panelId}-tasks`} className="text-[13px] font-bold text-white/82">
                 Задачи по этой формуле
               </h3>
@@ -90,16 +90,16 @@ export function FormulaAccordionItem({
                 {entry.relatedTasks.map((task) => (
                   <li
                     key={task.familyId}
-                    className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 rounded-option border border-white/[.08] bg-white/[.02] px-3 py-2.5"
+                    className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 rounded-option border border-line bg-surface-1 px-3 py-2.5"
                   >
                     <div className="min-w-0">
                       <p className="text-[12px] font-semibold text-white/88">{task.title}</p>
-                      <p className="mt-0.5 text-[11px] text-white/48">{task.topicLabel}</p>
+                      <p className="mt-0.5 text-[11px] text-ink-faint">{task.topicLabel}</p>
                     </div>
                     <div className="flex flex-wrap items-center gap-3 text-[12px] font-semibold">
                       <Link
                         href={task.taskHref}
-                        className="rounded-option text-white/65 transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/55"
+                        className="rounded-option text-ink-muted transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/55"
                       >
                         Открыть тип
                       </Link>

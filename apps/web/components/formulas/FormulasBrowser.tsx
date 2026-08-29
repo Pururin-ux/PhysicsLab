@@ -5,7 +5,9 @@ import { startTransition, useEffect, useMemo, useState } from "react";
 import type { FormulaReferenceViewEntry, FormulaReferenceViewGroup } from "../../lib/learning/learning-links";
 import { FormulaAccordionItem } from "./FormulaAccordionItem";
 import { Badge } from "../ui/Badge";
+import { Button } from "../ui/Button";
 import { Card } from "../ui/Card";
+import { EmptyState } from "../ui/EmptyState";
 
 interface FormulasBrowserProps {
   groups: readonly FormulaReferenceViewGroup[];
@@ -232,20 +234,19 @@ export function FormulasBrowser({
       </div>
 
       {!hasResults && (isFiltering || formulaFromUrl) ? (
-        <Card className="border-white/[.08] !p-6 text-center">
-          <p className="text-[14px] text-white/55">
-            {formulaFromUrl && !isFiltering
+        <EmptyState
+          title="Ничего не нашлось"
+          body={
+            formulaFromUrl && !isFiltering
               ? "Такая формула не найдена. Открой весь справочник и выбери нужную строку."
-              : `Ничего не нашлось по запросу «${query.trim()}». Проверь написание или очисти поиск.`}
-          </p>
-          <button
-            type="button"
-            onClick={showAllFormulas}
-            className="mt-4 min-h-10 rounded-option border border-white/[.12] px-4 text-[13px] font-semibold text-white/70 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/55"
-          >
-            Показать все формулы
-          </button>
-        </Card>
+              : `По запросу «${query.trim()}» совпадений нет. Проверь написание или очисти поиск.`
+          }
+          action={
+            <Button variant="secondary" size="sm" onClick={showAllFormulas}>
+              Показать все формулы
+            </Button>
+          }
+        />
       ) : null}
 
       {displayedGroups.map((group) => (

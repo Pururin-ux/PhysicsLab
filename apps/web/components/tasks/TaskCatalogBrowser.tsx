@@ -116,13 +116,13 @@ export function TaskCatalogBrowser({ entries, coverage }: TaskCatalogBrowserProp
             value={query}
             onChange={(event) => handleQueryChange(event.target.value)}
             placeholder="Например: закон Ома, I=U/R или v(t)"
-            className="h-12 w-full rounded-option border border-white/[.12] bg-white/[.03] px-4 pr-24 text-[14px] font-medium text-white placeholder:text-white/35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/55"
+            className="h-12 w-full rounded-option border border-line-strong bg-surface-1 px-4 pr-24 text-[14px] font-medium text-white placeholder:text-ink-faint focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/55"
           />
           {query ? (
             <button
               type="button"
               onClick={() => handleQueryChange("")}
-              className="absolute right-2 top-1/2 min-h-9 -translate-y-1/2 rounded-option px-3 text-[12px] font-semibold text-white/55 transition-colors hover:bg-white/[.06] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/55"
+              className="absolute right-2 top-1/2 min-h-9 -translate-y-1/2 rounded-option px-3 text-[12px] font-semibold text-ink-soft transition-colors hover:bg-surface-2 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/55"
             >
               Очистить
             </button>
@@ -137,7 +137,7 @@ export function TaskCatalogBrowser({ entries, coverage }: TaskCatalogBrowserProp
             className={`min-h-10 rounded-option border px-3.5 text-[13px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/55 ${
               activeTopic === "all"
                 ? "border-nova-cyan/55 bg-nova-cyan/[.12] text-white"
-                : "border-white/[.09] bg-white/[.02] text-white/60 hover:text-white"
+                : "border-line bg-surface-1 text-ink-soft hover:text-white"
             }`}
           >
             Все
@@ -151,7 +151,7 @@ export function TaskCatalogBrowser({ entries, coverage }: TaskCatalogBrowserProp
               className={`min-h-10 rounded-option border px-3.5 text-[13px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/55 ${
                 activeTopic === topic.id
                   ? "border-nova-cyan/55 bg-nova-cyan/[.12] text-white"
-                  : "border-white/[.09] bg-white/[.02] text-white/60 hover:text-white"
+                  : "border-line bg-surface-1 text-ink-soft hover:text-white"
               }`}
             >
               {topic.title}
@@ -160,7 +160,7 @@ export function TaskCatalogBrowser({ entries, coverage }: TaskCatalogBrowserProp
         </div>
 
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <p aria-live="polite" className="text-[13px] font-semibold text-white/55">
+          <p aria-live="polite" className="text-[13px] font-semibold text-ink-soft">
             Найдено типов: <span className="physics-number text-white/80">{filteredEntries.length}</span>
           </p>
           <Link
@@ -177,7 +177,7 @@ export function TaskCatalogBrowser({ entries, coverage }: TaskCatalogBrowserProp
         open={coverageOpen}
         onToggle={(event) => setCoverageOpen(event.currentTarget.open)}
         data-testid="program-coverage"
-        className="group rounded-card border border-white/[.09] bg-space-900/45"
+        className="group rounded-card border border-line bg-space-900/45"
       >
         <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-4 px-4 py-3 text-[15px] font-[800] text-white marker:content-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-nova-cyan/55 sm:px-5">
           <span>Покрытие программы</span>
@@ -185,30 +185,30 @@ export function TaskCatalogBrowser({ entries, coverage }: TaskCatalogBrowserProp
             +
           </span>
         </summary>
-        <div className="border-t border-white/[.08] px-4 pb-5 pt-4 sm:px-5">
+        <div className="border-t border-line px-4 pb-5 pt-4 sm:px-5">
           <h2 className="text-lg font-[800] text-white">Что уже покрывает PhysicsLab</h2>
-          <p className="mt-1 max-w-3xl text-[13px] leading-[1.6] text-white/58">
+          <p className="mt-1 max-w-3xl text-[13px] leading-[1.6] text-ink-soft">
             Сейчас доступны 35 типов задач в четырёх разделах. Все четыре раздела покрыты частично.
           </p>
-          <p className="mt-2 text-[12px] font-semibold text-white/50">
+          <p className="mt-2 text-[12px] font-semibold text-ink-soft">
             4 раздела с задачами · 2 раздела без задач
           </p>
-          <p className="mt-1 text-[12px] leading-[1.55] text-white/45">
+          <p className="mt-1 text-[12px] leading-[1.55] text-ink-faint">
             Количество типов относится ко всему каталогу, а не к текущему фильтру.
           </p>
 
           <ul className="mt-4 grid gap-3 lg:grid-cols-2" aria-label="Покрытие разделов физики">
             {coverage.map((section) => (
-              <li key={section.id} className="border-l-2 border-white/[.13] pl-3.5">
+              <li key={section.id} className="border-l-2 border-line-strong pl-3.5">
                 <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
                   <h3 className="text-[14px] font-[800] text-white">{section.title}</h3>
-                  <span className="text-[11px] font-bold text-white/55">{coverageStatusLabel(section.status)}</span>
+                  <span className="text-[11px] font-bold text-ink-soft">{coverageStatusLabel(section.status)}</span>
                   <span className="text-[11px] font-semibold text-nova-cyan/75">
                     {section.familyCount} {taskTypeCountLabel(section.familyCount)}
                   </span>
                 </div>
-                <p className="mt-1 text-[12px] leading-[1.55] text-white/55">{section.summary}</p>
-                <ul className="mt-2 space-y-1 text-[12px] leading-[1.5] text-white/45">
+                <p className="mt-1 text-[12px] leading-[1.55] text-ink-soft">{section.summary}</p>
+                <ul className="mt-2 space-y-1 text-[12px] leading-[1.5] text-ink-faint">
                   {section.knownGaps.map((gap) => (
                     <li key={gap}>Не покрыто: {gap}</li>
                   ))}
@@ -227,12 +227,12 @@ export function TaskCatalogBrowser({ entries, coverage }: TaskCatalogBrowserProp
                 <h2 id={`catalog-group-${topic.id}`} className="text-xl font-[800] text-white">
                   {topic.title}
                 </h2>
-                <span className="text-[12px] font-semibold text-white/60">
+                <span className="text-[12px] font-semibold text-ink-soft">
                   {topicEntries.length} {taskTypeCountLabel(topicEntries.length)}
                 </span>
               </div>
 
-              <div className="overflow-hidden rounded-card border border-white/[.08] bg-space-900/55">
+              <div className="overflow-hidden rounded-card border border-line bg-space-900/55">
                 {topicEntries.map((entry) => (
                   <article
                     key={entry.id}
@@ -246,10 +246,10 @@ export function TaskCatalogBrowser({ entries, coverage }: TaskCatalogBrowserProp
                       <h3 className="text-[16px] font-[800] leading-snug text-white">
                         {entry.title}
                       </h3>
-                      <p className="mt-1 text-[13px] leading-[1.55] text-white/58">
+                      <p className="mt-1 text-[13px] leading-[1.55] text-ink-soft">
                         {entry.shortDescription}
                       </p>
-                      <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-[11px] font-semibold text-white/60">
+                      <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-[11px] font-semibold text-ink-soft">
                         <span>{answerFormatLabel(entry.answerFormat)}</span>
                         <span>{difficultyLabel(entry)}</span>
                         {entry.visualKinds.map((kind) => (
@@ -260,7 +260,7 @@ export function TaskCatalogBrowser({ entries, coverage }: TaskCatalogBrowserProp
                     <Link
                       href={`/tasks/${entry.slug}`}
                       aria-label={`Открыть тип задачи: ${entry.title}`}
-                      className="inline-flex min-h-10 items-center justify-center rounded-option border border-white/[.12] bg-white/[.035] px-4 text-[13px] font-bold text-white/72 transition-colors hover:border-nova-cyan/45 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/55"
+                      className="inline-flex min-h-10 items-center justify-center rounded-option border border-line-strong bg-surface-2 px-4 text-[13px] font-bold text-ink-base transition-colors hover:border-nova-cyan/45 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/55"
                     >
                       Открыть тип
                     </Link>
@@ -272,11 +272,11 @@ export function TaskCatalogBrowser({ entries, coverage }: TaskCatalogBrowserProp
         </div>
       ) : (
         <section
-          className="rounded-card border border-white/[.08] bg-space-900/55 px-5 py-8 text-center"
+          className="rounded-card border border-line bg-space-900/55 px-5 py-8 text-center"
           data-testid="task-catalog-empty"
         >
           <h2 className="text-lg font-bold text-white">Ничего не найдено</h2>
-          <p className="mx-auto mt-2 max-w-[520px] text-[13px] leading-[1.6] text-white/55">
+          <p className="mx-auto mt-2 max-w-[520px] text-[13px] leading-[1.6] text-ink-soft">
             Попробуй название закона, формулу или другую тему.
           </p>
           <button
@@ -285,7 +285,7 @@ export function TaskCatalogBrowser({ entries, coverage }: TaskCatalogBrowserProp
               setQuery("");
               navigate("", "all", "replace");
             }}
-            className="mt-4 min-h-10 rounded-option border border-white/[.12] px-4 text-[13px] font-semibold text-white/70 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/55"
+            className="mt-4 min-h-10 rounded-option border border-line-strong px-4 text-[13px] font-semibold text-ink-muted hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/55"
           >
             Сбросить фильтры
           </button>
