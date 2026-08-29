@@ -9,10 +9,15 @@ import {
 } from "./reference-solutions.ts";
 
 const expectedPilotIds = [
+  "ampere-force",
   "average-speed-segments",
+  "coulomb-force",
+  "echo-distance",
   "friction-force",
   "heat-balance-simple",
   "ohm-law",
+  "photoelectric-effect",
+  "radioactive-decay",
   "thin-lens-image-distance",
   "vt-area",
 ] as const;
@@ -23,8 +28,8 @@ function entries(): ReferenceSolution[] {
   );
 }
 
-test("reference registry contains exactly the six approved pilots", () => {
-  assert.equal(entries().length, 6);
+test("reference registry contains exactly the approved pilots", () => {
+  assert.equal(entries().length, 11);
   assert.deepEqual([...referencePilotIds].sort(), [...expectedPilotIds]);
   assert.deepEqual(entries().map(({ familyId }) => familyId).sort(), [...expectedPilotIds]);
 });
