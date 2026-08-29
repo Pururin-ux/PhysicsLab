@@ -22,9 +22,9 @@ test("coverage map remains explicit about partial and absent sections", () => {
 
   assert.equal(mechanics?.status, "partial");
   assert.ok((mechanics?.familyCount ?? 0) > 0);
-  assert.equal(quantum?.status, "not-covered");
-  assert.equal(quantum?.familyCount, 0);
-  assert.equal(atomic?.status, "not-covered");
-  assert.equal(atomic?.familyCount, 0);
+  assert.equal(quantum?.status, "partial");
+  assert.ok((quantum?.familyCount ?? 0) > 0);
+  assert.equal(atomic?.status, "partial");
+  assert.ok((atomic?.familyCount ?? 0) > 0);
   assert.ok(coverage.every((section) => section.knownGaps.length > 0));
 });

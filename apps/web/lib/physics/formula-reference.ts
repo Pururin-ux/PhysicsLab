@@ -331,7 +331,7 @@ export const formulaReference: FormulaReferenceGroup[] = [
   {
     id: "electrodynamics",
     title: "Электродинамика",
-    intro: "Постоянный ток в участке цепи.",
+    intro: "Постоянный ток в участке цепи, электростатика и магнитное поле.",
     badgeTone: "blue",
     status: "active",
     entries: [
@@ -392,6 +392,82 @@ export const formulaReference: FormulaReferenceGroup[] = [
         ],
         limitation:
           "В знаменателе стоит сумма сопротивлений: внутреннее сопротивление нельзя отбрасывать.",
+      },
+      {
+        id: "coulomb-law",
+        relatedSkillIds: ["coulomb-force"],
+        title: "Закон Кулона",
+        formula: "F = k\\frac{|q_1||q_2|}{r^2}",
+        caption: "сила взаимодействия двух неподвижных точечных зарядов",
+        symbols: [
+          { latex: "F", description: "модуль силы взаимодействия, Н" },
+          { latex: "q_1, q_2", description: "модули зарядов, Кл" },
+          { latex: "r", description: "расстояние между зарядами, м" },
+          { latex: "k", description: "коэффициент 9·10⁹ Н·м²/Кл²" },
+        ],
+        limitation:
+          "Для точечных зарядов (или шаров, размеры которых малы по сравнению с расстоянием). Заряды и расстояние подставляем в СИ.",
+      },
+      {
+        id: "ampere-force",
+        relatedSkillIds: ["ampere-force"],
+        title: "Сила Ампера",
+        formula: "F_A = BIL\\sin\\alpha",
+        caption: "магнитное поле действует на проводник с током",
+        symbols: [
+          { latex: "F_A", description: "сила Ампера, Н" },
+          { latex: "B", description: "магнитная индукция, Тл" },
+          { latex: "I", description: "сила тока в проводнике, А" },
+          { latex: "L", description: "длина части проводника в поле, м" },
+          { latex: "\\alpha", description: "угол между проводником и линиями индукции" },
+        ],
+        limitation:
+          "В задачах каталога проводник перпендикулярен полю (sin α = 1); для параллельного проводника сила равна нулю.",
+      },
+      {
+        id: "lorentz-force",
+        relatedSkillIds: ["lorentz-force"],
+        title: "Сила Лоренца",
+        formula: "F_{\\text{Л}} = qvB\\sin\\alpha",
+        caption: "магнитное поле действует на движущийся заряд",
+        symbols: [
+          { latex: "F_{\\text{Л}}", description: "сила Лоренца, Н" },
+          { latex: "q", description: "заряд частицы, Кл" },
+          { latex: "v", description: "скорость частицы, м/с" },
+          { latex: "B", description: "магнитная индукция, Тл" },
+          { latex: "\\alpha", description: "угол между скоростью и линиями индукции" },
+        ],
+        limitation:
+          "Сила Лоренца перпендикулярна скорости и работы не совершает: меняет направление движения, но не модуль скорости.",
+      },
+      {
+        id: "magnetic-flux",
+        relatedSkillIds: ["magnetic-flux"],
+        title: "Магнитный поток",
+        formula: "\\Phi = BS\\cos\\alpha",
+        caption: "сколько линий индукции проходит через площадку",
+        symbols: [
+          { latex: "\\Phi", description: "магнитный поток, Вб" },
+          { latex: "B", description: "магнитная индукция, Тл" },
+          { latex: "S", description: "площадь контура, м²" },
+          { latex: "\\alpha", description: "угол между линиями индукции и нормалью к площадке" },
+        ],
+        limitation:
+          "Максимум при площадке, перпендикулярной полю; если площадка лежит вдоль линий, поток равен нулю.",
+      },
+      {
+        id: "emf-induction",
+        relatedSkillIds: ["emf-induction"],
+        title: "Закон электромагнитной индукции",
+        formula: "\\mathcal{E} = \\frac{\\Delta\\Phi}{\\Delta t}",
+        caption: "ЭДС тем больше, чем быстрее меняется поток",
+        symbols: [
+          { latex: "\\mathcal{E}", description: "ЭДС индукции, В" },
+          { latex: "\\Delta\\Phi", description: "изменение магнитного потока, Вб" },
+          { latex: "\\Delta t", description: "время изменения, с" },
+        ],
+        limitation:
+          "Формула даёт среднее значение ЭДС за интервал времени; знак (направление тока) определяется правилом Ленца и здесь не рассматривается.",
       },
       {
         id: "electric-power",
@@ -636,6 +712,125 @@ export const formulaReference: FormulaReferenceGroup[] = [
         ],
         limitation:
           "Формула записана по модулю: правила знаков v1 намеренно не использует, ориентация изображения оговаривается отдельно.",
+      },
+    ],
+  },
+  {
+    id: "oscillations",
+    title: "Колебания и волны",
+    intro: "Период, частота, длина волны и скорость её распространения.",
+    badgeTone: "blue",
+    status: "active",
+    entries: [
+      {
+        id: "oscillation-period",
+        relatedSkillIds: ["oscillation-period"],
+        title: "Период и частота колебаний",
+        formula: "T = \\frac{t}{N}, \\qquad \\nu = \\frac{N}{t}",
+        caption: "период — время одного колебания, частота — число колебаний в секунду",
+        symbols: [
+          { latex: "T", description: "период, с" },
+          { latex: "\\nu", description: "частота, Гц" },
+          { latex: "N", description: "число колебаний" },
+          { latex: "t", description: "время наблюдения, с" },
+        ],
+        limitation:
+          "Для равномерных колебаний, когда период не меняется со временем.",
+      },
+      {
+        id: "wave-relation",
+        relatedSkillIds: ["wave-speed", "wave-length"],
+        title: "Связь скорости, длины волны и частоты",
+        formula: "v = \\lambda\\nu, \\qquad \\lambda = \\frac{v}{\\nu}",
+        caption: "за период волна уходит ровно на одну длину волны",
+        symbols: [
+          { latex: "v", description: "скорость волны, м/с" },
+          { latex: "\\lambda", description: "длина волны, м" },
+          { latex: "\\nu", description: "частота, Гц" },
+        ],
+        limitation:
+          "Частота задаётся источником и при переходе в другую среду не меняется; меняются скорость и длина волны.",
+      },
+      {
+        id: "echo-distance",
+        relatedSkillIds: ["echo-distance"],
+        title: "Расстояние по времени эха",
+        formula: "s = \\frac{vt}{2}",
+        caption: "звук проходит расстояние дважды: туда и обратно",
+        symbols: [
+          { latex: "s", description: "расстояние до препятствия, м" },
+          { latex: "v", description: "скорость звука в среде, м/с" },
+          { latex: "t", description: "время от посылки до приёма сигнала, с" },
+        ],
+        limitation:
+          "Среда считается однородной, а скорость звука — постоянной: 340 м/с в воздухе, 1500 м/с в воде.",
+      },
+    ],
+  },
+  {
+    id: "quantum",
+    title: "Квантовая и атомная физика",
+    intro: "Фотоны, фотоэффект, радиоактивный распад и состав ядра.",
+    badgeTone: "gold",
+    status: "active",
+    entries: [
+      {
+        id: "photon-energy",
+        relatedSkillIds: ["photon-energy"],
+        title: "Энергия фотона",
+        formula: "E = h\\nu, \\qquad \\lambda = \\frac{c}{\\nu}",
+        caption: "чем выше частота, тем больше энергия фотона",
+        symbols: [
+          { latex: "E", description: "энергия фотона, Дж" },
+          { latex: "h", description: "постоянная Планка, 6,6·10⁻³⁴ Дж·с" },
+          { latex: "\\nu", description: "частота света, Гц" },
+          { latex: "c", description: "скорость света, 3·10⁸ м/с" },
+        ],
+        limitation:
+          "Энергию фотона часто выражают и в электронвольтах: 1 эВ = 1,6·10⁻¹⁹ Дж.",
+      },
+      {
+        id: "photoelectric-effect",
+        relatedSkillIds: ["photoelectric-effect"],
+        title: "Уравнение фотоэффекта",
+        formula: "h\\nu = A + E_{\\text{к}}",
+        caption: "энергия фотона расходуется на работу выхода и кинетическую энергию",
+        symbols: [
+          { latex: "h\\nu", description: "энергия поглощённого фотона, эВ" },
+          { latex: "A", description: "работа выхода электрона из металла, эВ" },
+          { latex: "E_{\\text{к}}", description: "максимальная кинетическая энергия электрона, эВ" },
+        ],
+        limitation:
+          "Фотоэффект возможен только при hν ≥ A: при меньшей частоте электрон из металла не вылетает.",
+      },
+      {
+        id: "radioactive-decay",
+        relatedSkillIds: ["radioactive-decay"],
+        title: "Закон радиоактивного распада",
+        formula: "N = \\frac{N_0}{2^{t/T}}",
+        caption: "за каждый период полураспада остаток делится пополам",
+        symbols: [
+          { latex: "N_0", description: "начальное число ядер" },
+          { latex: "N", description: "число нераспавшихся ядер" },
+          { latex: "T", description: "период полураспада" },
+          { latex: "t", description: "время наблюдения" },
+        ],
+        limitation:
+          "Закон статистический: он описывает ожидаемое число ядер, а не судьбу конкретного ядра.",
+      },
+      {
+        id: "nucleus-composition",
+        relatedSkillIds: ["nucleon-count"],
+        title: "Состав атомного ядра",
+        formula: "A = Z + N",
+        caption: "массовое число — это протоны плюс нейтроны",
+        symbols: [
+          { latex: "A", description: "массовое число (число нуклонов)" },
+          { latex: "Z", description: "зарядовое число (число протонов)" },
+          { latex: "N", description: "число нейтронов" },
+        ],
+        limitation:
+          "Для нейтрального атома число электронов равно Z, но в формулу состава ядра они не входят.",
       },
     ],
   },

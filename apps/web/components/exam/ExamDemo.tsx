@@ -9,6 +9,8 @@ import type {
 } from "../../lib/learning/exam-mix";
 import { $examLog, getBestAttempt } from "../../lib/stores/exam-log-store";
 import { Badge } from "../ui/Badge";
+// Длина диагностики выведена из состава открытых тем: по две задачи из каждой.
+import { EXAM_QUESTION_COUNT } from "../../lib/quiz/generated-quiz-count";
 import { Button } from "../ui/Button";
 import { Card } from "../ui/Card";
 import { QuizSession } from "../quiz/QuizSession";
@@ -88,8 +90,8 @@ function ExamCoverageMap({
           Что внутри варианта
         </h2>
         <p className="text-[12px] leading-[1.6] text-ink-soft">
-          По две задачи из каждой открытой темы: всего 10 заданий из {totalTaskTypes} доступных
-          типов.
+          По две задачи из каждой из {sections.length} открытых тем: всего {sections.length * 2}{" "}
+          заданий из {totalTaskTypes} доступных типов.
         </p>
       </div>
 
@@ -151,6 +153,7 @@ export function ExamDemo({ sections, missing, totalTaskTypes }: ExamDemoProps) {
         generatedTopic="Диагностика"
         generatedTitle="Диагностика · открытые темы"
         sessionKind="exam"
+        generatedCount={EXAM_QUESTION_COUNT}
         recoveryMode={started === "fresh" ? "fresh" : "auto"}
         freshAttemptId={discardedAttemptId}
       />
@@ -166,7 +169,7 @@ export function ExamDemo({ sections, missing, totalTaskTypes }: ExamDemoProps) {
       <div className="flex items-center gap-2.5">
         <Badge tone="gold">Открытые темы</Badge>
         <span className="text-[11px] font-bold uppercase tracking-[.14em] text-white/60">
-          10 задач
+          {EXAM_QUESTION_COUNT} задач
         </span>
       </div>
 

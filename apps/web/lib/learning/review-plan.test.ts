@@ -53,6 +53,22 @@ function progressWithWeaknesses(
         weakTrapLastSeenAt: {},
         lastPracticedAt: null,
       },
+      oscillations: {
+        solved: 0,
+        correct: 0,
+        completedSessions: 0,
+        weakTraps: {},
+        weakTrapLastSeenAt: {},
+        lastPracticedAt: null,
+      },
+      quantum: {
+        solved: 0,
+        correct: 0,
+        completedSessions: 0,
+        weakTraps: {},
+        weakTrapLastSeenAt: {},
+        lastPracticedAt: null,
+      },
     },
   };
 }

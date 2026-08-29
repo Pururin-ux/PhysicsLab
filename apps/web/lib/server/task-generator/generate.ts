@@ -34,6 +34,20 @@ import { vtAreaBlueprint } from "./templates/vt-area.ts";
 import { vtSlopeBlueprint } from "./templates/vt-slope.ts";
 import { weightLiftBlueprint } from "./templates/weight-lift.ts";
 import { workForceDistanceBlueprint } from "./templates/work-force-distance.ts";
+import { coulombForceBlueprint } from "./templates/coulomb-force.ts";
+import { ampereForceBlueprint } from "./templates/ampere-force.ts";
+import { lorentzForceBlueprint } from "./templates/lorentz-force.ts";
+import { magneticFluxBlueprint } from "./templates/magnetic-flux.ts";
+import { emfInductionBlueprint } from "./templates/emf-induction.ts";
+import { oscillationPeriodBlueprint } from "./templates/oscillation-period.ts";
+import { waveSpeedBlueprint } from "./templates/wave-speed.ts";
+import { waveLengthBlueprint } from "./templates/wave-length.ts";
+import { echoDistanceBlueprint } from "./templates/echo-distance.ts";
+import { photonEnergyBlueprint } from "./templates/photon-energy.ts";
+import { photoelectricEffectBlueprint } from "./templates/photoelectric-effect.ts";
+import { radioactiveDecayBlueprint } from "./templates/radioactive-decay.ts";
+import { nucleonCountBlueprint } from "./templates/nucleon-count.ts";
+
 import type {
   GeneratedOption,
   GeneratedTask,
@@ -93,6 +107,19 @@ export const blueprints = {
   "thin-lens-image-distance": thinLensImageDistanceBlueprint,
   "lens-optical-power": lensOpticalPowerBlueprint,
   "lens-image-height": lensImageHeightBlueprint,
+  "coulomb-force": coulombForceBlueprint,
+  "ampere-force": ampereForceBlueprint,
+  "lorentz-force": lorentzForceBlueprint,
+  "magnetic-flux": magneticFluxBlueprint,
+  "emf-induction": emfInductionBlueprint,
+  "oscillation-period": oscillationPeriodBlueprint,
+  "wave-speed": waveSpeedBlueprint,
+  "wave-length": waveLengthBlueprint,
+  "echo-distance": echoDistanceBlueprint,
+  "photon-energy": photonEnergyBlueprint,
+  "photoelectric-effect": photoelectricEffectBlueprint,
+  "radioactive-decay": radioactiveDecayBlueprint,
+  "nucleon-count": nucleonCountBlueprint,
 };
 
 export type TemplateId = keyof typeof blueprints;

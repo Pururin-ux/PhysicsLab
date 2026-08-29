@@ -43,6 +43,15 @@ function taskTypeCountLabel(count: number) {
   return "типов";
 }
 
+function sectionWord(count: number): string {
+  const mod100 = count % 100;
+  const mod10 = count % 10;
+  if (mod100 >= 11 && mod100 <= 14) return "разделов";
+  if (mod10 === 1) return "раздел";
+  if (mod10 >= 2 && mod10 <= 4) return "раздела";
+  return "разделов";
+}
+
 function coverageStatusLabel(status: CoverageSection["status"]) {
   return status === "partial" ? "Частично" : "Пока нет задач";
 }
@@ -74,6 +83,14 @@ export function TaskCatalogBrowser({ entries, coverage }: TaskCatalogBrowserProp
     () => filterTaskCatalog(entries, query, activeTopic),
     [activeTopic, entries, query],
   );
+
+  // Числа на карте покрытия считаются из каталога и разделов, а не вбиты
+  // руками: при пополнении каталога текст не устареет.
+  const coveredSections = useMemo(
+    () => coverage.filter((section) => section.familyCount > 0).length,
+    [coverage],
+  );
+  const emptySections = coverage.length - coveredSections;
 
   const groups = useMemo(
     () =>
@@ -188,10 +205,13 @@ export function TaskCatalogBrowser({ entries, coverage }: TaskCatalogBrowserProp
         <div className="border-t border-line px-4 pb-5 pt-4 sm:px-5">
           <h2 className="text-lg font-[800] text-white">Что уже покрывает PhysicsLab</h2>
           <p className="mt-1 max-w-3xl text-[13px] leading-[1.6] text-ink-soft">
-            Сейчас доступны 35 типов задач в четырёх разделах. Все четыре раздела покрыты частично.
+            Сейчас доступны {entries.length} {taskTypeCountLabel(entries.length)} задач
+            в {coveredSections} разделах. Каждый раздел покрыт частично: полного
+            варианта программы каталог не обещает.
           </p>
           <p className="mt-2 text-[12px] font-semibold text-ink-soft">
-            4 раздела с задачами · 2 раздела без задач
+            {coveredSections} {sectionWord(coveredSections)} с задачами
+            {emptySections > 0 ? ` · ${emptySections} без задач` : ""}
           </p>
           <p className="mt-1 text-[12px] leading-[1.55] text-ink-faint">
             Количество типов относится ко всему каталогу, а не к текущему фильтру.

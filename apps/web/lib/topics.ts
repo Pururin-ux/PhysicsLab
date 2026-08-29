@@ -55,14 +55,49 @@ export const topics = [
     skillsCount: getSkillsCount("optics"),
     modeLabel: "лучи и линзы",
   },
-] as const satisfies readonly ProductTopic[];
-
-// Отдельный список: эти темы не попадают в progress-store и не имеют задач.
-export const upcomingTopics = [
+  {
+    id: "oscillations",
+    title: "Колебания и волны",
+    description: "Период и частота, длина волны и скорость её распространения, эхо и эхолот.",
+    href: "/practice/oscillations-demo",
+    skillsCount: getSkillsCount("oscillations"),
+    modeLabel: "ритм и волны",
+  },
   {
     id: "quantum",
-    title: "Атомная и квантовая физика",
-    description: "Фотоэффект, спектры и ядерные превращения.",
-    reviewStatus: "needs-physics-review",
+    title: "Квантовая и атомная физика",
+    description: "Энергия фотона, уравнение фотоэффекта, радиоактивный распад и состав ядра.",
+    href: "/practice/quantum-demo",
+    skillsCount: getSkillsCount("quantum"),
+    modeLabel: "фотоны и ядра",
+  },
+] as const satisfies readonly ProductTopic[];
+
+// Отдельный список: разделы программы, для которых задач в каталоге ещё нет.
+// Они не попадают в progress-store и не имеют страницы урока.
+export const upcomingTopics = [
+  {
+    id: "hydrostatics",
+    title: "Гидростатика",
+    description: "Давление столба жидкости, сообщающиеся сосуды и сила Архимеда.",
+    reviewStatus: "planned",
+  },
+  {
+    id: "statics",
+    title: "Статика и момент силы",
+    description: "Равновесие рычага, правило моментов и центр тяжести.",
+    reviewStatus: "planned",
+  },
+  {
+    id: "ac-current",
+    title: "Переменный ток",
+    description: "Действующие значения, трансформатор и колебательный контур.",
+    reviewStatus: "planned",
+  },
+  {
+    id: "wave-optics",
+    title: "Волновая оптика",
+    description: "Интерференция, дифракционная решётка и поляризация света.",
+    reviewStatus: "planned",
   },
 ] as const;

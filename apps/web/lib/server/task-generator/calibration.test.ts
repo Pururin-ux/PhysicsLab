@@ -10,7 +10,15 @@ import {
   templateRegistry,
 } from "./generate.ts";
 
-const groups = ["kinematics", "dynamics", "electrodynamics", "thermodynamics", "optics"] as const;
+const groups = [
+  "kinematics",
+  "dynamics",
+  "electrodynamics",
+  "thermodynamics",
+  "optics",
+  "oscillations",
+  "quantum",
+] as const;
 
 async function api(template: string, batch = 0, count = 10) {
   const response = await GET(new Request(
@@ -20,11 +28,11 @@ async function api(template: string, batch = 0, count = 10) {
   return (await response.json()).tasks as Array<{ id: string; blueprint: string; difficulty: 1 | 2 | 3 }>;
 }
 
-test("calibration preserves 35 templates, 8 numeric and 27 choice", () => {
-  assert.equal(templateRegistry.length, 35);
+test("calibration preserves 48 templates, 8 numeric and 40 choice", () => {
+  assert.equal(templateRegistry.length, 48);
   const numeric = templateRegistry.filter(({ id }) => generateTasks(id, 1)[0].answerFormat === "numeric_input");
   assert.equal(numeric.length, 8);
-  assert.equal(templateRegistry.length - numeric.length, 27);
+  assert.equal(templateRegistry.length - numeric.length, 40);
 });
 
 test("every active topic supports D1, D2 and D3", () => {
@@ -76,7 +84,8 @@ test("topic and general mixed sessions use 5/3/2 at count=10", async () => {
 });
 
 test("exam keeps two tasks per active topic", async () => {
-  const tasks = await api("exam", 11);
+  // Вариант длиной 14 задач: по две из каждой из семи открытых тем.
+  const tasks = await api("exam", 11, 14);
   const groupsByBlueprint = new Map(templateRegistry.map((entry) => [entry.id, entry.group]));
   for (const group of groups) {
     assert.equal(tasks.filter((task) => groupsByBlueprint.get(task.blueprint as never) === group).length, 2);

@@ -21,6 +21,8 @@ const dynamicsTemplates = getTemplateIdsByGroup("dynamics");
 const electrodynamicsTemplates = getTemplateIdsByGroup("electrodynamics");
 const thermodynamicsTemplates = getTemplateIdsByGroup("thermodynamics");
 const opticsTemplates = getTemplateIdsByGroup("optics");
+const oscillationsTemplates = getTemplateIdsByGroup("oscillations");
+const quantumTemplates = getTemplateIdsByGroup("quantum");
 // Смешанная тренировка — сбалансированное покрытие пяти открытых разделов
 // поровну (это учебный микс, а не официальный вариант ЦТ/ЦЭ). Слоты
 // раздаются по кругу групп: для count=10 каждая группа получает ровно 2
@@ -31,6 +33,8 @@ const examGroups: readonly (readonly TemplateId[])[] = [
   electrodynamicsTemplates,
   thermodynamicsTemplates,
   opticsTemplates,
+  oscillationsTemplates,
+  quantumTemplates,
 ];
 const difficultyPattern: readonly Difficulty[] = [1, 1, 1, 1, 1, 2, 2, 2, 3, 3];
 
@@ -80,6 +84,18 @@ function buildTopicMix(templates: readonly TemplateId[], count: number, batch: n
     return templateForDifficulty(templates, difficulty, batch + occurrence);
   });
 }
+// Смешанные тренировки по темам. Ключ — имя шаблона в API; добавлять новую
+// тему сюда, а не в цепочку условий ниже.
+const mixedTemplateGroups: Record<string, readonly TemplateId[]> = {
+  mixed: kinematicsTemplates,
+  "dynamics-mixed": dynamicsTemplates,
+  "electro-mixed": electrodynamicsTemplates,
+  "thermo-mixed": thermodynamicsTemplates,
+  "optics-mixed": opticsTemplates,
+  "oscillations-mixed": oscillationsTemplates,
+  "quantum-mixed": quantumTemplates,
+};
+
 const supportedTemplates = templateRegistry.map((entry) => entry.id);
 
 function normalizeCount(value: string | null) {
@@ -282,22 +298,15 @@ export async function GET(req: Request) {
   }
 
   try {
+    const mixedGroup = mixedTemplateGroups[template];
     const generatedTasks =
-      template === "mixed"
-        ? generateMixedTasks(buildTopicMix(kinematicsTemplates, count, batch), "mixed", count, batch, count === 10)
-        : template === "dynamics-mixed"
-          ? generateMixedTasks(buildTopicMix(dynamicsTemplates, count, batch), "dynamics-mixed", count, batch, count === 10)
-        : template === "electro-mixed"
-          ? generateMixedTasks(buildTopicMix(electrodynamicsTemplates, count, batch), "electro-mixed", count, batch, count === 10)
-        : template === "thermo-mixed"
-          ? generateMixedTasks(buildTopicMix(thermodynamicsTemplates, count, batch), "thermo-mixed", count, batch, count === 10)
-        : template === "optics-mixed"
-          ? generateMixedTasks(buildTopicMix(opticsTemplates, count, batch), "optics-mixed", count, batch, count === 10)
-        : template === "exam"
-          ? generateExamTasks(count, batch)
-        : isTemplateId(template)
-          ? generateRandomizedTasks(template, count, batch, difficulty ?? undefined)
-          : null;
+      template === "exam"
+        ? generateExamTasks(count, batch)
+        : mixedGroup
+          ? generateMixedTasks(buildTopicMix(mixedGroup, count, batch), template, count, batch, count === 10)
+          : isTemplateId(template)
+            ? generateRandomizedTasks(template, count, batch, difficulty ?? undefined)
+            : null;
 
     if (!generatedTasks) {
       return jsonError(
@@ -305,11 +314,7 @@ export async function GET(req: Request) {
         "UNKNOWN_TEMPLATE",
         `Unknown template "${template}". Available templates: ${[
           ...supportedTemplates,
-          "mixed",
-          "dynamics-mixed",
-          "electro-mixed",
-          "thermo-mixed",
-          "optics-mixed",
+          ...Object.keys(mixedTemplateGroups),
           "exam",
         ].join(", ")}.`,
         false,

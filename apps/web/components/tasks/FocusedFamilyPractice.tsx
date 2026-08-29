@@ -2,16 +2,19 @@
 
 import type { TaskTypeCatalogEntry } from "../../lib/learning/task-catalog";
 import { topicHelpSections } from "../../lib/learning/topic-help";
+import type { TopicId } from "../../lib/learning/taxonomy.ts";
 import { CompactHelpCard } from "../theory/CompactHelpCard";
 import { PracticeWithHelp } from "../quiz/PracticeWithHelp";
 
-const accentByTopic = {
+const accentByTopic: Record<TopicId, "cyan" | "gold" | "blue" | "ember"> = {
   kinematics: "cyan",
   dynamics: "gold",
   electrodynamics: "blue",
   thermodynamics: "ember",
   optics: "cyan",
-} as const;
+  oscillations: "blue",
+  quantum: "gold",
+};
 
 export function FocusedFamilyPractice({ entry }: { entry: TaskTypeCatalogEntry }) {
   const sections = topicHelpSections[entry.topicId];

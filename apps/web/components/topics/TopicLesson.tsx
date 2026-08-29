@@ -17,6 +17,8 @@ const TOPIC_ORDER: readonly TopicLessonEntry["topicId"][] = [
   "electrodynamics",
   "thermodynamics",
   "optics",
+  "oscillations",
+  "quantum",
 ];
 
 const sections = [

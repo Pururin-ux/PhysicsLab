@@ -38,7 +38,17 @@ export type HelpSectionId =
   | "refractive-index"
   | "thin-lens"
   | "optical-power"
-  | "magnification";
+  | "magnification"
+  | "electrostatics"
+  | "magnetic-field"
+  | "induction"
+  | "oscillations-basics"
+  | "wave-relation"
+  | "sound-echo"
+  | "photon"
+  | "photoelectric"
+  | "radioactivity"
+  | "nucleus";
 
 export type HelpReason = "task" | "mistake" | "fallback";
 
@@ -216,6 +226,27 @@ export const topicHelpSections: Record<TopicId, TopicHelpSection[]> = {
       formula: "P=UI=I^2R",
       mistake: "Не останавливайся на напряжении U=IR: для мощности нужен еще множитель I.",
     },
+    {
+      id: "electrostatics",
+      label: "Закон Кулона",
+      shortHint: "Заряды переводим в Кл, расстояние в метры, затем делим на квадрат расстояния.",
+      formula: "F=k\\frac{q_1 q_2}{r^2}",
+      mistake: "Микрокулоны и сантиметры перед подстановкой нужно перевести в СИ.",
+    },
+    {
+      id: "magnetic-field",
+      label: "Магнитное поле",
+      shortHint: "На проводник с током действует F=BIL, на летящий заряд — F=qvB, поток через площадку — Ф=BS.",
+      formula: "F_A=BIL,\\quad F_{\\text{Л}}=qvB,\\quad \\Phi=BS",
+      mistake: "Не теряй ни одного множителя: в каждой формуле три величины перемножаются.",
+    },
+    {
+      id: "induction",
+      label: "Электромагнитная индукция",
+      shortHint: "ЭДС индукции равна скорости изменения магнитного потока: изменение потока делим на время.",
+      formula: "\\mathcal{E}=\\frac{\\Delta\\Phi}{\\Delta t}",
+      mistake: "Не принимай сам поток за ЭДС: важно, как быстро он меняется.",
+    },
   ],
   thermodynamics: [
     {
@@ -252,6 +283,59 @@ export const topicHelpSections: Record<TopicId, TopicHelpSection[]> = {
       shortHint: "Нагрев и плавление считаются отдельными стадиями: посчитай каждую и сложи.",
       formula: "Q=cm\\Delta T+\\lambda m",
       mistake: "Во время плавления температура не растёт: теплота идёт на изменение состояния.",
+    },
+  ],
+  oscillations: [
+    {
+      id: "oscillations-basics",
+      label: "Период и частота",
+      shortHint: "Период — время одного колебания (t/N), частота — число колебаний в секунду (N/t).",
+      formula: "T=\\frac{t}{N},\\qquad \\nu=\\frac{N}{t}",
+      mistake: "Не дели «как получится»: сначала назови, что ищешь — секунды на колебание или колебания в секунду.",
+    },
+    {
+      id: "wave-relation",
+      label: "Скорость и длина волны",
+      shortHint: "За один период волна уходит на одну длину волны: v = λν.",
+      formula: "v=\\lambda\\nu,\\qquad \\lambda=\\frac{v}{\\nu}",
+      mistake: "Не складывай длину волны и частоту: в формуле только умножение или деление.",
+    },
+    {
+      id: "sound-echo",
+      label: "Эхо и эхолот",
+      shortHint: "Звук идёт до препятствия и обратно, поэтому путь равен двум расстояниям: s = vt/2.",
+      formula: "s=\\frac{vt}{2}",
+      mistake: "Не забывай делить путь пополам: измеренное время — это время туда и обратно.",
+    },
+  ],
+  quantum: [
+    {
+      id: "photon",
+      label: "Энергия фотона",
+      shortHint: "Энергия фотона растёт с частотой: E = hν. Степени десятки перемножай отдельно от мантисс.",
+      formula: "E=h\\nu,\\qquad \\lambda=\\frac{c}{\\nu}",
+      mistake: "Не теряй степень десятки: 10⁻³⁴ · 10¹⁴ даёт 10⁻²⁰, а не 10⁻¹⁹.",
+    },
+    {
+      id: "photoelectric",
+      label: "Фотоэффект",
+      shortHint: "Энергия фотона расходуется на работу выхода и кинетическую энергию электрона: hν = A + Eк.",
+      formula: "h\\nu=A+E_{\\text{к}}",
+      mistake: "Не складывай энергии: работа выхода вычитается из энергии фотона.",
+    },
+    {
+      id: "radioactivity",
+      label: "Радиоактивный распад",
+      shortHint: "Сначала считаем число периодов полураспада, затем делим остаток пополам столько же раз.",
+      formula: "N=\\frac{N_0}{2^{t/T}}",
+      mistake: "Не дели начальное число ядер на удвоенное число периодов: каждый период делит остаток пополам.",
+    },
+    {
+      id: "nucleus",
+      label: "Состав ядра",
+      shortHint: "Массовое число — это протоны плюс нейтроны, зарядовое число — число протонов.",
+      formula: "N=A-Z",
+      mistake: "Не называй массовое число числом нейтронов: в него входят и протоны.",
     },
   ],
   optics: [

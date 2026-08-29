@@ -7,7 +7,8 @@ export type ExamSectionId =
   | "mechanics"
   | "mkt-thermodynamics"
   | "electrodynamics"
-  | "optics-srt";
+  | "optics-srt"
+  | "quantum-atomic";
 
 export type TaskVisualKind = "graph" | "diagram";
 

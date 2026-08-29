@@ -5,7 +5,9 @@ export type TopicGlyphId =
   | "dynamics"
   | "electrodynamics"
   | "thermodynamics"
-  | "optics";
+  | "optics"
+  | "oscillations"
+  | "quantum";
 
 const glyphs: Record<TopicGlyphId, ReactNode> = {
   // Растущий график v(t) с точкой — чтение движения по графику.
@@ -42,6 +44,23 @@ const glyphs: Record<TopicGlyphId, ReactNode> = {
       <circle cx="28" cy="23" r="1.7" fill="currentColor" stroke="none" />
       <circle cx="22" cy="28" r="1.7" fill="currentColor" stroke="none" />
       <path d="M17 41 q2.5 -3.5 5 0 t5 0" />
+    </>
+  ),
+  // Синусоида с отмеченной длиной волны — волна и колебания.
+  oscillations: (
+    <>
+      <path d="M6 24 q5.5 -11 11 0 t11 0 t11 0" />
+      <circle cx="17" cy="13" r="2" fill="currentColor" stroke="none" />
+      <circle cx="39" cy="35" r="2" fill="currentColor" stroke="none" />
+      <path d="M9 41 H39" strokeDasharray="3 3" />
+    </>
+  ),
+  // Ядро с орбитой электрона: атом и ядерные превращения.
+  quantum: (
+    <>
+      <ellipse cx="24" cy="24" rx="17" ry="7.5" transform="rotate(-28 24 24)" />
+      <circle cx="24" cy="24" r="4.2" fill="currentColor" stroke="none" />
+      <circle cx="39.5" cy="16" r="2.2" fill="currentColor" stroke="none" />
     </>
   ),
   // Собирающая линза с лучом, преломляющимся к оси.

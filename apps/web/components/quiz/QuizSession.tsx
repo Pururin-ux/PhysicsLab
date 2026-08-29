@@ -73,7 +73,12 @@ const nextStepByTopic: Record<string, { href: string; label: string }> = {
   dynamics: { href: "/practice/exam-demo", label: "Дальше: смешанная тренировка" },
   electrodynamics: { href: "/practice/thermo-demo", label: "Дальше: Термодинамика" },
   thermodynamics: { href: "/practice/optics-demo", label: "Дальше: Оптика" },
-  optics: { href: "/practice/exam-demo", label: "Дальше: смешанная тренировка" },
+  optics: { href: "/practice/oscillations-demo", label: "Дальше: Колебания и волны" },
+  oscillations: {
+    href: "/practice/quantum-demo",
+    label: "Дальше: Квантовая и атомная физика",
+  },
+  quantum: { href: "/practice/exam-demo", label: "Дальше: смешанная тренировка" },
 };
 
 const emptyTasks: QuizData["tasks"] = [];

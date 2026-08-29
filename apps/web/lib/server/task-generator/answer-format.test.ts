@@ -52,9 +52,9 @@ test("ровно восемь семейств используют numeric_inpu
     (entry) => (blueprints[entry.id].answerFormat ?? "single_choice") === "single_choice",
   );
 
-  assert.equal(templateRegistry.length, 35);
+  assert.equal(templateRegistry.length, 48);
   assert.equal(numeric.length, 8);
-  assert.equal(single.length, 27);
+  assert.equal(single.length, 40);
 });
 
 test("каждый шаблон имеет валидный answerFormat", () => {

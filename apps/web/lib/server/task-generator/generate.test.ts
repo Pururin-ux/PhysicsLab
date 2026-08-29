@@ -39,6 +39,11 @@ const electrodynamicsTemplateIds = [
   "capacitor-energy",
   "charge-sharing",
   "electric-power",
+  "coulomb-force",
+  "ampere-force",
+  "lorentz-force",
+  "magnetic-flux",
+  "emf-induction",
 ] as const;
 
 // Шаблоны на пифагоровых тройках имеют естественно малый пул параметров:
@@ -52,6 +57,11 @@ const uniqueTextPoolBySkill: Record<string, number> = {
   "refractive-index-speed": 15,
   "snell-index-ratio": 12,
   "lens-optical-power": 12,
+  // Магнетизм: сетка B/S/t режется требованием к точности ответа.
+  "magnetic-flux": 40,
+  "wave-length": 40,
+  // Квантовая физика: h = 6,6·10⁻³⁴ и ответы в две цифры дают узкую сетку.
+  "photon-energy": 20,
 };
 const thermodynamicsTemplateIds = [
   "ideal-gas-state",
@@ -59,6 +69,27 @@ const thermodynamicsTemplateIds = [
   "phase-change-heat",
   "gas-state-ratio",
   "heat-balance-simple",
+] as const;
+const opticsTemplateIds = [
+  "reflection-angle",
+  "plane-mirror-separation",
+  "refractive-index-speed",
+  "snell-index-ratio",
+  "thin-lens-image-distance",
+  "lens-optical-power",
+  "lens-image-height",
+] as const;
+const oscillationsTemplateIds = [
+  "oscillation-period",
+  "wave-speed",
+  "wave-length",
+  "echo-distance",
+] as const;
+const quantumTemplateIds = [
+  "photon-energy",
+  "photoelectric-effect",
+  "radioactive-decay",
+  "nucleon-count",
 ] as const;
 
 type ApiTaskBase = {
@@ -245,6 +276,14 @@ test("registry groups every template exactly once", () => {
     new Set(getTemplateIdsByGroup("thermodynamics")),
     new Set(thermodynamicsTemplateIds),
   );
+  assert.deepEqual(
+    new Set(getTemplateIdsByGroup("oscillations")),
+    new Set(oscillationsTemplateIds),
+  );
+  assert.deepEqual(
+    new Set(getTemplateIdsByGroup("quantum")),
+    new Set(quantumTemplateIds),
+  );
 });
 
 test("ohm-law: покрывает все три искомые величины с единицами", () => {
@@ -321,6 +360,8 @@ for (const templateId of [
   ...dynamicsTemplateIds,
   ...electrodynamicsTemplateIds,
   ...thermodynamicsTemplateIds,
+  ...oscillationsTemplateIds,
+  ...quantumTemplateIds,
 ]) {
   if (templateId === "ohm-law") {
     continue; // отдельный тест ниже: покрывает три целевые величины.
@@ -491,17 +532,41 @@ test("API route mixed покрывает все навыки кинематик�
 });
 
 test("API route electro-mixed покрывает все навыки электродинамики", async () => {
+  // Семейств больше, чем слотов в стандартной десятке: берём сессию длиной
+  // в число семейств, иначе одно из них гарантированно выпадет из микса.
+  const count = electrodynamicsTemplateIds.length;
   const response = await GET(
-    new Request("http://localhost/api/tasks?template=electro-mixed&count=10&batch=7"),
+    new Request(`http://localhost/api/tasks?template=electro-mixed&count=${count}&batch=7`),
   );
   const data = (await response.json()) as ApiTaskResponse;
 
   assert.equal(response.status, 200);
-  assert.equal(data.tasks.length, 10);
+  assert.equal(data.tasks.length, count);
   assert.deepEqual(
     new Set(data.tasks.map((task) => task.blueprint)),
     new Set(electrodynamicsTemplateIds),
   );
+});
+
+test("API route oscillations-mixed и quantum-mixed покрывают свои разделы", async () => {
+  for (const [template, expected] of [
+    ["oscillations-mixed", oscillationsTemplateIds],
+    ["quantum-mixed", quantumTemplateIds],
+  ] as const) {
+    const response = await GET(
+      new Request(
+        `http://localhost/api/tasks?template=${template}&count=${expected.length}&batch=3`,
+      ),
+    );
+    const data = (await response.json()) as ApiTaskResponse;
+
+    assert.equal(response.status, 200, template);
+    assert.deepEqual(
+      new Set(data.tasks.map((task) => task.blueprint)),
+      new Set(expected),
+      template,
+    );
+  }
 });
 
 test("API route thermo-mixed покрывает все навыки термодинамики", async () => {
@@ -519,28 +584,41 @@ test("API route thermo-mixed покрывает все навыки термод
 });
 
 test("API route exam собирает сбалансированную смешанную тренировку", async () => {
-  const url = "http://localhost/api/tasks?template=exam&count=10&batch=3";
+  const url = "http://localhost/api/tasks?template=exam&count=14&batch=3";
   const firstResponse = await GET(new Request(url));
   const repeatResponse = await GET(new Request(url));
   const first = (await firstResponse.json()) as ApiTaskResponse;
   const repeat = (await repeatResponse.json()) as ApiTaskResponse;
 
   assert.equal(firstResponse.status, 200);
-  assert.equal(first.tasks.length, 10);
+  assert.equal(first.tasks.length, 14);
   assert.deepEqual(first.tasks, repeat.tasks);
 
-  // Квоты на 10 задач: 4 механики (2 кинематика + 2 динамика),
-  // 3 электродинамики, 3 термодинамики — как в route.ts.
-  const groupOf = (blueprint: string) =>
-    (kinematicsTemplateIds as readonly string[]).includes(blueprint)
-      ? "kinematics"
-      : (dynamicsTemplateIds as readonly string[]).includes(blueprint)
-        ? "dynamics"
-        : (electrodynamicsTemplateIds as readonly string[]).includes(blueprint)
-          ? "electrodynamics"
-          : (thermodynamicsTemplateIds as readonly string[]).includes(blueprint)
-            ? "thermodynamics"
-            : "optics";
+  // Диагностика: по две задачи из каждой из семи открытых тем.
+  const groups: readonly (readonly string[])[] = [
+    kinematicsTemplateIds,
+    dynamicsTemplateIds,
+    electrodynamicsTemplateIds,
+    thermodynamicsTemplateIds,
+    opticsTemplateIds,
+    oscillationsTemplateIds,
+    quantumTemplateIds,
+  ];
+  const groupNames = [
+    "kinematics",
+    "dynamics",
+    "electrodynamics",
+    "thermodynamics",
+    "optics",
+    "oscillations",
+    "quantum",
+  ];
+  const groupOf = (blueprint: string) => {
+    const index = groups.findIndex((group) =>
+      (group as readonly string[]).includes(blueprint),
+    );
+    return index === -1 ? "unknown" : groupNames[index];
+  };
 
   const counts: Record<string, number> = {};
   for (const task of first.tasks) {
@@ -548,11 +626,9 @@ test("API route exam собирает сбалансированную смеш�
     counts[group] = (counts[group] ?? 0) + 1;
   }
 
-  assert.equal(counts.kinematics, 2, "в mixed должно быть 2 задачи кинематики");
-  assert.equal(counts.dynamics, 2, "в mixed должно быть 2 задачи динамики");
-  assert.equal(counts.electrodynamics, 2, "в mixed должно быть 2 задачи электродинамики");
-  assert.equal(counts.thermodynamics, 2, "в mixed должно быть 2 задачи термодинамики");
-  assert.equal(counts.optics, 2, "в mixed должно быть 2 задачи оптики");
+  for (const name of groupNames) {
+    assert.equal(counts[name], 2, `в exam должно быть 2 задачи по теме ${name}`);
+  }
 
   // Порядок перемешан: первые пять задач не могут быть одной группы.
   const firstFiveGroups = new Set(first.tasks.slice(0, 5).map((task) => groupOf(task.blueprint)));

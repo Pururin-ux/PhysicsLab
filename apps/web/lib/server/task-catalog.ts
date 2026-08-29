@@ -22,6 +22,8 @@ const examSectionByTopic: Record<TopicId, ExamSectionId> = {
   electrodynamics: "electrodynamics",
   thermodynamics: "mkt-thermodynamics",
   optics: "optics-srt",
+  oscillations: "mechanics",
+  quantum: "quantum-atomic",
 };
 
 // Только дополнительные ученические синонимы. Основные названия, подсказки,

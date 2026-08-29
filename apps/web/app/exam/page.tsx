@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ExamDemo } from "../../components/exam/ExamDemo";
-import { getExamMixInfo } from "../../lib/learning/exam-mix";
+import { EXAM_QUESTION_COUNT, getExamMixInfo } from "../../lib/learning/exam-mix";
 import { Badge } from "../../components/ui/Badge";
 import { Card } from "../../components/ui/Card";
 import { SectionHeading } from "../../components/ui/SectionHeading";
@@ -8,20 +8,20 @@ import { SectionHeading } from "../../components/ui/SectionHeading";
 export const metadata = {
   title: "Диагностика | PhysicsLab",
   description:
-    "Диагностика по физике: 10 задач по пяти открытым темам ЦЭ/ЦТ вперемешку, разбор каждого ответа и план повторения.",
+    "Диагностика по физике: 14 задач по семи открытым темам ЦЭ/ЦТ вперемешку, разбор каждого ответа и план повторения.",
 };
 
 const interpretation = [
   {
-    range: "8–10",
+    range: "11–14",
     body: "Тема держится без подсказок. Стоит взять задачи посложнее и следить за единицами и знаками.",
   },
   {
-    range: "5–7",
+    range: "7–10",
     body: "Нормальная рабочая зона: ошибки приходят из конкретных ловушек, а не из незнания темы целиком.",
   },
   {
-    range: "до 5",
+    range: "до 7",
     body: "Не повод паниковать: открой уроки тем, где ошибки повторились, и реши по пять задач на каждый навык.",
   },
 ];
@@ -54,7 +54,9 @@ export default function ExamPage() {
         <Badge tone="gold" size="sm" dot className="w-fit">
           ЦЭ/ЦТ · проверка
         </Badge>
-        <h1 className="pl-h1 max-w-[26ch]">Диагностика: 10 задач по 5 открытым темам</h1>
+        <h1 className="pl-h1 max-w-[26ch]">
+          Диагностика: {EXAM_QUESTION_COUNT} задач по {mix.sections.length} открытым темам
+        </h1>
         <p className="pl-body pl-measure">
           Задачи идут вперемешку, как на экзамене: нельзя заранее знать, какой раздел сейчас
           попадётся. Считаем не балл ЦТ/ЦЭ, а то, какие навыки держатся в смешанном порядке.

@@ -38,6 +38,22 @@ export const topicAccents: Record<TopicId, TopicAccent> = {
     text: "text-nova-blue",
     bar: "bg-nova-blue",
   },
+  // Колебания и волны переиспользуют blue (ритм и волны, как в схемах).
+  oscillations: {
+    badge: "blue",
+    border: "border-l-nova-blue/60",
+    tile: "border-nova-blue/25 bg-nova-blue/[.08] text-nova-blue",
+    text: "text-nova-blue",
+    bar: "bg-nova-blue",
+  },
+  // Квантовая и атомная физика переиспользуют gold (излучение и ядро).
+  quantum: {
+    badge: "gold",
+    border: "border-l-nova-gold/60",
+    tile: "border-nova-gold/25 bg-nova-gold/[.08] text-nova-gold",
+    text: "text-nova-gold",
+    bar: "bg-nova-gold",
+  },
   thermodynamics: {
     badge: "ember",
     border: "border-l-nova-ember/60",

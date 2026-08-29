@@ -226,3 +226,86 @@ export function lensOpticalPower(p: Params): number {
 export function lensImageHeight(p: Params): number {
   return (p.h * p.di) / p.dObj;
 }
+
+// --- Электростатика, магнитное поле, индукция ---
+
+// k = 9·10⁹ Н·м²/Кл². Заряды в задаче даны в мкКл, расстояние — в см,
+// поэтому 10⁻⁶ · 10⁻⁶ / 10⁻⁴ даёт множитель 90 перед q₁q₂/r².
+export const COULOMB_PREFIX = 90;
+
+export function coulombForce(p: Params): number {
+  return (COULOMB_PREFIX * p.q1 * p.q2) / (p.r * p.r);
+}
+
+export function ampereForce(p: Params): number {
+  return p.B * p.I * p.L;
+}
+
+// q в мкКл, v в 10⁶ м/с: 10⁻⁶ · 10⁶ = 1, поэтому F = qvB.
+export function lorentzForce(p: Params): number {
+  return p.q * p.v * p.B;
+}
+
+export function magneticFlux(p: Params): number {
+  return p.B * p.S;
+}
+
+export function inductionEmf(p: Params): number {
+  return (p.B * p.S) / p.t;
+}
+
+// --- Колебания и волны ---
+
+// Вариант 0 — период (с), вариант 1 — частота (Гц).
+export function oscillationAnswer(p: Params): number {
+  return variantIndex(p, 2) === 0 ? p.t / p.N : p.N / p.t;
+}
+
+export function waveSpeed(p: Params): number {
+  return p.lambda * p.freq;
+}
+
+export function waveLength(p: Params): number {
+  return p.speed / p.freq;
+}
+
+// Вариант 0 — эхо в воздухе (340 м/с), вариант 1 — эхолот в воде (1500 м/с).
+export const ECHO_SPEED_BY_VARIANT = [340, 1500] as const;
+
+export function echoSpeed(p: Params): number {
+  return ECHO_SPEED_BY_VARIANT[variantIndex(p, ECHO_SPEED_BY_VARIANT.length)];
+}
+
+export function echoDistance(p: Params): number {
+  return (echoSpeed(p) * p.t) / 2;
+}
+
+// --- Квантовая и атомная физика ---
+
+// h = 6,6·10⁻³⁴ Дж·с. Ответ считаем в 10⁻¹⁹ Дж — привычный для школы порядок.
+// Вариант 0: по частоте ν (в 10¹⁴ Гц) — E = 0,66·ν единиц 10⁻¹⁹ Дж.
+// Вариант 1: по длине волны λ (в нм) — E = hc/λ = 1980/λ единиц 10⁻¹⁹ Дж.
+export function photonEnergy(p: Params): number {
+  return variantIndex(p, 2) === 0 ? 0.66 * p.nu : 1980 / p.lambda;
+}
+
+// Уравнение Эйнштейна для фотоэффекта в электронвольтах: максимальная
+// кинетическая энергия электрона равна энергии фотона минус работа выхода.
+export function photoelectricAnswer(p: Params): number {
+  return p.ePhoton - p.aWork;
+}
+
+// Число периодов полураспада, прошедших к моменту наблюдения.
+export function halfLives(p: Params): number {
+  return p.elapsed / p.halfLife;
+}
+
+// Вариант 0: сколько ядер осталось; вариант 1: сколько распалось.
+export function decayAnswer(p: Params): number {
+  const remaining = p.n0 / 2 ** halfLives(p);
+  return variantIndex(p, 2) === 0 ? remaining : p.n0 - remaining;
+}
+
+export function neutronCount(p: Params): number {
+  return p.A - p.Z;
+}

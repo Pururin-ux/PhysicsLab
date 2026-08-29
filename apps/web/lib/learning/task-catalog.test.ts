@@ -14,8 +14,9 @@ import {
 
 const catalog = getTaskCatalog();
 
-test("task catalog exactly covers the 35 generator templates", () => {
-  assert.equal(catalog.length, 35);
+test("task catalog exactly covers all generator templates", () => {
+  assert.equal(catalog.length, templateRegistry.length);
+  assert.equal(catalog.length, 48);
   assert.deepEqual(
     new Set(catalog.map((entry) => entry.id)),
     new Set(templateRegistry.map((entry) => entry.id)),
@@ -24,13 +25,13 @@ test("task catalog exactly covers the 35 generator templates", () => {
   assert.equal(getTaskCatalogEntry("not-a-family"), undefined);
 });
 
-test("task catalog keeps the 8 numeric / 27 choice contract", () => {
+test("task catalog keeps the 8 numeric / 40 choice contract", () => {
   assert.equal(catalog.filter((entry) => entry.answerFormat === "numeric_input").length, 8);
-  assert.equal(catalog.filter((entry) => entry.answerFormat === "single_choice").length, 27);
+  assert.equal(catalog.filter((entry) => entry.answerFormat === "single_choice").length, 40);
 });
 
 test("task catalog entries have complete student-facing metadata and active topics", () => {
-  const activeTopics = new Set(topics.map((topic) => topic.id));
+  const activeTopics = new Set<string>(topics.map((topic) => topic.id));
 
   for (const entry of catalog) {
     assert.ok(entry.title.trim(), `${entry.id}: empty title`);
@@ -71,9 +72,11 @@ test("catalog topic counts match the active generator distribution", () => {
     {
       kinematics: 6,
       dynamics: 11,
-      electrodynamics: 6,
+      electrodynamics: 11,
       thermodynamics: 5,
       optics: 7,
+      oscillations: 4,
+      quantum: 4,
     },
   );
 });
@@ -94,7 +97,7 @@ test("catalog search handles names, formulas, graphs, aliases and ё/е", () => 
 });
 
 test("catalog filtering supports empty and combined topic queries", () => {
-  assert.equal(filterTaskCatalog(catalog, "").length, 35);
+  assert.equal(filterTaskCatalog(catalog, "").length, 48);
   const electrodynamicsLawResults = filterTaskCatalog(
     catalog,
     "закон",

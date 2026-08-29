@@ -1,10 +1,13 @@
 import type { DistractorRule, Params } from "./types.ts";
 import {
+  COULOMB_PREFIX,
   GAS_CONSTANT,
   GRAVITY,
   ICE_FUSION_HEAT_KJ,
   ICE_SPECIFIC_HEAT_KJ,
   WATER_SPECIFIC_HEAT_KJ,
+  echoSpeed,
+  halfLives,
   variantIndex,
 } from "./solver.ts";
 
@@ -1021,4 +1024,271 @@ export const lensImageHeightDistractors: DistractorRule[] = [
     label: "нашёл увеличение, но не умножил на высоту предмета",
     compute: imageHeightForgotObjectHeight,
   },
+];
+
+// --- Электростатика: закон Кулона ---
+
+function coulombNoSquare(p: Params): number {
+  return (COULOMB_PREFIX * p.q1 * p.q2) / p.r;
+}
+
+function coulombSumCharges(p: Params): number {
+  return (COULOMB_PREFIX * (p.q1 + p.q2)) / (p.r * p.r);
+}
+
+function coulombSingleCharge(p: Params): number {
+  return (COULOMB_PREFIX * p.q1) / (p.r * p.r);
+}
+
+export const coulombForceDistractors: DistractorRule[] = [
+  { label: "не возводит расстояние в квадрат", compute: coulombNoSquare },
+  { label: "складывает заряды вместо умножения", compute: coulombSumCharges },
+  { label: "учитывает только один заряд", compute: coulombSingleCharge },
+];
+
+// --- Сила Ампера ---
+
+function ampereWithoutLength(p: Params): number {
+  return p.B * p.I;
+}
+
+function ampereWithoutCurrent(p: Params): number {
+  return p.B * p.L;
+}
+
+function ampereDividesByLength(p: Params): number {
+  return (p.B * p.I) / p.L;
+}
+
+export const ampereForceDistractors: DistractorRule[] = [
+  { label: "забывает длину проводника", compute: ampereWithoutLength },
+  { label: "забывает силу тока", compute: ampereWithoutCurrent },
+  { label: "делит на длину вместо умножения", compute: ampereDividesByLength },
+];
+
+// --- Сила Лоренца ---
+
+function lorentzWithoutSpeed(p: Params): number {
+  return p.q * p.B;
+}
+
+function lorentzWithoutCharge(p: Params): number {
+  return p.v * p.B;
+}
+
+function lorentzDividesByField(p: Params): number {
+  return (p.q * p.v) / p.B;
+}
+
+export const lorentzForceDistractors: DistractorRule[] = [
+  { label: "забывает скорость заряда", compute: lorentzWithoutSpeed },
+  { label: "забывает величину заряда", compute: lorentzWithoutCharge },
+  { label: "делит на индукцию вместо умножения", compute: lorentzDividesByField },
+];
+
+// --- Магнитный поток ---
+
+function fluxDividesByArea(p: Params): number {
+  return p.B / p.S;
+}
+
+function fluxInvertsRatio(p: Params): number {
+  return p.S / p.B;
+}
+
+function fluxTwiceValue(p: Params): number {
+  return 2 * p.B * p.S;
+}
+
+export const magneticFluxDistractors: DistractorRule[] = [
+  { label: "делит индукцию на площадь", compute: fluxDividesByArea },
+  { label: "переворачивает отношение", compute: fluxInvertsRatio },
+  { label: "удваивает поток", compute: fluxTwiceValue },
+];
+
+// --- ЭДС индукции ---
+
+function emfMultipliesByTime(p: Params): number {
+  return p.B * p.S * p.t;
+}
+
+function emfWithoutArea(p: Params): number {
+  return p.B / p.t;
+}
+
+function emfWithoutField(p: Params): number {
+  return p.S / p.t;
+}
+
+export const emfInductionDistractors: DistractorRule[] = [
+  { label: "умножает поток на время вместо деления", compute: emfMultipliesByTime },
+  { label: "забывает площадь контура", compute: emfWithoutArea },
+  { label: "забывает магнитную индукцию", compute: emfWithoutField },
+];
+
+// --- Период и частота колебаний ---
+
+function oscillationInverted(p: Params): number {
+  return variantIndex(p, 2) === 0 ? p.N / p.t : p.t / p.N;
+}
+
+function oscillationProduct(p: Params): number {
+  return p.t * p.N;
+}
+
+function oscillationHalved(p: Params): number {
+  return variantIndex(p, 2) === 0 ? p.t / (2 * p.N) : p.N / (2 * p.t);
+}
+
+export const oscillationPeriodDistractors: DistractorRule[] = [
+  { label: "перепутал период и частоту", compute: oscillationInverted },
+  { label: "перемножает данные вместо деления", compute: oscillationProduct },
+  { label: "делит результат пополам без причины", compute: oscillationHalved },
+];
+
+// --- Скорость волны ---
+
+function waveSpeedSum(p: Params): number {
+  return p.lambda + p.freq;
+}
+
+function waveSpeedRatio(p: Params): number {
+  return p.lambda / p.freq;
+}
+
+function waveSpeedHalved(p: Params): number {
+  return (p.lambda * p.freq) / 2;
+}
+
+export const waveSpeedDistractors: DistractorRule[] = [
+  { label: "складывает длину волны и частоту", compute: waveSpeedSum },
+  { label: "делит длину волны на частоту", compute: waveSpeedRatio },
+  { label: "делит скорость пополам", compute: waveSpeedHalved },
+];
+
+// --- Длина волны ---
+
+function waveLengthProduct(p: Params): number {
+  return p.speed * p.freq;
+}
+
+function waveLengthInverted(p: Params): number {
+  return p.freq / p.speed;
+}
+
+function waveLengthHalved(p: Params): number {
+  return p.speed / (2 * p.freq);
+}
+
+export const waveLengthDistractors: DistractorRule[] = [
+  { label: "перемножает скорость и частоту", compute: waveLengthProduct },
+  { label: "переворачивает отношение", compute: waveLengthInverted },
+  { label: "делит ответ пополам", compute: waveLengthHalved },
+];
+
+// --- Эхо / эхолот ---
+
+function echoFullPath(p: Params): number {
+  return echoSpeed(p) * p.t;
+}
+
+function echoDoubledPath(p: Params): number {
+  return echoSpeed(p) * p.t * 2;
+}
+
+function echoQuarterPath(p: Params): number {
+  return (echoSpeed(p) * p.t) / 4;
+}
+
+export const echoDistanceDistractors: DistractorRule[] = [
+  { label: "не делит путь пополам", compute: echoFullPath },
+  { label: "удваивает путь вместо деления пополам", compute: echoDoubledPath },
+  { label: "делит путь на четыре части", compute: echoQuarterPath },
+];
+
+// --- Энергия фотона ---
+
+// Ошибки общего вида: сбитый порядок величины, перепутанное действие и
+// подстановка числа из условия без формулы. Формулировки годятся для обоих
+// вариантов задачи (энергия по частоте и длина волны по частоте).
+function photonDecadeOff(p: Params): number {
+  return variantIndex(p, 2) === 0 ? 6.6 * p.nu : 300 / p.nu;
+}
+
+function photonInvertedOperation(p: Params): number {
+  return variantIndex(p, 2) === 0 ? 6.6 / p.nu : 3000 * p.nu;
+}
+
+function photonUnfinishedCalculation(p: Params): number {
+  return p.nu;
+}
+
+export const photonEnergyDistractors: DistractorRule[] = [
+  { label: "ошибся в 10 раз", compute: photonDecadeOff },
+  { label: "перепутал, что на что делить", compute: photonInvertedOperation },
+  { label: "назвал частоту вместо ответа", compute: photonUnfinishedCalculation },
+];
+
+// --- Уравнение фотоэффекта ---
+
+function photoelectricFullPhoton(p: Params): number {
+  return p.ePhoton;
+}
+
+function photoelectricOtherEnergy(p: Params): number {
+  return p.aWork;
+}
+
+function photoelectricSum(p: Params): number {
+  return p.ePhoton + p.aWork;
+}
+
+export const photoelectricEffectDistractors: DistractorRule[] = [
+  {
+    label: "не вычитает вторую энергию из энергии фотона",
+    compute: photoelectricFullPhoton,
+  },
+  { label: "перепутал искомую и данную энергию", compute: photoelectricOtherEnergy },
+  { label: "складывает энергии вместо вычитания", compute: photoelectricSum },
+];
+
+// --- Радиоактивный распад ---
+
+function decayLinearDivision(p: Params): number {
+  return p.n0 / halfLives(p);
+}
+
+function decayExtraHalfLife(p: Params): number {
+  return p.n0 / 2 ** (halfLives(p) + 1);
+}
+
+function decayMirrorValue(p: Params): number {
+  const remaining = p.n0 / 2 ** halfLives(p);
+  return variantIndex(p, 2) === 0 ? p.n0 - remaining : remaining;
+}
+
+export const radioactiveDecayDistractors: DistractorRule[] = [
+  { label: "делит на число периодов вместо степени двойки", compute: decayLinearDivision },
+  { label: "считает лишний период полураспада", compute: decayExtraHalfLife },
+  { label: "перепутал распавшиеся и оставшиеся ядра", compute: decayMirrorValue },
+];
+
+// --- Состав ядра ---
+
+function nucleonMassNumber(p: Params): number {
+  return p.A;
+}
+
+function nucleonChargeNumber(p: Params): number {
+  return p.Z;
+}
+
+function nucleonSum(p: Params): number {
+  return p.A + p.Z;
+}
+
+export const nucleonCountDistractors: DistractorRule[] = [
+  { label: "называет массовое число вместо числа нейтронов", compute: nucleonMassNumber },
+  { label: "называет зарядовое число вместо числа нейтронов", compute: nucleonChargeNumber },
+  { label: "складывает массовое и зарядовое числа", compute: nucleonSum },
 ];

@@ -245,33 +245,40 @@ test("API: optics-mixed детерминирован по batch", async () => {
   assert.equal(first.some((task, index) => task.id !== other[index]?.id), true);
 });
 
-test("exam: точное распределение 2 задачи на группу при count=10 и корректные длины 1–20", async () => {
+test("exam: точное распределение 2 задачи на группу при count=14 и корректные длины 1–20", async () => {
+  const examGroups = [
+    "kinematics",
+    "dynamics",
+    "electrodynamics",
+    "thermodynamics",
+    "optics",
+    "oscillations",
+    "quantum",
+  ] as const;
   const groupsByTemplate = new Map<string, string>();
-  for (const group of ["kinematics", "dynamics", "electrodynamics", "thermodynamics", "optics"] as const) {
+  for (const group of examGroups) {
     for (const id of getTemplateIdsByGroup(group)) {
       groupsByTemplate.set(id, group);
     }
   }
 
-  for (const count of [1, 3, 5, 10, 13, 20]) {
+  for (const count of [1, 3, 5, 10, 13, 14, 20]) {
     const tasks = await fetchTasks(`template=exam&count=${count}&batch=4`);
     assert.equal(tasks.length, count, `exam?count=${count}`);
     const ids = new Set(tasks.map((task) => task.id));
     assert.equal(ids.size, count, "id не дублируются");
 
-    if (count === 10) {
+    // Полный вариант диагностики: по две задачи из каждой открытой темы.
+    if (count === 14) {
       const counts: Record<string, number> = {};
       for (const task of tasks) {
         const group = groupsByTemplate.get(task.blueprint) ?? "unknown";
         counts[group] = (counts[group] ?? 0) + 1;
       }
-      assert.deepEqual(counts, {
-        kinematics: 2,
-        dynamics: 2,
-        electrodynamics: 2,
-        thermodynamics: 2,
-        optics: 2,
-      });
+      assert.deepEqual(
+        counts,
+        Object.fromEntries(examGroups.map((group) => [group, 2])),
+      );
     }
   }
 });

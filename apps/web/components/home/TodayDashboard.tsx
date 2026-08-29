@@ -32,6 +32,8 @@ const mixRoutes: Record<string, string> = {
   "electro-mixed": "/practice/electro-demo",
   "thermo-mixed": "/practice/thermo-demo",
   "optics-mixed": "/practice/optics-demo",
+  "oscillations-mixed": "/practice/oscillations-demo",
+  "quantum-mixed": "/practice/quantum-demo",
 };
 
 function resumeHref(snapshot: ActiveQuizSnapshot): string {

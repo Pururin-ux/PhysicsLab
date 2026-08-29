@@ -11,7 +11,9 @@ export type TopicId =
   | "dynamics"
   | "electrodynamics"
   | "thermodynamics"
-  | "optics";
+  | "optics"
+  | "oscillations"
+  | "quantum";
 
 export type SkillId =
   | "vt-slope"
@@ -48,7 +50,23 @@ export type SkillId =
   | "snell-index-ratio"
   | "thin-lens-image-distance"
   | "lens-optical-power"
-  | "lens-image-height";
+  | "lens-image-height"
+  // Электростатика и магнетизм
+  | "coulomb-force"
+  | "ampere-force"
+  | "lorentz-force"
+  | "magnetic-flux"
+  | "emf-induction"
+  // Механические колебания и волны
+  | "oscillation-period"
+  | "wave-speed"
+  | "wave-length"
+  | "echo-distance"
+  // Квантовая и атомная физика
+  | "photon-energy"
+  | "photoelectric-effect"
+  | "radioactive-decay"
+  | "nucleon-count";
 
 export type SkillMetadata = {
   id: SkillId;
@@ -339,5 +357,109 @@ export const skillMetadata: Record<SkillId, SkillMetadata> = {
     title: "Линейное увеличение линзы",
     shortTitle: "Увеличение линзы",
     description: "Модуль высоты изображения через отношение расстояний d_i/d_o и высоту предмета.",
+  },
+  "coulomb-force": {
+    id: "coulomb-force",
+    topicId: "electrodynamics",
+    sectionId: "electrodynamics",
+    title: "Закон Кулона",
+    shortTitle: "Закон Кулона",
+    description: "Сила взаимодействия зарядов: произведение зарядов, делённое на квадрат расстояния.",
+  },
+  "ampere-force": {
+    id: "ampere-force",
+    topicId: "electrodynamics",
+    sectionId: "electrodynamics",
+    title: "Сила Ампера",
+    shortTitle: "Сила Ампера",
+    description: "Сила, с которой магнитное поле действует на проводник с током: F = BIL.",
+  },
+  "lorentz-force": {
+    id: "lorentz-force",
+    topicId: "electrodynamics",
+    sectionId: "electrodynamics",
+    title: "Сила Лоренца",
+    shortTitle: "Сила Лоренца",
+    description: "Сила, действующая на заряд, движущийся в магнитном поле: F = qvB.",
+  },
+  "magnetic-flux": {
+    id: "magnetic-flux",
+    topicId: "electrodynamics",
+    sectionId: "electrodynamics",
+    title: "Магнитный поток",
+    shortTitle: "Магнитный поток",
+    description: "Поток магнитной индукции через площадку, перпендикулярную полю: Ф = BS.",
+  },
+  "emf-induction": {
+    id: "emf-induction",
+    topicId: "electrodynamics",
+    sectionId: "electrodynamics",
+    title: "ЭДС электромагнитной индукции",
+    shortTitle: "ЭДС индукции",
+    description: "Средняя ЭДС индукции равна скорости изменения магнитного потока.",
+  },
+  "oscillation-period": {
+    id: "oscillation-period",
+    topicId: "oscillations",
+    sectionId: "mechanics",
+    title: "Период и частота колебаний",
+    shortTitle: "Период колебаний",
+    description: "Период — время одного колебания, частота — число колебаний за секунду.",
+  },
+  "wave-speed": {
+    id: "wave-speed",
+    topicId: "oscillations",
+    sectionId: "mechanics",
+    title: "Скорость распространения волны",
+    shortTitle: "Скорость волны",
+    description: "Скорость волны равна произведению длины волны на частоту.",
+  },
+  "wave-length": {
+    id: "wave-length",
+    topicId: "oscillations",
+    sectionId: "mechanics",
+    title: "Длина волны",
+    shortTitle: "Длина волны",
+    description: "Длина волны равна скорости волны, делённой на частоту колебаний.",
+  },
+  "echo-distance": {
+    id: "echo-distance",
+    topicId: "oscillations",
+    sectionId: "mechanics",
+    title: "Расстояние по эху",
+    shortTitle: "Эхо и эхолот",
+    description: "Сигнал до препятствия и обратно: искомое расстояние — половина пройденного пути.",
+  },
+  "photon-energy": {
+    id: "photon-energy",
+    topicId: "quantum",
+    sectionId: "quantum",
+    title: "Энергия фотона",
+    shortTitle: "Энергия фотона",
+    description: "Энергия фотона пропорциональна частоте света: E = hν.",
+  },
+  "photoelectric-effect": {
+    id: "photoelectric-effect",
+    topicId: "quantum",
+    sectionId: "quantum",
+    title: "Уравнение фотоэффекта",
+    shortTitle: "Фотоэффект",
+    description: "Энергия фотона расходуется на работу выхода и кинетическую энергию электрона.",
+  },
+  "radioactive-decay": {
+    id: "radioactive-decay",
+    topicId: "quantum",
+    sectionId: "atomic",
+    title: "Закон радиоактивного распада",
+    shortTitle: "Радиоактивный распад",
+    description: "За каждый период полураспада число нераспавшихся ядер уменьшается вдвое.",
+  },
+  "nucleon-count": {
+    id: "nucleon-count",
+    topicId: "quantum",
+    sectionId: "atomic",
+    title: "Состав атомного ядра",
+    shortTitle: "Состав ядра",
+    description: "Число нейтронов в ядре: массовое число минус зарядовое.",
   },
 };

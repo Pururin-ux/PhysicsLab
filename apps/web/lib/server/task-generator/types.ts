@@ -11,7 +11,9 @@ export type TemplateGroup =
   | "dynamics"
   | "electrodynamics"
   | "thermodynamics"
-  | "optics";
+  | "optics"
+  | "oscillations"
+  | "quantum";
 
 export type Params = Record<string, number>;
 

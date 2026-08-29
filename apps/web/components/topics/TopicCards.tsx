@@ -205,7 +205,7 @@ export function TopicCards() {
             <Badge tone="gold" size="sm" dot>
               Диагностика
             </Badge>
-            <span className="pl-eyebrow">10 задач · открытые темы</span>
+            <span className="pl-eyebrow">14 задач · открытые темы</span>
           </div>
           <p className="text-[14px] leading-[1.7] text-ink-muted">
             Задачи из всех пяти тем вперемешку: видно, что держится, а что рассыпается без

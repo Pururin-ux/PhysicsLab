@@ -1,4 +1,8 @@
 import { buildCoverageSections } from "./coverage.ts";
+import {
+  EXAM_QUESTION_COUNT,
+  EXAM_TASKS_PER_TOPIC,
+} from "../quiz/generated-quiz-count.ts";
 import { getTaskCatalog } from "../server/task-catalog.ts";
 import { topics } from "../topics.ts";
 
@@ -13,6 +17,10 @@ export type ExamMissingSection = {
   title: string;
   summary: string;
 };
+
+// Длина варианта и число задач на тему живут в generated-quiz-count.ts:
+// этот модуль тянет за собой серверный генератор и не годится для клиента.
+export { EXAM_QUESTION_COUNT, EXAM_TASKS_PER_TOPIC };
 
 export type ExamMixInfo = {
   // Темы, из которых собирается вариант (по две задачи из каждой).
