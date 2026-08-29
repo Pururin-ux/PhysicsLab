@@ -2,7 +2,7 @@ import type { TemplateId } from "../server/task-generator/generate.ts";
 import { formulaReference, type FormulaReferenceEntry } from "../physics/formula-reference.ts";
 import { getReferenceSolution } from "./reference-solutions.ts";
 import { taskLearningMetadataByTemplateId } from "./task-metadata.ts";
-import { skillMetadata, type SkillId } from "./taxonomy.ts";
+import { skillMetadata, type SkillId, type TopicId } from "./taxonomy.ts";
 import { topics } from "../topics.ts";
 
 export type TaskHref = `/tasks/${TemplateId}`;
@@ -153,6 +153,15 @@ export function getFormulaReferenceView(): readonly FormulaReferenceViewGroup[] 
       }),
     })),
   }));
+}
+
+// Группы справочника совпадают с темами каталога (id групп = id тем),
+// поэтому фильтр по теме — это выбор одной группы.
+export function filterFormulaReferenceViewByTopic(
+  groups: readonly FormulaReferenceViewGroup[],
+  topicId: TopicId,
+): readonly FormulaReferenceViewGroup[] {
+  return groups.filter((group) => group.id === topicId);
 }
 
 export function getKnownLearningSkillIds(): readonly SkillId[] {

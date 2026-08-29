@@ -105,7 +105,7 @@ test("@a11y simplified navigation and practice disclosures", async ({
 
   if (testInfo.project.name === "desktop") {
     const navigation = page.getByTestId("desktop-sidebar-nav");
-    await expect(navigation.getByRole("link")).toHaveCount(5);
+    await expect(navigation.getByRole("link")).toHaveCount(7);
     await expect(
       navigation.getByRole("link", { name: "Задачи", exact: true }),
     ).toHaveAttribute("aria-current", "page");
@@ -113,7 +113,7 @@ test("@a11y simplified navigation and practice disclosures", async ({
     await expect(page.getByTestId("tablet-quick-actions").getByRole("link")).toHaveCount(4);
   } else {
     const navigation = page.getByTestId("mobile-bottom-nav");
-    await expect(navigation.getByRole("link")).toHaveCount(4);
+    await expect(navigation.getByRole("link")).toHaveCount(5);
     await expect(
       navigation.getByRole("link", { name: "Задачи", exact: true }),
     ).toHaveAttribute("aria-current", "page");

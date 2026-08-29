@@ -173,7 +173,7 @@ test("@visual simplified navigation shell is stable", async ({ page }, testInfo)
   );
 
   if (testInfo.project.name === "desktop") {
-    await expect(page.getByTestId("desktop-sidebar-nav").getByRole("link")).toHaveCount(5);
+    await expect(page.getByTestId("desktop-sidebar-nav").getByRole("link")).toHaveCount(7);
   } else if (testInfo.project.name === "tablet") {
     await expect(page.getByTestId("tablet-quick-actions").getByRole("link")).toHaveCount(4);
   } else {

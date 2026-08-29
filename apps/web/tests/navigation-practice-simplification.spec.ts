@@ -1,12 +1,19 @@
 import { expect, test, type Page } from "@playwright/test";
 
+// Единая ИА продукта: семь разделов в трёх группах (см. components/layout/nav-config.tsx).
 const desktopLabels = [
+  "Сегодня",
+  "Учиться",
   "Задачи",
-  "Смешанная тренировка",
+  "Диагностика",
   "Ошибки",
   "Формулы",
   "Прогресс",
 ] as const;
+
+const mobileLabels = ["Сегодня", "Учиться", "Задачи", "Ошибки", "Прогресс"] as const;
+
+const tabletLabels = ["Учиться", "Задачи", "Диагностика", "Прогресс"] as const;
 
 async function answerOhmWrong(page: Page) {
   const responsePromise = page.waitForResponse((response) => {
@@ -26,14 +33,14 @@ async function answerOhmWrong(page: Page) {
     .click();
 }
 
-test("desktop sidebar exposes five durable destinations", async ({ page }, testInfo) => {
+test("desktop sidebar exposes the seven durable destinations", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "desktop", "Desktop navigation contract.");
   await page.goto("/tasks", { waitUntil: "domcontentloaded" });
 
   const sidebar = page.getByTestId("app-sidebar");
   const navigation = page.getByTestId("desktop-sidebar-nav");
   await expect(sidebar).toBeVisible();
-  await expect(navigation.getByRole("link")).toHaveCount(5);
+  await expect(navigation.getByRole("link")).toHaveCount(desktopLabels.length);
   expect(await navigation.getByRole("link").allTextContents()).toEqual(desktopLabels);
   expect(
     await navigation.getByRole("link").evaluateAll((links) =>
@@ -44,6 +51,7 @@ test("desktop sidebar exposes five durable destinations", async ({ page }, testI
     ),
   ).toEqual(desktopLabels.map(() => true));
   await expect(sidebar).not.toContainText("Кинематика");
+  await expect(sidebar).not.toContainText("10 задач");
   await expect(sidebar).not.toContainText("Квантовая физика");
   await expect(sidebar).not.toContainText("скоро");
   await expect(sidebar).not.toContainText("XP");
@@ -57,20 +65,15 @@ test("desktop sidebar exposes five durable destinations", async ({ page }, testI
   await expect(page).toHaveTitle("Прогресс | PhysicsLab");
 });
 
-test("mobile navigation has four items and practice stays under Tasks", async ({ page }, testInfo) => {
+test("mobile navigation has five items and practice stays under Tasks", async ({ page }, testInfo) => {
   test.skip(!testInfo.project.name.startsWith("mobile"), "Mobile navigation contract.");
   await page.goto("/practice/family/ohm-law", { waitUntil: "domcontentloaded" });
   await expect(page.getByTestId("question-card")).toBeVisible();
 
   const navigation = page.getByTestId("mobile-bottom-nav");
   await expect(navigation).toBeVisible();
-  await expect(navigation.getByRole("link")).toHaveCount(4);
-  expect(await navigation.getByRole("link").allTextContents()).toEqual([
-    "Задачи",
-    "Ошибки",
-    "Формулы",
-    "Прогресс",
-  ]);
+  await expect(navigation.getByRole("link")).toHaveCount(mobileLabels.length);
+  expect(await navigation.getByRole("link").allTextContents()).toEqual([...mobileLabels]);
   await expect(navigation.getByRole("link", { name: "Задачи", exact: true })).toHaveAttribute(
     "aria-current",
     "page",
@@ -90,7 +93,8 @@ test("tablet quick actions remain a single four-item row", async ({ page }, test
     await page.goto("/tasks", { waitUntil: "domcontentloaded" });
     const quickActions = page.getByTestId("tablet-quick-actions");
     await expect(quickActions).toBeVisible();
-    await expect(quickActions.getByRole("link")).toHaveCount(4);
+    await expect(quickActions.getByRole("link")).toHaveCount(tabletLabels.length);
+    expect(await quickActions.getByRole("link").allTextContents()).toEqual([...tabletLabels]);
     await expect(page.getByTestId("mobile-bottom-nav")).toBeHidden();
 
     const geometry = await quickActions.evaluate((element) => ({

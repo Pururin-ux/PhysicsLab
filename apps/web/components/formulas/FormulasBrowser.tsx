@@ -9,6 +9,10 @@ import { Card } from "../ui/Card";
 
 interface FormulasBrowserProps {
   groups: readonly FormulaReferenceViewGroup[];
+  // Тема приходит из /formulas?topic=<id>: страница урока ведёт сюда за
+  // формулами конкретной темы.
+  activeTopic?: { id: string; title: string } | null;
+  totalGroupCount?: number;
 }
 
 const dotClassByTone: Record<FormulaReferenceViewGroup["badgeTone"], string> = {
@@ -68,7 +72,11 @@ function selectFormula(
     .filter((group) => group.entries.length > 0);
 }
 
-export function FormulasBrowser({ groups }: FormulasBrowserProps) {
+export function FormulasBrowser({
+  groups,
+  activeTopic = null,
+  totalGroupCount,
+}: FormulasBrowserProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -133,6 +141,7 @@ export function FormulasBrowser({ groups }: FormulasBrowserProps) {
     const params = new URLSearchParams(searchParams.toString());
     params.delete("formula");
     params.delete("q");
+    params.delete("topic");
     setQuery("");
     navigate(params);
   }
@@ -163,6 +172,24 @@ export function FormulasBrowser({ groups }: FormulasBrowserProps) {
           />
         </label>
 
+        {activeTopic ? (
+          <div className="flex flex-wrap items-center justify-between gap-3" role="status">
+            <p className="text-[12px] font-semibold text-white/58">
+              Формулы темы «{activeTopic.title}»
+              {totalGroupCount && totalGroupCount > 1
+                ? ` · остальные разделы скрыты`
+                : null}
+            </p>
+            <button
+              type="button"
+              onClick={showAllFormulas}
+              className="rounded-option px-1 text-[12px] font-semibold text-nova-cyan/80 transition-colors hover:text-nova-cyan focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/55"
+            >
+              Показать все разделы
+            </button>
+          </div>
+        ) : null}
+
         {selectedEntry ? (
           <div className="flex flex-wrap items-center justify-between gap-3" role="status">
             <p className="text-[12px] font-semibold text-white/58">
@@ -184,7 +211,7 @@ export function FormulasBrowser({ groups }: FormulasBrowserProps) {
           </p>
         ) : null}
 
-        {!isFiltering && !selectedEntry ? (
+        {!isFiltering && !selectedEntry && !activeTopic ? (
           <nav aria-label="Разделы справочника" className="flex flex-wrap gap-2">
             {groups.map((group) => (
               <a

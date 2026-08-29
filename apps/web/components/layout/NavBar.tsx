@@ -2,30 +2,17 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { findActiveNavItem } from "./nav-config";
+import { XPBadge } from "./XPBadge";
 
 export function NavBar() {
   const pathname = usePathname();
-  const sectionLabels: [prefix: string, label: string][] = [
-    ["/practice/family", "Похожие задачи"],
-    ["/practice/dynamics", "Динамика"],
-    ["/practice/kinematics", "Кинематика"],
-    ["/practice/electro", "Электродинамика"],
-    ["/practice/thermo", "Термодинамика"],
-    ["/practice/optics", "Оптика"],
-    ["/practice/exam", "Смешанная"],
-    ["/mistakes", "Ошибки"],
-    ["/formulas", "Формулы"],
-    ["/profile", "Прогресс"],
-    ["/tasks", "Задачи"],
-  ];
-  const topic =
-    sectionLabels.find(([prefix]) => pathname.startsWith(prefix))?.[1] ??
-    "Темы";
+  const activeItem = findActiveNavItem(pathname);
 
   return (
     <header className="sticky top-0 z-20 border-b border-nova-cyan/[.07] bg-space-950/85 backdrop-blur-[14px]">
       <nav
-        className="mx-auto flex max-w-[960px] items-center px-4 py-3 md:px-8 md:py-4"
+        className="mx-auto flex max-w-[1400px] items-center justify-between gap-3 px-4 py-3 md:px-6 md:py-4"
         aria-label="Главная навигация"
       >
         <Link
@@ -37,9 +24,15 @@ export function NavBar() {
             Physics<span className="text-nova-cyan">Lab</span>
           </span>
           <span className="mt-1 text-[10px] font-bold uppercase tracking-[.14em] text-white/50 md:text-[11px]">
-            {topic}
+            {activeItem?.label ?? "ЦЭ/ЦТ · физика"}
           </span>
         </Link>
+
+        {/* XP в шапке только с планшета: на телефоне место занимает
+            подпись раздела, а нижняя навигация и так ведёт в прогресс. */}
+        <div className="hidden items-center gap-2 md:flex">
+          <XPBadge />
+        </div>
       </nav>
     </header>
   );

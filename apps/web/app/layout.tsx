@@ -14,8 +14,20 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "PhysicsLab",
-  description: "Тренажёр по физике с задачами и разбором.",
+  title: {
+    default: "PhysicsLab — подготовка к ЦЭ/ЦТ по физике",
+    template: "%s | PhysicsLab",
+  },
+  description:
+    "Тренажёр по физике для ЦЭ/ЦТ: уроки по темам, короткие тренировки, разбор каждой ошибки и честный прогресс.",
+  applicationName: "PhysicsLab",
+  openGraph: {
+    title: "PhysicsLab — подготовка к ЦЭ/ЦТ по физике",
+    description:
+      "Уроки по пяти темам, тренировки по 10 задач, разбор каждой ошибки и план повторения.",
+    locale: "ru_RU",
+    type: "website",
+  },
 };
 
 export default function RootLayout({

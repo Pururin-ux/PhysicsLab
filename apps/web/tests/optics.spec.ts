@@ -78,7 +78,7 @@ test.describe("optics desktop flows", () => {
 
     await expect(page.getByRole("heading", { name: "Оптика", exact: true })).toBeVisible();
     const sidebar = page.getByRole("navigation", { name: "Разделы PhysicsLab" });
-    await expect(sidebar.getByRole("link")).toHaveCount(5);
+    await expect(sidebar.getByRole("link")).toHaveCount(7);
     await expect(sidebar.getByRole("link", { name: "Оптика", exact: true })).toHaveCount(0);
 
     const opticsLinks = page.locator('a[href="/practice/optics-demo"]');

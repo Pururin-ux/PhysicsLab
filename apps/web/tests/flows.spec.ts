@@ -47,11 +47,11 @@ for (const route of productRoutes) {
   });
 }
 
-test("смешанная тренировка честно обозначает открытый scope", async ({ page }) => {
+test("диагностика честно обозначает открытый scope", async ({ page }) => {
   await page.goto("/practice/exam-demo", { waitUntil: "domcontentloaded" });
 
   await expect(
-    page.getByRole("heading", { name: "Смешанная тренировка" }),
+    page.getByRole("heading", { name: "Диагностика по открытым темам" }),
   ).toBeVisible();
   await expect(
     page.getByText(

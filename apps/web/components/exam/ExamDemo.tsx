@@ -3,6 +3,10 @@
 import { useStore } from "@nanostores/react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import type {
+  ExamMissingSection,
+  ExamMixTopic,
+} from "../../lib/learning/exam-mix";
 import { $examLog, getBestAttempt } from "../../lib/stores/exam-log-store";
 import { Badge } from "../ui/Badge";
 import { Button } from "../ui/Button";
@@ -13,6 +17,16 @@ import {
   readExamResumeCandidate,
   type ExamResumeCandidate,
 } from "../../lib/quiz/active-session-snapshot";
+
+
+interface ExamDemoProps {
+  // Темы, из которых собирается вариант, и разделы программы без задач.
+  // Карта показывается ДО кнопки старта — иначе непонятно, что именно
+  // проверяет диагностика и каких разделов в ней принципиально нет.
+  sections: readonly ExamMixTopic[];
+  missing: readonly ExamMissingSection[];
+  totalTaskTypes: number;
+}
 
 function ExamHistoryLine() {
   const log = useStore($examLog);
@@ -31,8 +45,7 @@ function ExamHistoryLine() {
 
   return (
     <p className="text-[13px] font-semibold leading-[1.6] text-white/55">
-      Попыток:{" "}
-      <span className="physics-number text-white/80">{log.length}</span>
+      Попыток: <span className="physics-number text-white/80">{log.length}</span>
       {best ? (
         <>
           {" "}
@@ -55,7 +68,65 @@ function ExamHistoryLine() {
   );
 }
 
-export function ExamDemo() {
+function ExamCoverageMap({
+  sections,
+  missing,
+  totalTaskTypes,
+}: {
+  sections: readonly ExamMixTopic[];
+  missing: readonly ExamMissingSection[];
+  totalTaskTypes: number;
+}) {
+  return (
+    <section
+      data-testid="exam-coverage-map"
+      aria-labelledby="exam-coverage-title"
+      className="flex flex-col gap-3"
+    >
+      <div className="flex flex-col gap-1">
+        <h2 id="exam-coverage-title" className="text-[15px] font-[800] text-white">
+          Что внутри варианта
+        </h2>
+        <p className="text-[12px] leading-[1.6] text-white/55">
+          По две задачи из каждой открытой темы: всего 10 заданий из {totalTaskTypes} доступных
+          типов.
+        </p>
+      </div>
+
+      <ul className="flex flex-col gap-2">
+        {sections.map((section) => (
+          <li
+            key={section.id}
+            className="flex items-center justify-between gap-3 rounded-option border border-white/[.08] bg-white/[.025] px-3.5 py-2.5"
+          >
+            <span className="min-w-0 text-[13px] font-semibold text-white/78">{section.title}</span>
+            <span className="shrink-0 text-[12px] font-semibold text-white/50">
+              <span className="physics-number text-white/80">{section.familyCount}</span> типов · 2
+              задачи
+            </span>
+          </li>
+        ))}
+      </ul>
+
+      {missing.length > 0 ? (
+        <div className="flex flex-col gap-1.5 rounded-option border border-white/[.08] bg-space-950/40 px-3.5 py-3">
+          <p className="text-[11px] font-bold uppercase tracking-[.12em] text-white/45">
+            Чего в варианте нет
+          </p>
+          <ul className="flex flex-col gap-1">
+            {missing.map((section) => (
+              <li key={section.id} className="text-[12px] leading-[1.55] text-white/55">
+                {section.title} — {section.summary}
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
+    </section>
+  );
+}
+
+export function ExamDemo({ sections, missing, totalTaskTypes }: ExamDemoProps) {
   const [started, setStarted] = useState<"normal" | "resume" | "fresh" | null>(null);
   const [resumeCandidate, setResumeCandidate] = useState<ExamResumeCandidate | null>();
   const [discardedAttemptId, setDiscardedAttemptId] = useState<string | undefined>();
@@ -68,8 +139,8 @@ export function ExamDemo() {
     return (
       <QuizSession
         generatedTemplate="exam"
-        generatedTopic="Смешанная тренировка"
-        generatedTitle="Смешанная тренировка · открытые темы"
+        generatedTopic="Диагностика"
+        generatedTitle="Диагностика · открытые темы"
         sessionKind="exam"
         recoveryMode={started === "fresh" ? "fresh" : "auto"}
         freshAttemptId={discardedAttemptId}
@@ -80,7 +151,7 @@ export function ExamDemo() {
   return (
     <Card
       variant="elevated"
-      className="mx-auto flex w-full max-w-[580px] flex-col gap-5 border-nova-gold/25 !p-6 md:!p-7"
+      className="mx-auto flex w-full max-w-[620px] flex-col gap-5 border-nova-gold/25 !p-5 md:!p-7"
     >
       <div className="flex items-center gap-2.5">
         <Badge tone="gold">Открытые темы</Badge>
@@ -89,10 +160,12 @@ export function ExamDemo() {
         </span>
       </div>
 
+      <ExamCoverageMap sections={sections} missing={missing} totalTaskTypes={totalTaskTypes} />
+
       <ul className="flex flex-col gap-2.5 text-[14px] leading-[1.65] text-white/72">
         <li className="grid grid-cols-[auto_1fr] gap-2.5">
           <span className="text-nova-gold">—</span>
-          Кинематика, динамика, электродинамика, термодинамика и оптика — по две задачи из каждой темы.
+          Темы идут вперемешку: как на экзамене, а не блоками по разделу.
         </li>
         <li className="grid grid-cols-[auto_1fr] gap-2.5">
           <span className="text-nova-gold">—</span>
@@ -100,7 +173,7 @@ export function ExamDemo() {
         </li>
         <li className="grid grid-cols-[auto_1fr] gap-2.5">
           <span className="text-nova-gold">—</span>
-          Ошибки попадут в твой список слабых мест.
+          Ошибки попадут в список слабых мест и в план повторения.
         </li>
       </ul>
 
@@ -110,7 +183,7 @@ export function ExamDemo() {
           href="/tasks#coverage"
           className="font-semibold text-nova-cyan/85 transition-colors hover:text-nova-cyan focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/55"
         >
-          Посмотреть покрытие программы
+          Все типы задач
         </Link>
       </div>
 

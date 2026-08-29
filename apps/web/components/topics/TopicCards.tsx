@@ -8,61 +8,13 @@ import { getLearningNextStep } from "../../lib/learning/next-step";
 import { buildReviewPlan } from "../../lib/learning/review-plan";
 import { topics, upcomingTopics } from "../../lib/topics";
 import { $examLog, getBestAttempt } from "../../lib/stores/exam-log-store";
-import {
-  $appProgress,
-} from "../../lib/stores/progress-store";
+import { $appProgress } from "../../lib/stores/progress-store";
+import { getTopicAccent } from "./topic-accents";
 import { Badge } from "../ui/Badge";
 import { Button } from "../ui/Button";
 import { Card } from "../ui/Card";
 import { MathText } from "../ui/MathText";
 import { TopicGlyph } from "./TopicGlyph";
-
-const topicStyles = {
-  kinematics: {
-    border: "border-white/[.08] border-l-nova-cyan/55",
-    depth:
-      "!shadow-[0_14px_38px_rgba(0,0,0,0.34),inset_0_1px_0_rgba(255,255,255,0.045)]",
-    badge: "cyan",
-    button: "mt-auto",
-    tile: "border-nova-cyan/25 bg-nova-cyan/[.08] text-nova-cyan",
-  },
-  dynamics: {
-    border: "border-white/[.08] border-l-nova-gold/55",
-    depth:
-      "!shadow-[0_14px_38px_rgba(0,0,0,0.34),inset_0_1px_0_rgba(255,255,255,0.045)]",
-    badge: "gold",
-    button:
-      "mt-auto border-nova-gold bg-nova-gold shadow-gold-glow focus-visible:ring-nova-gold/50",
-    tile: "border-nova-gold/25 bg-nova-gold/[.08] text-nova-gold",
-  },
-  electrodynamics: {
-    border: "border-white/[.08] border-l-nova-blue/55",
-    depth:
-      "!shadow-[0_14px_38px_rgba(0,0,0,0.34),inset_0_1px_0_rgba(255,255,255,0.045)]",
-    badge: "blue",
-    button:
-      "mt-auto border-nova-blue bg-nova-blue shadow-[0_0_22px_rgba(45,156,255,0.25)] focus-visible:ring-nova-blue/50",
-    tile: "border-nova-blue/25 bg-nova-blue/[.08] text-nova-blue",
-  },
-  thermodynamics: {
-    border: "border-white/[.08] border-l-nova-ember/55",
-    depth:
-      "!shadow-[0_14px_38px_rgba(0,0,0,0.34),inset_0_1px_0_rgba(255,255,255,0.045)]",
-    badge: "ember",
-    button:
-      "mt-auto border-nova-ember bg-nova-ember shadow-ember-glow focus-visible:ring-nova-ember/50",
-    tile: "border-nova-ember/25 bg-nova-ember/[.08] text-nova-ember",
-  },
-  // Оптика переиспользует cyan (лучи света) — новых токенов не заводим.
-  optics: {
-    border: "border-white/[.08] border-l-nova-cyan/55",
-    depth:
-      "!shadow-[0_14px_38px_rgba(0,0,0,0.34),inset_0_1px_0_rgba(255,255,255,0.045)]",
-    badge: "cyan",
-    button: "mt-auto",
-    tile: "border-nova-cyan/25 bg-nova-cyan/[.08] text-nova-cyan",
-  },
-} as const;
 
 export function TopicCards() {
   const progress = useStore($appProgress);
@@ -76,208 +28,216 @@ export function TopicCards() {
   const bestExam = mounted ? getBestAttempt(examLog) : null;
   const nextStep = mounted ? getLearningNextStep(progress, Boolean(bestExam)) : null;
   const reviewPlan = mounted ? buildReviewPlan(progress, 8) : [];
+  const totalSolved = mounted
+    ? topics.reduce((sum, topic) => sum + (progress.topics[topic.id]?.solved ?? 0), 0)
+    : 0;
 
   return (
-    <>
-    {nextStep ? (
-      <Card
-        className={`flex flex-col gap-4 !p-4 sm:flex-row sm:items-center sm:justify-between md:!p-5 ${
-          nextStep.tone === "gold"
-            ? "border-nova-gold/25 bg-nova-gold/[.055]"
-            : "border-nova-cyan/22 bg-nova-cyan/[.045]"
-        }`}
-        aria-label="Что сделать сейчас"
-      >
-        <div className="flex min-w-0 flex-col gap-2">
-          <p
-            className={`text-[11px] font-bold uppercase tracking-[.14em] ${
-              nextStep.tone === "gold" ? "text-nova-gold/80" : "text-nova-cyan/80"
-            }`}
+    <div className="flex flex-col gap-8">
+      {nextStep ? (
+        <Card
+          className={`flex flex-col gap-4 !p-5 sm:flex-row sm:items-center sm:justify-between md:!p-6 ${
+            nextStep.tone === "gold"
+              ? "border-nova-gold/25 bg-nova-gold/[.055]"
+              : "border-nova-cyan/22 bg-nova-cyan/[.045]"
+          }`}
+          aria-label="Что сделать сейчас"
+        >
+          <div className="flex min-w-0 flex-col gap-2">
+            <p
+              className={`text-[11px] font-bold uppercase tracking-[.14em] ${
+                nextStep.tone === "gold" ? "text-nova-gold/80" : "text-nova-cyan/80"
+              }`}
+            >
+              {nextStep.label}
+            </p>
+            <div className="flex flex-col gap-1">
+              <h2 className="text-[19px] font-[800] leading-tight text-white">{nextStep.title}</h2>
+              <p className="max-w-[680px] text-[13px] leading-[1.65] text-white/68">
+                <MathText text={nextStep.body} />
+              </p>
+            </div>
+          </div>
+          <Button
+            asChild
+            size="sm"
+            className={
+              nextStep.tone === "gold"
+                ? "shrink-0 border-nova-gold bg-nova-gold shadow-gold-glow focus-visible:ring-nova-gold/50"
+                : "shrink-0"
+            }
           >
-            {nextStep.label}
-          </p>
+            <Link href={nextStep.href}>{nextStep.cta}</Link>
+          </Button>
+        </Card>
+      ) : null}
+
+      <section className="flex flex-col gap-4" aria-labelledby="topics-title">
+        <div className="flex flex-wrap items-end justify-between gap-3">
           <div className="flex flex-col gap-1">
-            <h2 className="text-[18px] font-[800] leading-tight text-white">
-              {nextStep.title}
+            <h2 id="topics-title" className="text-[20px] font-[800] text-white">
+              Темы
             </h2>
-            <p className="max-w-[680px] text-[13px] leading-[1.65] text-white/68">
-              <MathText text={nextStep.body} />
+            <p className="text-[13px] leading-[1.6] text-white/55">
+              Внутри темы — опорные идеи, типы задач и тренировка. Решено всего:{" "}
+              <span className="physics-number text-white/80">{mounted ? totalSolved : "—"}</span>
             </p>
           </div>
+          <Button asChild size="sm" variant="ghost" className="shrink-0">
+            <Link href="/tasks">Каталог типов задач</Link>
+          </Button>
         </div>
-        <Button
-          asChild
-          size="sm"
-          className={
-            nextStep.tone === "gold"
-              ? "shrink-0 border-nova-gold bg-nova-gold shadow-gold-glow focus-visible:ring-nova-gold/50"
-              : "shrink-0"
-          }
-        >
-          <Link href={nextStep.href}>{nextStep.cta}</Link>
-        </Button>
-      </Card>
-    ) : null}
 
-    <section
-      className="grid gap-4 md:grid-cols-2"
-      aria-label="Темы для повторения"
-    >
-      {topics.map((topic) => {
-        const style = topicStyles[topic.id];
-        const topicProgress = mounted ? progress.topics[topic.id] : null;
-        const solved = topicProgress?.solved ?? 0;
-        const correct = topicProgress?.correct ?? 0;
-        const sessions = topicProgress?.completedSessions ?? 0;
-        const hasProgress = Boolean(
-          topicProgress &&
-            (topicProgress.completedSessions > 0 || topicProgress.solved > 0),
-        );
-        const weakTrapCount = topicProgress
-          ? Object.keys(topicProgress.weakTraps).length
-          : 0;
-        const topWeaknesses = topicProgress
-          ? getTopWeaknessesForTopic(topicProgress.weakTraps, topic.id, 2)
-          : [];
-        const topWeaknessLabels = Array.from(
-          new Set(topWeaknesses.map((weakness) => weakness.skillTitle)),
-        );
-        const reviewItem = reviewPlan.find((item) => item.topicId === topic.id);
+        <div className="grid gap-4 md:grid-cols-2">
+          {topics.map((topic) => {
+            const style = getTopicAccent(topic.id);
+            const topicProgress = mounted ? progress.topics[topic.id] : null;
+            const solved = topicProgress?.solved ?? 0;
+            const correct = topicProgress?.correct ?? 0;
+            const sessions = topicProgress?.completedSessions ?? 0;
+            const hasProgress = Boolean(
+              topicProgress && (topicProgress.completedSessions > 0 || topicProgress.solved > 0),
+            );
+            const accuracy = solved > 0 ? Math.round((correct / solved) * 100) : null;
+            const weakTrapCount = topicProgress ? Object.keys(topicProgress.weakTraps).length : 0;
+            const reviewItem = reviewPlan.find((item) => item.topicId === topic.id);
 
-        return (
-          <Card
-            key={topic.id}
-            variant="elevated"
-            className={`card-lift flex flex-col gap-3 border-l-2 !p-4 md:!p-5 ${style.border} ${style.depth}`}
-          >
-            <div className="flex items-start gap-3">
-              <span
-                className={`grid h-12 w-12 shrink-0 place-items-center rounded-option border ${style.tile}`}
+            return (
+              <Card
+                key={topic.id}
+                variant="elevated"
+                className={`card-lift flex flex-col gap-4 border-l-2 !p-5 ${style.border}`}
               >
-                <TopicGlyph topic={topic.id} className="h-7 w-7" />
-              </span>
-              <div className="flex min-w-0 flex-1 flex-col gap-1.5">
-                <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
-                  <h2 className="text-lg font-[800] leading-tight text-white">
-                    {topic.title}
-                  </h2>
-                  <Badge tone={style.badge} className="w-fit shrink-0">
-                    {hasProgress ? "В процессе" : "Не начато"}
-                  </Badge>
+                <div className="flex items-start gap-3.5">
+                  <span className={`grid h-12 w-12 shrink-0 place-items-center rounded-option border ${style.tile}`}>
+                    <TopicGlyph topic={topic.id} className="h-7 w-7" />
+                  </span>
+                  <div className="flex min-w-0 flex-1 flex-col gap-2">
+                    <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+                      <h3 className="text-lg font-[800] leading-tight text-white">{topic.title}</h3>
+                      <Badge tone={hasProgress ? style.badge : "neutral"} className="w-fit shrink-0">
+                        {hasProgress ? "В работе" : "Не начато"}
+                      </Badge>
+                    </div>
+                    <p className="text-[13px] leading-[1.55] text-white/68">{topic.description}</p>
+                  </div>
                 </div>
-                <p className="line-clamp-2 text-[13px] leading-[1.5] text-white/68">
-                  {topic.description}
-                </p>
-              </div>
-            </div>
 
-            {hasProgress ? (
-              <div className="flex flex-wrap gap-1.5">
-                <span className="rounded-badge border border-white/[.08] bg-white/[.03] px-2 py-1 text-[11px] font-semibold leading-none text-white/70">
-                  <span className="physics-number">{solved}</span> решено
-                </span>
-                <span className="rounded-badge border border-white/[.08] bg-white/[.03] px-2 py-1 text-[11px] font-semibold leading-none text-white/70">
-                  <span className="physics-number">{correct}</span> верно
-                </span>
-                <span className="rounded-badge border border-white/[.08] bg-white/[.03] px-2 py-1 text-[11px] font-semibold leading-none text-white/70">
-                  <span className="physics-number">{sessions}</span>{" "}
-                  {sessions === 1 ? "тренировка" : "тренировок"}
-                </span>
-                {weakTrapCount > 0 ? (
-                  <span
-                    className="rounded-badge border border-nova-gold/25 bg-nova-gold/[.06] px-2 py-1 text-[11px] font-semibold leading-none text-nova-gold/85"
-                    title={topWeaknessLabels.join(", ")}
-                  >
-                    {weakTrapCount === 1 ? "1 слабое место" : `${weakTrapCount} слабых места`}
+                <div className="flex flex-wrap gap-1.5">
+                  <span className="rounded-badge border border-white/[.08] bg-white/[.03] px-2 py-1 text-[11px] font-semibold leading-none text-white/70">
+                    <span className="physics-number">{mounted ? solved : "—"}</span> решено
                   </span>
-                ) : null}
-                {reviewItem ? (
-                  <span
-                    className={
-                      reviewItem.urgency === "today"
-                        ? "rounded-badge border border-nova-gold/25 bg-nova-gold/[.07] px-2 py-1 text-[11px] font-semibold leading-none text-nova-gold/90"
-                        : "rounded-badge border border-nova-cyan/20 bg-nova-cyan/[.05] px-2 py-1 text-[11px] font-semibold leading-none text-nova-cyan/80"
-                    }
-                    title={reviewItem.reason}
-                  >
-                    {reviewItem.dueLabel}
+                  {accuracy !== null ? (
+                    <span className="rounded-badge border border-white/[.08] bg-white/[.03] px-2 py-1 text-[11px] font-semibold leading-none text-white/70">
+                      точность <span className="physics-number">{mounted ? accuracy : "—"}%</span>
+                    </span>
+                  ) : null}
+                  <span className="rounded-badge border border-white/[.08] bg-white/[.03] px-2 py-1 text-[11px] font-semibold leading-none text-white/70">
+                    <span className="physics-number">{mounted ? sessions : "—"}</span>{" "}
+                    {sessions === 1 ? "тренировка" : "тренировок"}
                   </span>
-                ) : null}
-              </div>
-            ) : (
-              <p className="text-[12px] font-semibold leading-[1.5] text-white/60">
-                Короткая тренировка из 10 задач.
-              </p>
-            )}
+                  <span className="rounded-badge border border-white/[.08] bg-white/[.03] px-2 py-1 text-[11px] font-semibold leading-none text-white/70">
+                    <span className="physics-number">{topic.skillsCount}</span> навыков
+                  </span>
+                  {weakTrapCount > 0 ? (
+                    <span className="rounded-badge border border-nova-gold/25 bg-nova-gold/[.06] px-2 py-1 text-[11px] font-semibold leading-none text-nova-gold/85">
+                      {weakTrapCount === 1 ? "1 слабое место" : `${weakTrapCount} слабых места`}
+                    </span>
+                  ) : null}
+                  {reviewItem ? (
+                    <span
+                      className={`rounded-badge px-2 py-1 text-[11px] font-semibold leading-none ${
+                        reviewItem.urgency === "today"
+                          ? "border border-nova-gold/25 bg-nova-gold/[.07] text-nova-gold/90"
+                          : "border border-nova-cyan/20 bg-nova-cyan/[.05] text-nova-cyan/80"
+                      }`}
+                      title={reviewItem.reason}
+                    >
+                      {reviewItem.dueLabel}
+                    </span>
+                  ) : null}
+                </div>
 
-            <Button asChild size="sm" className={style.button}>
-              <Link href={topic.href}>{hasProgress ? "Продолжить" : "Начать"}</Link>
-            </Button>
-          </Card>
-        );
-      })}
-    </section>
+                <div className="mt-auto flex flex-col gap-2 sm:flex-row">
+                  <Button asChild size="sm" className="sm:flex-1">
+                    <Link href={`/topics/${topic.id}`}>
+                      {hasProgress ? "Продолжить урок" : "Урок темы"}
+                    </Link>
+                  </Button>
+                  <Button asChild size="sm" variant="ghost" className="sm:flex-1">
+                    <Link href={topic.href}>10 задач</Link>
+                  </Button>
+                </div>
+              </Card>
+            );
+          })}
+        </div>
+      </section>
 
-    <section aria-label="Смешанная тренировка">
-      <Card
-        variant="elevated"
-        className="card-lift flex flex-col gap-4 border-l-2 border-nova-gold/30 !p-5 md:flex-row md:items-center md:justify-between md:!p-6"
-      >
-        <div className="flex min-w-0 flex-col gap-2">
+      <section aria-label="Диагностика" className="grid gap-4 lg:grid-cols-2">
+        <Card
+          variant="elevated"
+          className="card-lift flex flex-col gap-4 border-l-2 border-l-nova-gold/50 !p-5 md:!p-6"
+        >
           <div className="flex items-center gap-2.5">
-            <Badge tone="gold">Смешанная тренировка</Badge>
+            <Badge tone="gold">Диагностика</Badge>
             <span className="text-[11px] font-bold uppercase tracking-[.12em] text-white/60">
-              открытые темы
+              10 задач · открытые темы
             </span>
           </div>
           <p className="text-[14px] leading-[1.65] text-white/70">
-            10 задач: механика, электродинамика, термодинамика и оптика вперемешку.
-            Это тренировка по открытым темам, не полный вариант ЦТ/ЦЭ.
+            Задачи из всех пяти тем вперемешку: видно, что держится, а что рассыпается без
+            подсказок темы. Это не полный вариант ЦТ/ЦЭ — квантовая и атомная физика пока не
+            включены.
           </p>
           {bestExam ? (
             <p className="text-[12px] font-semibold text-white/50">
               Лучший результат:{" "}
-              <span className="physics-number text-nova-gold">
+              <span className="physics-number text-white/80">
                 {bestExam.score}/{bestExam.total}
               </span>
             </p>
           ) : null}
-        </div>
-        <Button
-          asChild
-          className="shrink-0 border-nova-gold bg-nova-gold shadow-gold-glow focus-visible:ring-nova-gold/50"
-        >
-          <Link href="/practice/exam-demo">
-            {bestExam ? "Ещё тренировка" : "Начать тренировку"}
-          </Link>
-        </Button>
-      </Card>
-    </section>
+          <Button asChild size="sm" className="mt-auto w-fit border-nova-gold bg-nova-gold shadow-gold-glow focus-visible:ring-nova-gold/50">
+            <Link href="/exam">Пройти диагностику</Link>
+          </Button>
+        </Card>
 
-    <section aria-label="Будущие темы" className="flex flex-col gap-3">
-      <h2 className="text-[13px] font-bold uppercase tracking-[.14em] text-white/45">
-        Скоро
-      </h2>
-      <div className="flex flex-col gap-4 sm:flex-row">
-        {upcomingTopics.map((topic) => (
-          <Card
-            key={topic.id}
-            className="flex flex-1 flex-col gap-3 border-white/[.07] bg-space-900/60 !p-5 shadow-none sm:max-w-sm"
-          >
-            <Badge className="w-fit">Скоро</Badge>
-            <h3 className="text-[17px] font-[800] leading-snug text-white/85">
-              {topic.title}
-            </h3>
-            <p className="text-[13px] leading-[1.65] text-white/55">
-              {topic.description}
-            </p>
-            <p className="mt-auto pt-1 text-[12px] font-semibold leading-[1.5] text-white/50">
-              Задачи и разборы готовятся — тема откроется позже.
-            </p>
-          </Card>
-        ))}
-      </div>
-    </section>
-    </>
+        <Card variant="elevated" className="card-lift flex flex-col gap-4 !p-5 md:!p-6">
+          <div className="flex items-center gap-2.5">
+            <Badge tone="cyan">Справочник</Badge>
+            <span className="text-[11px] font-bold uppercase tracking-[.12em] text-white/60">
+              формулы и условия
+            </span>
+          </div>
+          <p className="text-[14px] leading-[1.65] text-white/70">
+            Формулы с обозначениями и ограничениями: когда формула работает, а когда её
+            применять рано. Открывается по ходу тренировки, но можно и полистать.
+          </p>
+          <Button asChild size="sm" variant="ghost" className="mt-auto w-fit">
+            <Link href="/formulas">Открыть справочник</Link>
+          </Button>
+        </Card>
+      </section>
+
+      {upcomingTopics.length > 0 ? (
+        <section aria-labelledby="upcoming-title" className="flex flex-col gap-3">
+          <h2 id="upcoming-title" className="text-[13px] font-bold uppercase tracking-[.14em] text-white/45">
+            Готовится
+          </h2>
+          <div className="grid gap-3 md:grid-cols-2">
+            {upcomingTopics.map((topic) => (
+              <Card key={topic.id} className="flex flex-col gap-2 border-white/[.08] !p-4">
+                <h3 className="text-[15px] font-[800] text-white/85">{topic.title}</h3>
+                <p className="text-[13px] leading-[1.6] text-white/55">{topic.description}</p>
+                <p className="text-[11px] font-bold uppercase tracking-[.12em] text-white/40">
+                  Скоро
+                </p>
+              </Card>
+            ))}
+          </div>
+        </section>
+      ) : null}
+    </div>
   );
 }

@@ -75,6 +75,15 @@ function readinessFor(solved: number, correct: number): Readiness {
   };
 }
 
+function formatAttemptDate(iso: string) {
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) {
+    return "—";
+  }
+
+  return date.toLocaleDateString("ru-RU", { day: "numeric", month: "long" });
+}
+
 function formatLastPracticed(iso: string | null) {
   if (!iso) {
     return null;
@@ -429,6 +438,43 @@ export function ProfileOverview() {
           })}
         </div>
       </section>
+
+      {examLog.length > 0 ? (
+        <section className="flex flex-col gap-3" aria-labelledby="exam-history-title">
+          <h2
+            id="exam-history-title"
+            className="text-[13px] font-bold uppercase tracking-[.14em] text-white/45"
+          >
+            История диагностик
+          </h2>
+          <Card className="flex flex-col gap-3 border-white/[.08] !p-4">
+            <ul className="flex flex-col gap-2">
+              {[...examLog].reverse().slice(0, 5).map((attempt) => (
+                <li
+                  key={attempt.completedAt}
+                  className="flex items-center justify-between gap-3 border-b border-white/[.06] pb-2 last:border-b-0 last:pb-0 text-[13px]"
+                >
+                  <span className="text-white/60">{formatAttemptDate(attempt.completedAt)}</span>
+                  <span className="flex items-center gap-2">
+                    <span className="physics-number font-bold text-white/85">
+                      {attempt.score}/{attempt.total}
+                    </span>
+                    <span className="text-[11px] font-semibold text-white/40">
+                      {Math.round((attempt.score / attempt.total) * 100)}%
+                    </span>
+                  </span>
+                </li>
+              ))}
+            </ul>
+            <Link
+              href="/exam"
+              className="w-fit rounded-option text-[12px] font-semibold text-nova-cyan/85 transition-colors hover:text-nova-cyan focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/55"
+            >
+              Пройти диагностику ещё раз
+            </Link>
+          </Card>
+        </section>
+      ) : null}
 
       <section
         className="flex flex-col gap-3 rounded-card border border-white/[.06] bg-space-900/50 px-5 py-4"

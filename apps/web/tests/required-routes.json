@@ -3,6 +3,9 @@
   "required": [
     "/",
     "/topics",
+    "/topics/[topic]",
+    "/exam",
+    "/about",
     "/tasks",
     "/tasks/[family]",
     "/mistakes",
@@ -18,6 +21,7 @@
     "/api/tasks"
   ],
   "smokePaths": {
+    "/topics/[topic]": "/topics/kinematics",
     "/tasks/[family]": "/tasks/ohm-law",
     "/practice/family/[family]": "/practice/family/ohm-law"
   },
