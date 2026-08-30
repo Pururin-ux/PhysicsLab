@@ -132,19 +132,16 @@ export function TopicLesson({ topicId }: { topicId: TopicLessonEntry["topicId"] 
               </p>
             </div>
 
-            <div className="grid gap-3 sm:grid-cols-2">
+            <div className="grid gap-x-8 gap-y-6 sm:grid-cols-2">
               {data.ideas.map((idea, ideaIndex) => (
                 <article
                   key={idea.id}
-                  className={cn(
-                    "pl-panel flex scroll-mt-24 flex-col gap-3 rounded-card p-4",
-                    accent.border,
-                  )}
+                  className="flex scroll-mt-24 flex-col gap-2 border-t-2 border-line-strong pt-3.5"
                 >
-                  <div className="flex items-start gap-2.5">
+                  <div className="flex items-baseline gap-2.5">
                     <span
                       className={cn(
-                        "physics-number grid h-6 w-6 shrink-0 place-items-center rounded-full border border-line bg-surface-2 text-[12px] font-bold",
+                        "physics-number text-[12px] font-bold",
                         accent.text,
                       )}
                     >
@@ -159,7 +156,7 @@ export function TopicLesson({ topicId }: { topicId: TopicLessonEntry["topicId"] 
 
                   {idea.formula ? (
                     <div
-                      className="formula-white rounded-option border border-line bg-surface-2 px-3 py-3 text-center text-[15px] leading-[1.7]"
+                      className="formula-white py-1.5 text-[16px] leading-[1.8]"
                       dangerouslySetInnerHTML={{
                         __html: renderFormulaToHtml(idea.formula, { displayMode: false }),
                       }}
@@ -167,7 +164,7 @@ export function TopicLesson({ topicId }: { topicId: TopicLessonEntry["topicId"] 
                   ) : null}
 
                   {idea.mistake ? (
-                    <p className="rounded-option border border-nova-gold/20 bg-nova-gold/[.05] px-3 py-2 text-[12px] leading-[1.6] text-ink-muted">
+                    <p className="border-l-2 border-nova-gold/45 pl-3 text-[12px] leading-[1.6] text-ink-muted">
                       <span className="font-bold text-nova-gold">Ловушка: </span>
                       <MathText text={idea.mistake} />
                     </p>
@@ -184,7 +181,7 @@ export function TopicLesson({ topicId }: { topicId: TopicLessonEntry["topicId"] 
               {data.lesson.approach.map((step, stepIndex) => (
                 <li
                   key={step}
-                  className="grid grid-cols-[auto_1fr] items-start gap-3.5 rounded-card border border-line bg-surface-1 px-4 py-3.5"
+                  className="grid grid-cols-[auto_1fr] items-start gap-3.5 border-l-2 border-line pl-4"
                 >
                   <span
                     className={cn(
@@ -269,6 +266,27 @@ export function TopicLesson({ topicId }: { topicId: TopicLessonEntry["topicId"] 
                   {section.label}
                 </a>
               ))}
+
+              <div className="my-1.5 h-px bg-line-subtle" />
+              <p className="pl-eyebrow px-2 pb-1">Связанное</p>
+              <ul className="flex flex-col gap-2 px-2 text-[13px] font-semibold">
+                <li>
+                  <Link href={`/formulas?topic=${topicId}`} className="pl-link">
+                    Формулы темы
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/exam" className="pl-link">
+                    Проверить себя: диагностика
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/mistakes" className="pl-link">
+                    Мои ошибки
+                  </Link>
+                </li>
+              </ul>
+
               <div className="my-1.5 h-px bg-line-subtle" />
               <p className="px-2 pb-1 text-[11px] font-semibold text-ink-faint">
                 {data.taskTypes.length} типов задач · {data.topic.skillsCount} навыков
@@ -288,27 +306,6 @@ export function TopicLesson({ topicId }: { topicId: TopicLessonEntry["topicId"] 
             skillsCount={data.topic.skillsCount}
             practiceLabel="Начать тренировку"
           />
-
-          <Card padding="sm" className="flex flex-col gap-2.5">
-            <p className="pl-eyebrow">Связанное</p>
-            <ul className="flex flex-col gap-2 text-[13px] font-semibold">
-              <li>
-                <Link href={`/formulas?topic=${topicId}`} className="pl-link">
-                  Формулы темы
-                </Link>
-              </li>
-              <li>
-                <Link href="/exam" className="pl-link">
-                  Проверить себя: диагностика
-                </Link>
-              </li>
-              <li>
-                <Link href="/mistakes" className="pl-link">
-                  Мои ошибки
-                </Link>
-              </li>
-            </ul>
-          </Card>
         </div>
       </div>
 
