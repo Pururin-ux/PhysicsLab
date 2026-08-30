@@ -32,14 +32,14 @@ export const lensOpticalPowerBlueprint: TaskBlueprint = {
   solver: lensOpticalPower,
   distractors: lensOpticalPowerDistractors,
   textTemplate: (p) =>
-    `Фокусное расстояние ${contextFor(p)} равно ${p.Fcm} см. Найдите оптическую силу этой линзы.`,
+    `Фокусное расстояние ${contextFor(p)} равно ${formatAnswerValue(p.Fcm)} см. Найдите оптическую силу этой линзы.`,
   explanationTemplate: (p, answer) =>
     `Оптическая сила — обратная величина фокусного расстояния, взятого в метрах: $D=\\frac{1}{F}=\\frac{1}{${formatMathValue(p.Fcm / 100)}\\ \\text{м}}=${formatMathValue(answer)}$ дптр.`,
   trap: "Перед делением переведи фокусное расстояние в метры: D = 1/F только при F в метрах.",
   coachLines: {
     correct: () => "Верно. Диоптрия — это 1/м, поэтому фокусное расстояние сначала переводим в метры.",
     wrong: (p, selected, correct) =>
-      `Сначала переведи ${p.Fcm} см в метры, потом бери обратную величину: D = ${formatAnswerValue(correct)} дптр, а не ${formatAnswerValue(selected)}.`,
+      `Сначала переведи ${formatAnswerValue(p.Fcm)} см в метры, потом бери обратную величину: D = ${formatAnswerValue(correct)} дптр, а не ${formatAnswerValue(selected)}.`,
   },
   constraints: [
     // Ответ не длиннее одного знака после запятой.

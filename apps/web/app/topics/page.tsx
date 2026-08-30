@@ -1,12 +1,11 @@
 import Link from "next/link";
 import { TopicCards } from "../../components/topics/TopicCards";
-import { Card } from "../../components/ui/Card";
 import { SectionHeading } from "../../components/ui/SectionHeading";
 
 export const metadata = {
   title: "Учиться | PhysicsLab",
   description:
-    "Пять тем физики для подготовки к ЦЭ/ЦТ: опорные идеи, типы задач, тренировки и честный прогресс.",
+    "Семь тем физики для подготовки к ЦЭ/ЦТ: опорные идеи, типы задач, тренировки и честный прогресс.",
 };
 
 const steps = [
@@ -34,7 +33,7 @@ export default function TopicsPage() {
       <section className="flex max-w-[720px] flex-col gap-4">
         <p className="pl-eyebrow text-nova-cyan/80">Учиться</p>
         <h1 className="pl-h1 max-w-[24ch]">
-          Пять тем ЦЭ/ЦТ — от идеи до устойчивого навыка
+          Семь тем ЦЭ/ЦТ — от идеи до устойчивого навыка
         </h1>
         <p className="pl-body pl-measure">
           Каждая тема открывается уроком: зачем она нужна, что в ней спрашивают, как решать и где
@@ -49,30 +48,33 @@ export default function TopicsPage() {
           title="Как здесь учат"
           description="Один и тот же цикл для каждой темы: разобрать, закрепить, проверить, вернуться к слабому."
         />
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <ol className="grid gap-x-8 gap-y-5 sm:grid-cols-2 lg:grid-cols-4">
           {steps.map((step, index) => (
-            <Card key={step.title} padding="sm" interactive className="flex flex-col gap-2">
+            <li
+              key={step.title}
+              className="flex flex-col gap-1.5 border-t-2 border-nova-cyan/30 pt-3"
+            >
               <span className="physics-number text-[12px] font-bold text-nova-cyan/85">
                 Шаг {index + 1}
               </span>
               <h3 className="pl-h3">{step.title}</h3>
               <p className="text-[13px] leading-[1.6] text-ink-muted">{step.body}</p>
-            </Card>
+            </li>
           ))}
-        </div>
+        </ol>
       </section>
 
       <TopicCards />
 
       <section className="flex flex-col gap-3 border-t border-white/[.08] pt-6">
         <p className="text-[13px] leading-[1.7] text-ink-soft">
-          Тренажёр покрывает не всю программу: квантовая и атомная физика, колебания и волны,
-          магнитное поле пока без задач. Текущее покрытие и известные пробелы —{" "}
+          Тренажёр покрывает не всю программу: гидростатика, статика и момент силы, переменный
+          ток и волновая оптика пока без задач. Текущее покрытие и известные пробелы —{" "}
           <Link
-            href="/about"
+            href="/tasks#coverage"
             className="pl-link"
           >
-            на странице «О проекте»
+            в каталоге задач
           </Link>
           .
         </p>

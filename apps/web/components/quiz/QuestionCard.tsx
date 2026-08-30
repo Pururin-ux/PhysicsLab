@@ -10,6 +10,8 @@ import type { TaskFocus } from "../../lib/learning/task-focus";
 import type { QuizDiagram, QuizGraph } from "./quiz-session-store";
 
 interface QuestionCardProps {
+  // Оставлено в контракте: формат ответа и так виден по интерфейсу
+  // (варианты или поле ввода), отдельным чипом его не помечаем.
   type: string;
   difficulty: 1 | 2 | 3;
   text: string;
@@ -27,13 +29,7 @@ const difficultyLabels: Record<QuestionCardProps["difficulty"], string> = {
   3: "Сложность 3",
 };
 
-const typeLabels: Record<string, string> = {
-  single_choice: "Один ответ",
-  numeric_input: "Числовой ответ",
-};
-
 export function QuestionCard({
-  type,
   difficulty,
   text,
   graph,
@@ -70,15 +66,16 @@ export function QuestionCard({
       className={cn("flex flex-col gap-4 p-4 md:gap-5 md:p-6", className)}
     >
       {showMetadata ? (
-        <div className="flex flex-wrap items-center gap-2">
-          <Badge size="sm">{typeLabels[type] ?? type}</Badge>
-          <Badge size="sm" tone="blue">
-            {difficultyLabels[difficulty]}
-          </Badge>
-        </div>
+        <Badge size="sm" tone="blue">
+          {difficultyLabels[difficulty]}
+        </Badge>
       ) : null}
 
-      <p className="text-[15px] leading-[1.8] text-white/90 md:text-[16px]">{text}</p>
+      {/* Условие приходит с $...$-формулами, поэтому текст идёт через MathText:
+          иначе ученик видит исходник разметки вместо формулы. */}
+      <p className="text-[15px] leading-[1.8] text-white/90 md:text-[16px]">
+        <MathText text={text} />
+      </p>
 
       {diagram?.kind === "vector" ? (
         <div className="rounded-option border border-nova-cyan/[.10] bg-space-950/50 p-2">
@@ -109,8 +106,8 @@ export function QuestionCard({
       ) : null}
 
       {visualActivityLabel && focus?.visualPrompt && !showSolutionContent ? (
-        <div className="rounded-option border border-white/[.08] bg-white/[.025] px-3.5 py-3 text-[13px] leading-[1.6] text-white/68">
-          <p className="mb-1.5 text-[11px] font-bold uppercase tracking-[.13em] text-white/45">
+        <div className="border-l-2 border-nova-cyan/30 pl-3.5 text-[13px] leading-[1.6] text-white/68">
+          <p className="mb-1 text-[11px] font-bold uppercase tracking-[.13em] text-white/45">
             {visualActivityLabel}
           </p>
           <MathText text={focus.visualPrompt} />

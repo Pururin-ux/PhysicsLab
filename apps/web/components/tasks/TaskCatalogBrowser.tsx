@@ -254,16 +254,17 @@ export function TaskCatalogBrowser({ entries, coverage }: TaskCatalogBrowserProp
 
               <div className="overflow-hidden rounded-card border border-line bg-space-900/55">
                 {topicEntries.map((entry) => (
-                  <article
+                  <Link
                     key={entry.id}
+                    href={`/tasks/${entry.slug}`}
                     data-testid="task-catalog-item"
                     data-family={entry.slug}
                     data-topic={entry.topicId}
                     data-answer-format={entry.answerFormat}
-                    className="grid gap-3 border-b border-white/[.07] px-4 py-4 last:border-b-0 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center sm:px-5"
+                    className="group grid gap-1.5 border-b border-white/[.07] px-4 py-4 transition-colors last:border-b-0 hover:bg-white/[.035] focus-visible:bg-white/[.035] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-nova-cyan/55 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center sm:gap-4 sm:px-5"
                   >
                     <div className="min-w-0">
-                      <h3 className="text-[16px] font-[800] leading-snug text-white">
+                      <h3 className="text-[16px] font-[800] leading-snug text-white group-hover:text-nova-cyan">
                         {entry.title}
                       </h3>
                       <p className="mt-1 text-[13px] leading-[1.55] text-ink-soft">
@@ -277,14 +278,13 @@ export function TaskCatalogBrowser({ entries, coverage }: TaskCatalogBrowserProp
                         ))}
                       </div>
                     </div>
-                    <Link
-                      href={`/tasks/${entry.slug}`}
-                      aria-label={`Открыть тип задачи: ${entry.title}`}
-                      className="inline-flex min-h-10 items-center justify-center rounded-option border border-line-strong bg-surface-2 px-4 text-[13px] font-bold text-ink-base transition-colors hover:border-nova-cyan/45 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/55"
+                    <span
+                      aria-hidden="true"
+                      className="hidden text-[13px] font-bold text-ink-faint transition-colors group-hover:text-nova-cyan sm:block"
                     >
-                      Открыть тип
-                    </Link>
-                  </article>
+                      Открыть →
+                    </span>
+                  </Link>
                 ))}
               </div>
             </section>

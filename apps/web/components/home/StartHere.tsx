@@ -5,8 +5,6 @@ import { InteractivePreview } from "../landing/InteractivePreview";
 import { topics } from "../../lib/topics";
 import { getTopicAccent } from "../topics/topic-accents";
 import { TopicGlyph } from "../topics/TopicGlyph";
-import { Badge } from "../ui/Badge";
-import { Button } from "../ui/Button";
 import { Card } from "../ui/Card";
 import { SectionHeading } from "../ui/SectionHeading";
 
@@ -25,7 +23,7 @@ const steps = [
   },
   {
     title: "Диагностика",
-    body: "Десять задач по всем темам вперемешку — видно, что держится на самом деле.",
+    body: "14 задач по всем семи темам вперемешку — видно, что держится на самом деле.",
     cta: "Пройти диагностику",
     href: "/exam",
   },
@@ -42,20 +40,18 @@ export function StartHere() {
           description="Сначала разбираешь модель, потом закрепляешь её на короткой серии, затем проверяешь вперемешку."
         />
 
-        <ol className="grid gap-3 md:grid-cols-3">
+        <ol className="grid gap-x-8 gap-y-5 md:grid-cols-3">
           {steps.map((step, index) => (
-            <Card key={step.title} padding="md" interactive className="flex flex-col gap-2.5">
-              <div className="flex items-center gap-2.5">
-                <span className="physics-number grid h-7 w-7 shrink-0 place-items-center rounded-full border border-nova-cyan/30 bg-nova-cyan-10 text-[13px] font-bold text-nova-cyan">
-                  {index + 1}
-                </span>
-                <h3 className="pl-h3">{step.title}</h3>
-              </div>
+            <li key={step.title} className="flex flex-col gap-1.5 border-t-2 border-nova-cyan/30 pt-3">
+              <span className="physics-number text-[12px] font-bold text-nova-cyan/85">
+                Шаг {index + 1}
+              </span>
+              <h3 className="pl-h3">{step.title}</h3>
               <p className="text-[13px] leading-[1.65] text-ink-muted">{step.body}</p>
-              <Link href={step.href} className="pl-link mt-auto w-fit pt-1 text-[13px]">
+              <Link href={step.href} className="pl-link w-fit pt-0.5 text-[13px]">
                 {step.cta}
               </Link>
-            </Card>
+            </li>
           ))}
         </ol>
       </section>
@@ -75,42 +71,46 @@ export function StartHere() {
           id="inside-title"
           eyebrow="Содержание"
           title="Что внутри"
-          description="Пять тем ЦЭ/ЦТ с задачами и разборами. Прогресс и ошибки хранятся только в твоём браузере — без регистрации."
+          description="Семь тем ЦЭ/ЦТ с задачами и разборами. Прогресс и ошибки хранятся только в твоём браузере — без регистрации."
         />
 
-        <div className="grid gap-3 sm:grid-cols-2">
+        <ul className="grid gap-x-8 sm:grid-cols-2">
           {topics.map((topic) => {
             const accent = getTopicAccent(topic.id);
 
             return (
-              <Card key={topic.id} padding="sm" interactive className="flex flex-col gap-3.5">
-                <div className="flex items-start gap-3">
+              <li key={topic.id} className="border-b border-white/[.07] last:border-b-0">
+                <Link
+                  href={`/topics/${topic.id}`}
+                  className="group flex items-start gap-3 py-3.5 transition-colors hover:bg-white/[.03] focus-visible:bg-white/[.03] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-nova-cyan/55"
+                >
                   <span
                     className={`grid h-10 w-10 shrink-0 place-items-center rounded-option border ${accent.tile}`}
                   >
                     <TopicGlyph topic={topic.id} className="h-6 w-6" />
                   </span>
-                  <div className="flex min-w-0 flex-1 flex-col gap-1">
-                    <h3 className="pl-h3">{topic.title}</h3>
-                    <p className="text-[13px] leading-[1.6] text-ink-muted">{topic.description}</p>
-                  </div>
-                </div>
-                <div className="flex flex-wrap items-center gap-2">
-                  <Badge size="sm">{topic.skillsCount} навыков</Badge>
-                  <Button asChild size="sm" variant="secondary" className="ml-auto">
-                    <Link href={`/topics/${topic.id}`}>Урок</Link>
-                  </Button>
-                </div>
-              </Card>
+                  <span className="flex min-w-0 flex-1 flex-col gap-1">
+                    <h3 className="text-[15px] font-[800] leading-snug text-white group-hover:text-nova-cyan">
+                      {topic.title}
+                    </h3>
+                    <span className="text-[13px] leading-[1.6] text-ink-muted">
+                      {topic.description}
+                    </span>
+                    <span className="text-[11px] font-semibold text-ink-faint">
+                      {topic.skillsCount} навыков
+                    </span>
+                  </span>
+                </Link>
+              </li>
             );
           })}
-        </div>
+        </ul>
 
         <p className="text-[13px] leading-[1.7] text-ink-soft">
-          Тренажёр не притворяется полным вариантом ЦТ/ЦЭ: квантовая и атомная физика, колебания
-          и волны, магнитное поле пока без задач. Текущее покрытие —{" "}
-          <Link href="/about" className="pl-link">
-            на странице «О проекте»
+          Тренажёр не притворяется полным вариантом ЦТ/ЦЭ: гидростатика, статика и момент силы,
+          переменный ток и волновая оптика пока без задач. Текущее покрытие —{" "}
+          <Link href="/tasks#coverage" className="pl-link">
+            в каталоге задач
           </Link>
           .
         </p>

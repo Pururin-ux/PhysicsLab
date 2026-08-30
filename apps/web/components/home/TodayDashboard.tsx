@@ -20,7 +20,6 @@ import { Button } from "../ui/Button";
 import { Card } from "../ui/Card";
 import { ProgressBar } from "../ui/ProgressBar";
 import { SectionHeading } from "../ui/SectionHeading";
-import { StatTile } from "../ui/StatTile";
 import { MathText } from "../ui/MathText";
 import { cn } from "../../lib/utils";
 
@@ -108,8 +107,8 @@ export function TodayDashboard() {
 
   return (
     <div className="flex flex-col gap-8">
-      <section aria-label="Сводка дня" className="pl-rise">
-        <Card variant="raised" padding="lg" className="flex flex-col gap-6">
+      <section aria-label="Сводка дня" className="pl-rise flex flex-col gap-5">
+        <div className="flex flex-col gap-6">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div className="flex min-w-0 flex-col gap-1.5">
               <p className="pl-eyebrow text-nova-cyan/80">Сегодня</p>
@@ -132,16 +131,37 @@ export function TodayDashboard() {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-            <StatTile label="Решено" value={totals.solved} />
-            <StatTile label="Точность" value={accuracy === null ? "—" : `${accuracy}%`} />
-            <StatTile label="Тренировок" value={totals.sessions} />
-            <StatTile
-              label="Слабых мест"
-              value={totals.traps}
-              tone={totals.traps > 0 ? "gold" : "neutral"}
-            />
-          </div>
+          <dl className="flex flex-wrap gap-x-10 gap-y-4 border-t border-line-subtle pt-5">
+            <div className="flex flex-col gap-1">
+              <dt className="pl-eyebrow">Решено</dt>
+              <dd className="physics-number text-[22px] font-bold leading-none text-white">
+                {totals.solved}
+              </dd>
+            </div>
+            <div className="flex flex-col gap-1">
+              <dt className="pl-eyebrow">Точность</dt>
+              <dd className="physics-number text-[22px] font-bold leading-none text-white">
+                {accuracy === null ? "—" : `${accuracy}%`}
+              </dd>
+            </div>
+            <div className="flex flex-col gap-1">
+              <dt className="pl-eyebrow">Тренировок</dt>
+              <dd className="physics-number text-[22px] font-bold leading-none text-white">
+                {totals.sessions}
+              </dd>
+            </div>
+            <div className="flex flex-col gap-1">
+              <dt className="pl-eyebrow">Слабых мест</dt>
+              <dd
+                className={cn(
+                  "physics-number text-[22px] font-bold leading-none",
+                  totals.traps > 0 ? "text-nova-gold" : "text-white",
+                )}
+              >
+                {totals.traps}
+              </dd>
+            </div>
+          </dl>
 
           <div className="flex flex-col gap-2.5 border-t border-line-subtle pt-5">
             <div className="flex items-baseline justify-between gap-3">
@@ -164,7 +184,7 @@ export function TodayDashboard() {
               ))}
             </div>
           </div>
-        </Card>
+        </div>
       </section>
 
       <div className="grid gap-5 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)] lg:items-start">

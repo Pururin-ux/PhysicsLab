@@ -208,9 +208,9 @@ export function TopicCards() {
             <span className="pl-eyebrow">14 задач · открытые темы</span>
           </div>
           <p className="text-[14px] leading-[1.7] text-ink-muted">
-            Задачи из всех пяти тем вперемешку: видно, что держится, а что рассыпается без
-            подсказок темы. Это не полный вариант ЦТ/ЦЭ — квантовая и атомная физика пока не
-            включены.
+            Задачи из всех семи тем вперемешку: видно, что держится, а что рассыпается без
+            подсказок темы. Это не полный вариант ЦТ/ЦЭ: гидростатика, статика, переменный ток
+            и волновая оптика пока без задач.
           </p>
           {bestExam ? (
             <p className="text-[13px] font-semibold text-ink-soft">
@@ -250,15 +250,16 @@ export function TopicCards() {
             title="Готовится"
             description="Разделы программы, для которых задач в каталоге пока нет."
           />
-          <div className="grid gap-3 md:grid-cols-2">
+          <ul className="grid gap-x-8 gap-y-4 md:grid-cols-2">
             {upcomingTopics.map((topic) => (
-              <Card key={topic.id} padding="sm" className="flex flex-col gap-2">
-                <h3 className="pl-h3 text-white/85">{topic.title}</h3>
-                <p className="text-[13px] leading-[1.6] text-ink-soft">{topic.description}</p>
-                <p className="pl-eyebrow pt-0.5">Скоро</p>
-              </Card>
+              <li key={topic.id} className="border-l-2 border-line pl-4">
+                <h3 className="text-[14px] font-[800] text-white/85">{topic.title}</h3>
+                <p className="mt-0.5 text-[13px] leading-[1.6] text-ink-soft">
+                  {topic.description}
+                </p>
+              </li>
             ))}
-          </div>
+          </ul>
         </section>
       ) : null}
     </div>

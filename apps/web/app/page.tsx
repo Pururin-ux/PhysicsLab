@@ -49,7 +49,7 @@ export default function Home() {
               <Button asChild size="lg">
                 <Link href="/topics">К задачам</Link>
               </Button>
-              <Button asChild size="lg" variant="gold">
+              <Button asChild size="lg" variant="secondary">
                 <Link href="/exam">Пройти диагностику</Link>
               </Button>
             </div>
