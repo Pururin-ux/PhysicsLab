@@ -1,12 +1,8 @@
 import { expect, test, type Page } from "@playwright/test";
 
-const desktopLabels = [
-  "Задачи",
-  "Смешанная тренировка",
-  "Ошибки",
-  "Формулы",
-  "Прогресс",
-] as const;
+// На всех размерах остаются те же пять долговечных направлений. На телефоне
+// они переезжают в нижнюю панель, но не меняют названия и не прячутся в «Ещё».
+const durableLabels = ["Главная", "Темы", "Формулы", "Задачи", "Прогресс"] as const;
 
 async function answerOhmWrong(page: Page) {
   const responsePromise = page.waitForResponse((response) => {
@@ -26,51 +22,48 @@ async function answerOhmWrong(page: Page) {
     .click();
 }
 
-test("desktop sidebar exposes five durable destinations", async ({ page }, testInfo) => {
+test("desktop header exposes five durable destinations", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "desktop", "Desktop navigation contract.");
   await page.goto("/tasks", { waitUntil: "domcontentloaded" });
 
-  const sidebar = page.getByTestId("app-sidebar");
   const navigation = page.getByTestId("desktop-sidebar-nav");
-  await expect(sidebar).toBeVisible();
+  await expect(navigation).toBeVisible();
   await expect(navigation.getByRole("link")).toHaveCount(5);
-  expect(await navigation.getByRole("link").allTextContents()).toEqual(desktopLabels);
+  expect(
+    (await navigation.getByRole("link").allTextContents()).map((label) => label.trim()),
+  ).toEqual(durableLabels);
+  // Подписи не обрезаются: пункт целиком помещается в свою кнопку.
   expect(
     await navigation.getByRole("link").evaluateAll((links) =>
-      links.map((link) => {
-        const label = link.querySelector<HTMLElement>("span.flex-1");
-        return label ? label.scrollWidth <= label.clientWidth + 1 : false;
-      }),
+      links.map((link) => link.scrollWidth <= link.clientWidth + 1),
     ),
-  ).toEqual(desktopLabels.map(() => true));
-  await expect(sidebar).not.toContainText("Кинематика");
-  await expect(sidebar).not.toContainText("Квантовая физика");
-  await expect(sidebar).not.toContainText("скоро");
-  await expect(sidebar).not.toContainText("XP");
-  await expect(sidebar).not.toContainText("Опыт");
+  ).toEqual(durableLabels.map(() => true));
+  await expect(navigation).not.toContainText("Кинематика");
+  await expect(navigation).not.toContainText("Квантовая физика");
+  await expect(navigation).not.toContainText("скоро");
+  await expect(navigation).not.toContainText("XP");
+  await expect(navigation).not.toContainText("Опыт");
 
   const progressLink = navigation.getByRole("link", { name: "Прогресс", exact: true });
   await expect(progressLink).toHaveAttribute("href", "/profile");
   await progressLink.click();
   await expect(page).toHaveURL("/profile");
-  await expect(page.getByRole("heading", { name: "Прогресс", level: 1 })).toBeVisible();
-  await expect(page).toHaveTitle("Прогресс | PhysicsLab");
+  await expect(page.getByRole("heading", { name: "Твоя физика", level: 1 })).toBeVisible();
+  await expect(page).toHaveTitle("Твоя физика | PhysicsLab");
 });
 
-test("mobile navigation has four items and practice stays under Tasks", async ({ page }, testInfo) => {
+test("mobile navigation keeps the same five destinations and practice stays under Tasks", async ({ page }, testInfo) => {
   test.skip(!testInfo.project.name.startsWith("mobile"), "Mobile navigation contract.");
   await page.goto("/practice/family/ohm-law", { waitUntil: "domcontentloaded" });
   await expect(page.getByTestId("question-card")).toBeVisible();
 
   const navigation = page.getByTestId("mobile-bottom-nav");
   await expect(navigation).toBeVisible();
-  await expect(navigation.getByRole("link")).toHaveCount(4);
-  expect(await navigation.getByRole("link").allTextContents()).toEqual([
-    "Задачи",
-    "Ошибки",
-    "Формулы",
-    "Прогресс",
-  ]);
+  expect(
+    (await navigation.getByRole("link").allTextContents()).map((label) => label.trim()),
+  ).toEqual([...durableLabels]);
+
+  // Тренировка по типу задач относится к постоянному пункту «Задачи».
   await expect(navigation.getByRole("link", { name: "Задачи", exact: true })).toHaveAttribute(
     "aria-current",
     "page",
@@ -104,10 +97,11 @@ test("tablet quick actions remain a single four-item row", async ({ page }, test
     expect(geometry.rowCount).toBe(1);
   }
 
+  // На 1024 та же шапка продолжает работать: строка одна, скролла нет.
   await page.setViewportSize({ width: 1024, height: 900 });
   await page.goto("/tasks", { waitUntil: "domcontentloaded" });
-  await expect(page.getByTestId("tablet-quick-actions")).toBeHidden();
-  await expect(page.getByTestId("app-sidebar")).toBeVisible();
+  await expect(page.getByTestId("tablet-quick-actions")).toBeVisible();
+  await expect(page.getByTestId("mobile-bottom-nav")).toBeHidden();
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(
     1025,
   );

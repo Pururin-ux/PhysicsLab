@@ -14,7 +14,7 @@ export function ForceModel({ variant, title, caption }: ForceModelProps) {
     <Card className="overflow-hidden p-0">
       <figure className="flex flex-col gap-3 p-4 md:p-5">
         <figcaption className="flex flex-col gap-1">
-          <span className="text-[11px] font-bold uppercase tracking-[.14em] text-white/50">
+          <span className="text-[11px] font-bold uppercase tracking-[.14em] text-white/60">
             Силы на рисунке
           </span>
           <span className="text-xl font-bold text-white">{title}</span>
@@ -52,7 +52,7 @@ export function ForceModel({ variant, title, caption }: ForceModelProps) {
                 markerHeight="7"
                 orient="auto-start-reverse"
               >
-                <path d="M 0 0 L 10 5 L 0 10 z" fill="#FFC857" />
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--ambient-warm)" />
               </marker>
             </defs>
 
@@ -76,7 +76,7 @@ export function ForceModel({ variant, title, caption }: ForceModelProps) {
                   m
                 </text>
 
-                <g className="text-nova-gold">
+                <g className="text-ambient-warm">
                   <line
                     x1="139"
                     x2="58"
@@ -173,7 +173,7 @@ export function ForceModel({ variant, title, caption }: ForceModelProps) {
                   </text>
                 </g>
 
-                <g className="text-nova-gold">
+                <g className="text-ambient-warm">
                   <line
                     x1="210"
                     x2="210"

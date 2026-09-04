@@ -1,8 +1,8 @@
 "use client";
 
 import { useStore } from "@nanostores/react";
+import { usePathname } from "next/navigation";
 import { useEffect, useMemo, useRef, useState, type RefObject } from "react";
-import { useCoach } from "../coach/useCoach";
 import { AnswerFeedback } from "./AnswerFeedback";
 import { NumericAnswerInput } from "./NumericAnswerInput";
 import { OptionList } from "./OptionList";
@@ -19,6 +19,7 @@ import {
   answerCurrentTask,
   moveToNextTask,
   resetQuizSession,
+  retryCurrentTask,
   type AnswerResult,
   type QuizData,
   type QuizTask,
@@ -33,6 +34,7 @@ import {
   snapshotMatches,
   writeActiveQuizSnapshot,
   type ActiveQuizSnapshot,
+  type QuizSessionKind,
 } from "../../lib/quiz/active-session-snapshot";
 import { newAttemptId } from "../../lib/quiz/attempt-id";
 import { integrityError } from "../../lib/quiz/quiz-load-error";
@@ -43,7 +45,11 @@ import {
   getHelpTargetForTask,
   type HelpTarget,
 } from "../../lib/learning/topic-help";
-import type { TopicId } from "../../lib/stores/progress-store";
+import {
+  recordMistakeImmediately,
+  type TopicId,
+} from "../../lib/stores/progress-store";
+import { calcXP } from "../../lib/xp";
 import { addXP, resetSessionProgress } from "../../lib/stores/session-store";
 import { useSessionRecording } from "./useSessionRecording";
 import type { GeneratedQuizCount } from "../../lib/quiz/generated-quiz-count";
@@ -53,9 +59,9 @@ interface QuizSessionProps {
   generatedTopic: string;
   generatedTitle: string;
   topicId?: TopicId;
-  // "exam" пишет результат в журнал смешанных тренировок и слабые места тем,
-  // не увеличивая счётчик тренировок темы.
-  sessionKind?: "practice" | "exam";
+  // Cross-topic режимы пишут слабые места по затронутым темам; только exam
+  // считается попыткой ЦТ/ЦЭ.
+  sessionKind?: QuizSessionKind;
   onHelpTargetChange?: (target: HelpTarget) => void;
   onOpenHelpTarget?: (target: HelpTarget) => void;
   helpOpen?: boolean;
@@ -66,14 +72,16 @@ interface QuizSessionProps {
   restartLabel?: string;
   nextHref?: string;
   nextLabel?: string;
+  preAnswerGuidance?: "guided" | "unlabelled";
+  summaryVariant?: "diagnostic" | "exam";
 }
 
 const nextStepByTopic: Record<string, { href: string; label: string }> = {
-  kinematics: { href: "/practice/dynamics-demo", label: "Дальше: Динамика" },
-  dynamics: { href: "/practice/exam-demo", label: "Дальше: смешанная тренировка" },
-  electrodynamics: { href: "/practice/thermo-demo", label: "Дальше: Термодинамика" },
-  thermodynamics: { href: "/practice/optics-demo", label: "Дальше: Оптика" },
-  optics: { href: "/practice/exam-demo", label: "Дальше: смешанная тренировка" },
+  kinematics: { href: "/practice/dynamics-lesson", label: "Дальше: Динамика" },
+  dynamics: { href: "/practice/electro-lesson", label: "Дальше: Электричество" },
+  electrodynamics: { href: "/practice/density-lesson", label: "Дальше: Плотность" },
+  thermodynamics: { href: "/practice/optics-lesson", label: "Дальше: Оптика" },
+  optics: { href: "/practice/exam-demo", label: "Дальше: диагностика" },
 };
 
 const emptyTasks: QuizData["tasks"] = [];
@@ -94,7 +102,10 @@ export function QuizSession({
   restartLabel,
   nextHref,
   nextLabel,
+  preAnswerGuidance = "guided",
+  summaryVariant,
 }: QuizSessionProps) {
+  const pathname = usePathname();
   const session = useStore($quizSession);
   const snapshotWriteBlockedRef = useRef(false);
   // Кандидат на восстановление читается один раз при монтировании и до
@@ -156,15 +167,6 @@ export function QuizSession({
     batch: generatedBatch,
     count: generatedCount,
   });
-  const {
-    emitCoachEvent,
-    startPauseTimer,
-    clearPauseTimer,
-    hideCoach,
-  } = useCoach();
-  const sessionStartTimerRef = useRef<ReturnType<typeof setTimeout> | null>(
-    null,
-  );
   const reactionRef = useRef<HTMLDivElement>(null);
   const activeData = generatedData;
   const tasks = activeData?.tasks ?? emptyTasks;
@@ -178,6 +180,7 @@ export function QuizSession({
     sessionKind,
     topicId,
     sessionId,
+    evidenceMode: preAnswerGuidance === "unlabelled" ? "transfer" : "guided",
   });
   const currentTask = tasks[session.currentIndex];
   const latestAnswer = session.answers.at(-1);
@@ -191,8 +194,13 @@ export function QuizSession({
   const weakTraps = useMemo(
     () =>
       session.answers
-        .filter((answer) => !answer.isCorrect)
-        .map((answer) => answer.selectedMisconception || answer.taskTrap)
+        .filter((answer) => !answer.isCorrect || answer.attempt > 1)
+        // Префикс blueprint даёт сводке название навыка («Свободное падение»)
+        // вместо безликого «Типовая ошибка» на каждом пункте.
+        .map((answer) => {
+          const trap = answer.selectedMisconception || answer.taskTrap;
+          return trap.length > 0 ? `${answer.blueprint}:${trap}` : "";
+        })
         .filter((trap) => trap.length > 0),
     [session.answers],
   );
@@ -223,8 +231,7 @@ export function QuizSession({
         taskIds,
       })
     ) {
-      // Восстанавливаем состояние сессии без повторных side-эффектов:
-      // XP не начисляется, coach-события не переигрываются.
+      // Восстанавливаем состояние сессии без повторного начисления XP.
       $quizSession.set({
         phase: pendingRestore.session.phase,
         currentIndex: pendingRestore.session.currentIndex,
@@ -234,6 +241,13 @@ export function QuizSession({
         streak: pendingRestore.session.streak,
         total: pendingRestore.session.total,
       });
+      if (sessionId) {
+        for (const answer of pendingRestore.session.answers) {
+          if (!answer.isCorrect || answer.attempt > 1) {
+            recordMistakeImmediately({ sessionId, topicId, answer, resumeHref: pathname });
+          }
+        }
+      }
       setRestoredNotice(
         `Тренировка восстановлена: задание ${pendingRestore.session.currentIndex + 1} из ${pendingRestore.session.total}.`,
       );
@@ -251,29 +265,9 @@ export function QuizSession({
     }
 
     resetQuizSession(tasks.length);
-
-    if (sessionStartTimerRef.current) {
-      clearTimeout(sessionStartTimerRef.current);
-    }
-
-    sessionStartTimerRef.current = setTimeout(() => {
-      emitCoachEvent({ type: "session_start" });
-    }, 1200);
-
-    if (tasks[0]) {
-      startPauseTimer(tasks[0].coach_lines);
-    }
-
-    return () => {
-      if (sessionStartTimerRef.current) {
-        clearTimeout(sessionStartTimerRef.current);
-        sessionStartTimerRef.current = null;
-      }
-      clearPauseTimer();
-    };
     // generatedTemplate/sessionKind стабильны для конкретного экрана.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [clearPauseTimer, emitCoachEvent, resetRecording, startPauseTimer, tasks]);
+  }, [resetRecording, tasks]);
 
   // Снапшот активной сессии: обновляется после ответов/переходов (не в
   // render). Completed не сохраняется — к этому моменту результат записан
@@ -316,14 +310,21 @@ export function QuizSession({
       return;
     }
 
-    const frame = requestAnimationFrame(() => {
+    // Feedback и его действие появляются в том же React-переходе. Небольшая
+    // задержка даёт браузеру закончить layout; один RAF иногда измерял старую
+    // высоту и оставлял retry ниже мобильного fold.
+    const timer = window.setTimeout(() => {
       const reaction = reactionRef.current;
       if (!reaction) return;
 
-      if (latestAnswer?.format === "numeric_input") {
-        reaction
-          .querySelector<HTMLButtonElement>('[data-testid="next-task-button"]')
-          ?.focus({ preventScroll: true });
+      const primaryAction = reaction.querySelector<HTMLButtonElement>(
+        '[data-testid="retry-task-button"], [data-testid="next-task-button"]',
+      );
+      if (
+        latestAnswer?.format === "numeric_input" ||
+        (latestAnswer?.isCorrect === false && latestAnswer.attempt === 1)
+      ) {
+        primaryAction?.focus({ preventScroll: true });
       }
 
       const rect = reaction.getBoundingClientRect();
@@ -332,92 +333,72 @@ export function QuizSession({
       if (isVisible) return;
 
       const isMobile = window.matchMedia("(max-width: 767px)").matches;
-      if (isMobile && rect.top > viewportHeight) {
-        reaction.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      if (isMobile) {
+        const actionRect = primaryAction?.getBoundingClientRect();
+        // Нижняя навигация занимает около 64 px плюс safe-area. Проверяем
+        // именно действие, а не верх feedback-блока: раньше причина ошибки
+        // была видна, а «Попробовать ещё раз» оставалось под fold.
+        const safeBottom = viewportHeight - 80;
+        if (
+          actionRect &&
+          (actionRect.top < 0 || actionRect.bottom > safeBottom)
+        ) {
+          primaryAction?.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
       }
-    });
+    }, 120);
 
-    return () => cancelAnimationFrame(frame);
+    return () => window.clearTimeout(timer);
   }, [latestAnswer?.format, session.phase, session.currentIndex]);
 
-  // Общая реакция на любой ответ (single_choice и numeric): Nova либо хвалит,
-  // либо называет конкретную ошибку прямой речью. selectedMisconception уже
-  // определён вызывающим кодом по формату ответа.
-  function reactToAnswer(
-    task: QuizTask,
-    result: AnswerResult,
-    selectedMisconception: string | undefined,
-  ) {
-    clearPauseTimer();
-    hideCoach();
-
+  // Единственный общий side-effect ответа вне session store — XP. Причина
+  // ошибки и следующий шаг рендерятся одним видимым контуром AnswerFeedback;
+  // параллельный невидимый coach-state здесь больше не создаётся.
+  function recordAnswerXP(result: AnswerResult) {
     if (result.isCorrect) {
-      addXP(10);
-      emitCoachEvent(
-        {
-          type: "correct_answer",
-          streak: result.streak,
-          taskId: task.id,
-        },
-        task.coach_lines,
-      );
+      // Правила XP живут в lib/xp.ts (база за попытку + разовые бонусы за
+      // серию) — начисление и цифры в профиле ссылаются на один источник.
+      addXP(calcXP({ correct: true, attempt: result.attempt, streak: result.streak }));
       return;
     }
 
-    const taskFocus = getTaskFocus(task);
-
     addXP(0);
-    emitCoachEvent(
-      {
-        type: "wrong_answer",
-        attempt: result.attempt,
-        taskId: task.id,
-      },
-      {
-        ...task.coach_lines,
-        // Называем конкретную ошибку прямой речью; без определённого
-        // misconception берём авторскую реплику задачи (она уже конкретна).
-        wrong: selectedMisconception
-          ? `Похоже, ты ${selectedMisconception}.`
-          : task.coach_lines.wrong,
-        hint: taskFocus.check,
-      },
-    );
+  }
+
+  function persistWrongAnswer(result: AnswerResult) {
+    if (result.isCorrect || !sessionId) return;
+
+    const answer = $quizSession.get().answers.at(-1);
+    if (!answer) return;
+
+    recordMistakeImmediately({ sessionId, topicId, answer, resumeHref: pathname });
   }
 
   function handleAnswer(optionId: string) {
     if (!currentTask || currentTask.type !== "single_choice") return;
-    if (session.phase !== "active") return;
+    if (session.phase !== "active" && session.phase !== "retrying") return;
 
     const result = answerCurrentTask(currentTask, optionId);
     if (!result) return;
 
-    const selectedOption = currentTask.options.find(
-      (option) => option.id === optionId,
-    );
-
-    reactToAnswer(currentTask, result, selectedOption?.misconception?.trim());
+    persistWrongAnswer(result);
+    recordAnswerXP(result);
   }
 
   function handleNumericSubmit(raw: string) {
     if (!currentTask || currentTask.type !== "numeric_input") return;
-    if (session.phase !== "active") return;
+    if (session.phase !== "active" && session.phase !== "retrying") return;
 
     const result = answerCurrentNumericTask(currentTask, raw);
     if (!result) return;
 
-    // Misconception по значению уже вычислен в сторе и лежит в записи ответа.
-    const selectedMisconception = $quizSession
-      .get()
-      .answers.at(-1)?.selectedMisconception;
-
-    reactToAnswer(currentTask, result, selectedMisconception);
+    persistWrongAnswer(result);
+    recordAnswerXP(result);
   }
 
   function handleNext() {
     if (!currentTask || session.phase !== "answered") return;
 
-    hideCoach();
     setRestoredNotice(null);
 
     if (isLastTask) {
@@ -428,30 +409,29 @@ export function QuizSession({
       if (!snapshotWriteBlockedRef.current) clearActiveQuizSnapshot();
     }
 
-    const nextIndex = session.currentIndex + 1;
     const moved = moveToNextTask();
     if (!moved) return;
 
-    if (isLastTask) {
-      clearPauseTimer();
-      emitCoachEvent({
-        type: "session_end",
-        score: $quizSession.get().score,
-        total: session.total,
-      });
-      return;
-    }
+    if (isLastTask) return;
 
-    const nextTask = tasks[nextIndex];
-    if (nextTask) {
-      startPauseTimer(nextTask.coach_lines);
-    }
+  }
+
+  function handleRetry() {
+    if (!retryCurrentTask()) return;
+
+    setRestoredNotice(null);
+    requestAnimationFrame(() => {
+      document
+        .querySelector<HTMLElement>(
+          '[data-testid="numeric-answer-input"], .quiz-option:not(:disabled)',
+        )
+        ?.focus({ preventScroll: true });
+    });
   }
 
   function handleRestart() {
     resetRecording();
     resetSessionProgress();
-    hideCoach();
     setRestoredNotice(null);
     clearActiveQuizSnapshot();
     snapshotWriteBlockedRef.current = false;
@@ -479,12 +459,13 @@ export function QuizSession({
         onRestart={handleRestart}
         restartLabel={
           restartLabel ?? (sessionKind === "exam"
-            ? "Новая тренировка"
+            ? "Новая диагностика"
             : `Ещё ${generatedCount} задач`)
         }
         topic={activeData?.topic}
         nextHref={nextStep?.href}
         nextLabel={nextStep?.label}
+        variant={summaryVariant}
       />
     );
   }
@@ -513,14 +494,28 @@ export function QuizSession({
         )
       : currentHelpTarget;
   const latestIsCorrect = latestAnswer?.isCorrect ?? false;
+  const firstWrongAttempt =
+    session.phase === "answered" &&
+    latestAnswer?.isCorrect === false &&
+    latestAnswer.attempt === 1;
+  // Для числового ввода без распознанного misconception показываем
+  // правило-ловушку задачи: реплика «а не N» называла бы дистрактор,
+  // которого ученик не вводил (правильный ответ выводится отдельной строкой).
   const feedbackText =
     latestIsCorrect
       ? currentTask.coach_lines.correct
       : latestAnswer?.selectedMisconception
-        ? `Похоже, ты ${latestAnswer.selectedMisconception}.`
-        : currentTask.coach_lines.wrong;
+        ? `Ты ${latestAnswer.selectedMisconception}.`
+        : latestAnswer?.format === "numeric_input"
+          ? currentTask.trap
+          : currentTask.coach_lines.wrong;
   const mistakeHelpTarget =
     latestAnswer && !latestAnswer.isCorrect ? answerHelpTarget : null;
+  const visibleTaskFocus =
+    session.phase === "retrying" ||
+    (session.phase === "active" && preAnswerGuidance === "guided")
+      ? taskFocus
+      : undefined;
 
   return (
     <section
@@ -556,7 +551,7 @@ export function QuizSession({
         diagram={currentTask.diagram}
         // «Сейчас тренируем» — приминг перед ответом; после ответа его
         // работа сделана, и он лишь конкурирует с разбором за внимание.
-        focus={session.phase === "answered" ? undefined : taskFocus}
+        focus={visibleTaskFocus}
         showSolutionContent={session.phase === "answered"}
         showMetadata={false}
       />
@@ -570,11 +565,11 @@ export function QuizSession({
         />
       ) : (
         <NumericAnswerInput
-          key={currentTask.id}
+          key={`${currentTask.id}:${session.phase}`}
           unit={currentTask.answer.unit}
           decimals={currentTask.answer.decimals}
           sign={currentTask.answer.sign}
-          disabled={session.phase !== "active"}
+          disabled={session.phase !== "active" && session.phase !== "retrying"}
           submitted={
             session.phase === "answered" &&
             latestAnswer?.format === "numeric_input"
@@ -585,32 +580,43 @@ export function QuizSession({
         />
       )}
 
-      {session.phase === "answered" ? (
+      {session.phase === "answered" || session.phase === "retrying" ? (
         <div ref={reactionRef} className="flex flex-col gap-4 scroll-mt-6">
           <AnswerFeedback
             isCorrect={latestIsCorrect}
             feedbackText={feedbackText}
             correctAnswer={
-              latestAnswer?.format === "numeric_input" && !latestAnswer.isCorrect
+              latestAnswer?.format === "numeric_input" &&
+              !latestAnswer.isCorrect &&
+              latestAnswer.attempt > 1
                 ? `${formatNumericValue(latestAnswer.correctValue)} ${latestAnswer.unit}`.trim()
                 : undefined
             }
+            retryHint={firstWrongAttempt || session.phase === "retrying" ? taskFocus.check : undefined}
           />
 
-          <Button type="button" size="lg" data-testid="next-task-button" onClick={handleNext}>
-            {isLastTask ? "Показать итог" : "Следующая задача"}
-          </Button>
+          {firstWrongAttempt ? (
+            <Button type="button" size="lg" data-testid="retry-task-button" onClick={handleRetry}>
+              Попробовать ещё раз
+            </Button>
+          ) : session.phase === "answered" ? (
+            <Button type="button" size="lg" data-testid="next-task-button" onClick={handleNext}>
+              {isLastTask ? "Показать итог" : "Следующая задача"}
+            </Button>
+          ) : null}
 
-          <SolutionDisclosure
-            key={currentTask.id}
-            explanation={currentTask.explanation}
-            helpTarget={mistakeHelpTarget ?? undefined}
-            onOpenHelp={
-              mistakeHelpTarget && onOpenHelpTarget
-                ? () => onOpenHelpTarget(mistakeHelpTarget)
-                : undefined
-            }
-          />
+          {session.phase === "answered" ? (
+            <SolutionDisclosure
+              key={currentTask.id}
+              explanation={currentTask.explanation}
+              helpTarget={mistakeHelpTarget ?? undefined}
+              onOpenHelp={
+                mistakeHelpTarget && onOpenHelpTarget
+                  ? () => onOpenHelpTarget(mistakeHelpTarget)
+                  : undefined
+              }
+            />
+          ) : null}
         </div>
       ) : null}
     </section>

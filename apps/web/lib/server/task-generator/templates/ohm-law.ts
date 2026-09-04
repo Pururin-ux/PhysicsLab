@@ -5,14 +5,16 @@ import { formatAnswerValue, formatMathValue } from "../validator.ts";
 
 type OhmTarget = "current" | "voltage" | "resistance";
 
-// Контексты нейтральны к тому, какая величина ищется.
+// Контексты нейтральны к искомой величине и не противоречат диапазону токов
+// 1–6 А (карманный фонарик с таким током — уже неправда, стенд и
+// нагреватель — норма).
 const circuitContexts = [
-  "В схеме настольной лампы измерили параметры участка цепи",
   "На лабораторном стенде собрали цепь с одним резистором",
-  "В самодельном фонарике проверяют участок цепи",
+  "К участку цепи подключили амперметр и вольтметр",
   "Датчик мультиметра подключили к элементу цепи",
   "В модели электросети измеряют характеристики нагрузки",
   "На макетной плате проверяют работу нагревательного элемента",
+  "В цепи электроплитки измерили параметры нагревателя",
 ];
 
 function targetFor(p: Params): OhmTarget {
@@ -61,12 +63,14 @@ function explanationFor(p: Params, answer: number): string {
   const formattedAnswer = formatMathValue(answer);
 
   switch (targetFor(p)) {
+    // Решение показывает счёт. Про ошибку уже сказано строкой выше — второй раз
+    // повторять её здесь не нужно.
     case "voltage":
-      return `По закону Ома напряжение $U = IR = ${current} \\cdot ${p.r} = ${formattedAnswer}$ В. Делить ток на сопротивление здесь не нужно.`;
+      return `По закону Ома $U = IR = ${current} \\cdot ${p.r} = ${formattedAnswer}$ В.`;
     case "resistance":
-      return `Выражаем сопротивление: $R = \\frac{U}{I} = \\frac{${voltage}}{${current}} = ${formattedAnswer}$ Ом. Произведение U · I даёт мощность, а не сопротивление.`;
+      return `По закону Ома $R = \\frac{U}{I} = \\frac{${voltage}}{${current}} = ${formattedAnswer}$ Ом.`;
     default:
-      return `По закону Ома $I = \\frac{U}{R} = \\frac{${voltage}}{${p.r}} = ${formattedAnswer}$ А. Умножение U на R не имеет физического смысла.`;
+      return `По закону Ома $I = \\frac{U}{R} = \\frac{${voltage}}{${p.r}} = ${formattedAnswer}$ А.`;
   }
 }
 

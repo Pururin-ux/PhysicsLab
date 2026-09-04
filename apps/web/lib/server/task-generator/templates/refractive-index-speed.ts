@@ -36,14 +36,14 @@ export const refractiveIndexSpeedBlueprint: TaskBlueprint = {
   solver: refractiveIndexFromSpeed,
   distractors: refractiveIndexSpeedDistractors,
   textTemplate: (p) =>
-    `Скорость света в вакууме равна 3·10⁸ м/с, а в ${mediumFor(p)} свет распространяется со скоростью ${speedText(p)}·10⁸ м/с. Найдите абсолютный показатель преломления этого вещества.`,
+    `Для видимого света фазовая скорость в вакууме равна 3·10⁸ м/с, а в ${mediumFor(p)} — ${speedText(p)}·10⁸ м/с. Найдите абсолютный показатель преломления этой среды.`,
   explanationTemplate: (p, answer) =>
-    `Показатель преломления — отношение скорости света в вакууме к скорости в среде: $n=\\frac{c}{v}=\\frac{3\\cdot10^8}{${formatMathValue(p.v8)}\\cdot10^8}=${formatMathValue(answer)}$. Степени $10^8$ сокращаются.`,
-  trap: "Показатель преломления — это c/v, а не v/c: у вещества он всегда не меньше единицы.",
+    `В этой школьной модели показатель преломления — отношение c к фазовой скорости света в обычной прозрачной среде: $n=\\frac{c}{v}=\\frac{3\\cdot10^8}{${formatMathValue(p.v8)}\\cdot10^8}=${formatMathValue(answer)}$. Степени $10^8$ сокращаются.`,
+  trap: "Показатель преломления — это c/v, а не v/c. В этих задачах рассматривается обычная прозрачная среда для видимого света, где n>1.",
   coachLines: {
-    correct: () => "Верно. Свет в веществе медленнее, поэтому n = c/v всегда больше единицы.",
+    correct: () => "Верно. Для рассматриваемой прозрачной среды видимого света n=c/v>1.",
     wrong: (_p, selected, correct) =>
-      `Проверь порядок деления: n = c/v = ${formatAnswerValue(correct)}, а не ${formatAnswerValue(selected)}. Показатель преломления вещества не бывает меньше 1.`,
+      `Проверь порядок деления: n=c/v=${formatAnswerValue(correct)}, а не ${formatAnswerValue(selected)}. В рамках этой задачи n>1.`,
   },
   constraints: [
     // Ответ должен быть «чистым» (не более двух знаков) и физичным (n > 1).

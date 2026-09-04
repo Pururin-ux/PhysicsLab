@@ -1,8 +1,11 @@
 import type { Metadata } from "next";
+import { ArrowLeft, ArrowRight } from "@phosphor-icons/react/dist/ssr";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ReferenceSolution } from "../../../components/tasks/ReferenceSolution";
 import { Button } from "../../../components/ui/Button";
+import { FormulaBox } from "../../../components/ui/FormulaBox";
+import { MathText } from "../../../components/ui/MathText";
 import { getReferenceSolution } from "../../../lib/learning/reference-solutions";
 import {
   buildFormulaHref,
@@ -10,14 +13,11 @@ import {
   getLearningDestinationForFamily,
 } from "../../../lib/learning/learning-links";
 import { getTaskCatalog, getTaskCatalogEntry } from "../../../lib/server/task-catalog";
+import { topics } from "../../../lib/topics";
 
 type TaskTypePageProps = {
   params: Promise<{ family: string }>;
 };
-
-function answerFormatLabel(format: "single_choice" | "numeric_input") {
-  return format === "numeric_input" ? "Числовой ответ" : "Один ответ";
-}
 
 export function generateStaticParams() {
   return getTaskCatalog().map((entry) => ({ family: entry.slug }));
@@ -27,8 +27,11 @@ export async function generateMetadata({ params }: TaskTypePageProps): Promise<M
   const { family } = await params;
   const entry = getTaskCatalogEntry(family);
   return entry
-    ? { title: `${entry.title} | Типы задач | PhysicsLab` }
-    : { title: "Тип задачи не найден | PhysicsLab" };
+    ? {
+        title: `${entry.title} | Практика | PhysicsLab`,
+        description: entry.shortDescription,
+      }
+    : { title: "Тренировка не найдена | PhysicsLab" };
 }
 
 export default async function TaskTypePage({ params }: TaskTypePageProps) {
@@ -37,76 +40,83 @@ export default async function TaskTypePage({ params }: TaskTypePageProps) {
   if (!entry) notFound();
   const referenceSolution = getReferenceSolution(entry.id);
   const destination = getLearningDestinationForFamily(entry.id);
+  const topic = topics.find((item) => item.id === entry.topicId);
   const relatedFormulas = (destination?.formulaIds ?? []).flatMap((formulaId) => {
     const formula = getFormulaEntry(formulaId);
     return formula ? [formula] : [];
   });
 
-  const difficulty =
-    entry.difficultyRange.min === entry.difficultyRange.max
-      ? String(entry.difficultyRange.min)
-      : `${entry.difficultyRange.min}–${entry.difficultyRange.max}`;
-
   return (
-    <div className="mx-auto flex w-full max-w-[760px] flex-col gap-7">
-      <nav aria-label="Хлебные крошки" className="flex flex-wrap items-center gap-2 text-[13px] font-semibold text-white/48">
-        <Link className="rounded-option hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/55" href="/tasks">
-          Задачи
+    <div className="mx-auto flex w-full max-w-[760px] min-w-0 flex-col gap-7">
+      <nav aria-label="Путь к тренировке" className="sm:hidden">
+        <Link
+          className="inline-flex min-h-10 w-fit items-center gap-2 rounded-option pr-2 text-[13px] font-semibold text-white/62 transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-blue/55"
+          href="/tasks"
+        >
+          <ArrowLeft size={16} weight="bold" aria-hidden="true" />
+          Все тренировки
         </Link>
-        <span aria-hidden="true">/</span>
-        <span>{entry.topicLabel}</span>
       </nav>
 
-      <section className="flex flex-col gap-4">
+      {/* Страница отвечает на четыре вопроса подряд: что за задача, что решать,
+          какая формула, где обычно ошибаются. По одному блоку на вопрос. */}
+      <section className="flex flex-col gap-5">
         <div>
-          <p className="text-[11px] font-bold uppercase tracking-[.14em] text-white/58">
-            {entry.topicLabel}
-          </p>
-          <h1 className="mt-2 text-[34px] font-[800] leading-tight text-white sm:text-[42px]">
-            {entry.title}
-          </h1>
-          <p className="mt-3 max-w-[680px] text-[15px] leading-[1.7] text-white/68">
+          <h1 className="type-h1 text-white">{entry.title}</h1>
+          <p className="type-body mt-3 max-w-[620px] text-[var(--text-secondary)]">
             {entry.shortDescription}
           </p>
         </div>
 
-        <div className="flex flex-wrap gap-x-4 gap-y-2 text-[12px] font-semibold text-white/52">
-          <span>{answerFormatLabel(entry.answerFormat)}</span>
-          <span>Сложность внутри тренажёра: {difficulty}</span>
-          {entry.visualKinds.includes("graph") ? <span>Есть график</span> : null}
-          {entry.visualKinds.includes("diagram") ? <span>Есть схема</span> : null}
-        </div>
-
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-          <Button asChild size="lg" className="sm:w-auto">
-            <Link href={`/practice/family/${entry.slug}`}>Решить 5 похожих</Link>
+          <Button asChild size="lg" className="w-full gap-2 sm:w-auto">
+            <Link href={`/practice/family/${entry.slug}`}>
+              Начать: 5 задач
+              <ArrowRight size={17} weight="bold" aria-hidden="true" />
+            </Link>
           </Button>
           {referenceSolution ? (
-            <Button asChild size="lg" variant="ghost" className="sm:w-auto">
-              <Link href="#reference-example">Посмотреть пример</Link>
+            <Button asChild size="lg" variant="ghost" className="w-full sm:w-auto">
+              <Link href="#reference-example">Сначала разобрать пример</Link>
             </Button>
           ) : null}
         </div>
+        {topic ? (
+          <Link
+            href={topic.learnHref}
+            className="inline-flex min-h-10 w-fit items-center gap-2 text-[13px] font-semibold text-nova-cyan/85 transition-colors hover:text-nova-cyan focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-blue/55"
+          >
+            Если тема пока незнакома — сначала разберём её
+            <ArrowRight size={15} weight="bold" aria-hidden="true" />
+          </Link>
+        ) : null}
       </section>
 
       {relatedFormulas.length > 0 ? (
         <section className="border-t border-white/[.08] pt-6" aria-labelledby="related-formulas-title">
-          <h2 id="related-formulas-title" className="text-xl font-[800] text-white">
-            Связанные формулы
+          <h2 id="related-formulas-title" className="type-h2 text-white">
+            Что понадобится
           </h2>
-          <p className="mt-2 text-[13px] leading-[1.6] text-white/58">
-            Открой формулу, обозначения и условия применения для этого типа задач.
-          </p>
-          <ul className="mt-4 flex flex-col gap-2">
+          <div className={`mt-4 grid gap-3 ${relatedFormulas.length > 1 ? "sm:grid-cols-2" : ""}`}>
+            {relatedFormulas.map((formula) => (
+              <FormulaBox
+                key={formula.id}
+                formula={formula.formula}
+                caption={formula.title}
+              />
+            ))}
+          </div>
+          <ul className="mt-3 flex flex-wrap gap-3">
             {relatedFormulas.map((formula) => (
               <li key={formula.id}>
                 <Link
                   href={buildFormulaHref(formula.id)}
-                  className="inline-flex min-h-10 items-center rounded-option border border-white/[.12] bg-white/[.025] px-3.5 text-[13px] font-semibold text-nova-cyan/85 transition-colors hover:border-nova-cyan/45 hover:text-nova-cyan focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/55"
+                  className="inline-flex min-h-10 items-center gap-1.5 rounded-option text-[13px] font-semibold text-nova-cyan/85 transition-colors hover:text-nova-cyan focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-blue/55"
                 >
                   {relatedFormulas.length === 1
-                    ? "Открыть формулу и условия применения"
-                    : formula.title}
+                    ? "Что означают буквы"
+                    : `${formula.title}: что означают буквы`}
+                  <ArrowRight size={15} weight="bold" aria-hidden="true" />
                 </Link>
               </li>
             ))}
@@ -116,19 +126,18 @@ export default async function TaskTypePage({ params }: TaskTypePageProps) {
 
       {referenceSolution ? <ReferenceSolution solution={referenceSolution} /> : null}
 
-      <section className="border-t border-white/[.08] pt-6" aria-labelledby="training-points-title">
-        <h2 id="training-points-title" className="text-xl font-[800] text-white">
-          Что тренируется
-        </h2>
-        <ul className="mt-4 grid gap-3 text-[14px] leading-[1.65] text-white/66">
-          {entry.trainingPoints.map((point) => (
-            <li key={point} className="grid grid-cols-[auto_1fr] gap-3">
-              <span aria-hidden="true" className="text-nova-cyan">—</span>
-              <span>{point}</span>
-            </li>
-          ))}
-        </ul>
-      </section>
+      {/* Если разбор примера есть, ошибка уже разобрана внутри него — второй
+          раз о ней не говорим. */}
+      {!referenceSolution && entry.commonMistake ? (
+        <section className="border-t border-white/[.08] pt-6" aria-labelledby="common-mistake-title">
+          <h2 id="common-mistake-title" className="type-h2 text-white">
+            На чём легко сбиться
+          </h2>
+          <p className="mt-3 border-l-2 border-feedback-warning/60 pl-4 text-[15px] leading-[1.7] text-white/76">
+            <MathText text={entry.commonMistake} />
+          </p>
+        </section>
+      ) : null}
     </div>
   );
 }

@@ -15,6 +15,9 @@ const routes = [
   "/tasks",
   "/tasks/ohm-law",
   "/practice/family/ohm-law",
+  "/practice/kinematics-lesson",
+  "/practice/acceleration-focus",
+  "/practice/dynamics-lesson",
   "/practice/kinematics-demo",
   "/practice/optics-demo",
   "/practice/exam-demo",
@@ -79,6 +82,30 @@ for (const route of routes) {
   });
 }
 
+test("@a11y диагностика: карта покрытия читаема в светлой теме", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.addInitScript(() => {
+    window.localStorage.setItem("physicslab-theme", "light");
+  });
+  await page.goto("/practice/exam-demo", { waitUntil: "domcontentloaded" });
+  await page.waitForLoadState("networkidle");
+
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+  await expect(page.getByTestId("exam-coverage-map")).toContainText(
+    "Полностью: 0 · Частично: 4 · Пока нет: 2",
+  );
+  const start = page.getByRole("button", { name: "Начать диагностику" });
+  await start.focus();
+  await expect(start).toBeFocused();
+
+  expect(
+    (await scanForBlockingViolations(page)).map((violation) => ({
+      id: violation.id,
+      nodes: violation.nodes.slice(0, 5).map((node) => node.html.slice(0, 140)),
+    })),
+  ).toEqual([]);
+});
+
 test("@a11y simplified navigation and practice disclosures", async ({
   page,
   request,
@@ -112,8 +139,9 @@ test("@a11y simplified navigation and practice disclosures", async ({
   } else if (testInfo.project.name === "tablet") {
     await expect(page.getByTestId("tablet-quick-actions").getByRole("link")).toHaveCount(4);
   } else {
+    // На телефоне те же пять направлений находятся в нижней панели.
     const navigation = page.getByTestId("mobile-bottom-nav");
-    await expect(navigation.getByRole("link")).toHaveCount(4);
+    await expect(navigation.getByRole("link")).toHaveCount(5);
     await expect(
       navigation.getByRole("link", { name: "Задачи", exact: true }),
     ).toHaveAttribute("aria-current", "page");
@@ -154,7 +182,7 @@ test("@a11y simplified navigation and practice disclosures", async ({
 test("@a11y exam resume gate after an answered task", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/practice/exam-demo", { waitUntil: "domcontentloaded" });
-  await page.getByRole("button", { name: "Начать тренировку" }).click();
+  await page.getByRole("button", { name: "Начать диагностику" }).click();
   await expect(page.getByTestId("question-card")).toBeVisible({ timeout: 15000 });
 
   const numericInput = page.getByTestId("numeric-answer-input");
@@ -169,8 +197,8 @@ test("@a11y exam resume gate after an answered task", async ({ page }) => {
 
   const candidate = page.getByTestId("exam-resume-candidate");
   await expect(candidate).toContainText("Ответ на задание 1 уже сохранён");
-  const continueButton = candidate.getByRole("button", { name: "Продолжить вариант" });
-  const freshButton = candidate.getByRole("button", { name: "Начать новый вариант" });
+  const continueButton = candidate.getByRole("button", { name: "Продолжить диагностику" });
+  const freshButton = candidate.getByRole("button", { name: "Начать новую диагностику" });
   await continueButton.focus();
   await expect(continueButton).toBeFocused();
   await freshButton.focus();
@@ -178,14 +206,16 @@ test("@a11y exam resume gate after an answered task", async ({ page }) => {
   expect(await scanForBlockingViolations(page)).toEqual([]);
 });
 
+// Карточку разбора сканируем на тренировке динамики: это тот же QuizScreen,
+// а урок кинематики живёт отдельно на /practice/kinematics-lesson.
 test("@a11y карточка разбора после ошибки — без serious/critical", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   const taskResponse = page.waitForResponse((response) => {
     const url = new URL(response.url());
-    return url.pathname === "/api/tasks" && url.searchParams.get("template") === "mixed";
+    return url.pathname === "/api/tasks" && url.searchParams.get("template") === "dynamics-mixed";
   });
 
-  await page.goto("/practice/kinematics-demo", { waitUntil: "domcontentloaded" });
+  await page.goto("/practice/dynamics-demo", { waitUntil: "domcontentloaded" });
   const payload = (await (await taskResponse).json()) as {
     tasks: { options: { correct?: boolean; text: string }[] }[];
   };
@@ -247,7 +277,7 @@ test("@a11y числовой ввод и его разбор — без serious/
   });
   await page.route("**/api/tasks?*", async (route) => {
     const template = new URL(route.request().url()).searchParams.get("template");
-    if (template !== "mixed") {
+    if (template !== "dynamics-mixed") {
       await route.continue();
       return;
     }
@@ -258,7 +288,7 @@ test("@a11y числовой ввод и его разбор — без serious/
     });
   });
 
-  await page.goto("/practice/kinematics-demo", { waitUntil: "domcontentloaded" });
+  await page.goto("/practice/dynamics-demo", { waitUntil: "domcontentloaded" });
   await page.waitForLoadState("networkidle");
 
   const input = page.getByTestId("numeric-answer-input");
@@ -401,12 +431,12 @@ test("@a11y карточки загрузки и ошибки, notice и 404 —
     window.localStorage.setItem("physicslab-v3-progress-v1", "{broken");
   });
   await page.route("**/api/tasks?*", (route) =>
-    new URL(route.request().url()).searchParams.get("template") === "mixed"
+    new URL(route.request().url()).searchParams.get("template") === "dynamics-mixed"
       ? route.fulfill({ status: 500, contentType: "application/json", body: "{}" })
       : route.continue(),
   );
 
-  await page.goto("/practice/kinematics-demo", { waitUntil: "domcontentloaded" });
+  await page.goto("/practice/dynamics-demo", { waitUntil: "domcontentloaded" });
   await expect(page.getByTestId("quiz-load-error-card")).toBeVisible({ timeout: 10000 });
   await expect(page.getByTestId("persistence-notice")).toBeVisible();
 
@@ -423,14 +453,14 @@ test("@a11y карточки загрузки и ошибки, notice и 404 —
 
 test("@a11y восстановленная сессия анонсируется без дублей", async ({ page, request }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
-  const response = await request.get("/api/tasks?template=mixed&count=10&batch=0");
+  const response = await request.get("/api/tasks?template=dynamics-mixed&count=10&batch=0");
   expect(response.ok()).toBe(true);
   const payload = (await response.json()) as {
     tasks: { type: string; options?: { correct?: boolean }[]; answer: unknown }[];
   };
 
   await page.route("**/api/tasks?*", (route) =>
-    new URL(route.request().url()).searchParams.get("template") === "mixed"
+    new URL(route.request().url()).searchParams.get("template") === "dynamics-mixed"
       ? route.fulfill({
           status: 200,
           contentType: "application/json",
@@ -438,7 +468,7 @@ test("@a11y восстановленная сессия анонсируется
         })
       : route.continue(),
   );
-  await page.goto("/practice/kinematics-demo", { waitUntil: "domcontentloaded" });
+  await page.goto("/practice/dynamics-demo", { waitUntil: "domcontentloaded" });
   await page.waitForLoadState("networkidle");
 
   // Один ответ → reload → восстановленное answered-состояние.

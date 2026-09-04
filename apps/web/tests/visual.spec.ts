@@ -10,8 +10,8 @@ import {
 //
 // 1) Layout-assertions — детерминированные проверки геометрии, работают
 //    на любой платформе (и в CI на linux): нет горизонтального скролла,
-//    main в пределах viewport, на мобиле нижняя навигация видима и
-//    прижата к низу. Ловят сломанную вёрстку без пиксельного сравнения.
+//    main в пределах viewport, на мобиле липкая шапка остаётся целой и
+//    не перекрывает содержимое. Ловят сломанную вёрстку без пиксельного сравнения.
 //
 // 2) Пиксельные снапшоты main-региона — только при VISUAL_SNAPSHOTS=1:
 //    рендеринг шрифтов платформозависим, базлайны в репо сняты на
@@ -69,42 +69,51 @@ for (const route of routes) {
     expect(mainBox!.x).toBeGreaterThanOrEqual(-1);
     expect(mainBox!.x + mainBox!.width).toBeLessThanOrEqual(viewport.width + 1);
 
-    // На мобиле нижняя навигация видима и прижата к нижней кромке.
+    // На мобиле первичная навигация живёт во второй строке липкой шапки.
     if (testInfo.project.name.startsWith("mobile")) {
-      const mobileNav = page.getByRole("navigation", { name: "Мобильная навигация" });
+      const mobileNav = page.getByTestId("mobile-bottom-nav");
+      const header = page.locator("header").first();
       await expect(mobileNav).toBeVisible();
-      const navBox = await mobileNav.boundingBox();
+
+      const [navBox, headerBox] = await Promise.all([
+        mobileNav.boundingBox(),
+        header.boundingBox(),
+      ]);
       expect(navBox).not.toBeNull();
-      // Роль navigation — на <nav> внутри fixed-контейнера с py-2:
-      // допускаем паддинг контейнера (12px), но не «уплывшую» панель.
-      expect(navBox!.y + navBox!.height).toBeGreaterThanOrEqual(viewport.height - 12);
+      expect(headerBox).not.toBeNull();
+      expect(await mobileNav.evaluate((element) => getComputedStyle(element).position)).toBe(
+        "fixed",
+      );
+      expect(navBox!.y + navBox!.height).toBeLessThanOrEqual(viewport.height + 1);
+      expect(navBox!.y).toBeGreaterThan(headerBox!.y + headerBox!.height);
 
       if (route.name === "home") {
-        const warmupHeading = page.getByRole("heading", {
-          name: "Проверь себя на графике скорости",
-        });
-        const warmupBox = await warmupHeading.boundingBox();
-        expect(warmupBox, "next working section must be rendered").not.toBeNull();
-        expect(
-          warmupBox!.y,
-          "mobile home must hint at the warm-up task above the fixed nav",
-        ).toBeLessThan(navBox!.y);
+        expect(await header.evaluate((element) => getComputedStyle(element).position)).toBe(
+          "absolute",
+        );
+        const titleBox = await page.getByRole("heading", { level: 1 }).boundingBox();
+        expect(titleBox, "home title must be rendered").not.toBeNull();
+        expect(titleBox!.y).toBeGreaterThanOrEqual(headerBox!.y + headerBox!.height);
+      } else {
+        expect(await header.evaluate((element) => getComputedStyle(element).position)).toBe(
+          "sticky",
+        );
       }
 
       if (route.name === "formulas") {
-        const rowMetrics = await page.locator(".formula-row button").evaluateAll(
-          (rows) =>
-            rows.map((row) => ({
-              clientWidth: row.clientWidth,
-              scrollWidth: row.scrollWidth,
+        const entryMetrics = await page.locator("[data-formula-id]").evaluateAll(
+          (entries) =>
+            entries.map((entry) => ({
+              clientWidth: entry.clientWidth,
+              scrollWidth: entry.scrollWidth,
             })),
         );
-        expect(rowMetrics.length).toBeGreaterThan(20);
+        expect(entryMetrics).toHaveLength(40);
         expect(
-          rowMetrics.filter(
+          entryMetrics.filter(
             ({ clientWidth, scrollWidth }) => scrollWidth > clientWidth + 1,
           ),
-          "formula rows must not overflow horizontally on mobile",
+          "formula entries must not overflow horizontally on mobile",
         ).toEqual([]);
       }
     }
@@ -177,7 +186,11 @@ test("@visual simplified navigation shell is stable", async ({ page }, testInfo)
   } else if (testInfo.project.name === "tablet") {
     await expect(page.getByTestId("tablet-quick-actions").getByRole("link")).toHaveCount(4);
   } else {
-    await expect(page.getByTestId("mobile-bottom-nav").getByRole("link")).toHaveCount(4);
+    const navigation = page.getByTestId("mobile-bottom-nav");
+    await expect(navigation.locator(":scope > a")).toHaveCount(5);
+    await expect(
+      navigation.getByRole("link", { name: "Задачи", exact: true }),
+    ).toBeVisible();
   }
 
   if (
@@ -310,17 +323,16 @@ test("@visual numeric wrong-answer hierarchy is stable", async ({
   );
 });
 
-async function expectScrollableAboveMobileNav(
+async function expectReachableBelowStickyHeader(
   control: Locator,
-  mobileNavContainer: Locator,
+  header: Locator,
 ) {
-  await control.evaluate((element) =>
-    element.scrollIntoView({ block: "end" }),
-  );
+  await control.scrollIntoViewIfNeeded();
 
-  const [controlBox, navBox] = await Promise.all([
+  const [controlBox, headerBox, viewportHeight] = await Promise.all([
     control.boundingBox(),
-    mobileNavContainer.boundingBox(),
+    header.boundingBox(),
+    control.evaluate(() => window.innerHeight),
   ]);
 
   expect(
@@ -328,47 +340,112 @@ async function expectScrollableAboveMobileNav(
     "interactive control must have a bounding box",
   ).not.toBeNull();
   expect(
-    navBox,
-    "fixed mobile navigation must have a bounding box",
+    headerBox,
+    "sticky mobile header must have a bounding box",
   ).not.toBeNull();
   expect(
-    navBox!.y - (controlBox!.y + controlBox!.height),
-    "interactive control must clear the fixed mobile navigation after scrollIntoView",
-  ).toBeGreaterThanOrEqual(8);
+    controlBox!.y - (headerBox!.y + headerBox!.height),
+    "interactive control must remain below the sticky mobile header",
+  ).toBeGreaterThanOrEqual(0);
+  expect(controlBox!.y + controlBox!.height).toBeLessThanOrEqual(viewportHeight + 1);
 }
 
-test("@visual mobile practice controls clear the fixed bottom navigation", async (
-  { page },
+test("@visual home art keeps one reviewed source across viewports", async ({ page }, testInfo) => {
+  await page.goto("/", { waitUntil: "domcontentloaded" });
+  await page.waitForLoadState("networkidle");
+
+  const scene = page.getByTestId("home-study-scene");
+  await expect(scene).toHaveAttribute(
+    "data-art-source",
+    "/art/production/hero-night-study-ultrawide-v3.webp",
+  );
+  await expect(scene).toHaveAttribute("data-art-viewport-policy", "single-source-crop");
+
+  const images = scene.locator("img");
+  const baseImage = images.first();
+  await baseImage.evaluate((image) => (image as HTMLImageElement).decode());
+
+  const decodedSources = await images.evaluateAll((elements) =>
+    elements.map((element) => {
+      const image = element as HTMLImageElement;
+      const source = image.currentSrc || image.getAttribute("src") || "";
+      const url = new URL(source, window.location.href);
+      return url.searchParams.get("url") ?? url.pathname;
+    }),
+  );
+  expect(new Set(decodedSources)).toEqual(
+    new Set(["/art/production/hero-night-study-ultrawide-v3.webp"]),
+  );
+
+  const guard = page.getByTestId("home-scene-logic-guard");
+  if (testInfo.project.name.startsWith("mobile")) {
+    await expect(guard).toBeHidden();
+  } else {
+    await expect(guard).toBeVisible();
+    expect(await guard.evaluate((element) => getComputedStyle(element).backgroundImage)).toContain(
+      "linear-gradient",
+    );
+  }
+
+  for (const selector of [".home-window-light", ".home-desk-light"]) {
+    const effect = page.locator(selector);
+    if (testInfo.project.name.startsWith("mobile")) {
+      await expect(effect).toBeHidden();
+    } else {
+      const style = await effect.evaluate((element) => {
+        const computed = getComputedStyle(element);
+        return { background: computed.backgroundImage, clip: computed.clipPath };
+      });
+      expect(style.background).toContain("radial-gradient");
+      expect(style.clip).toBe("none");
+    }
+  }
+});
+
+test("@visual home respects reduced motion", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/", { waitUntil: "domcontentloaded" });
+  await page.waitForLoadState("networkidle");
+
+  const animationNames = await page
+    .locator(".home-study-art, .home-window-light, .home-desk-light")
+    .evaluateAll((elements) => elements.map((element) => getComputedStyle(element).animationName));
+  expect(new Set(animationNames)).toEqual(new Set(["none"]));
+});
+
+test("@visual mobile practice controls remain reachable below the sticky header", async (
+  { page, request },
   testInfo,
 ) => {
   test.skip(
     !testInfo.project.name.startsWith("mobile"),
-    "This assertion exercises the fixed mobile navigation.",
+    "This assertion exercises the sticky mobile header.",
   );
 
-  await page.goto("/practice/kinematics-demo", {
+  const payload = await useDeterministicPracticeBatch(page, request, "ohm-law");
+  await page.goto("/practice/family/ohm-law", {
     waitUntil: "domcontentloaded",
   });
 
-  const mobileNav = page.getByRole("navigation", {
-    name: "Мобильная навигация",
-  });
-  const mobileNavContainer = mobileNav.locator("xpath=..");
+  const mobileNav = page.getByTestId("mobile-bottom-nav");
+  const header = page.locator("header").first();
   const options = page
     .getByRole("list", { name: "Варианты ответа" })
     .getByRole("button");
 
   await expect(mobileNav).toBeVisible();
   await expect(options).toHaveCount(4);
-  await expectScrollableAboveMobileNav(options.last(), mobileNavContainer);
+  await expectReachableBelowStickyHeader(options.last(), header);
 
-  await options.last().click();
+  const wrongIndex = payload.tasks[0].options!.findIndex((option) => !option.correct);
+  expect(wrongIndex).toBeGreaterThanOrEqual(0);
+  await options.nth(wrongIndex).click();
   await expect(page.getByText("Не совсем", { exact: true })).toBeVisible();
   await expect(page.getByTestId("solution-toggle")).toBeVisible();
 
   const nextTaskButton = page.getByTestId("next-task-button");
   await expect(nextTaskButton).toBeVisible();
-  await expectScrollableAboveMobileNav(nextTaskButton, mobileNavContainer);
+  await expectReachableBelowStickyHeader(nextTaskButton, header);
 
   await page.getByTestId("solution-toggle").click();
   await expect(
@@ -376,7 +453,7 @@ test("@visual mobile practice controls clear the fixed bottom navigation", async
   ).toBeVisible();
   await expect(page.getByTestId("solution-content")).toBeVisible();
   await expect(page.getByTestId("solution-formula")).toHaveCount(0);
-  await expectScrollableAboveMobileNav(nextTaskButton, mobileNavContainer);
+  await expectReachableBelowStickyHeader(nextTaskButton, header);
 });
 
 test("@visual task catalog search and empty states are stable", async ({ page }, testInfo) => {
@@ -444,28 +521,26 @@ for (const visualCase of referenceVisualCases) {
   });
 }
 
-test("@visual focused numeric controls clear the fixed bottom navigation", async (
+test("@visual focused numeric controls remain reachable below the sticky header", async (
   { page },
   testInfo,
 ) => {
   test.skip(
     !testInfo.project.name.startsWith("mobile"),
-    "This assertion exercises the fixed mobile navigation.",
+    "This assertion exercises the sticky mobile header.",
   );
 
   await page.goto("/practice/family/average-speed-segments", {
     waitUntil: "domcontentloaded",
   });
-  const mobileNavContainer = page
-    .getByRole("navigation", { name: "Мобильная навигация" })
-    .locator("xpath=..");
+  const header = page.locator("header").first();
   const input = page.getByTestId("numeric-answer-input");
   await input.fill("0");
   await page.getByTestId("numeric-submit").click();
 
   const nextTaskButton = page.getByTestId("next-task-button");
   await expect(nextTaskButton).toBeVisible();
-  await expectScrollableAboveMobileNav(nextTaskButton, mobileNavContainer);
+  await expectReachableBelowStickyHeader(nextTaskButton, header);
 });
 
 type VisualChoiceTask = {
@@ -521,7 +596,7 @@ test("@visual focused five-task summary is stable", async ({ page, request }, te
 // при VISUAL_SNAPSHOTS=1 на снапшот-проектах.
 test("@visual exam resume gate: layout is stable", async ({ page }, testInfo) => {
   await page.goto("/practice/exam-demo", { waitUntil: "domcontentloaded" });
-  await page.getByRole("button", { name: "Начать тренировку" }).click();
+  await page.getByRole("button", { name: "Начать диагностику" }).click();
   await expect(page.getByTestId("question-card")).toBeVisible({ timeout: 15000 });
   await page.reload({ waitUntil: "domcontentloaded" });
 
@@ -536,15 +611,16 @@ test("@visual exam resume gate: layout is stable", async ({ page }, testInfo) =>
   );
 
   if (testInfo.project.name.startsWith("mobile")) {
-    const freshButton = candidate.getByRole("button", { name: "Начать новый вариант" });
+    const freshButton = candidate.getByRole("button", { name: "Начать новую диагностику" });
     await freshButton.scrollIntoViewIfNeeded();
-    const [buttonBox, navBox] = await Promise.all([
+    const [buttonBox, headerBox] = await Promise.all([
       freshButton.boundingBox(),
-      page.getByRole("navigation", { name: "Мобильная навигация" }).boundingBox(),
+      page.locator("header").first().boundingBox(),
     ]);
     expect(buttonBox).not.toBeNull();
-    expect(navBox).not.toBeNull();
-    expect(navBox!.y - (buttonBox!.y + buttonBox!.height)).toBeGreaterThanOrEqual(8);
+    expect(headerBox).not.toBeNull();
+    expect(buttonBox!.y).toBeGreaterThanOrEqual(headerBox!.y + headerBox!.height);
+    expect(buttonBox!.y + buttonBox!.height).toBeLessThanOrEqual(viewport.height + 1);
   }
 
   if (withSnapshots && SNAPSHOT_PROJECTS.includes(testInfo.project.name)) {
@@ -557,11 +633,11 @@ test("@visual exam resume gate: layout is stable", async ({ page }, testInfo) =>
 
 test("@visual карточка ошибки загрузки: раскладка целая", async ({ page }, testInfo) => {
   await page.route("**/api/tasks?*", (route) =>
-    new URL(route.request().url()).searchParams.get("template") === "mixed"
+    new URL(route.request().url()).searchParams.get("template") === "dynamics-mixed"
       ? route.fulfill({ status: 500, contentType: "application/json", body: "{}" })
       : route.continue(),
   );
-  await page.goto("/practice/kinematics-demo", { waitUntil: "domcontentloaded" });
+  await page.goto("/practice/dynamics-demo", { waitUntil: "domcontentloaded" });
   const card = page.getByTestId("quiz-load-error-card");
   await expect(card).toBeVisible({ timeout: 10000 });
   await page.evaluate(() => document.fonts.ready);

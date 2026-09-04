@@ -30,14 +30,16 @@ export const heatAmountBlueprint: TaskBlueprint = {
   answerKind: "positive",
   solver: heatAmount,
   distractors: heatAmountDistractors,
+  // Условие показывается обычным текстом (QuestionCard не прогоняет его через
+  // MathText), поэтому здесь не должно быть $…$ — иначе доллары видны ученику.
   textTemplate: (p) =>
-    `Нужно нагреть ${contextFor(p)} массой ${formatAnswerValue(p.m)} кг на ${p.dT} °C. Удельная теплоёмкость воды $c = 4200$ Дж/(кг·°C). Какое количество теплоты для этого потребуется?`,
+    `Нужно нагреть ${contextFor(p)} массой ${formatAnswerValue(p.m)} кг на ${p.dT} °C. Удельная теплоёмкость воды c = 4200 Дж/(кг·°C). Считайте, что тепло получает только вода: потерь и нагрева сосуда нет. Какое количество теплоты получит вода?`,
   explanationTemplate: (p, answer) =>
-    `$Q = cm\\Delta T = ${formatMathValue(WATER_SPECIFIC_HEAT_KJ)} \\cdot ${formatMathValue(p.m)} \\cdot ${p.dT} = ${formatMathValue(answer)}$ кДж (теплоёмкость взята в кДж/(кг·°C), поэтому ответ сразу в кДж).`,
-  trap: "В формуле $Q=cm\\Delta T$ все три множителя обязательны: не забывай ни один из них.",
+    `При постоянной теплоёмкости и без фазового перехода $Q = cm\\Delta T = ${formatMathValue(WATER_SPECIFIC_HEAT_KJ)} \\cdot ${formatMathValue(p.m)} \\cdot ${p.dT} = ${formatMathValue(answer)}$ кДж. Потерями и нагревом сосуда по условию пренебрегаем.`,
+  trap: "В $Q=cm\\Delta T$ нужны все три множителя. Эта формула даёт теплоту воды; потери и теплоёмкость сосуда должны быть исключены условием.",
   coachLines: {
     correct: () =>
-      "Да. $Q = cm\\Delta T$ — важны все три множителя: теплоёмкость, масса и изменение температуры.",
+      "Да. При постоянной c и без потерь $Q = cm\\Delta T$: теплоёмкость, масса и изменение температуры.",
     wrong: (_p, selected, correct) =>
       `Проверь, что учтены все три множителя: $c$, $m$ и $\\Delta T$. Получается ${formatAnswerValue(correct)} кДж, а не ${formatAnswerValue(selected)}.`,
   },

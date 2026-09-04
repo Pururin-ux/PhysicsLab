@@ -28,7 +28,7 @@ export function SolutionDisclosure({
           aria-expanded={open}
           aria-controls={panelId}
           onClick={() => setOpen((current) => !current)}
-          className="inline-flex min-h-10 items-center gap-2 rounded-option border border-white/[.10] bg-white/[.025] px-3 text-[12px] font-semibold text-white/68 transition-colors hover:border-white/[.20] hover:bg-white/[.05] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/55"
+          className="inline-flex min-h-10 items-center gap-2 rounded-option border border-[var(--border-muted)] bg-[var(--surface-hover)] px-3 text-[12px] font-semibold text-[var(--text-default)] transition-colors hover:border-[var(--border-emphasis)] hover:text-[var(--text-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
         >
           {open ? "Свернуть решение" : "Показать решение"}
           <svg
@@ -50,9 +50,10 @@ export function SolutionDisclosure({
             type="button"
             data-testid="help-target-button"
             onClick={onOpenHelp}
-            className="inline-flex min-h-10 items-center rounded-option px-3 text-left text-[12px] font-semibold text-white/58 transition-colors hover:bg-white/[.035] hover:text-nova-cyan focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/55"
+            className="inline-flex min-h-10 items-center rounded-option px-3 text-left text-[12px] font-semibold text-[var(--text-quiet)] transition-colors hover:bg-[var(--surface-hover)] hover:text-[var(--math-accent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
           >
-            Справка: {helpTarget.label}
+            {/* Кнопка называет, что откроется, а не сама себя. */}
+            Разобрать тему: {helpTarget.label}
           </button>
         ) : null}
       </div>

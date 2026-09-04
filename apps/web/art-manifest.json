@@ -1,0 +1,438 @@
+{
+  "schemaVersion": 1,
+  "reviewedAt": "2026-07-25",
+  "policy": {
+    "maxReferencedBytes": 1500000,
+    "allowedFormat": "webp",
+    "canonicalViewportAssets": [
+      {
+        "sceneId": "home-night-study",
+        "file": "hero-night-study-ultrawide-v3.webp",
+        "component": "components/home/HomeEditorial.tsx"
+      }
+    ],
+    "reviewChecklist": [
+      "same identity and source on desktop and mobile",
+      "no pseudo-text, broken anatomy, fused objects, or unexplained marks",
+      "physically meaningful objects agree with the depicted state",
+      "decorative art is never presented as a diagram or proof",
+      "composition is checked in the real browser at 1440x1000 and 390x844"
+    ]
+  },
+  "assets": {
+    "hero-night-study-ultrawide-v3.webp": {
+      "sceneId": "home-night-study",
+      "use": "decorative",
+      "viewportPolicy": "single-source-crop",
+      "sha256": "089ba15b9ad7a0cd83cd5a2ff0c99eddc22504ce14507427c3b83d577b0ae926",
+      "bytes": 518140,
+      "width": 3720,
+      "height": 1692,
+      "review": {
+        "status": "approved-with-composition-guard",
+        "humanApproved": true,
+        "identity": "pass",
+        "anatomy": "pass",
+        "textArtifacts": "pass",
+        "logic": "decorative-only",
+        "notes": "Nova, the bandana cat, trolleybus and desk are consistent. The unreliable prism beam at the lower edge stays behind the tested desktop vignette and outside the mobile hero crop."
+      }
+    },
+    "cat-chronometrist-trolleybus-clean-v2.webp": {
+      "sceneId": "mechanics-night-trolleybus",
+      "use": "decorative",
+      "viewportPolicy": "natural-crop",
+      "sha256": "90d035b0a58d6ed35a1c4f852efc12f6380b02930ab0721c35cd84207970013c",
+      "bytes": 451838,
+      "width": 3600,
+      "height": 1580,
+      "review": {
+        "status": "approved",
+        "humanApproved": true,
+        "identity": "pass",
+        "anatomy": "pass",
+        "textArtifacts": "pass",
+        "logic": "decorative-only",
+        "notes": "Intentional storybook anthropomorphism; stopwatch and Belarusian urban trolleybus are readable, with no generated lettering."
+      }
+    },
+    "topic-dynamics.webp": {
+      "sceneId": "dynamics-force-bench",
+      "use": "decorative",
+      "viewportPolicy": "natural-crop",
+      "sha256": "f42c146d828c7a46e361db0042b944a3573c049a8f5aa1043355bfc0d5f82279",
+      "bytes": 219790,
+      "width": 960,
+      "height": 960,
+      "review": {
+        "status": "approved",
+        "humanApproved": true,
+        "identity": "not-applicable",
+        "anatomy": "not-applicable",
+        "textArtifacts": "pass",
+        "logic": "decorative-only",
+        "notes": "The block and spring scale form a plausible force-measurement still life. It is used as atmospheric section art, not as a measured force diagram."
+      }
+    },
+    "topic-electricity.webp": {
+      "sceneId": "electricity-bench-circuit",
+      "use": "decorative",
+      "viewportPolicy": "natural-crop",
+      "sha256": "d4a13806c4a38ab3c44e6abd4aa8385b36942e3b2f334ad915bcb4201f0c7e5a",
+      "bytes": 251284,
+      "width": 960,
+      "height": 960,
+      "review": {
+        "status": "approved",
+        "humanApproved": true,
+        "identity": "not-applicable",
+        "anatomy": "not-applicable",
+        "textArtifacts": "pass",
+        "logic": "decorative-only",
+        "notes": "Cells, lamp and coil are readable as a coherent electricity workbench. The scene is never presented as a circuit schematic."
+      }
+    },
+    "topic-optics.webp": {
+      "sceneId": "optics-prism-bench",
+      "use": "decorative",
+      "viewportPolicy": "natural-crop",
+      "sha256": "43ce6fb5ae373103b93cc9d8d604aa0028a0aef76851388825072659f7321239",
+      "bytes": 177512,
+      "width": 960,
+      "height": 960,
+      "review": {
+        "status": "approved",
+        "humanApproved": true,
+        "identity": "not-applicable",
+        "anatomy": "not-applicable",
+        "textArtifacts": "pass",
+        "logic": "pass",
+        "notes": "A single incident beam reaches the prism and the dispersed spectrum continues toward the screen; there are no characters, pseudo-labels or disconnected light fragments."
+      }
+    },
+    "topic-electricity-clean-v2.webp": {
+      "sceneId": "electricity-open-circuit",
+      "use": "decorative",
+      "viewportPolicy": "natural-crop",
+      "sha256": "12895913d4f76ec107a23edf73227aa10481d581f563da86ba1b946037d1e85a",
+      "bytes": 691196,
+      "width": 2508,
+      "height": 2508,
+      "review": {
+        "status": "approved",
+        "humanApproved": true,
+        "identity": "pass",
+        "anatomy": "pass",
+        "textArtifacts": "pass",
+        "logic": "pass",
+        "notes": "The switch is open and the bulb is unlit; the visible state is coherent. It remains atmospheric art, not a circuit schematic."
+      }
+    },
+    "cat-optics-spectrum-clean-v2.webp": {
+      "sceneId": "optics-prism-cat",
+      "use": "decorative",
+      "viewportPolicy": "natural-crop",
+      "sha256": "2ed3b05049e7cdc97116c5044ec3cc150d944daec69b3d8173a3872d3da3edfc",
+      "bytes": 713382,
+      "width": 2800,
+      "height": 1866,
+      "review": {
+        "status": "approved",
+        "humanApproved": true,
+        "identity": "pass",
+        "anatomy": "pass",
+        "textArtifacts": "pass",
+        "logic": "pass",
+        "notes": "A visible incident beam enters the prism and a spectrum exits toward the screen; simplified but logically complete."
+      }
+    },
+    "topic-thermodynamics-clean-v2.webp": {
+      "sceneId": "thermodynamics-heated-flask",
+      "use": "decorative",
+      "viewportPolicy": "natural-crop",
+      "sha256": "21e76f131a62d0e3569a83629f694974ceaf0e587e28efe46805d885f1d95f3b",
+      "bytes": 918062,
+      "width": 2508,
+      "height": 2508,
+      "review": {
+        "status": "approved",
+        "humanApproved": true,
+        "identity": "pass",
+        "anatomy": "pass",
+        "textArtifacts": "pass",
+        "logic": "decorative-only",
+        "notes": "The glowing flow is metaphorical and must not be used to teach convection direction or apparatus construction."
+      }
+    },
+    "topic-kinematics-cozy.webp": {
+      "sceneId": "kinematics-timing-desk",
+      "use": "decorative",
+      "viewportPolicy": "natural-crop",
+      "sha256": "e287230619d29b1ffbc43e2c133b4adf72dbf237a7233a7df96591c4987f3a0b",
+      "bytes": 421676,
+      "width": 1254,
+      "height": 1254,
+      "review": {
+        "status": "approved",
+        "humanApproved": true,
+        "identity": "pass",
+        "anatomy": "pass",
+        "textArtifacts": "pass",
+        "logic": "decorative-only",
+        "notes": "Stopwatch and moving-ball motif communicate timing; no vector or trajectory in the image is treated as instructional data."
+      }
+    },
+    "topic-dynamics-cozy.webp": {
+      "sceneId": "dynamics-incline-desk",
+      "use": "decorative",
+      "viewportPolicy": "natural-crop",
+      "sha256": "3f5aba68aaf26d7835c337bc32a55f7e30fae5eb0d488f6cc2aa1c5c7f1d3efd",
+      "bytes": 479138,
+      "width": 1254,
+      "height": 1254,
+      "review": {
+        "status": "approved",
+        "humanApproved": true,
+        "identity": "pass",
+        "anatomy": "pass",
+        "textArtifacts": "pass",
+        "logic": "decorative-only",
+        "notes": "The incline and arrows are a mood cue only; they are not a force diagram and may not be labeled as one."
+      }
+    },
+    "topic-optics-cozy.webp": {
+      "sceneId": "optics-bench-prism",
+      "use": "decorative",
+      "viewportPolicy": "natural-crop",
+      "sha256": "0de30287aca708d58017d2930840771a1e1e63b7455fb2be44f288e5d141414e",
+      "bytes": 477478,
+      "width": 1254,
+      "height": 1254,
+      "review": {
+        "status": "approved",
+        "humanApproved": true,
+        "identity": "pass",
+        "anatomy": "pass",
+        "textArtifacts": "pass",
+        "logic": "pass",
+        "notes": "The incident beam, prism and projected spectrum form a coherent decorative optical setup."
+      }
+    },
+    "cat-exam-scratch-paper.webp": {
+      "sceneId": "exam-scratch-paper-cat",
+      "use": "decorative",
+      "viewportPolicy": "natural-crop",
+      "sha256": "d911667a0c71c924296075c5e6c69d589a5176f66297847641c24515d3fedcda",
+      "bytes": 331456,
+      "width": 960,
+      "height": 1200,
+      "review": {
+        "status": "approved",
+        "humanApproved": true,
+        "identity": "pass",
+        "anatomy": "pass",
+        "textArtifacts": "pass",
+        "logic": "decorative-only",
+        "notes": "Paws, pencil, ruler and blank scratch paper are coherent; there is no fake handwritten content."
+      }
+    },
+    "lesson-acceleration-trolleybus-cozy.webp": {
+      "sceneId": "acceleration-minsk-trolleybus",
+      "use": "decorative",
+      "viewportPolicy": "natural-crop",
+      "sha256": "18c44ab5e44a909c6c61123049e3897c7b87b25be323b62e6fdeedf5e5c52f48",
+      "bytes": 329118,
+      "width": 1672,
+      "height": 941,
+      "review": {
+        "status": "approved",
+        "humanApproved": true,
+        "identity": "pass",
+        "anatomy": "not-applicable",
+        "textArtifacts": "pass",
+        "logic": "decorative-only",
+        "notes": "The two overhead poles and wet Belarusian city setting are plausible. It illustrates context, not a motion measurement."
+      }
+    },
+    "curator-mechanics.webp": {
+      "sceneId": "curator-mechanics-cat",
+      "use": "decorative",
+      "viewportPolicy": "natural-crop",
+      "sha256": "778a812356fdb2e542fb87a17d0be31e619e1422dc8110f44f6f7651b287164e",
+      "bytes": 406156,
+      "width": 1254,
+      "height": 1254,
+      "review": { "status": "approved", "humanApproved": true, "identity": "pass", "anatomy": "pass", "textArtifacts": "pass", "logic": "decorative-only", "notes": "Bandana cat identity is consistent with the mechanics story family." }
+    },
+    "curator-electricity.webp": {
+      "sceneId": "curator-electricity-cat",
+      "use": "decorative",
+      "viewportPolicy": "natural-crop",
+      "sha256": "575c048b1dfa70ff07843afcce82cd0d167d21c8a96b78499479ce3bd5e76b04",
+      "bytes": 339794,
+      "width": 1254,
+      "height": 1254,
+      "review": { "status": "approved", "humanApproved": true, "identity": "pass", "anatomy": "pass", "textArtifacts": "pass", "logic": "pass", "notes": "Open switch and unlit lamp agree; lightning tag identifies the curator without fake text." }
+    },
+    "curator-optics.webp": {
+      "sceneId": "curator-optics-cat",
+      "use": "decorative",
+      "viewportPolicy": "natural-crop",
+      "sha256": "5078dcf86814259a044c799f429c772db5132285e697afa87b51c6ca1abee658",
+      "bytes": 473068,
+      "width": 1254,
+      "height": 1254,
+      "review": { "status": "approved", "humanApproved": true, "identity": "pass", "anatomy": "pass", "textArtifacts": "pass", "logic": "pass", "notes": "Incident beam, prism and screen are visibly connected; the Siamese optics curator stays consistent." }
+    },
+    "curator-thermodynamics.webp": {
+      "sceneId": "curator-thermodynamics-cat",
+      "use": "decorative",
+      "viewportPolicy": "natural-crop",
+      "sha256": "d94ac762a87bab6fefcce59811da494bc4d99638abdf357b234370cc8d61781e",
+      "bytes": 397536,
+      "width": 1254,
+      "height": 1254,
+      "review": { "status": "approved", "humanApproved": true, "identity": "pass", "anatomy": "pass", "textArtifacts": "pass", "logic": "decorative-only", "notes": "Heating vessel is atmospheric and is not used as a laboratory apparatus diagram." }
+    },
+    "curator-mechanics-thinking.webp": {
+      "sceneId": "mechanics-cat-thinking-state",
+      "use": "decorative",
+      "viewportPolicy": "natural-crop",
+      "sha256": "4cf1844b8aebbf369ed4a0492034c80b1304487aeac5639a97982cfa7a715d7c",
+      "bytes": 78700,
+      "width": 472,
+      "height": 768,
+      "review": { "status": "approved", "humanApproved": true, "identity": "pass", "anatomy": "pass", "textArtifacts": "pass", "logic": "decorative-only", "notes": "Transparent thinking pose matches the black bandana mechanics cat." }
+    },
+    "curator-mechanics-support.webp": {
+      "sceneId": "mechanics-cat-support-state",
+      "use": "decorative",
+      "viewportPolicy": "natural-crop",
+      "sha256": "31c382668285a8dd338c696571f452e8eacc1aece7c362e9f77f07e7cba1ec67",
+      "bytes": 73198,
+      "width": 417,
+      "height": 768,
+      "review": { "status": "approved", "humanApproved": true, "identity": "pass", "anatomy": "pass", "textArtifacts": "pass", "logic": "decorative-only", "notes": "Transparent support pose preserves the same cat, bandana and proportions." }
+    },
+    "tutor-calm.webp": {
+      "sceneId": "nova-calm-state",
+      "use": "decorative",
+      "viewportPolicy": "natural-crop",
+      "sha256": "9bc74f13594dae382ef1026a812fd6c77e4ae4602ccdf3d069e86c01d943672f",
+      "bytes": 69316,
+      "width": 768,
+      "height": 768,
+      "review": { "status": "approved", "humanApproved": true, "identity": "pass", "anatomy": "pass", "textArtifacts": "pass", "logic": "decorative-only", "notes": "Nova baseline: glasses, purple bob, hair clips and blue overshirt are the canonical identity." }
+    },
+    "tutor-thinking.webp": {
+      "sceneId": "nova-thinking-state",
+      "use": "decorative",
+      "viewportPolicy": "natural-crop",
+      "sha256": "e51e3be846d501e7abb0499e62b3ca5c2d524958405fe1ddd58e46b189c40cb1",
+      "bytes": 86766,
+      "width": 768,
+      "height": 768,
+      "review": { "status": "approved", "humanApproved": true, "identity": "pass", "anatomy": "pass", "textArtifacts": "pass", "logic": "decorative-only", "notes": "Identity and hand anatomy remain coherent with the calm state." }
+    },
+    "tutor-warning.webp": {
+      "sceneId": "nova-warning-state",
+      "use": "decorative",
+      "viewportPolicy": "natural-crop",
+      "sha256": "1022f6111d96065e0e6de6da622bc81770179f18d9f3d5df362843bf63762710",
+      "bytes": 86238,
+      "width": 768,
+      "height": 768,
+      "review": { "status": "approved", "humanApproved": true, "identity": "pass", "anatomy": "pass", "textArtifacts": "pass", "logic": "decorative-only", "notes": "Open hand has five fingers; face, glasses, clothing and hair remain consistent." }
+    },
+    "tutor-encouraging.webp": {
+      "sceneId": "nova-encouraging-state",
+      "use": "decorative",
+      "viewportPolicy": "natural-crop",
+      "sha256": "21170b0cd8001b863afd10c9b7af52c80ac709c9c7faea036868c62c5d9eee08",
+      "bytes": 85664,
+      "width": 768,
+      "height": 768,
+      "review": { "status": "approved", "humanApproved": true, "identity": "pass", "anatomy": "pass", "textArtifacts": "pass", "logic": "decorative-only", "notes": "Thumb gesture and wrist are coherent; identity remains stable." }
+    },
+    "tutor-surprised.webp": {
+      "sceneId": "nova-surprised-state",
+      "use": "decorative",
+      "viewportPolicy": "natural-crop",
+      "sha256": "a04e74a5165df744035089561ec3a26462916837e18dd264ffbfe6a6b16a4312",
+      "bytes": 75370,
+      "width": 768,
+      "height": 768,
+      "review": { "status": "approved", "humanApproved": true, "identity": "pass", "anatomy": "pass", "textArtifacts": "pass", "logic": "decorative-only", "notes": "Expression changes without changing Nova's face, glasses, hair or clothes." }
+    },
+    "meme-kinematics-jet-cat.webp": {
+      "sceneId": "meme-kinematics-jet-cat",
+      "use": "decorative",
+      "viewportPolicy": "natural-crop",
+      "sha256": "b909d542e040628f41fe5459eb4bfe6d1ba2f5d06f8567afca863a67ea701783",
+      "bytes": 32236,
+      "width": 736,
+      "height": 736,
+      "review": { "status": "approved-with-composition-guard", "humanApproved": true, "identity": "not-applicable", "anatomy": "not-applicable", "textArtifacts": "pass", "logic": "decorative-only", "notes": "User-supplied public meme. Use only as a small kinematics summary reaction; crop removes the camera overlay and it is never presented as evidence of real propulsion." }
+    },
+    "meme-dynamics-sisyphus-cat.webp": {
+      "sceneId": "meme-dynamics-sisyphus-cat",
+      "use": "decorative",
+      "viewportPolicy": "natural-crop",
+      "sha256": "6524132bccc3aea6781bd1e65b2952f3ca89e357b907788eda17953991af5717",
+      "bytes": 42756,
+      "width": 735,
+      "height": 667,
+      "review": { "status": "approved-with-composition-guard", "humanApproved": true, "identity": "not-applicable", "anatomy": "not-applicable", "textArtifacts": "pass", "logic": "decorative-only", "notes": "User-supplied public meme. The Sisyphus composition reads as force and work; use only after a completed dynamics practice, never as a measured force diagram." }
+    },
+    "meme-electro-lightning-cat.webp": {
+      "sceneId": "meme-electro-lightning-cat",
+      "use": "decorative",
+      "viewportPolicy": "natural-crop",
+      "sha256": "0fa148ee3ed1251f2080b77a37ee790c722daca19efde9f6e02a8a184b9c5b6c",
+      "bytes": 36784,
+      "width": 474,
+      "height": 842,
+      "review": { "status": "approved-with-composition-guard", "humanApproved": true, "identity": "not-applicable", "anatomy": "not-applicable", "textArtifacts": "pass", "logic": "decorative-only", "notes": "User-supplied public meme. Lightning is an expressive electricity reaction, not a circuit or a safe demonstration; keep it out of instructional diagrams." }
+    },
+    "meme-thermo-explosion-cat.webp": {
+      "sceneId": "meme-thermo-explosion-cat",
+      "use": "decorative",
+      "viewportPolicy": "natural-crop",
+      "sha256": "2199176daf1ba9ac0adf052946f466808eaecb9f46120d42b637fb99c2fb641d",
+      "bytes": 19132,
+      "width": 300,
+      "height": 300,
+      "review": { "status": "approved-with-composition-guard", "humanApproved": true, "identity": "not-applicable", "anatomy": "not-applicable", "textArtifacts": "pass", "logic": "decorative-only", "notes": "User-supplied public meme. The explosion is a comic energy-release reaction only; never use it to explain heat transfer, nuclear physics, or safety." }
+    },
+    "meme-optics-star-cat.webp": {
+      "sceneId": "meme-optics-star-cat",
+      "use": "decorative",
+      "viewportPolicy": "natural-crop",
+      "sha256": "6c6a10751c8ebc31563d97b248d8e0a1b239f06c353b02e13c3dd1e0570d13eb",
+      "bytes": 33606,
+      "width": 736,
+      "height": 581,
+      "review": { "status": "approved-with-composition-guard", "humanApproved": true, "identity": "not-applicable", "anatomy": "not-applicable", "textArtifacts": "pass", "logic": "decorative-only", "notes": "User-supplied public meme. The luminous star supports an optics summary mood; it is decorative and not a model of a light source." }
+    },
+    "mistakes-empty.webp": {
+      "sceneId": "nova-cleared-mistakes-desk",
+      "use": "decorative",
+      "viewportPolicy": "natural-crop",
+      "sha256": "0570d9da06c7f10f545226dda77f2fba8ba2fab1ac127f8c04e828fd26c26e71",
+      "bytes": 207138,
+      "width": 1448,
+      "height": 1086,
+      "review": { "status": "approved", "humanApproved": true, "identity": "pass", "anatomy": "pass", "textArtifacts": "pass", "logic": "decorative-only", "notes": "Nova's hands and desk objects are coherent; no fake writing is visible on the paper." }
+    },
+    "paper-texture.webp": {
+      "sceneId": "paper-surface-texture",
+      "use": "interface-texture",
+      "viewportPolicy": "natural-crop",
+      "sha256": "13e4e533f8ef58dc6637b3f6b79b5f6819f92a6c2b60188587750ba9f2af8029",
+      "bytes": 29148,
+      "width": 1200,
+      "height": 900,
+      "review": { "status": "approved", "humanApproved": true, "identity": "not-applicable", "anatomy": "not-applicable", "textArtifacts": "pass", "logic": "not-applicable", "notes": "Neutral paper grain contains no writing, symbols or embedded watermark." }
+    }
+  }
+}

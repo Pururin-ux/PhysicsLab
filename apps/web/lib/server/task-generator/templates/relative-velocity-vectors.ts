@@ -30,15 +30,18 @@ const stories = [
 
 export const relativeVelocityVectorsBlueprint: TaskBlueprint = {
   id: "relative-velocity-vectors",
-  skill: "Сложение перпендикулярных скоростей",
+  skill: "Сложение относительных скоростей",
   topic: "Кинематика",
   group: "kinematics",
-  difficulty: 2,
+  // Самый многошаговый навык кинематики: вектора → треугольник → Пифагор,
+  // плюс чтение диаграммы. Держит «сложность 3» раздела после того, как
+  // средняя скорость перешла на целые ответы.
+  difficulty: 3,
   params: {
     v1: { min: 3, max: 16, step: 1, unit: "м/с" },
     v2: { min: 3, max: 16, step: 1, unit: "м/с" },
   },
-  formula: "v=\\sqrt{v_1^2+v_2^2}",
+  formula: "\\vec v_{A/C}=\\vec v_{A/B}+\\vec v_{B/C}",
   answerUnit: "м/с",
   answerKind: "positive",
   solver: perpendicularVelocityMagnitude,
@@ -60,10 +63,10 @@ export const relativeVelocityVectorsBlueprint: TaskBlueprint = {
   }),
   textTemplate: (p) => stories[variantIndex(p, stories.length)].text(p),
   explanationTemplate: (p, answer) =>
-    `Скорости перпендикулярны, поэтому модули не складываются напрямую — работает теорема Пифагора: v = √(${p.v1}² + ${p.v2}²) = √${p.v1 * p.v1 + p.v2 * p.v2} = ${answer} м/с.`,
+    `Скорость аппарата относительно берега или земли — векторная сумма его скорости относительно среды и скорости среды относительно берега или земли: $\\vec v_{A/C}=\\vec v_{A/B}+\\vec v_{B/C}$. Векторы перпендикулярны, поэтому модуль равен $\\sqrt{${p.v1}^2+${p.v2}^2}=\\sqrt{${p.v1 * p.v1 + p.v2 * p.v2}}=${answer}$ м/с.`,
   trap: "Складывает модули перпендикулярных скоростей вместо векторного сложения.",
   coachLines: {
-    correct: () => "Да. Перпендикулярные скорости складываются по теореме Пифагора.",
+    correct: () => "Да. После согласования систем отсчёта перпендикулярные векторы складываются по теореме Пифагора.",
     wrong: (p, selected, correct) =>
       selected === p.v1 + p.v2
         ? `Модули складывать нельзя — скорости перпендикулярны. По Пифагору получается ${correct} м/с.`

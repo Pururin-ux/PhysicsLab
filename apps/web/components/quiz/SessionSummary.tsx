@@ -1,12 +1,13 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import Link from "next/link";
 import { formatWeakness } from "../../lib/learning/weakness-labels";
 import { Badge } from "../ui/Badge";
 import { Button } from "../ui/Button";
 import { Card } from "../ui/Card";
 import { MathText } from "../ui/MathText";
+import { hasTopicMeme, TopicMemePostcard } from "./TopicMemePostcard";
 
 interface SessionSummaryProps {
   score: number;
@@ -17,6 +18,7 @@ interface SessionSummaryProps {
   topic?: string;
   nextHref?: string;
   nextLabel?: string;
+  variant?: "diagnostic" | "exam";
 }
 
 type ResultVariant =
@@ -25,9 +27,11 @@ type ResultVariant =
   | "electro"
   | "thermo"
   | "optics"
+  | "diagnostic"
   | "exam";
 
-function resultVariantFor(topic?: string): ResultVariant {
+function resultVariantFor(topic?: string, variant?: "diagnostic" | "exam"): ResultVariant {
+  if (variant) return variant;
   if (topic === "Динамика") return "dynamics";
   if (topic === "Электродинамика") return "electro";
   if (topic === "Термодинамика") return "thermo";
@@ -38,53 +42,67 @@ function resultVariantFor(topic?: string): ResultVariant {
 
 const resultBodies: Record<ResultVariant, [string, string, string, string]> = {
   kinematics: [
-    "Ты уверенно работаешь со скоростью, ускорением и графиками.",
+    "В этом наборе сошлись ответы про скорость, ускорение и графики. Это результат одной попытки, а не статус освоения темы: дальше проверь перенос без подсказки и вернись к теме позже.",
     "Посмотри ошибки: чаще всего сбивает график, знак или выбор формулы.",
     "Сначала пойми, что дано на графике. Потом выбирай формулу.",
     "Вернись к разбору выше и проверь, что показывает график.",
   ],
   dynamics: [
-    "Ты уверенно работаешь с силами и направлением ускорения.",
+    "В этом наборе сошлись ответы про силы и направление ускорения. Это результат одной попытки, а не статус освоения темы: дальше проверь перенос без подсказки и вернись к теме позже.",
     "Посмотри ошибки: чаще всего сбивает направление силы или ускорения.",
     "Сначала отметь силы и направление. Потом записывай уравнение.",
     "Вернись к разбору выше и проверь направления сил.",
   ],
   electro: [
-    "Ты уверенно работаешь с законом Ома и делением заряда.",
+    "В этом наборе сошлись ответы про закон Ома и деление заряда. Это результат одной попытки, а не статус освоения темы: дальше проверь перенос без подсказки и вернись к теме позже.",
     "Посмотри ошибки: чаще всего сбивает, что на что делить, или знак заряда.",
     "Сначала запиши закон, потом выражай нужную величину.",
     "Вернись к разбору выше и повтори, что показывают U, I, R и q.",
   ],
   thermo: [
-    "Ты уверенно работаешь с уравнением состояния газа и количеством теплоты.",
+    "В этом наборе сошлись ответы про состояние газа и количество теплоты. Это результат одной попытки, а не статус освоения темы: дальше проверь перенос без подсказки и вернись к теме позже.",
     "Посмотри ошибки: чаще всего сбивают кельвины или пропущенный множитель.",
     "Сначала переведи температуру в кельвины, потом считай остальное.",
     "Вернись к разбору выше и проверь единицы измерения по каждой величине.",
   ],
   optics: [
-    "Ты уверенно работаешь с отражением, преломлением и собирающей линзой.",
+    "В этом наборе сошлись ответы про отражение, преломление и собирающую линзу. Это результат одной попытки, а не статус освоения темы: дальше проверь перенос без подсказки и вернись к теме позже.",
     "Посмотри ошибки: чаще всего сбивают нормаль, порядок отношений или единицы фокусного расстояния.",
     "Сначала отметь нормаль или главную ось, затем выбери нужную связь величин.",
     "Вернись к справке и проверь, откуда отсчитан угол и в каких единицах дано расстояние.",
   ],
   exam: [
-    "Пять открытых тем в этой тренировке в хорошей форме. Атомно-ядерная физика сюда пока не входит.",
-    "Разбор ошибок ниже покажет, что повторить перед следующими 10 задачами.",
-    "В этой тренировке верна половина ответов. Разбери слабые места и возьми ещё 10 задач.",
-    "Вернись к темам, повтори слабые места и начни следующую смешанную тренировку.",
+    "В открытой части этой диагностики большинство ответов верны. Это результат одной попытки, а не оценка устойчивого знания или готовности ко всей программе: четыре раздела покрыты частично, два пока не покрыты.",
+    "Разбор ошибок ниже покажет, что повторить в открытой части каталога. Полную готовность к ЦТ/ЦЭ этот результат не измеряет.",
+    "В этой диагностике верна половина ответов. Разбери слабые места, но помни: два раздела программы здесь пока отсутствуют.",
+    "Вернись к темам, повтори слабые места и пройди диагностику снова. Непокрытые разделы нужно готовить отдельно.",
+  ],
+  diagnostic: [
+    "В этой попытке большинство ответов верны. Теперь можно выбрать место, которое хочется проверить глубже и затем воспроизвести после перерыва.",
+    "Микс показал несколько мест для повторения. Выбери одно — не нужно разбирать всё сразу.",
+    "Это нормальная стартовая точка. Посмотри, какая тема сбивала чаще, и начни с неё.",
+    "Этот результат ничего не говорит о твоих способностях. Он только показывает, с какой открытой темы удобнее начать.",
   ],
 };
 
-function getResultCopy(score: number, total: number, topic?: string) {
+function getResultCopy(
+  score: number,
+  total: number,
+  topic?: string,
+  variant?: "diagnostic" | "exam",
+) {
   const ratio = total === 0 ? 0 : score / total;
-  const bodies = resultBodies[resultVariantFor(topic)];
+  const bodies = resultBodies[resultVariantFor(topic, variant)];
 
   if (ratio >= 0.9) {
     return {
       tone: "cyan" as const,
       scoreClass: "text-nova-cyan",
       marker: "✦",
-      title: "Отлично получилось",
+      title:
+        variant === "diagnostic"
+          ? "Есть опора для старта"
+          : "Ответы сошлись",
       body: bodies[0],
     };
   }
@@ -94,32 +112,44 @@ function getResultCopy(score: number, total: number, topic?: string) {
       tone: "cyan" as const,
       scoreClass: "text-nova-cyan",
       marker: "◈",
-      title: "Хороший результат",
+      title:
+        variant === "diagnostic"
+          ? "Хорошая стартовая точка"
+          : "Хороший результат",
       body: bodies[1],
     };
   }
 
   if (ratio >= 0.5) {
     return {
-      tone: "gold" as const,
-      scoreClass: "text-nova-gold",
+      tone: variant === "diagnostic" ? ("cyan" as const) : ("gold" as const),
+      scoreClass:
+        variant === "diagnostic" ? "text-nova-cyan" : "text-feedback-warning",
       marker: "△",
-      title: "Есть над чем поработать",
+      title:
+        variant === "diagnostic"
+          ? "Нашлись темы для старта"
+          : "Есть над чем поработать",
       body: bodies[2],
     };
   }
 
   return {
-    tone: "gold" as const,
-    scoreClass: "text-nova-gold",
+    tone: variant === "diagnostic" ? ("cyan" as const) : ("gold" as const),
+    scoreClass:
+      variant === "diagnostic" ? "text-nova-cyan" : "text-feedback-warning",
     marker: "○",
-    title: "Повтори теорию и попробуй снова",
+    title:
+      variant === "diagnostic"
+        ? "Теперь видно, с чего начать"
+        : "Повтори теорию и попробуй снова",
     body: bodies[3],
   };
 }
 
 type SummaryWeakness = {
   key: string;
+  dedupeKey: string;
   title: string;
   hint: string;
 };
@@ -137,6 +167,9 @@ function formatSummaryWeakness(value: string): SummaryWeakness | null {
     if (formatted) {
       return {
         key: formatted.key,
+        // Один навык — один пункт сводки, даже если ловушки внутри навыка
+        // разные: ученику нужен список тем для повторения, а не журнал.
+        dedupeKey: formatted.skillId,
         title: formatted.title,
         hint: formatted.hint,
       };
@@ -145,6 +178,7 @@ function formatSummaryWeakness(value: string): SummaryWeakness | null {
 
   return {
     key: trimmed,
+    dedupeKey: trimmed,
     title: "Типовая ошибка",
     hint: trimmed,
   };
@@ -157,11 +191,11 @@ function getUniqueSummaryWeaknesses(weakTraps: string[]) {
   for (const trap of weakTraps) {
     const weakness = formatSummaryWeakness(trap);
 
-    if (!weakness || seen.has(weakness.key)) {
+    if (!weakness || seen.has(weakness.dedupeKey)) {
       continue;
     }
 
-    seen.add(weakness.key);
+    seen.add(weakness.dedupeKey);
     weaknesses.push(weakness);
   }
 
@@ -177,10 +211,12 @@ export function SessionSummary({
   topic,
   nextHref,
   nextLabel,
+  variant,
 }: SessionSummaryProps) {
-  const copy = getResultCopy(score, total, topic);
+  const copy = getResultCopy(score, total, topic, variant);
   const summaryWeaknesses = getUniqueSummaryWeaknesses(weakTraps);
   const ratio = total === 0 ? 0 : score / total;
+  const showTopicMeme = hasTopicMeme(topic, variant);
 
   return (
     <motion.section
@@ -190,37 +226,57 @@ export function SessionSummary({
       transition={{ duration: 0.5, ease: "easeOut" }}
     >
       <Card className="flex flex-col items-center gap-6 text-center">
-        <Badge tone={copy.tone}>Итог тренировки</Badge>
+        <Badge tone={copy.tone}>
+          {resultVariantFor(topic, variant) === "exam" ||
+          resultVariantFor(topic, variant) === "diagnostic"
+            ? "Итог диагностики"
+            : "Итог тренировки"}
+        </Badge>
 
-        <div className="flex flex-col items-center gap-3">
-          <p className={`${copy.scoreClass} text-[48px] font-[800] leading-none tracking-tight`}>
-            {copy.marker} {score} / {total} {copy.marker}
-          </p>
-          <div className="flex flex-col gap-2">
-            <h2 className="text-xl font-bold text-white">{copy.title}</h2>
-            <p className="text-[14px] font-normal leading-[1.7] text-white/70">
-              {copy.body}
+        <div
+          className={
+            showTopicMeme
+              ? "grid w-full items-center gap-6 sm:grid-cols-[minmax(0,1fr)_132px] sm:text-left"
+              : "flex w-full flex-col items-center gap-3"
+          }
+        >
+          <div
+            className={
+              showTopicMeme
+                ? "flex min-w-0 flex-col items-center gap-3 sm:items-start"
+                : "flex w-full flex-col items-center gap-3"
+            }
+          >
+            <p className={`${copy.scoreClass} text-[48px] font-[800] leading-none tracking-tight`}>
+              {copy.marker} {score} / {total} {copy.marker}
             </p>
+            <div className="flex flex-col gap-2">
+              <h2 className="text-xl font-bold text-white">{copy.title}</h2>
+              <p className="text-[14px] font-normal leading-[1.7] text-white/70">
+                {copy.body}
+              </p>
+            </div>
+            <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-white/10">
+              <motion.div
+                className="h-full rounded-full bg-nova-cyan"
+                initial={{ width: 0 }}
+                animate={{ width: `${Math.round(ratio * 100)}%` }}
+                transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
+              />
+            </div>
           </div>
-          <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-white/10">
-            <motion.div
-              className="h-full rounded-full bg-nova-cyan"
-              initial={{ width: 0 }}
-              animate={{ width: `${Math.round(ratio * 100)}%` }}
-              transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
-            />
-          </div>
+          <TopicMemePostcard topic={topic} variant={variant} />
         </div>
 
         {summaryWeaknesses.length > 0 ? (
           <div className="w-full rounded-card border border-white/[.08] bg-space-900 p-6 text-left">
-            <p className="mb-4 text-[11px] font-bold uppercase tracking-[.14em] text-white/50">
+            <p className="mb-4 text-[11px] font-bold uppercase tracking-[.14em] text-white/60">
               На что обратить внимание
             </p>
             <ol className="space-y-3 text-[13px] font-normal leading-[1.6] text-white/75">
               {summaryWeaknesses.map((weakness, index) => (
                 <li key={weakness.key} className="grid grid-cols-[auto_1fr] gap-3">
-                  <span className="mt-0.5 shrink-0 text-nova-gold">
+                  <span className="mt-0.5 shrink-0 text-feedback-warning">
                     {index + 1}.
                   </span>
                   <span className="flex min-w-0 flex-col gap-1">
@@ -234,7 +290,7 @@ export function SessionSummary({
             </ol>
             <Link
               href="/mistakes"
-              className="mt-4 inline-flex items-center gap-1 rounded-option text-[13px] font-semibold text-nova-cyan/85 transition-colors hover:text-nova-cyan focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/50"
+              className="mt-4 inline-flex items-center gap-1 rounded-option text-[13px] font-semibold text-nova-cyan/85 transition-colors hover:text-nova-cyan focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-blue/50"
             >
               Все мои слабые места →
             </Link>

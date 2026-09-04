@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { getHelpTargetForMistake } from "../lib/learning/topic-help.ts";
 
 const topicPracticeRoutes = [
   { name: "kinematics", path: "/practice/kinematics-demo" },
@@ -85,7 +86,7 @@ test.skip("kinematics help targets accelerated first task and graph second task"
     page,
     "motion-graphs",
     "Графики v(t), x(t)",
-    "a=\\frac{\\Delta v}{\\Delta t},\\quad s=S_{v(t)}",
+    "a=\\frac{\\Delta v}{\\Delta t},\\quad s=\\frac{v_0+v}{2}\\,t",
   );
   await expect(drawer.getByTestId("compact-help-card")).toContainText("площадь под v(t)");
   await expect(page.getByTestId("help-section-selector")).toHaveValue("motion-graphs");
@@ -155,15 +156,27 @@ test("wrong answer opens contextual help without expanding solution", async ({ p
 
   await page.goto("/practice/kinematics-demo", { waitUntil: "domcontentloaded" });
   const payload = (await (await taskResponse).json()) as {
-    tasks: { options: { correct?: boolean; text: string }[] }[];
+    tasks: {
+      blueprint: string;
+      text?: string;
+      options: { correct?: boolean; text: string; misconception?: string }[];
+    }[];
   };
   await page.waitForLoadState("networkidle");
 
   const options = page.getByRole("list", { name: "Варианты ответа" });
   await expect(options).toBeVisible();
-  const wrongOption = payload.tasks[0]?.options.find((option) => !option.correct);
-  expect(wrongOption, "generated kinematics task must expose a wrong option").toBeDefined();
-  await options.getByRole("button").filter({ hasText: wrongOption!.text }).click();
+  // По подписи вариант искать нельзя: «50 м» — подстрока «250 м». Берём его по
+  // позиции: OptionList рендерит варианты в порядке ответа API.
+  const currentTask = payload.tasks[0];
+  const wrongIndex = currentTask?.options.findIndex((option) => !option.correct) ?? -1;
+  expect(wrongIndex, "generated kinematics task must expose a wrong option").toBeGreaterThan(-1);
+  await options.getByRole("button").nth(wrongIndex).click();
+  const expectedTarget = getHelpTargetForMistake(
+    currentTask,
+    currentTask.options[wrongIndex]?.misconception,
+    "kinematics",
+  );
 
   await expect(page.getByRole("button", { name: "Показать решение" })).toBeVisible();
   await expect(page.getByTestId("solution-content")).toHaveCount(0);
@@ -173,18 +186,17 @@ test("wrong answer opens contextual help without expanding solution", async ({ p
 
   const helpTarget = page.getByTestId("help-target-button");
   await expect(helpTarget).toBeVisible();
-  await expect(helpTarget).toContainText("Равноускоренное движение");
+  await expect(helpTarget).toContainText(expectedTarget.label);
   await helpTarget.click();
 
   await expect(drawer).toBeVisible();
-  await expectActiveHelpCard(
-    page,
-    "accelerated-motion",
-    "Равноускоренное движение",
-    "x=x_0+v_0t+\\frac{at^2}{2}",
+  await expect(drawer).toHaveAttribute("data-active-section", expectedTarget.sectionId);
+  await expect(drawer.getByTestId("compact-help-card")).toHaveAttribute(
+    "data-help-card-title",
+    expectedTarget.label,
   );
   await expect(page.locator('[data-testid^="help-chip-"]')).toHaveCount(0);
-  await expect(page.getByTestId("help-section-selector")).toHaveValue("accelerated-motion");
+  await expect(page.getByTestId("help-section-selector")).toHaveValue(expectedTarget.sectionId);
   await expect(page.getByTestId("solution-content")).toHaveCount(0);
 });
 

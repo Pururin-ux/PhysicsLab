@@ -13,6 +13,14 @@ const accentByTopic = {
   optics: "cyan",
 } as const;
 
+const mixedPracticeByTopic = {
+  kinematics: "/practice/kinematics-demo",
+  dynamics: "/practice/dynamics-demo",
+  electrodynamics: "/practice/electro-demo",
+  thermodynamics: "/practice/thermo-demo",
+  optics: "/practice/optics-demo",
+} as const;
+
 export function FocusedFamilyPractice({ entry }: { entry: TaskTypeCatalogEntry }) {
   const sections = topicHelpSections[entry.topicId];
 
@@ -23,12 +31,11 @@ export function FocusedFamilyPractice({ entry }: { entry: TaskTypeCatalogEntry }
       generatedTopic={entry.topicLabel}
       generatedTitle={entry.title}
       generatedCount={5}
-      restartLabel="Ещё 5 похожих"
-      nextHref={`/tasks/${entry.slug}`}
-      nextLabel="К типу задачи"
+      restartLabel="Ещё 5 задач"
+      nextHref={mixedPracticeByTopic[entry.topicId]}
+      nextLabel="Проверить без подсказки"
       accent={accentByTopic[entry.topicId]}
-      drawerTitle="Справка по задаче"
-      drawerDescription="Открыт раздел, который нужен для текущего вопроса."
+      drawerTitle="Справка"
       subtopics={sections}
     >
       {sections.map((section) => (

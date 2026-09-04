@@ -1,3 +1,6 @@
+> **Component-local guidance.** It does not define product direction; use
+> `docs/current/` and `docs/decisions/` for current web requirements.
+
 # Nova mascot integration
 
 Nova is not a standalone product showcase. The Claude prototype is treated as a

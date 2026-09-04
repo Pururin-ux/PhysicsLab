@@ -160,19 +160,25 @@ async function expectSummaryScore(page: Page, score: number, total: number) {
   await expect(visibleScore).toHaveCount(1);
 }
 
-async function expectScrollableAboveMobileNav(
+// После штатной прокрутки контрол должен помещаться между липкой шапкой и
+// фиксированной мобильной навигацией, а не только внутри layout viewport.
+async function expectReachableBetweenShellBars(
   control: Locator,
-  mobileNavContainer: Locator,
+  header: Locator,
+  bottomNavigation: Locator,
 ) {
-  await control.evaluate((element) => element.scrollIntoView({ block: "end" }));
-  const [controlBox, navBox] = await Promise.all([
+  await control.scrollIntoViewIfNeeded();
+  const [controlBox, headerBox, navigationBox] = await Promise.all([
     control.boundingBox(),
-    mobileNavContainer.boundingBox(),
+    header.boundingBox(),
+    bottomNavigation.boundingBox(),
   ]);
 
   expect(controlBox, "control must have a bounding box").not.toBeNull();
-  expect(navBox, "mobile nav must have a bounding box").not.toBeNull();
-  expect(navBox!.y - (controlBox!.y + controlBox!.height)).toBeGreaterThanOrEqual(8);
+  expect(headerBox, "sticky header must have a bounding box").not.toBeNull();
+  expect(navigationBox, "mobile navigation must have a bounding box").not.toBeNull();
+  expect(controlBox!.y).toBeGreaterThanOrEqual(headerBox!.y + headerBox!.height);
+  expect(controlBox!.y + controlBox!.height).toBeLessThanOrEqual(navigationBox!.y);
 }
 
 test.describe("numeric answer desktop flows", () => {
@@ -445,7 +451,7 @@ test.describe("numeric answer mobile layout", () => {
     );
   });
 
-  test("input, feedback and expanded solution clear the bottom nav", async ({
+  test("input, feedback and expanded solution stay clear of the sticky header", async ({
     page,
     request,
   }) => {
@@ -458,15 +464,10 @@ test.describe("numeric answer mobile layout", () => {
     await expectNumericReady(page, task);
     await expectNoHorizontalOverflow(page);
 
-    const mobileNav = page.getByRole("navigation", {
-      name: "Мобильная навигация",
-    });
-    const mobileNavContainer = mobileNav.locator("xpath=..");
+    const mobileNav = page.getByTestId("mobile-bottom-nav");
+    const header = page.locator("header").first();
     await expect(mobileNav).toBeVisible();
-    await expectScrollableAboveMobileNav(
-      page.getByTestId("numeric-submit"),
-      mobileNavContainer,
-    );
+    await expectReachableBetweenShellBars(page.getByTestId("numeric-submit"), header, mobileNav);
 
     await page.getByTestId("numeric-answer-input").fill(String(misconception.value));
     await page.getByTestId("numeric-submit").click();
@@ -474,18 +475,12 @@ test.describe("numeric answer mobile layout", () => {
       "aria-expanded",
       "false",
     );
-    await expectScrollableAboveMobileNav(
-      page.getByTestId("next-task-button"),
-      mobileNavContainer,
-    );
+    await expectReachableBetweenShellBars(page.getByTestId("next-task-button"), header, mobileNav);
 
     await page.getByTestId("solution-toggle").click();
     await expect(page.getByTestId("solution-content")).toBeVisible();
     await expect(page.getByTestId("solution-formula")).toHaveCount(0);
-    await expectScrollableAboveMobileNav(
-      page.getByTestId("next-task-button"),
-      mobileNavContainer,
-    );
+    await expectReachableBetweenShellBars(page.getByTestId("next-task-button"), header, mobileNav);
     await expectNoHorizontalOverflow(page);
   });
 });

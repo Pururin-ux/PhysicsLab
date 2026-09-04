@@ -21,6 +21,7 @@ export default function DynamicsDemoPage() {
         eyebrow="Тренировка"
         title="Динамика"
         description="10 задач: силы, ускорение и второй закон Ньютона. Разбор темы доступен рядом."
+        learnHref="/practice/dynamics-lesson"
         accent="gold"
       />
 
@@ -30,31 +31,31 @@ export default function DynamicsDemoPage() {
           generatedTemplate="dynamics-mixed"
           generatedTopic="Динамика"
           generatedTitle="Задачи по динамике"
+          preAnswerGuidance="unlabelled"
           accent="gold"
-          drawerTitle="Справка по задаче"
-          drawerDescription="Открыт раздел, который нужен для текущего вопроса."
+          drawerTitle="Справка"
           drawerLayout="stack"
           subtopics={topicHelpSections.dynamics}
         >
           <article data-help-section-id="newton-second-law" className="flex min-w-0 flex-col gap-4">
             <ForceModel
               variant="resultant"
-              title="Равнодействующая задаёт ускорение"
-              caption="Силы в одну сторону складываются, встречные — вычитаются с учётом выбранной оси."
+              title="Встречные силы: что остаётся"
+              caption="Силы в одну сторону складываются, а встречная сила гасит такую же часть тяги."
             />
 
             <Card
               variant="elevated"
-              className="flex flex-col gap-3 border-l-2 border-l-nova-gold/55"
+              className="flex flex-col gap-3 border-l-2 border-l-feedback-warning/60"
             >
-              <p className="text-[11px] font-bold uppercase tracking-[.14em] text-white/50">
+              <p className="text-[11px] font-bold uppercase tracking-[.14em] text-white/60">
                 Главное
               </p>
               <p className="text-[14px] font-normal leading-[1.7] text-white/80">
-                <MathText text="Ускорение создаёт ==сумма всех сил==, а не одна из них. Знак проекции — это направление, а не ошибка." />
+                <MathText text="Ускорение задаёт ==сила, которая остаётся после сравнения всех сил==, а не одна выбранная сила." />
               </p>
-              <div className="flex gap-2 rounded-option border border-white/[.09] border-l-2 border-l-nova-gold/70 bg-nova-gold/[.04] px-4 py-3 text-[13px] leading-[1.6] text-white/75">
-                <span className="shrink-0 text-nova-gold" aria-hidden="true">
+              <div className="flex gap-2 rounded-option border border-white/[.09] border-l-2 border-l-feedback-warning/75 bg-feedback-warning/[.05] px-4 py-3 text-[13px] leading-[1.6] text-white/75">
+                <span className="shrink-0 text-feedback-warning" aria-hidden="true">
                   ⚠
                 </span>
                 <p>Ошибка: складывать силы, не проверив направления.</p>
@@ -62,14 +63,14 @@ export default function DynamicsDemoPage() {
             </Card>
 
             <FormulaDisplay
-              formula={"\\sum F_x=ma_x"}
-              caption="второй закон Ньютона в проекции на выбранную ось"
+              formula={"F_{\\text{рез}}=ma"}
+              caption="второй закон Ньютона для итоговой силы"
               symbols={[
-                { latex: "\\sum F_x", description: "сумма проекций всех сил, Н" },
+                { latex: "F_{\\text{рез}}", description: "результирующая сила после сложения и взаимного погашения, Н" },
                 { latex: "m", description: "масса тела, кг" },
-                { latex: "a_x", description: "проекция ускорения, м/с²" },
+                { latex: "a", description: "ускорение тела, м/с²" },
               ]}
-              limitation="Сначала выбери положительное направление оси, потом знаки проекций."
+              limitation="Сначала сравни направления сил на рисунке. Оси и знаки проекций понадобятся в следующем уровне задач."
             />
           </article>
 
@@ -77,9 +78,9 @@ export default function DynamicsDemoPage() {
             <CompactHelpCard
               accent="gold"
               title="Равнодействующая"
-              body="Если силы направлены вдоль одной оси, выбери положительное направление и складывай проекции со знаками. Если силы перпендикулярны, используй теорему Пифагора."
-              formula={"F_{res}=\\sum F_x,\\quad F=\\sqrt{F_1^2+F_2^2}"}
-              trap="Ошибка — сложить модули сил, не проверив направления."
+              body="Равнодействующая — сила, которая остаётся после сложения и взаимного погашения всех сил. Встречные силы сначала сравни, а не складывай модулями."
+              formula={"F_{\\text{рез}}=F_{\\rightarrow}-F_{\\leftarrow}"}
+              trap="Ошибка — сложить модули встречных сил, не проверив направления."
             />
           </div>
 
@@ -107,21 +108,21 @@ export default function DynamicsDemoPage() {
             <ForceModel
               variant="lift"
               title="Вес в ускоряющемся лифте"
-              caption="Вес — это сила реакции опоры N; ускорение вверх или вниз его меняет."
+              caption="Вес P действует на опору, реакция N — на тело. Пока контакт сохраняется, их модули равны."
             />
 
             <Card
               variant="elevated"
-              className="flex flex-col gap-3 border-l-2 border-l-nova-gold/55"
+              className="flex flex-col gap-3 border-l-2 border-l-feedback-warning/60"
             >
-              <p className="text-[11px] font-bold uppercase tracking-[.14em] text-white/50">
+              <p className="text-[11px] font-bold uppercase tracking-[.14em] text-white/60">
                 Главное
               </p>
               <p className="text-[14px] font-normal leading-[1.7] text-white/80">
-                <MathText text="Ускорение вверх — опора давит сильнее (==N больше mg==), вниз — вес **меньше**. Масса при этом не меняется." />
+                <MathText text="При ускорении вверх реакция опоры ==N больше mg== и равный ей по модулю вес P тоже больше. При ускорении вниз оба модуля меньше. Масса не меняется." />
               </p>
-              <div className="flex gap-2 rounded-option border border-white/[.09] border-l-2 border-l-nova-gold/70 bg-nova-gold/[.04] px-4 py-3 text-[13px] leading-[1.6] text-white/75">
-                <span className="shrink-0 text-nova-gold" aria-hidden="true">
+              <div className="flex gap-2 rounded-option border border-white/[.09] border-l-2 border-l-feedback-warning/75 bg-feedback-warning/[.05] px-4 py-3 text-[13px] leading-[1.6] text-white/75">
+                <span className="shrink-0 text-feedback-warning" aria-hidden="true">
                   ⚠
                 </span>
                 <p>Ошибка: выбирать знак по скорости лифта, а не по ускорению.</p>
@@ -129,17 +130,28 @@ export default function DynamicsDemoPage() {
             </Card>
 
             <FormulaDisplay
-              formula={"N=m(g\\pm a)"}
-              caption="кажущийся вес при вертикальном ускорении лифта"
+              formula={"P=N=m(g\\pm a)"}
+              caption="модули веса и реакции опоры при сохранённом контакте"
               symbols={[
-                { latex: "N", description: "сила реакции опоры, Н" },
+                { latex: "P", description: "вес: сила, с которой тело действует на опору, Н" },
+                { latex: "N", description: "реакция опоры: сила, действующая на тело, Н" },
                 { latex: "m", description: "масса тела, кг" },
                 { latex: "g", description: "ускорение свободного падения, м/с²" },
                 { latex: "a", description: "модуль ускорения лифта, м/с²" },
               ]}
-              limitation="Знак «плюс» соответствует ускорению вверх, знак «минус» — ускорению вниз."
+              limitation="Считаем, что по вертикали действуют только тяжесть и опора. Знак «плюс» — ускорение вверх, «минус» — вниз."
             />
           </article>
+
+          <div data-help-section-id="impulse-force">
+            <CompactHelpCard
+              accent="gold"
+              title="Импульс силы"
+              body="Изменение импульса тела равно импульсу равнодействующей всех сил. Если равнодействующая постоянна, её модуль умножают на время действия."
+              formula={"\\Delta\\vec p=\\vec F_{\\text{рез}}\\Delta t"}
+              trap="Не подставляй одну выбранную силу, если в задаче есть другие силы: сначала найди равнодействующую."
+            />
+          </div>
 
           <div data-help-section-id="momentum">
             <CompactHelpCard

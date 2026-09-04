@@ -1,4 +1,8 @@
-import type { CircuitDiagramSpec, CircuitTone } from "../../lib/physics/circuit-diagram-spec";
+import type {
+  CircuitDiagramSpec,
+  CircuitTone,
+  CircuitTopology,
+} from "../../lib/physics/circuit-diagram-spec";
 import { cn } from "../../lib/utils";
 import {
   AMMETER_SLOT,
@@ -25,6 +29,35 @@ const WIRE_COLOR = "rgba(226, 232, 240, 0.45)";
 const PLATE_COLOR = "rgba(226, 232, 240, 0.85)";
 const LABEL_COLOR = "rgba(226, 232, 240, 0.65)";
 
+const TOPOLOGY_DESCRIPTION: Record<CircuitTopology, string> = {
+  single: "Один резистор подключён к источнику.",
+  series: "Резисторы соединены последовательно в одной ветви.",
+  parallel: "Резисторы соединены параллельно в отдельных ветвях.",
+  "source-internal": "Источник с внутренним сопротивлением соединён с внешним резистором.",
+};
+
+function describeCircuit(spec: CircuitDiagramSpec) {
+  const source = `Источник ${spec.sourceLabel ?? "ε"}.`;
+  const resistors = spec.resistorLabels.length
+    ? `Резисторы: ${spec.resistorLabels.join(", ")}.`
+    : "Резисторы не подписаны.";
+  const internalResistance = spec.topology === "source-internal"
+    ? `Внутреннее сопротивление ${spec.internalResistanceLabel ?? "r"}.`
+    : null;
+  const switchState = spec.switch
+    ? `Ключ ${spec.switch.label ?? "K"} ${spec.switch.state === "closed" ? "замкнут" : "разомкнут"}.`
+    : null;
+  const meter = spec.meter
+    ? spec.meter.kind === "ammeter"
+      ? `Амперметр ${spec.meter.label ?? "A"} включён последовательно в цепь.`
+      : `Вольтметр ${spec.meter.label ?? "V"} подключён параллельно первому резистору.`
+    : null;
+
+  return ["Электрическая схема.", TOPOLOGY_DESCRIPTION[spec.topology], source, internalResistance, resistors, switchState, meter]
+    .filter(Boolean)
+    .join(" ");
+}
+
 export function CircuitDiagram({ spec, className, ariaLabel }: CircuitDiagramProps) {
   const layout = CIRCUIT_LAYOUTS[spec.topology];
   const tone = TONE_COLOR[spec.tone ?? "gold"];
@@ -40,7 +73,7 @@ export function CircuitDiagram({ spec, className, ariaLabel }: CircuitDiagramPro
       <svg
         viewBox="0 0 320 180"
         role="img"
-        aria-label={ariaLabel ?? "Электрическая схема"}
+        aria-label={ariaLabel ?? describeCircuit(spec)}
         className="mx-auto w-full max-w-[380px]"
       >
         <rect x="0" y="0" width="320" height="180" rx="14" fill={SURFACE} />

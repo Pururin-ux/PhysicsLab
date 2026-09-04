@@ -26,7 +26,6 @@ const dynamicsTemplateIds = [
   "resultant-force",
   "resultant-force-2d",
   "weight-lift",
-  "density-volume-ratio",
   "impulse-momentum",
   "inelastic-collision-speed",
   "kinetic-energy",
@@ -44,6 +43,9 @@ const electrodynamicsTemplateIds = [
 // Шаблоны на пифагоровых тройках имеют естественно малый пул параметров:
 // пар с целым ответом немного, тексты множатся только сюжетами.
 const uniqueTextPoolBySkill: Record<string, number> = {
+  // Свободное падение: 4 времени × 8 правдоподобных сюжетов — контексты
+  // намеренно привязаны к масштабу высоты, поэтому пул меньше дефолтных 50.
+  "free-fall": 30,
   "relative-velocity-vectors": 36,
   "resultant-force-2d": 24,
   // Оптика: кураторские наборы параметров имеют естественно меньший пул.
@@ -54,6 +56,7 @@ const uniqueTextPoolBySkill: Record<string, number> = {
   "lens-optical-power": 12,
 };
 const thermodynamicsTemplateIds = [
+  "density-volume-ratio",
   "ideal-gas-state",
   "heat-amount",
   "phase-change-heat",
@@ -215,6 +218,29 @@ test("production templates keep enough variants and explanations", () => {
         assert.notEqual(task.explanation, task.coach_lines.correct);
       }
     });
+  }
+});
+
+// Условие и варианты ответа рисует QuestionCard/OptionList обычным текстом, без
+// MathText. Любой $…$ в этих полях ученик увидит долларами (так вылезло
+// «$c = 4200$» в задачах на количество теплоты). Разбор и подсказки идут через
+// MathText, поэтому там формулы допустимы.
+test("task text and options stay free of raw LaTeX markers", () => {
+  for (const { id } of templateRegistry) {
+    for (const task of generateTasks(id, 60)) {
+      assert.equal(
+        /\$|\\frac|\\Delta|\\cdot/.test(task.text),
+        false,
+        `${id}: условие показывается без MathText, а содержит разметку: ${task.text}`,
+      );
+      for (const option of task.options) {
+        assert.equal(
+          /\$|\\frac|\\Delta|\\cdot/.test(option.text),
+          false,
+          `${id}: вариант ответа содержит разметку: ${option.text}`,
+        );
+      }
+    }
   }
 });
 
@@ -506,12 +532,12 @@ test("API route electro-mixed покрывает все навыки элект�
 
 test("API route thermo-mixed покрывает все навыки термодинамики", async () => {
   const response = await GET(
-    new Request("http://localhost/api/tasks?template=thermo-mixed&count=10&batch=7"),
+    new Request("http://localhost/api/tasks?template=thermo-mixed&count=12&batch=7"),
   );
   const data = (await response.json()) as ApiTaskResponse;
 
   assert.equal(response.status, 200);
-  assert.equal(data.tasks.length, 10);
+  assert.equal(data.tasks.length, 12);
   assert.deepEqual(
     new Set(data.tasks.map((task) => task.blueprint)),
     new Set(thermodynamicsTemplateIds),

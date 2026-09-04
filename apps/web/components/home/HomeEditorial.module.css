@@ -1,0 +1,480 @@
+.page {
+  --home-ink: var(--text-strong);
+  --home-copy: var(--text-default);
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: transparent;
+  color: var(--home-ink);
+}
+
+.hero {
+  position: relative;
+  min-height: 100svh;
+  overflow: hidden;
+  background: rgba(7, 16, 26, 0.88);
+  color: #f2f4f2;
+  isolation: isolate;
+}
+
+.heroScene {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  background: transparent;
+}
+
+.heroArt {
+  object-fit: cover;
+  object-position: 58% center;
+  transform: scale(1.015);
+  transform-origin: 58% center;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.28) 34%, #000 56%);
+  mask-image: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.28) 34%, #000 56%);
+}
+
+.heroShade {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgba(4, 12, 22, 0.99) 0%, rgba(4, 12, 22, 0.94) 31%, rgba(4, 12, 22, 0.55) 52%, rgba(4, 12, 22, 0.04) 78%),
+    linear-gradient(180deg, rgba(4, 12, 22, 0.18), rgba(4, 12, 22, 0.2) 72%, #07101a 100%);
+}
+
+.heroInner,
+.tools,
+.footer {
+  width: min(calc(100% - (var(--physics-gutter) * 2)), var(--physics-content-max));
+  margin-inline: auto;
+}
+
+.heroInner {
+  display: flex;
+  min-height: 100svh;
+  padding-block: clamp(6.5rem, 12vh, 9rem) clamp(5.5rem, 8vh, 7rem);
+  align-items: center;
+}
+
+.heroCopy {
+  width: min(100%, 610px);
+}
+
+.eyebrow {
+  margin: 0;
+  color: var(--mode-learn-accent);
+  font-size: 0.7rem;
+  font-weight: 850;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.hero h1 {
+  margin: 0.75rem 0 0;
+  max-width: 610px;
+  font-size: clamp(3rem, 5.2vw, 5rem);
+  font-weight: 800;
+  letter-spacing: -0.062em;
+  line-height: 0.98;
+  text-wrap: balance;
+}
+
+.heroLead {
+  max-width: 48ch;
+  margin: 1.15rem 0 0;
+  color: rgba(242, 244, 242, 0.7);
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.todayStep {
+  display: grid;
+  margin-top: clamp(1.6rem, 3.4vh, 2.5rem);
+  padding: 1.15rem;
+  border: 1px solid rgba(83, 218, 236, 0.38);
+  border-left: 3px solid var(--mode-learn-accent);
+  background: rgba(5, 18, 28, 0.78);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.24);
+  backdrop-filter: blur(14px);
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 1rem 1.5rem;
+}
+
+.todayStep[data-tone="gold"] {
+  border-color: color-mix(in srgb, var(--feedback-warning) 38%, transparent);
+  border-left-color: var(--feedback-warning);
+}
+
+.todayCopy {
+  min-width: 0;
+}
+
+.todayCopy p,
+.todayCopy h2,
+.todayCopy span {
+  margin: 0;
+}
+
+.todayCopy p {
+  color: var(--mode-learn-accent);
+  font-size: 0.65rem;
+  font-weight: 850;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.todayStep[data-tone="gold"] .todayCopy p {
+  color: var(--feedback-warning);
+}
+
+.todayCopy h2 {
+  margin-top: 0.35rem;
+  color: #f4f5f2;
+  font-size: clamp(1.1rem, 2vw, 1.35rem);
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  line-height: 1.25;
+  text-wrap: balance;
+}
+
+.todayCopy span {
+  display: block;
+  margin-top: 0.32rem;
+  color: rgba(242, 244, 242, 0.62);
+  font-size: 0.78rem;
+  line-height: 1.5;
+}
+
+.todayStep > a {
+  display: inline-flex;
+  min-height: 50px;
+  padding: 0.75rem 1rem;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  border-radius: var(--radius-control);
+  background: var(--mode-learn-accent);
+  color: #061519;
+  font-size: 0.84rem;
+  font-weight: 850;
+  white-space: nowrap;
+  transition: transform 160ms ease, filter 160ms ease;
+}
+
+.todayStep[data-tone="gold"] > a {
+  background: var(--feedback-warning);
+  color: #171108;
+}
+
+.todayStep > a:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.05);
+}
+
+.todayStep > a:focus-visible,
+.quickActions a:focus-visible,
+.diagnosticLink:focus-visible,
+.toolLink:focus-visible,
+.footer a:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 4px;
+}
+
+.quickActions {
+  display: grid;
+  margin-top: 0.8rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.quickActions > a {
+  display: grid;
+  min-height: 70px;
+  padding: 0.9rem 0.95rem;
+  align-items: center;
+  border: 1px solid rgba(242, 244, 242, 0.16);
+  background: rgba(5, 18, 28, 0.6);
+  color: rgba(242, 244, 242, 0.9);
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 0.75rem;
+  transition: border-color 160ms ease, background-color 160ms ease, transform 160ms ease;
+}
+
+.quickActions > a[data-action="learn"] {
+  grid-column: 1 / -1;
+  border-color: rgba(83, 218, 236, 0.5);
+  background: rgba(8, 30, 42, 0.76);
+}
+
+.quickActions > a:hover {
+  border-color: rgba(83, 218, 236, 0.48);
+  background: rgba(8, 30, 42, 0.78);
+  transform: translateY(-1px);
+}
+
+.quickActions > a[data-action="exam"]:hover {
+  border-color: color-mix(in srgb, var(--mode-exam-accent) 58%, transparent);
+}
+
+.quickActions > a[data-action="learn"] svg:first-child,
+.quickActions > a[data-action="tasks"] svg:first-child {
+  color: var(--mode-learn-accent);
+}
+
+.quickActions a[data-action="exam"] svg:first-child {
+  color: var(--mode-exam-accent);
+}
+
+.quickActions span {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.quickActions strong {
+  font-size: 0.9rem;
+  font-weight: 850;
+}
+
+.quickActions small {
+  color: rgba(242, 244, 242, 0.55);
+  font-size: 0.69rem;
+  line-height: 1.35;
+}
+
+.quickActions > a > svg:last-child {
+  color: rgba(242, 244, 242, 0.45);
+}
+
+.diagnosticLink {
+  display: inline-flex;
+  min-height: 2.75rem;
+  margin-top: 0.6rem;
+  padding-inline: 0.15rem;
+  align-items: center;
+  gap: 0.5rem;
+  color: rgba(242, 244, 242, 0.68);
+  font-size: 0.74rem;
+  font-weight: 720;
+}
+
+.diagnosticLink:hover {
+  color: #f2f4f2;
+}
+
+.tools {
+  display: grid;
+  padding: clamp(3.5rem, 7vw, 6rem) 0;
+  border-bottom: 1px solid var(--border-muted);
+  grid-template-columns: minmax(230px, 0.72fr) minmax(0, 1.28fr);
+  gap: clamp(2.5rem, 7vw, 7rem);
+}
+
+.toolsHeading h2 {
+  margin: 0.8rem 0 0;
+  font-size: var(--physics-type-section);
+  font-weight: 800;
+  letter-spacing: -0.055em;
+  line-height: 1.02;
+}
+
+.toolList {
+  border-top: 1px solid var(--border-emphasis);
+}
+
+.toolLink {
+  display: grid;
+  min-height: 88px;
+  padding: 1rem 0;
+  align-items: center;
+  border-bottom: 1px solid var(--border-muted);
+  color: var(--home-ink);
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 1rem;
+  transition: padding 160ms ease, background-color 160ms ease;
+}
+
+.toolLink:hover {
+  padding-inline: 0.8rem;
+  background: var(--surface-hover);
+}
+
+.toolLink > span {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.toolLink strong {
+  font-size: 1rem;
+}
+
+.toolLink small {
+  color: var(--home-copy);
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
+
+.toolLink svg {
+  color: var(--text-quiet);
+}
+
+.footer {
+  display: flex;
+  padding: 2rem 0 2.6rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+}
+
+.footer p {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 850;
+}
+
+.footer p span {
+  color: var(--mode-learn-accent);
+}
+
+.footer nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 1.5rem;
+}
+
+.footer a {
+  color: var(--home-copy);
+  font-size: 0.76rem;
+  font-weight: 720;
+  transition: color 160ms ease;
+}
+
+.footer a:hover {
+  color: var(--mode-learn-accent);
+}
+
+@media (max-width: 760px) {
+  .heroInner {
+    min-height: 100svh;
+    padding-block: 5.6rem calc(6.2rem + env(safe-area-inset-bottom));
+    align-items: flex-start;
+  }
+
+  .heroArt {
+    object-position: 72% center;
+    opacity: 0.82;
+    transform: scale(1.04);
+    -webkit-mask-image: linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.1) 45%, #000 70%);
+    mask-image: linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.1) 45%, #000 70%);
+  }
+
+  .heroShade {
+    background:
+      linear-gradient(180deg, rgba(7, 16, 26, 0.84) 0%, rgba(7, 16, 26, 0.8) 48%, rgba(7, 16, 26, 0.38) 72%, rgba(7, 16, 26, 0.82) 100%),
+      linear-gradient(90deg, rgba(7, 16, 26, 0.72), rgba(7, 16, 26, 0.16));
+  }
+
+  .hero h1 {
+    max-width: 350px;
+    font-size: clamp(2.55rem, 12vw, 3.25rem);
+    line-height: 0.98;
+  }
+
+  .heroLead {
+    max-width: 34ch;
+    margin-top: 0.8rem;
+    font-size: 0.88rem;
+    line-height: 1.5;
+  }
+
+  .todayStep {
+    margin-top: 1.25rem;
+    padding: 0.9rem;
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  .todayCopy h2 {
+    font-size: 1.03rem;
+  }
+
+  .todayCopy span {
+    font-size: 0.73rem;
+  }
+
+  .todayStep > a {
+    width: 100%;
+    min-height: 48px;
+    justify-content: space-between;
+  }
+
+  .quickActions {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+
+  .quickActions > a {
+    min-height: 62px;
+    padding: 0.68rem 0.75rem;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 0.6rem;
+  }
+
+  .quickActions > a[data-action="learn"] {
+    grid-column: auto;
+  }
+
+  .quickActions strong {
+    font-size: 0.82rem;
+  }
+
+  .quickActions small {
+    font-size: 0.65rem;
+  }
+
+  .tools {
+    padding: 3.5rem 0;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .toolsHeading h2 {
+    font-size: clamp(2rem, 9vw, 2.7rem);
+  }
+
+  .toolLink {
+    min-height: 84px;
+  }
+
+  .footer {
+    padding-bottom: 1.25rem;
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 380px) {
+  .heroInner {
+    padding-top: 5.2rem;
+  }
+
+  .hero h1 {
+    font-size: 2.35rem;
+  }
+
+  .todayCopy span {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .todayStep > a,
+  .quickActions > a,
+  .toolLink {
+    transition: none;
+  }
+}

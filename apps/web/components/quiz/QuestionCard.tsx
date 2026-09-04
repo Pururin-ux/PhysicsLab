@@ -74,22 +74,25 @@ export function QuestionCard({
         </div>
       ) : null}
 
-      <p className="text-[14px] font-normal leading-[1.8] text-white/80 md:text-[15px]">
+      <p className="text-[15px] font-normal leading-[1.75] text-[var(--text-primary)]/88 md:text-[16px]">
         {text}
       </p>
 
+      {/* «Физика, которую можно увидеть»: визуализация — герой задачи. Она
+          лежит на отдельной тёмной поверхности-верстаке с тёплой подсветкой
+          снизу, а не втиснута в общий поток текста. */}
       {diagram?.kind === "vector" ? (
-        <div className="rounded-option border border-nova-cyan/[.10] bg-space-950/50 p-2">
+        <div className="physics-stage">
           <VectorDiagram spec={diagram.spec} />
         </div>
       ) : null}
       {diagram?.kind === "circuit" ? (
-        <div className="rounded-option border border-nova-cyan/[.10] bg-space-950/50 p-2">
+        <div className="physics-stage">
           <CircuitDiagram spec={diagram.spec} />
         </div>
       ) : null}
       {diagram?.kind === "optics" ? (
-        <div className="rounded-option border border-nova-cyan/[.10] bg-space-950/50 p-2">
+        <div className="physics-stage">
           {/* Решение (отражённый луч, изображение) появляется только после
               ответа — до этого его нет ни в DOM, ни в accessibility tree. */}
           <OpticsDiagram spec={diagram.spec} showSolution={showSolutionContent} />
@@ -97,22 +100,23 @@ export function QuestionCard({
       ) : null}
 
       {graphConfig ? (
-        <ModelVisual
-          config={graphConfig}
-          title={graphTitle}
-          framed={false}
-          compact
-          showArea={showArea}
-        />
+        <div className="physics-stage">
+          <ModelVisual
+            config={graphConfig}
+            title={graphTitle}
+            framed={false}
+            compact
+            showArea={showArea}
+          />
+        </div>
       ) : null}
 
+      {/* Подсказка к визуализации — тихая строка с тёплой кромкой, без
+          капслочного ярлыка: он дублировал то, что и так видно на сцене. */}
       {visualActivityLabel && focus?.visualPrompt && !showSolutionContent ? (
-        <div className="rounded-option border border-white/[.08] bg-white/[.025] px-3.5 py-3 text-[13px] leading-[1.6] text-white/68">
-          <p className="mb-1.5 text-[11px] font-bold uppercase tracking-[.13em] text-white/45">
-            {visualActivityLabel}
-          </p>
+        <p className="border-l-2 border-[var(--ambient-warm)]/40 pl-3.5 text-[13px] leading-[1.65] text-[var(--text-secondary)]">
           <MathText text={focus.visualPrompt} />
-        </div>
+        </p>
       ) : null}
 
     </Card>

@@ -1,6 +1,6 @@
 import type { TemplateId } from "../server/task-generator/generate.ts";
 import { getLearningDestinationForFamily } from "./learning-links.ts";
-import { skillMetadata, type PhysicsSectionId } from "./taxonomy.ts";
+import { skillMetadata, type PhysicsSectionId, type TopicId } from "./taxonomy.ts";
 
 export type CoverageStatus = "partial" | "not-covered";
 
@@ -12,9 +12,38 @@ export type CoverageSection = {
   familyCount: number;
   summary: string;
   knownGaps: readonly string[];
+  catalogDestinations: readonly CoverageCatalogDestination[];
 };
 
-type CoverageDefinition = Omit<CoverageSection, "familyIds" | "familyCount">;
+export type CoverageCatalogDestination = {
+  topicId: TopicId;
+  label: string;
+  href: string;
+  familyCount: number;
+};
+
+type CoverageDefinition = Omit<
+  CoverageSection,
+  "familyIds" | "familyCount" | "catalogDestinations"
+>;
+
+export const EXAM_PROGRAM_SOURCE = {
+  label: "Спецификация экзаменационной работы по физике ЦЭ/ЦТ 2026",
+  organization: "Республиканский институт контроля знаний",
+  url: "https://rikc.by/ru/specification/2026/03.pdf",
+  checkedOn: "13.07.2026",
+} as const;
+
+const catalogDestinationDefinitions: Record<
+  TopicId,
+  { label: string; href: string }
+> = {
+  kinematics: { label: "Кинематика", href: "/tasks?topic=kinematics" },
+  dynamics: { label: "Динамика и законы сохранения", href: "/tasks?topic=dynamics" },
+  thermodynamics: { label: "Молекулярная физика и теплота", href: "/tasks?topic=thermodynamics" },
+  electrodynamics: { label: "Электричество и цепи", href: "/tasks?topic=electrodynamics" },
+  optics: { label: "Геометрическая оптика", href: "/tasks?topic=optics" },
+} as const;
 
 const coverageDefinitions: readonly CoverageDefinition[] = [
   {
@@ -92,6 +121,32 @@ export function buildCoverageSections(
 
   return coverageDefinitions.map((definition) => {
     const familyIds = idsBySection.get(definition.id) ?? [];
-    return { ...definition, familyIds, familyCount: familyIds.length };
+    const familyCountsByTopic = new Map<TopicId, number>();
+
+    for (const familyId of familyIds) {
+      const destination = getLearningDestinationForFamily(familyId)!;
+      const topicId = skillMetadata[destination.skillId].topicId;
+      familyCountsByTopic.set(topicId, (familyCountsByTopic.get(topicId) ?? 0) + 1);
+    }
+
+    const catalogDestinations = [...familyCountsByTopic.entries()].map(
+      ([topicId, familyCount]) => {
+        const catalogDestination = catalogDestinationDefinitions[topicId];
+
+        return {
+          topicId,
+          label: catalogDestination.label,
+          href: catalogDestination.href,
+          familyCount,
+        };
+      },
+    );
+
+    return {
+      ...definition,
+      familyIds,
+      familyCount: familyIds.length,
+      catalogDestinations,
+    };
   });
 }

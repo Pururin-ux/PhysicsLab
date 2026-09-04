@@ -92,15 +92,17 @@ async function mountDeterministicFamily(
 test("каталог показывает все 35 типов и честные группы", async ({ page }) => {
   await page.goto("/tasks", { waitUntil: "domcontentloaded" });
 
-  await expect(page.getByRole("heading", { name: "Типы задач" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Что потренируем?", level: 1 })).toBeVisible();
   await expect(page.getByTestId("task-catalog-item")).toHaveCount(35);
   await expect(page.getByText("Найдено типов:")).toContainText("35");
 
+  // Плотность и объём относятся к молекулярной физике, поэтому этот тип
+  // считается за термодинамику, а не за динамику.
   const expectedCounts = {
     kinematics: 6,
-    dynamics: 11,
+    dynamics: 10,
     electrodynamics: 6,
-    thermodynamics: 5,
+    thermodynamics: 6,
     optics: 7,
   } as const;
   for (const [topic, count] of Object.entries(expectedCounts)) {
@@ -108,20 +110,15 @@ test("каталог показывает все 35 типов и честные
   }
 });
 
-test("каталог показывает честную карту покрытия без зависимости от фильтра", async ({ page }) => {
-  await page.goto("/tasks#coverage", { waitUntil: "domcontentloaded" });
+test("карта экзаменационного покрытия принадлежит диагностике, а не каталогу", async ({ page }) => {
+  await page.goto("/tasks", { waitUntil: "domcontentloaded" });
+  await expect(page.getByTestId("program-coverage")).toHaveCount(0);
 
-  const coverage = page.getByTestId("program-coverage");
-  await expect(coverage).toHaveAttribute("open", "");
-  await expect(coverage.getByRole("heading", { name: "Что уже покрывает PhysicsLab" })).toBeVisible();
-  await expect(coverage).toContainText("35 типов задач");
-  await expect(coverage).toContainText("4 раздела с задачами");
-  await expect(coverage).toContainText("2 раздела без задач");
-  await expect(coverage).toContainText("Квантовая физика");
-  await expect(coverage).toContainText("Пока нет задач");
-
-  await page.getByRole("button", { name: "Электродинамика" }).click();
-  await expect(coverage).toContainText("35 типов задач");
+  await page.goto("/practice/exam-demo", { waitUntil: "domcontentloaded" });
+  const coverage = page.getByTestId("exam-coverage-map");
+  await expect(coverage).toBeVisible();
+  await expect(coverage.getByRole("list", { name: "Покрытие разделов программы" }).getByRole("listitem")).toHaveCount(6);
+  await expect(coverage).toContainText("Полностью: 0 · Частично: 4 · Пока нет: 2");
 });
 
 test("поиск, topic filter и URL-state переживают reload и историю", async ({ page }) => {
@@ -136,7 +133,7 @@ test("поиск, topic filter и URL-state переживают reload и ис�
     "ohm-law",
   );
 
-  await page.getByRole("button", { name: "Электродинамика" }).click();
+  await page.getByRole("button", { name: "Электричество" }).click();
   await expect(page).toHaveURL(/topic=electrodynamics/);
   await expect(page.getByTestId("task-catalog-item")).not.toHaveCount(0);
   expect(
@@ -147,7 +144,7 @@ test("поиск, topic filter и URL-state переживают reload и ис�
 
   await page.reload({ waitUntil: "domcontentloaded" });
   await expect(search).toHaveValue("закон Ома");
-  await expect(page.getByRole("button", { name: "Электродинамика" })).toHaveAttribute(
+  await expect(page.getByRole("button", { name: "Электричество" })).toHaveAttribute(
     "aria-pressed",
     "true",
   );
@@ -181,26 +178,19 @@ test("поиск поддерживает формулы, графики, син
 
 test("карточка типа ведёт в focused drill, неизвестный slug — 404", async ({ page }, testInfo) => {
   await page.goto("/tasks/ohm-law", { waitUntil: "domcontentloaded" });
-  await expect(page.getByRole("heading", { name: "Закон Ома" })).toBeVisible();
-  await expect(page.getByText("Один ответ", { exact: true })).toBeVisible();
-  await expect(page.getByText(/Сложность внутри тренажёра/)).toBeVisible();
-  await expect(page.getByRole("link", { name: "Открыть формулу и условия применения" })).toHaveAttribute(
+  await expect(page.getByRole("heading", { name: "Закон Ома", level: 1 })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Что означают буквы" })).toHaveAttribute(
     "href",
     "/formulas?formula=ohm-law",
   );
 
-  await page.goto("/tasks/average-speed-segments", { waitUntil: "domcontentloaded" });
-  await expect(page.getByText("Числовой ответ", { exact: true })).toBeVisible();
-  await page.goto("/tasks/vt-area", { waitUntil: "domcontentloaded" });
-  await expect(page.getByText("Есть график", { exact: true })).toBeVisible();
-
   await page.goto("/tasks/ohm-law", { waitUntil: "domcontentloaded" });
-  await page.getByRole("link", { name: "Решить 5 похожих" }).click();
+  await page.getByRole("link", { name: "Начать: 5 задач" }).click();
   await expect(page).toHaveURL("/practice/family/ohm-law");
   await expect(page.getByTestId("practice-progress")).toHaveText("Задание 1 из 5");
 
   await page.goto("/tasks/not-a-family", { waitUntil: "domcontentloaded" });
-  await expect(page.getByTestId("not-found-card")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Такой тренировки здесь нет" })).toBeVisible();
   await page.goto("/practice/family/not-a-family", { waitUntil: "domcontentloaded" });
   await expect(page.getByTestId("not-found-card")).toBeVisible();
 });
@@ -208,14 +198,13 @@ test("карточка типа ведёт в focused drill, неизвестн�
 test("формула ведёт к точному типу задачи и focused практике", async ({ page }) => {
   await page.goto("/formulas?formula=ohm-law", { waitUntil: "domcontentloaded" });
 
-  const formula = page.locator(".formula-row", { has: page.locator('[data-formula-id="ohm-law"]') });
+  const formula = page.locator('[data-formula-id="ohm-law"]');
   await expect(formula).toBeVisible();
-  await expect(formula.getByText("Задачи по этой формуле")).toBeVisible();
-  await expect(formula.getByRole("link", { name: "Открыть тип" })).toHaveAttribute(
+  await expect(formula.getByRole("link", { name: "Разобрать тип" })).toHaveAttribute(
     "href",
     "/tasks/ohm-law",
   );
-  await expect(formula.getByRole("link", { name: "Решить 5 похожих" })).toHaveAttribute(
+  await expect(formula.getByRole("link", { name: "Потренироваться" })).toHaveAttribute(
     "href",
     "/practice/family/ohm-law",
   );
@@ -242,13 +231,29 @@ test("focused drill сохраняет single choice и numeric input", async ({
   await expect(page.getByTestId("numeric-answer")).toHaveAttribute("data-state", "correct");
 });
 
-test("focused drill восстанавливает 3/5 и restart запрашивает новый batch", async ({ page, request }) => {
+test("focused drill восстанавливает correction и restart запрашивает новый batch", async ({ page, request }) => {
   test.skip(test.info().project.name !== "desktop", "Recovery и restart достаточно проверить один раз.");
 
   const { tasks, requestedBatches } = await mountDeterministicFamily(page, request, "ohm-law");
   await page.goto("/practice/family/ohm-law", { waitUntil: "domcontentloaded" });
 
-  await answerWrongly(page, tasks[0] as Extract<ApiTask, { type: "single_choice" }>);
+  const firstTask = tasks[0] as Extract<ApiTask, { type: "single_choice" }>;
+  const wrongIndex = firstTask.options.findIndex((option) => !option.correct);
+  const correctIndex = firstTask.options.findIndex((option) => option.correct);
+
+  await answerWrongly(page, firstTask);
+  const retry = page.getByTestId("retry-task-button");
+  await expect(retry).toBeFocused();
+  await expect(page.getByTestId("next-task-button")).toHaveCount(0);
+
+  await page.keyboard.press("Enter");
+  await expect(page.locator(".quiz-option").nth(wrongIndex)).toBeDisabled();
+  await expect(page.locator(".quiz-option:not(:disabled)").first()).toBeFocused();
+
+  const correctOption = page.locator(".quiz-option").nth(correctIndex);
+  await correctOption.focus();
+  await page.keyboard.press("Space");
+  await expect(page.getByTestId("next-task-button")).toBeVisible();
   await page.getByTestId("next-task-button").click();
   await answerCorrectly(page, tasks[1]);
   await page.getByTestId("next-task-button").click();
@@ -279,18 +284,18 @@ test("focused drill восстанавливает 3/5 и restart запраши
   }
   await expect(page.getByText("Итог тренировки", { exact: true })).toBeVisible();
   const taskTypeLinks = page.getByRole("link", { name: "К типу задачи" });
-  await expect(taskTypeLinks).toHaveCount(2);
-  expect(
-    await taskTypeLinks.evaluateAll((links) =>
-      links.every((link) => link.getAttribute("href") === "/tasks/ohm-law"),
-    ),
-  ).toBe(true);
+  await expect(taskTypeLinks).toHaveCount(1);
+  await expect(taskTypeLinks).toHaveAttribute("href", "/tasks/ohm-law");
+  await expect(page.getByRole("link", { name: "Проверить без подсказки" })).toHaveAttribute(
+    "href",
+    "/practice/electro-demo",
+  );
 
   const progress = await page.evaluate((key) => localStorage.getItem(key), PROGRESS_KEY);
   expect(progress).toContain('"completedSessions":1');
   expect(progress).toMatch(/"weakTraps":\{[^}]+\}/);
 
-  await page.getByRole("button", { name: "Ещё 5 похожих" }).click();
+  await page.getByRole("button", { name: "Ещё 5 задач" }).click();
   await expect(page.getByTestId("practice-progress")).toHaveText("Задание 1 из 5");
   expect(requestedBatches.at(-1)).toBe(1);
   await expect.poll(() => page.evaluate((key) => {
@@ -326,7 +331,7 @@ test("topic и mixed training сохраняют стандартные 10 за�
 
   await page.evaluate((key) => sessionStorage.removeItem(key), SNAPSHOT_KEY);
   await page.goto("/practice/exam-demo", { waitUntil: "domcontentloaded" });
-  await page.getByRole("button", { name: "Начать тренировку" }).click();
+  await page.getByRole("button", { name: "Начать диагностику" }).click();
   await expect(page.getByTestId("practice-progress")).toHaveText("Задание 1 из 10");
   expect(requests.some((request) => request.template === "exam" && request.count === "10")).toBe(true);
 });
