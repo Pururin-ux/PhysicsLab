@@ -21,6 +21,10 @@ test-results/
 **/.next-audit/
 **/.next-lighthouse/
 **/.lighthouse-profile/
+apps/web/.wrangler/
+apps/web/.qa-*.png
+apps/web/.tmp-shot.mjs
+pnpm-lock.yaml
 .env
 .env.*
 !.env.example

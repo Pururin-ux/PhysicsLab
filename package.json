@@ -19,6 +19,8 @@
     "test:e2e": "npm --prefix apps/web run test:e2e",
     "test:a11y": "npm --prefix apps/web run test:a11y",
     "test:visual": "npm --prefix apps/web run test:visual",
+    "verify": "npm run check && npm run test:physics",
+    "verify:full": "npm run check && npm run test:physics && npm test && npm run test:e2e && npm run test:a11y && npm run test:visual && npm run build && npm run assert:routes && npm run smoke",
     "quality:lighthouse": "npm --prefix apps/web run quality:lighthouse",
     "screenshots": "npm --prefix apps/web run screenshots",
     "assert:routes": "npm --prefix apps/web run assert:routes",
