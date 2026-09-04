@@ -15,7 +15,7 @@ function contextFor(p: Params): string {
   return pushContexts[variant % pushContexts.length];
 }
 
-// Масса — намеренная приманка: Δp = FΔt её не использует, задача проверяет
+// Масса — намеренная приманка: Δp = FрезΔt её не использует, задача проверяет
 // именно умение распознать, какие данные вообще нужны.
 export const impulseMomentumBlueprint: TaskBlueprint = {
   id: "impulse-momentum",
@@ -28,20 +28,20 @@ export const impulseMomentumBlueprint: TaskBlueprint = {
     F: { min: 2, max: 20, step: 1, unit: "Н" },
     dt: { min: 0.5, max: 4, step: 0.5, unit: "с" },
   },
-  formula: "\\Delta p = F \\, \\Delta t",
+  formula: "|\\Delta\\vec p| = F_{\\text{рез}} \\, \\Delta t",
   answerUnit: "кг·м/с",
   answerKind: "positive",
   solver: impulseFromForceTime,
   distractors: impulseFromForceTimeDistractors,
   textTemplate: (p) =>
-    `${contextFor(p)}. На тело массой ${p.m} кг в течение ${formatAnswerValue(p.dt)} с действует постоянная сила ${formatAnswerValue(p.F)} Н. Найдите модуль изменения импульса тела за это время.`,
+    `${contextFor(p)}. На тело массой ${p.m} кг в течение ${formatAnswerValue(p.dt)} с действует постоянная равнодействующая всех сил ${formatAnswerValue(p.F)} Н. Найдите модуль изменения импульса тела за это время.`,
   explanationTemplate: (p, answer) =>
-    `По теореме об изменении импульса $\\Delta p = F \\Delta t = ${formatMathValue(p.F)} \\cdot ${formatMathValue(p.dt)} = ${formatMathValue(answer)}$ кг·м/с. Масса тела для этой формулы не нужна.`,
-  trap: "Не все данные в тексте нужны для формулы: масса здесь лишняя — используй $\\Delta p = F\\Delta t$.",
+    `По теореме об изменении импульса $|\\Delta\\vec p| = F_{\\text{рез}} \\Delta t = ${formatMathValue(p.F)} \\cdot ${formatMathValue(p.dt)} = ${formatMathValue(answer)}$ кг·м/с. Масса тела для этой формулы не нужна.`,
+  trap: "Используй равнодействующую всех сил, а не одну выбранную силу. Масса здесь — лишнее данное.",
   coachLines: {
-    correct: () => "Да. $\\Delta p = F\\Delta t$ — масса тела в эту формулу не входит.",
+    correct: () => "Да. $|\\Delta\\vec p|=F_{\\text{рез}}\\Delta t$ — масса тела в эту формулу не входит.",
     wrong: (_p, selected, correct) =>
-      `Изменение импульса — это $F\\Delta t$, масса здесь ни при чём. Получается ${formatAnswerValue(correct)} кг·м/с, а не ${formatAnswerValue(selected)}.`,
+      `Изменение импульса задаёт импульс равнодействующей: $F_{\\text{рез}}\\Delta t$. Получается ${formatAnswerValue(correct)} кг·м/с, а не ${formatAnswerValue(selected)}.`,
   },
   variantCount: pushContexts.length,
 };

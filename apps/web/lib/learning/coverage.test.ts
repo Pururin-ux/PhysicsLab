@@ -27,4 +27,16 @@ test("coverage map remains explicit about partial and absent sections", () => {
   assert.equal(atomic?.status, "not-covered");
   assert.equal(atomic?.familyCount, 0);
   assert.ok(coverage.every((section) => section.knownGaps.length > 0));
+  assert.deepEqual(
+    mechanics?.catalogDestinations.map(({ topicId, familyCount }) => ({
+      topicId,
+      familyCount,
+    })),
+    [
+      { topicId: "kinematics", familyCount: 6 },
+      { topicId: "dynamics", familyCount: 10 },
+    ],
+  );
+  assert.deepEqual(quantum?.catalogDestinations, []);
+  assert.deepEqual(atomic?.catalogDestinations, []);
 });

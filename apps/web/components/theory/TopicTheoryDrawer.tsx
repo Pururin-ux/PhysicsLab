@@ -21,7 +21,8 @@ export type TopicTheorySubtopic = TopicHelpSection | string;
 
 interface TopicTheoryDrawerProps {
   title: string;
-  description: string;
+  /** Показывается, только если нечего сказать точнее (см. reasonLabel). */
+  description?: string;
   children: ReactNode;
   layout?: "grid" | "stack";
   accent?: "cyan" | "gold" | "blue" | "ember";
@@ -139,9 +140,13 @@ export function TopicTheoryDrawer({
           <h2 id={headingId} className="text-[20px] font-[800] leading-tight text-white">
             {title}
           </h2>
-          <p className="mt-1.5 text-[13px] leading-[1.6] text-white/58">
-            {description}
-          </p>
+          {/* Одна строка про то, откуда взялся раздел. Раньше здесь стояли
+              подряд описание и почти такая же строка про выбор раздела. */}
+          {reasonLabel ? (
+            <p className="mt-1.5 text-[12px] leading-[1.5] text-white/58">{reasonLabel}</p>
+          ) : description ? (
+            <p className="mt-1.5 text-[12px] leading-[1.5] text-white/58">{description}</p>
+          ) : null}
         </div>
 
         <button
@@ -150,7 +155,7 @@ export function TopicTheoryDrawer({
           onClick={() => onOpenChange?.(false)}
           aria-label="Закрыть справку"
           title="Закрыть справку"
-          className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-option border border-white/[.09] bg-white/[.025] text-white/62 transition-colors hover:border-white/[.18] hover:bg-white/[.05] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/55"
+          className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-option border border-white/[.09] bg-white/[.025] text-white/62 transition-colors hover:border-white/[.18] hover:bg-white/[.05] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-blue/55"
         >
           <svg
             viewBox="0 0 24 24"
@@ -166,18 +171,14 @@ export function TopicTheoryDrawer({
         </button>
       </div>
 
-      {reasonLabel ? (
-        <p className="mt-3 text-[12px] leading-[1.5] text-white/48">{reasonLabel}</p>
-      ) : null}
-
       {normalizedSubtopics.length > 1 ? (
-        <label className="mt-4 flex flex-col gap-1.5 text-[11px] font-bold uppercase tracking-[.12em] text-white/45">
-          Другой раздел
+        <label className="mt-4 flex flex-col gap-1.5 text-[11px] font-bold uppercase tracking-[.12em] text-white/58">
+          Раздел
           <select
             data-testid="help-section-selector"
             value={effectiveSectionId}
             onChange={(event) => setSelectedSectionId(event.target.value as HelpSectionId)}
-            className="min-h-10 w-full rounded-option border border-white/[.11] bg-space-950/70 px-3 text-[13px] font-semibold normal-case tracking-normal text-white/78 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/55"
+            className="min-h-10 w-full rounded-option border border-white/[.11] bg-space-950/70 px-3 text-[13px] font-semibold normal-case tracking-normal text-white/78 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-blue/55"
           >
             {normalizedSubtopics.map((subtopic) => (
               <option key={subtopic.id} value={subtopic.id}>
@@ -216,7 +217,7 @@ export function TopicTheoryDrawer({
             </h3>
             <p className="mt-2 text-[13px] leading-[1.65] text-white/62">
               {activeSubtopic?.shortHint ??
-                "Открой подробное решение задачи — там будет нужный шаг."}
+                "Открой подробное решение задачи — там будет нужное объяснение."}
             </p>
           </div>
         )}

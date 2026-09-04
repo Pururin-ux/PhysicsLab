@@ -1,6 +1,7 @@
 "use client";
 
 import { useId, useState } from "react";
+import { CaretRight } from "@phosphor-icons/react";
 import Link from "next/link";
 import { FormulaDetails } from "../theory/FormulaDisplay";
 import { MathText } from "../ui/MathText";
@@ -15,6 +16,7 @@ const dotClassByTone: Record<FormulaReferenceGroup["badgeTone"], string> = {
   cyan: "bg-nova-cyan",
   gold: "bg-nova-gold",
   blue: "bg-nova-blue",
+  pink: "bg-topic-optics",
   ember: "bg-nova-ember",
   neutral: "bg-white/30",
 };
@@ -37,9 +39,13 @@ export function FormulaAccordionItem({
   const panelId = useId();
 
   return (
-    <div
-      className="formula-row border-b border-white/[.07] transition-colors last:border-b-0"
+    // Компактная строка справочника: формула — главный объект и стоит слева,
+    // название и назначение читаются рядом. Раньше это был высокий бокс, из-за
+    // чего справочник превращался в очередную сетку карточек.
+    <article
+      className="formula-row overflow-hidden border-b border-white/[.08] bg-transparent transition-colors"
       data-open={isOpen}
+      data-tone={badgeTone}
     >
       <button
         type="button"
@@ -47,39 +53,35 @@ export function FormulaAccordionItem({
         aria-expanded={isOpen}
         aria-controls={panelId}
         onClick={() => setOpen((current) => !current)}
-        className="grid min-h-[72px] w-full grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-3 gap-y-2 px-1 py-3 text-left transition-colors hover:bg-white/[.025] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/50 sm:min-h-14 sm:grid-cols-[auto_minmax(160px,1fr)_minmax(180px,.8fr)_auto] sm:py-2.5"
+        className="grid min-h-[84px] w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-3 px-1 py-4 text-left transition-colors hover:bg-white/[.018] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-nova-blue/65 sm:grid-cols-[minmax(0,1fr)_176px_auto] sm:gap-5 sm:px-2"
       >
         <span
           aria-hidden="true"
-          className={cn("h-1.5 w-1.5 shrink-0 rounded-full", dotClassByTone[badgeTone])}
-        />
-        <span className="min-w-0 text-[14px] font-semibold leading-[1.35] text-white/88 sm:truncate">
-          {entry.title}
-        </span>
-        <span
-          aria-hidden="true"
-          className="formula-white col-[2/4] row-start-2 min-w-0 overflow-x-auto text-[15px] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:col-auto sm:row-auto sm:text-right sm:text-[15px] [&_.katex]:text-[0.94em]"
+          className="formula-paper formula-row-formula col-span-2 flex min-h-[54px] w-full items-center justify-center overflow-x-auto px-3 py-2.5 text-[18px] [scrollbar-width:none] sm:col-span-1 sm:col-start-2 sm:row-start-1 sm:w-[176px] sm:text-[19px] [&::-webkit-scrollbar]:hidden [&_.katex]:text-[1em]"
           dangerouslySetInnerHTML={{ __html: renderFormulaToHtml(entry.formula) }}
         />
-        <svg
+        <span className="min-w-0">
+          <span className="type-title flex items-center gap-2 text-white">
+            <span
+              aria-hidden="true"
+              className={cn("h-1.5 w-1.5 shrink-0 rounded-full", dotClassByTone[badgeTone])}
+            />
+            {entry.title}
+          </span>
+          <span className="type-helper mt-0.5 line-clamp-2 block sm:line-clamp-1">
+            <MathText text={entry.caption} />
+          </span>
+        </span>
+        <CaretRight
           aria-hidden="true"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth={2}
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          className="formula-row-chevron col-start-3 row-start-1 h-4 w-4 shrink-0 text-white/40 sm:col-auto sm:row-auto"
-        >
-          <path d="M9 6l6 6-6 6" />
-        </svg>
+          size={16}
+          weight="bold"
+          className="formula-row-chevron shrink-0 text-white/40"
+        />
       </button>
 
       {isOpen ? (
-        <div id={panelId} className="flex flex-col gap-3 px-5 pb-5 pt-1 sm:px-6">
-          <p className="max-w-[760px] text-[12px] leading-[1.6] text-white/55">
-            <MathText text={entry.caption} />
-          </p>
+        <div id={panelId} className="flex flex-col gap-3 border-t border-white/[.06] px-1 pb-6 pt-4 sm:px-2">
           <FormulaDetails symbols={entry.symbols} limitation={entry.limitation} />
           {entry.relatedTasks.length > 0 ? (
             <section className="border-t border-white/[.08] pt-3" aria-labelledby={`${panelId}-tasks`}>
@@ -90,24 +92,24 @@ export function FormulaAccordionItem({
                 {entry.relatedTasks.map((task) => (
                   <li
                     key={task.familyId}
-                    className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 rounded-option border border-white/[.08] bg-white/[.02] px-3 py-2.5"
+                    className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-t border-white/[.08] py-2.5"
                   >
                     <div className="min-w-0">
                       <p className="text-[12px] font-semibold text-white/88">{task.title}</p>
-                      <p className="mt-0.5 text-[11px] text-white/48">{task.topicLabel}</p>
+                      <p className="mt-0.5 text-[11px] text-white/58">{task.topicLabel}</p>
                     </div>
                     <div className="flex flex-wrap items-center gap-3 text-[12px] font-semibold">
                       <Link
                         href={task.taskHref}
-                        className="rounded-option text-white/65 transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/55"
+                        className="rounded-option text-white/65 transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-blue/55"
                       >
                         Открыть тип
                       </Link>
                       <Link
                         href={task.practiceHref}
-                        className="rounded-option text-nova-cyan/85 transition-colors hover:text-nova-cyan focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/55"
+                        className="rounded-option text-nova-blue transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-blue/65"
                       >
-                        Решить 5 похожих
+                        Решить 5 задач
                       </Link>
                     </div>
                   </li>
@@ -117,6 +119,6 @@ export function FormulaAccordionItem({
           ) : null}
         </div>
       ) : null}
-    </div>
+    </article>
   );
 }

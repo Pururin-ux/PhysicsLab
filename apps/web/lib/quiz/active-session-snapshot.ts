@@ -19,6 +19,8 @@ export const ACTIVE_QUIZ_SNAPSHOT_VERSION = 2;
 // Снапшот старше суток не восстанавливаем: контекст тренировки уже потерян.
 export const ACTIVE_QUIZ_SNAPSHOT_MAX_AGE_MS = 24 * 60 * 60 * 1000;
 
+export type QuizSessionKind = "practice" | "diagnostic" | "exam";
+
 export type ActiveQuizSnapshot = {
   version: number;
   // Идентификатор попытки: восстановление сохраняет его, Restart/новая
@@ -29,11 +31,11 @@ export type ActiveQuizSnapshot = {
   topic: string;
   title: string;
   topicId?: string;
-  sessionKind: "practice" | "exam";
+  sessionKind: QuizSessionKind;
   batch: number;
   taskIds: string[];
   session: {
-    phase: "active" | "answered";
+    phase: "active" | "retrying" | "answered";
     currentIndex: number;
     selectedOptionId: string | null;
     answers: AnswerRecord[];
@@ -52,7 +54,7 @@ export type ExamResumeCandidate = {
   batch: number;
   currentTaskNumber: number;
   total: number;
-  phase: "active" | "answered";
+  phase: "active" | "retrying" | "answered";
   savedAt: number;
 };
 
@@ -79,6 +81,7 @@ function isValidAnswerRecord(value: unknown): boolean {
   if (typeof value.taskId !== "string" || value.taskId.length === 0) return false;
   if (typeof value.blueprint !== "string") return false;
   if (typeof value.isCorrect !== "boolean") return false;
+  if (!isFinitePositiveInt(value.attempt) || value.attempt < 1) return false;
   if (typeof value.taskTrap !== "string") return false;
   if (!isRecord(value.response)) return false;
 
@@ -110,7 +113,11 @@ function isValidSnapshotShape(value: unknown): value is ActiveQuizSnapshot {
   if (typeof value.topic !== "string") return false;
   if (typeof value.title !== "string" || value.title.length === 0) return false;
   if (value.topicId !== undefined && typeof value.topicId !== "string") return false;
-  if (value.sessionKind !== "practice" && value.sessionKind !== "exam") return false;
+  if (
+    value.sessionKind !== "practice" &&
+    value.sessionKind !== "diagnostic" &&
+    value.sessionKind !== "exam"
+  ) return false;
   if (!isFinitePositiveInt(value.batch)) return false;
   if (!Array.isArray(value.taskIds) || value.taskIds.length === 0) return false;
   if (!value.taskIds.every((id) => typeof id === "string" && id.length > 0)) return false;
@@ -118,7 +125,11 @@ function isValidSnapshotShape(value: unknown): value is ActiveQuizSnapshot {
 
   const session = value.session;
   if (!isRecord(session)) return false;
-  if (session.phase !== "active" && session.phase !== "answered") return false;
+  if (
+    session.phase !== "active" &&
+    session.phase !== "retrying" &&
+    session.phase !== "answered"
+  ) return false;
   if (!isFinitePositiveInt(session.currentIndex)) return false;
   if (!isFinitePositiveInt(session.score)) return false;
   if (!isFinitePositiveInt(session.streak)) return false;
@@ -134,7 +145,9 @@ function isValidSnapshotShape(value: unknown): value is ActiveQuizSnapshot {
   if (session.total !== value.taskIds.length) return false;
   if (session.currentIndex >= session.total) return false;
   const expectedAnswers =
-    session.phase === "answered" ? session.currentIndex + 1 : session.currentIndex;
+    session.phase === "answered" || session.phase === "retrying"
+      ? session.currentIndex + 1
+      : session.currentIndex;
   if (session.answers.length !== expectedAnswers) return false;
   if (!session.answers.every((answer, index) => answer.taskId === taskIds[index])) return false;
   if (session.score > session.answers.length) return false;
@@ -255,7 +268,7 @@ export function snapshotMatches(
     template: string;
     topic: string;
     topicId?: string;
-    sessionKind: "practice" | "exam";
+    sessionKind: QuizSessionKind;
     taskIds: string[];
   },
 ): boolean {
@@ -276,7 +289,7 @@ export function buildSnapshot(input: {
   topic: string;
   title: string;
   topicId?: string;
-  sessionKind: "practice" | "exam";
+  sessionKind: QuizSessionKind;
   batch: number;
   taskIds: string[];
   session: QuizSessionState;
@@ -285,7 +298,11 @@ export function buildSnapshot(input: {
   const { session } = input;
   // Сохраняем только active/answered: completed записывается в прогресс и
   // снапшот к этому моменту очищен.
-  if (session.phase !== "active" && session.phase !== "answered") return null;
+  if (
+    session.phase !== "active" &&
+    session.phase !== "retrying" &&
+    session.phase !== "answered"
+  ) return null;
 
   return {
     version: ACTIVE_QUIZ_SNAPSHOT_VERSION,

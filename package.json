@@ -9,6 +9,7 @@
   },
   "scripts": {
     "audit:tasks": "npm --prefix apps/web run audit:tasks",
+    "audit:art": "npm --prefix apps/web run audit:art",
     "dev": "npm --prefix apps/web run dev --",
     "build": "npm --prefix apps/web run build",
     "preview": "npm --prefix apps/web run start --",
@@ -18,6 +19,7 @@
     "test:e2e": "npm --prefix apps/web run test:e2e",
     "test:a11y": "npm --prefix apps/web run test:a11y",
     "test:visual": "npm --prefix apps/web run test:visual",
+    "quality:lighthouse": "npm --prefix apps/web run quality:lighthouse",
     "screenshots": "npm --prefix apps/web run screenshots",
     "assert:routes": "npm --prefix apps/web run assert:routes",
     "smoke": "npm --prefix apps/web run smoke"

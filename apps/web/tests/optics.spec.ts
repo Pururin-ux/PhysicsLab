@@ -77,16 +77,18 @@ test.describe("optics desktop flows", () => {
     await page.waitForLoadState("networkidle");
 
     await expect(page.getByRole("heading", { name: "Оптика", exact: true })).toBeVisible();
-    const sidebar = page.getByRole("navigation", { name: "Разделы PhysicsLab" });
-    await expect(sidebar.getByRole("link")).toHaveCount(5);
-    await expect(sidebar.getByRole("link", { name: "Оптика", exact: true })).toHaveCount(0);
+    // Названия тем живут на странице, а не в постоянной навигации шапки.
+    const mainNavigation = page.getByRole("navigation", { name: "Основная навигация" });
+    await expect(mainNavigation.getByRole("link")).toHaveCount(4);
+    await expect(mainNavigation.getByRole("link", { name: "Оптика", exact: true })).toHaveCount(0);
 
-    const opticsLinks = page.locator('a[href="/practice/optics-demo"]');
+    const opticsLinks = page.locator('main a[href="/practice/optics-lesson"]');
     await expect(opticsLinks).toHaveCount(1);
     await opticsLinks.click();
 
-    await expect(page).toHaveURL(/\/practice\/optics-demo/);
-    await expect(page.getByTestId("question-card")).toBeVisible({ timeout: 15000 });
+    await expect(page).toHaveURL(/\/practice\/optics-lesson/);
+    await expect(page.getByRole("heading", { name: "Откуда считать угол луча" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "25°" })).toBeVisible();
   });
 
   test("отражение: луч-решение появляется только после ответа", async ({ page, request }) => {
@@ -229,7 +231,7 @@ test.describe("optics desktop flows", () => {
     await expect(drawer).toHaveAttribute("data-active-section", "reflection");
     await expect(drawer.getByTestId("compact-help-formula")).toHaveAttribute(
       "data-help-card-formula",
-      "\\theta_r=\\theta_i",
+      "\\beta=\\alpha",
     );
   });
 
@@ -339,7 +341,7 @@ test.describe("optics mobile layout", () => {
     );
   });
 
-  test("диаграмма и ответ без переполнения, контролы выше нижней навигации", async ({
+  test("диаграмма и ответ без переполнения, контролы не уезжают под шапку", async ({
     page,
     request,
   }) => {
@@ -354,18 +356,18 @@ test.describe("optics mobile layout", () => {
     }));
     expect(scrollWidth).toBeLessThanOrEqual(clientWidth + 1);
 
-    // Сабмит-контрол можно доскроллить выше фиксированной нижней навигации.
+    // Сабмит-контрол доскролливается и не прячется под липкой шапкой.
     const submit = page.getByTestId("numeric-submit");
     await submit.evaluate((element) => element.scrollIntoView({ block: "end" }));
-    const [submitBox, navBox] = await Promise.all([
+    const [submitBox, headerBox, viewportHeight] = await Promise.all([
       submit.boundingBox(),
-      page
-        .getByRole("navigation", { name: "Мобильная навигация" })
-        .boundingBox(),
+      page.locator("header").first().boundingBox(),
+      page.evaluate(() => window.innerHeight),
     ]);
     expect(submitBox).not.toBeNull();
-    expect(navBox).not.toBeNull();
-    expect(navBox!.y - (submitBox!.y + submitBox!.height)).toBeGreaterThanOrEqual(4);
+    expect(headerBox).not.toBeNull();
+    expect(submitBox!.y).toBeGreaterThanOrEqual(headerBox!.y + headerBox!.height);
+    expect(submitBox!.y + submitBox!.height).toBeLessThanOrEqual(viewportHeight);
 
     const answer = tasks[0].answer as NumericAnswer;
     await page
@@ -382,31 +384,27 @@ test.describe("optics mobile layout", () => {
 
     const next = page.getByTestId("next-task-button");
     await next.evaluate((element) => element.scrollIntoView({ block: "end" }));
-    const [nextBox, nextNavBox] = await Promise.all([
+    const [nextBox, nextHeaderBox] = await Promise.all([
       next.boundingBox(),
-      page
-        .getByRole("navigation", { name: "Мобильная навигация" })
-        .boundingBox(),
+      page.locator("header").first().boundingBox(),
     ]);
     expect(nextBox).not.toBeNull();
-    expect(nextNavBox).not.toBeNull();
-    expect(nextNavBox!.y - (nextBox!.y + nextBox!.height)).toBeGreaterThanOrEqual(4);
+    expect(nextHeaderBox).not.toBeNull();
+    expect(nextBox!.y).toBeGreaterThanOrEqual(nextHeaderBox!.y + nextHeaderBox!.height);
 
     await page.getByTestId("solution-toggle").click();
     await expect(page.getByTestId("solution-content")).toBeVisible();
     await expect(page.getByTestId("solution-formula")).toHaveCount(0);
     await next.evaluate((element) => element.scrollIntoView({ block: "end" }));
-    const [expandedNextBox, expandedNavBox] = await Promise.all([
+    const [expandedNextBox, expandedHeaderBox] = await Promise.all([
       next.boundingBox(),
-      page
-        .getByRole("navigation", { name: "Мобильная навигация" })
-        .boundingBox(),
+      page.locator("header").first().boundingBox(),
     ]);
     expect(expandedNextBox).not.toBeNull();
-    expect(expandedNavBox).not.toBeNull();
-    expect(
-      expandedNavBox!.y - (expandedNextBox!.y + expandedNextBox!.height),
-    ).toBeGreaterThanOrEqual(4);
+    expect(expandedHeaderBox).not.toBeNull();
+    expect(expandedNextBox!.y).toBeGreaterThanOrEqual(
+      expandedHeaderBox!.y + expandedHeaderBox!.height,
+    );
 
     const expandedDimensions = await page.evaluate(() => ({
       scrollWidth: document.documentElement.scrollWidth,

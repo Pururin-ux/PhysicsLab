@@ -17,7 +17,7 @@ export type FormulaReferenceGroup = {
   id: string;
   title: string;
   intro: string;
-  badgeTone: "cyan" | "gold" | "blue" | "ember" | "neutral";
+  badgeTone: "cyan" | "gold" | "blue" | "pink" | "ember" | "neutral";
   // "soon": задач по разделу ещё нет, формулы уже доступны в справочнике.
   status: "active" | "soon";
   entries: FormulaReferenceEntry[];
@@ -28,7 +28,7 @@ export const formulaReference: FormulaReferenceGroup[] = [
     id: "kinematics",
     title: "Кинематика",
     intro: "Движение по прямой и чтение графиков.",
-    badgeTone: "cyan",
+    badgeTone: "ember",
     status: "active",
     entries: [
       {
@@ -94,16 +94,16 @@ export const formulaReference: FormulaReferenceGroup[] = [
         id: "vt-area",
         relatedSkillIds: ["vt-area"],
         title: "Перемещение по графику v(t)",
-        formula: "s = \\frac{v_0 + v}{2}\\,t",
-        caption: "перемещение равно площади под графиком v(t)",
+        formula: "\\Delta x = \\frac{v_0 + v}{2}\\,t",
+        caption: "перемещение равно знаковой площади между v(t) и осью времени",
         symbols: [
-          { latex: "s", description: "перемещение, м" },
+          { latex: "\\Delta x", description: "проекция перемещения, м" },
           { latex: "v_0", description: "скорость в начале интервала, м/с" },
           { latex: "v", description: "скорость в конце интервала, м/с" },
           { latex: "t", description: "длительность интервала, с" },
         ],
         limitation:
-          "Формула — для равноускоренного движения. В общем случае считай площадь под графиком по частям.",
+          "Формула — для равноускоренного движения. Площадь ниже оси времени отрицательна; путь равен сумме модулей площадей.",
       },
       {
         id: "free-fall",
@@ -123,22 +123,22 @@ export const formulaReference: FormulaReferenceGroup[] = [
       {
         id: "average-speed-segments",
         relatedSkillIds: ["average-speed-segments"],
-        title: "Средняя скорость на участках",
-        formula: "v_{avg}=\\frac{s_1+s_2+\\ldots}{t_1+t_2+\\ldots}",
+        title: "Средняя путевая скорость",
+        formula: "v_{\\text{ср}}=\\frac{s_1+s_2+\\ldots}{t_1+t_2+\\ldots}",
         caption: "весь путь делится на всё время движения",
         symbols: [
-          { latex: "v_{\\mathrm{avg}}", description: "средняя скорость, м/с" },
+          { latex: "v_{\\text{ср}}", description: "средняя путевая скорость, м/с" },
           { latex: "s_1, s_2", description: "пути на отдельных участках, м" },
           { latex: "t_1, t_2", description: "время на отдельных участках, с" },
         ],
         limitation:
-          "Нельзя просто усреднять скорости, если участки длились разное время.",
+          "Это скалярная средняя скорость по пути. Средняя векторная скорость определяется через перемещение.",
       },
       {
         id: "unit-conversion-speed",
         relatedSkillIds: ["unit-conversion-speed"],
         title: "Перевод скорости",
-        formula: "1\\ \\mathrm{km/h}=\\frac{1}{3.6}\\ \\mathrm{m/s}",
+        formula: "1\\ \\text{км/ч}=\\frac{1}{3{,}6}\\ \\text{м/с}",
         caption: "перед расчетом пути скорость и время должны быть в согласованных единицах",
         symbols: [
           { latex: "\\text{км/ч}", description: "километры в час" },
@@ -151,15 +151,16 @@ export const formulaReference: FormulaReferenceGroup[] = [
       {
         id: "relative-velocity-vectors",
         relatedSkillIds: ["relative-velocity-vectors"],
-        title: "Сложение перпендикулярных скоростей",
-        formula: "v=\\sqrt{v_1^2+v_2^2}",
-        caption: "модуль результирующей скорости по двум взаимно перпендикулярным направлениям",
+        title: "Сложение относительных скоростей",
+        formula: "\\vec v_{A/C}=\\vec v_{A/B}+\\vec v_{B/C}",
+        caption: "индексы показывают тело и систему отсчёта",
         symbols: [
-          { latex: "v", description: "модуль скорости относительно неподвижной системы, м/с" },
-          { latex: "v_1, v_2", description: "взаимно перпендикулярные составляющие скорости, м/с" },
+          { latex: "\\vec v_{A/C}", description: "скорость тела A относительно системы C" },
+          { latex: "\\vec v_{A/B}", description: "скорость тела A относительно системы B" },
+          { latex: "\\vec v_{B/C}", description: "скорость системы B относительно системы C" },
         ],
         limitation:
-          "Теорема Пифагора применима только к взаимно перпендикулярным составляющим.",
+          "Складываются именно векторы. Если два слагаемых перпендикулярны, модуль результата равен √(v₁²+v₂²).",
       },
     ],
   },
@@ -167,7 +168,7 @@ export const formulaReference: FormulaReferenceGroup[] = [
     id: "dynamics",
     title: "Динамика",
     intro: "Силы и их связь с движением.",
-    badgeTone: "gold",
+    badgeTone: "blue",
     status: "active",
     entries: [
       {
@@ -244,44 +245,31 @@ export const formulaReference: FormulaReferenceGroup[] = [
         id: "weight-lift",
         relatedSkillIds: ["weight-lift"],
         title: "Вес тела в лифте",
-        formula: "P = m(g \\pm a)",
-        caption: "плюс — ускорение лифта направлено вверх, минус — вниз",
+        formula: "P=N=m(g \\pm a)",
+        caption: "при контакте вес P и реакция опоры N равны по модулю",
         symbols: [
           { latex: "P", description: "вес: сила давления тела на опору, Н" },
+          { latex: "N", description: "реакция опоры: сила, действующая на тело, Н" },
           { latex: "m", description: "масса тела, кг" },
           { latex: "g", description: "ускорение свободного падения, м/с²" },
           { latex: "a", description: "модуль ускорения лифта, м/с²" },
         ],
         limitation:
-          "При ускорении g, направленном вниз, вес обращается в ноль — невесомость.",
-      },
-      {
-        id: "density-volume-ratio",
-        relatedSkillIds: ["density-volume-ratio"],
-        title: "Масса через плотность и объём",
-        formula: "m = \\rho V",
-        caption: "масса растёт с объёмом, а не с линейным размером",
-        symbols: [
-          { latex: "m", description: "масса тела, кг" },
-          { latex: "\\rho", description: "плотность вещества, кг/м³" },
-          { latex: "V", description: "объём тела, м³" },
-        ],
-        limitation:
-          "Для однородного тела. При сравнении фигур одинаковой формы объём растёт как куб линейного размера.",
+          "P и N приложены к разным телам; по вертикали учтены только тяжесть и опора. Плюс — ускорение вверх, минус — вниз; при ускорении g вниз P=0.",
       },
       {
         id: "impulse-momentum",
         relatedSkillIds: ["impulse-momentum"],
         title: "Импульс силы",
-        formula: "\\Delta p = F\\,\\Delta t",
-        caption: "изменение импульса тела за интервал действия силы",
+        formula: "\\Delta\\vec p = \\vec F_{\\text{рез}}\\,\\Delta t",
+        caption: "изменение импульса задаёт импульс равнодействующей всех сил",
         symbols: [
-          { latex: "\\Delta p", description: "изменение импульса тела, кг·м/с" },
-          { latex: "F", description: "постоянная сила, Н" },
+          { latex: "\\Delta\\vec p", description: "изменение импульса тела, кг·м/с" },
+          { latex: "\\vec F_{\\text{рез}}", description: "постоянная равнодействующая всех сил, Н" },
           { latex: "\\Delta t", description: "интервал времени действия силы, с" },
         ],
         limitation:
-          "Для постоянной силы. Масса тела в эту формулу не входит напрямую.",
+          "Для постоянной равнодействующей. В общем случае импульс равен интегралу равнодействующей по времени.",
       },
       {
         id: "inelastic-collision-speed",
@@ -330,9 +318,9 @@ export const formulaReference: FormulaReferenceGroup[] = [
   },
   {
     id: "electrodynamics",
-    title: "Электродинамика",
+    title: "Электричество",
     intro: "Постоянный ток в участке цепи.",
-    badgeTone: "blue",
+    badgeTone: "cyan",
     status: "active",
     entries: [
       {
@@ -440,10 +428,24 @@ export const formulaReference: FormulaReferenceGroup[] = [
   {
     id: "thermodynamics",
     title: "Молекулярная физика и термодинамика",
-    intro: "Уравнение состояния газа и количество теплоты при нагревании.",
-    badgeTone: "ember",
+    intro: "Плотность, состояние газа и тепловые процессы.",
+    badgeTone: "gold",
     status: "active",
     entries: [
+      {
+        id: "density-volume-ratio",
+        relatedSkillIds: ["density-volume-ratio"],
+        title: "Масса через плотность и объём",
+        formula: "m = \\rho V",
+        caption: "масса растёт с объёмом, а не с линейным размером",
+        symbols: [
+          { latex: "m", description: "масса тела, кг" },
+          { latex: "\\rho", description: "плотность вещества, кг/м³" },
+          { latex: "V", description: "объём тела, м³" },
+        ],
+        limitation:
+          "Для однородного тела. При сравнении фигур одинаковой формы объём растёт как куб линейного размера.",
+      },
       {
         id: "mendeleev-clapeyron",
         relatedSkillIds: ["ideal-gas-state"],
@@ -459,7 +461,7 @@ export const formulaReference: FormulaReferenceGroup[] = [
           { latex: "T", description: "абсолютная температура, К" },
         ],
         limitation:
-          "Для идеального газа; температура обязательно в кельвинах.",
+          "Для идеального газа; T — абсолютная температура в кельвинах, а t обычно обозначает температуру по Цельсию.",
       },
       {
         id: "heat-amount",
@@ -474,7 +476,7 @@ export const formulaReference: FormulaReferenceGroup[] = [
           { latex: "\\Delta T", description: "изменение температуры, К" },
         ],
         limitation:
-          "Пока вещество не меняет агрегатное состояние — для плавления и кипения формулы другие.",
+          "Удельную теплоёмкость c считаем постоянной, агрегатное состояние не меняется. Энергия нагревателя равна Q лишь без потерь и нагрева посуды.",
       },
       {
         id: "phase-change-heat",
@@ -517,18 +519,18 @@ export const formulaReference: FormulaReferenceGroup[] = [
           { latex: "T_1, T_2", description: "абсолютная температура, К" },
         ],
         limitation:
-          "Температуру обязательно переводят в Кельвины.",
+          "Температуру обязательно переводят в кельвины.",
       },
       {
         id: "heat-balance-simple",
         relatedSkillIds: ["heat-balance-simple"],
         title: "Тепловой баланс",
-        formula: "m_1c(T_1-T)=m_2c(T-T_2)",
+        formula: "m_1c(t_1-t)=m_2c(t-t_2)",
         caption: "теплота, отданная горячей водой, равна теплоте, полученной холодной",
         symbols: [
           { latex: "m_1, m_2", description: "массы порций воды" },
-          { latex: "T_1, T_2", description: "начальные температуры" },
-          { latex: "T", description: "итоговая температура смеси" },
+          { latex: "t_1, t_2", description: "начальные температуры по Цельсию" },
+          { latex: "t", description: "итоговая температура смеси по Цельсию" },
         ],
         limitation:
           "Формула записана для одного вещества без потерь теплоты.",
@@ -539,18 +541,18 @@ export const formulaReference: FormulaReferenceGroup[] = [
     id: "optics",
     title: "Оптика",
     intro: "Отражение, преломление, плоское зеркало и собирающая тонкая линза.",
-    badgeTone: "cyan",
+    badgeTone: "pink",
     status: "active",
     entries: [
       {
         id: "reflection-angle",
         relatedSkillIds: ["reflection-angle"],
         title: "Закон отражения света",
-        formula: "\\theta_r=\\theta_i",
+        formula: "\\beta=\\alpha",
         caption: "угол отражения равен углу падения",
         symbols: [
-          { latex: "\\theta_i", description: "угол падения, от нормали" },
-          { latex: "\\theta_r", description: "угол отражения, от нормали" },
+          { latex: "\\alpha", description: "угол падения, от нормали" },
+          { latex: "\\beta", description: "угол отражения, от нормали" },
         ],
         limitation:
           "Оба угла отсчитываются от нормали — перпендикуляра к зеркалу, а не от его поверхности.",
@@ -573,42 +575,42 @@ export const formulaReference: FormulaReferenceGroup[] = [
         relatedSkillIds: ["refractive-index-speed"],
         title: "Показатель преломления",
         formula: "n=\\frac{c}{v}",
-        caption: "во сколько раз свет в среде медленнее, чем в вакууме",
+        caption: "отношение c к фазовой скорости света в среде",
         symbols: [
           { latex: "n", description: "абсолютный показатель преломления" },
           { latex: "c", description: "скорость света в вакууме, 3·10⁸ м/с" },
-          { latex: "v", description: "скорость света в среде, м/с" },
+          { latex: "v", description: "фазовая скорость света в среде, м/с" },
         ],
         limitation:
-          "Свет в веществе всегда медленнее, чем в вакууме, поэтому n ≥ 1.",
+          "В школьных задачах рассматривают обычные прозрачные среды для видимого света, где n > 1; это не универсальная граница для всех частот и сред.",
       },
       {
         id: "snell-index-ratio",
         relatedSkillIds: ["snell-index-ratio"],
         title: "Закон преломления света",
-        formula: "\\frac{n_2}{n_1}=\\frac{\\sin i}{\\sin r}",
+        formula: "\\frac{\\sin\\alpha}{\\sin\\gamma}=\\frac{n_2}{n_1}",
         caption: "на границе двух сред луч меняет направление",
         symbols: [
           { latex: "n_1, n_2", description: "показатели преломления сред" },
-          { latex: "i", description: "угол падения, от нормали" },
-          { latex: "r", description: "угол преломления, от нормали" },
+          { latex: "\\alpha", description: "угол падения, от нормали" },
+          { latex: "\\gamma", description: "угол преломления, от нормали" },
         ],
         limitation:
-          "Углы отсчитываются от нормали к границе; при переходе в оптически более плотную среду r < i.",
+          "Углы отсчитываются от нормали к границе; при переходе в оптически более плотную среду γ < α.",
       },
       {
         id: "thin-lens-image-distance",
         relatedSkillIds: ["thin-lens-image-distance"],
         title: "Формула тонкой линзы",
-        formula: "\\frac{1}{F}=\\frac{1}{d_o}+\\frac{1}{d_i}",
+        formula: "\\frac{1}{F}=\\frac{1}{d}+\\frac{1}{f}",
         caption: "связь фокусного расстояния с положением предмета и изображения",
         symbols: [
           { latex: "F", description: "фокусное расстояние линзы" },
-          { latex: "d_o", description: "расстояние от предмета до линзы" },
-          { latex: "d_i", description: "расстояние от линзы до изображения" },
+          { latex: "d", description: "расстояние от предмета до линзы" },
+          { latex: "f", description: "расстояние от линзы до изображения" },
         ],
         limitation:
-          "В таком виде — для собирающей линзы и действительного изображения (d_o > F); иначе слагаемые берут со знаками.",
+          "В таком виде — для собирающей линзы и действительного изображения (d > F); иначе слагаемые берут со знаками.",
       },
       {
         id: "lens-optical-power",
@@ -627,15 +629,16 @@ export const formulaReference: FormulaReferenceGroup[] = [
         id: "lens-image-height",
         relatedSkillIds: ["lens-image-height"],
         title: "Линейное увеличение линзы",
-        formula: "|\\Gamma|=\\frac{d_i}{d_o}=\\frac{h_i}{h_o}",
+        formula: "|\\Gamma|=\\frac{d_i}{d_o}=\\frac{H}{h}",
         caption: "во сколько раз изображение больше или меньше предмета",
         symbols: [
-          { latex: "|\\Gamma|", description: "модуль линейного увеличения" },
-          { latex: "d_o, d_i", description: "расстояния до предмета и изображения" },
-          { latex: "h_o, h_i", description: "высоты предмета и изображения" },
+          { latex: "\\Gamma", description: "линейное увеличение (по модулю)" },
+          { latex: "d_o", description: "расстояние от предмета до линзы" },
+          { latex: "d_i", description: "расстояние от линзы до изображения" },
+          { latex: "h, H", description: "высота предмета и модуль высоты изображения" },
         ],
         limitation:
-          "Формула записана по модулю: правила знаков v1 намеренно не использует, ориентация изображения оговаривается отдельно.",
+          "Формула записана по модулю: у действительного изображения собирающей линзы оно перевёрнуто.",
       },
     ],
   },

@@ -8,7 +8,8 @@ import {
   resolveAngleMark,
   type GridPoint,
 } from "./vector-diagram-geometry";
-import { SvgMathLabel } from "../physics-graph/SvgMathLabel";
+import { SvgMathLabel, getAccessibleMathLabel } from "../physics-graph/SvgMathLabel";
+import { formatTickValue } from "../../lib/physics/graph-ticks.ts";
 
 type VectorDiagramProps = {
   spec: VectorDiagramSpec;
@@ -34,6 +35,44 @@ const MARGIN = 34;
 
 function sanitizeId(value: string) {
   return value.replace(/[^a-zA-Z0-9_-]/g, "");
+}
+
+function describeVectorDiagram(
+  spec: VectorDiagramSpec,
+  endpoints: ReturnType<typeof computeVectorEndpoints>,
+) {
+  const layout = spec.layout === "concurrent"
+    ? "Все векторы выходят из общей точки."
+    : "Векторы сложены последовательно, конец к началу.";
+  const vectors = spec.vectors.map((vector) => {
+    const label = vector.label ? getAccessibleMathLabel(vector.label) : vector.id;
+    return `${label}: компонента по x ${formatTickValue(vector.dx)}, компонента по y ${formatTickValue(vector.dy)}.`;
+  });
+  const resultant = spec.showResultant ? computeResultant(spec.vectors) : null;
+  const resultantText = resultant
+    ? `Равнодействующая ${spec.resultantLabel ? getAccessibleMathLabel(spec.resultantLabel) : "R"}: компонента по x ${formatTickValue(resultant.dx)}, компонента по y ${formatTickValue(resultant.dy)}.`
+    : null;
+  const angles = spec.angleMarks?.map((mark) => {
+    const vectorName = (id: string) => {
+      const vector = spec.vectors.find((item) => item.id === id);
+      return vector?.label ? getAccessibleMathLabel(vector.label) : id;
+    };
+    const geometry = resolveAngleMark(mark.between[0], mark.between[1], endpoints);
+    const magnitudeA = geometry ? Math.hypot(geometry.dirA.x, geometry.dirA.y) : 0;
+    const magnitudeB = geometry ? Math.hypot(geometry.dirB.x, geometry.dirB.y) : 0;
+    const cosine = geometry && magnitudeA > 0 && magnitudeB > 0
+      ? Math.min(1, Math.max(-1, (geometry.dirA.x * geometry.dirB.x + geometry.dirA.y * geometry.dirB.y) / (magnitudeA * magnitudeB)))
+      : null;
+    const computedAngle = cosine === null ? null : Math.round((Math.acos(cosine) * 180) / Math.PI);
+    const label = mark.label
+      ? getAccessibleMathLabel(mark.label)
+      : computedAngle === null
+        ? null
+        : `${computedAngle}°`;
+    return `Угол между ${vectorName(mark.between[0])} и ${vectorName(mark.between[1])}${label ? `: ${label}` : ""}.`;
+  }) ?? [];
+
+  return ["Векторная диаграмма.", layout, ...vectors, resultantText, ...angles].filter(Boolean).join(" ");
 }
 
 export function VectorDiagram({ spec, className, ariaLabel }: VectorDiagramProps) {
@@ -129,7 +168,7 @@ export function VectorDiagram({ spec, className, ariaLabel }: VectorDiagramProps
       <svg
         viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
         role="img"
-        aria-label={ariaLabel ?? "Векторная диаграмма"}
+        aria-label={ariaLabel ?? describeVectorDiagram(spec, endpoints)}
         className="mx-auto h-auto w-full max-w-[360px]"
         preserveAspectRatio="xMidYMid meet"
       >

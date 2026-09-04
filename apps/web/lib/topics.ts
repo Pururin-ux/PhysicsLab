@@ -4,6 +4,10 @@ type ProductTopic = {
   id: TopicId;
   title: string;
   description: string;
+  learnHref: string;
+  learnLabel?: string;
+  practiceHref: string;
+  /** Default topic route kept for existing progress and recommendation links. */
   href: string;
   skillsCount: number;
   modeLabel: string;
@@ -18,40 +22,51 @@ export const topics = [
   {
     id: "kinematics",
     title: "Кинематика",
-    description: "Скорость, ускорение, перемещение и чтение графиков движения.",
-    href: "/practice/kinematics-demo",
+    description: "Как график скорости показывает ускорение движения.",
+    learnHref: "/practice/kinematics-lesson",
+    practiceHref: "/practice/family/vt-slope",
+    href: "/practice/kinematics-lesson",
     skillsCount: getSkillsCount("kinematics"),
     modeLabel: "графики движения",
   },
   {
     id: "dynamics",
     title: "Динамика",
-    description: "Силы, трение, наклонная плоскость, импульс и плотность тел.",
-    href: "/practice/dynamics-demo",
+    description: "Как сила и масса меняют движение тела.",
+    learnHref: "/practice/dynamics-lesson",
+    practiceHref: "/practice/family/newton-second",
+    href: "/practice/dynamics-lesson",
     skillsCount: getSkillsCount("dynamics"),
     modeLabel: "силы и движение",
   },
   {
     id: "electrodynamics",
-    title: "Электродинамика",
-    description: "Постоянный ток, закон Ома и деление заряда между проводниками.",
-    href: "/practice/electro-demo",
+    title: "Электричество",
+    description: "Ток, напряжение и сопротивление в простой цепи.",
+    learnHref: "/practice/electro-lesson",
+    practiceHref: "/practice/family/ohm-law",
+    href: "/practice/electro-lesson",
     skillsCount: getSkillsCount("electrodynamics"),
     modeLabel: "цепи и заряды",
   },
   {
     id: "thermodynamics",
     title: "Молекулярная физика и термодинамика",
-    description: "Уравнение состояния газа и количество теплоты при нагревании.",
-    href: "/practice/thermo-demo",
+    description: "Плотность вещества и связь массы с объёмом.",
+    learnHref: "/practice/density-lesson",
+    learnLabel: "Начать с основы",
+    practiceHref: "/practice/family/density-volume-ratio",
+    href: "/practice/density-lesson",
     skillsCount: getSkillsCount("thermodynamics"),
-    modeLabel: "газы и теплота",
+    modeLabel: "масса и объём",
   },
   {
     id: "optics",
     title: "Оптика",
-    description: "Отражение, плоское зеркало, преломление и собирающая линза с диаграммами.",
-    href: "/practice/optics-demo",
+    description: "Падающий и отражённый лучи: откуда считать угол.",
+    learnHref: "/practice/optics-lesson",
+    practiceHref: "/practice/family/reflection-angle",
+    href: "/practice/optics-lesson",
     skillsCount: getSkillsCount("optics"),
     modeLabel: "лучи и линзы",
   },

@@ -14,6 +14,6 @@ test("optics topic ведёт в тренировку и содержит сем
   const optics = topics.find((topic) => topic.id === "optics");
 
   assert.ok(optics);
-  assert.equal(optics.href, "/practice/optics-demo");
+  assert.equal(optics.href, "/practice/optics-lesson");
   assert.equal(optics.skillsCount, 7);
 });

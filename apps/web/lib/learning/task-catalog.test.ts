@@ -11,6 +11,8 @@ import {
   getDifficultyCounts,
   templateRegistry,
 } from "../server/task-generator/generate.ts";
+import { formulaReference } from "../physics/formula-reference.ts";
+import { taskLearningMetadataByTemplateId } from "./task-metadata.ts";
 
 const catalog = getTaskCatalog();
 
@@ -43,6 +45,55 @@ test("task catalog entries have complete student-facing metadata and active topi
   }
 });
 
+test("all 35 task families keep one semantic contract across generator, reference and catalog", () => {
+  const formulaEntriesBySkill = new Map(
+    catalog.map((entry) => [
+      entry.id,
+      formulaReference
+        .flatMap((group) => group.entries)
+        .filter((formula) => formula.relatedSkillIds.includes(entry.id)),
+    ]),
+  );
+
+  for (const entry of catalog) {
+    const blueprint = getBlueprint(entry.id);
+    const metadata = taskLearningMetadataByTemplateId[entry.id];
+    const formulas = formulaEntriesBySkill.get(entry.id) ?? [];
+
+    assert.ok(metadata, `${entry.id}: missing learning metadata`);
+    assert.equal(metadata.skillId, entry.id, `${entry.id}: metadata points to another family`);
+    assert.equal(metadata.topicId, entry.topicId, `${entry.id}: topic drift`);
+
+    assert.ok(blueprint.formula?.trim(), `${entry.id}: missing generator formula`);
+    assert.ok(
+      entry.formulaAliases.includes(blueprint.formula),
+      `${entry.id}: catalog lost the generator formula`,
+    );
+    assert.ok(formulas.length > 0, `${entry.id}: no formula reference`);
+    assert.ok(
+      formulas.every((formula) => formula.limitation.trim()),
+      `${entry.id}: formula has no applicability boundary`,
+    );
+    assert.ok(
+      formulas.every(
+        (formula) =>
+          formula.symbols.length > 0 &&
+          formula.symbols.every(
+            (symbol) => symbol.latex.trim() && symbol.description.trim(),
+          ),
+      ),
+      `${entry.id}: formula symbols or unit descriptions are incomplete`,
+    );
+
+    assert.ok(blueprint.trap?.trim(), `${entry.id}: missing family-specific mistake`);
+    assert.equal(
+      entry.commonMistake,
+      blueprint.trap.trim(),
+      `${entry.id}: task page shows a mistake from another concept`,
+    );
+  }
+});
+
 test("catalog difficulty ranges and visual markers come from real blueprints", () => {
   for (const entry of catalog) {
     const counts = getDifficultyCounts(entry.id);
@@ -70,9 +121,9 @@ test("catalog topic counts match the active generator distribution", () => {
     ),
     {
       kinematics: 6,
-      dynamics: 11,
+      dynamics: 10,
       electrodynamics: 6,
-      thermodynamics: 5,
+      thermodynamics: 6,
       optics: 7,
     },
   );

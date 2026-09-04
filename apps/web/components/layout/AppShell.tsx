@@ -1,371 +1,283 @@
 "use client";
 
+import {
+  ArrowLeft,
+  Atom,
+  Books,
+  ChartLineUp,
+  DotsThree,
+  GraduationCap,
+  House,
+  MoonStars,
+  Sun,
+} from "@phosphor-icons/react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import type { ReactNode } from "react";
+import { usePathname } from "next/navigation";
+import { useEffect, useRef, useState, type ReactNode } from "react";
+import {
+  getActiveProductDestination,
+  getProductDestination,
+  isExamDestination,
+  CONTEXTUAL_TOOLS,
+  PRODUCT_DESTINATIONS,
+} from "../../lib/product-routes";
 import { cn } from "../../lib/utils";
-import { NavBar } from "./NavBar";
+import { SmoothAnchorScroll } from "./SmoothAnchorScroll";
+import { StarField } from "./StarField";
+import styles from "./AppShell.module.css";
 
-type NavItem = {
-  label: string;
-  href: string;
-  icon?: ReactNode;
-  match?: (pathname: string) => boolean;
-};
-
-type NavGroup = {
-  title: string;
-  items: NavItem[];
-};
-
-const navIconClass = "h-[18px] w-[18px] shrink-0";
-
-const navIcons = {
-  tasks: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className={navIconClass} aria-hidden="true">
-      <rect x="3.5" y="3.5" width="7" height="7" rx="1.8" />
-      <rect x="13.5" y="3.5" width="7" height="7" rx="1.8" />
-      <rect x="3.5" y="13.5" width="7" height="7" rx="1.8" />
-      <rect x="13.5" y="13.5" width="7" height="7" rx="1.8" />
-    </svg>
-  ),
-  exam: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" className={navIconClass} aria-hidden="true">
-      <path d="M8 4h8l2 2v14H6V6l2-2Z" />
-      <path d="M9 10h6M9 14h6M9 18h4" />
-    </svg>
-  ),
-  mistakes: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className={navIconClass} aria-hidden="true">
-      <circle cx="12" cy="12" r="8" />
-      <circle cx="12" cy="12" r="3.6" />
-      <circle cx="12" cy="12" r="0.9" fill="currentColor" stroke="none" />
-    </svg>
-  ),
-  formulas: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinejoin="round" strokeLinecap="round" className={navIconClass} aria-hidden="true">
-      <path d="M17 5H7.5l5.5 7-5.5 7H17" />
-    </svg>
-  ),
-  profile: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" className={navIconClass} aria-hidden="true">
-      <circle cx="12" cy="8.4" r="3.6" />
-      <path d="M5.2 19.6c1.6-3.3 4-4.9 6.8-4.9s5.2 1.6 6.8 4.9" />
-    </svg>
-  ),
+const mobileIcons = {
+  today: House,
+  learn: Books,
+  exam: GraduationCap,
+  progress: ChartLineUp,
 } as const;
 
-const sidebarGroups: NavGroup[] = [
-  {
-    title: "Практика",
-    items: [
-      {
-        label: "Задачи",
-        href: "/tasks",
-        icon: navIcons.tasks,
-        match: (pathname) =>
-          pathname.startsWith("/tasks") || pathname.startsWith("/practice/family"),
-      },
-      {
-        label: "Смешанная тренировка",
-        href: "/practice/exam-demo",
-        icon: navIcons.exam,
-        match: (pathname) => pathname.startsWith("/practice/exam"),
-      },
-      {
-        label: "Ошибки",
-        href: "/mistakes",
-        icon: navIcons.mistakes,
-        match: (pathname) => pathname.startsWith("/mistakes"),
-      },
-    ],
-  },
-  {
-    title: "Справка",
-    items: [
-      {
-        label: "Формулы",
-        href: "/formulas",
-        icon: navIcons.formulas,
-        match: (pathname) => pathname.startsWith("/formulas"),
-      },
-      {
-        label: "Прогресс",
-        href: "/profile",
-        icon: navIcons.profile,
-        match: (pathname) => pathname.startsWith("/profile"),
-      },
-    ],
-  },
-];
-
-const mobileNavItems: NavItem[] = [
-  {
-    label: "Задачи",
-    href: "/tasks",
-    icon: navIcons.tasks,
-    match: (pathname) =>
-      pathname.startsWith("/tasks") ||
-      pathname.startsWith("/topics") ||
-      pathname.startsWith("/practice/"),
-  },
-  {
-    label: "Ошибки",
-    href: "/mistakes",
-    icon: navIcons.mistakes,
-    match: (pathname) => pathname.startsWith("/mistakes"),
-  },
-  {
-    label: "Формулы",
-    href: "/formulas",
-    icon: navIcons.formulas,
-    match: (pathname) => pathname.startsWith("/formulas"),
-  },
-  {
-    label: "Прогресс",
-    href: "/profile",
-    icon: navIcons.profile,
-    match: (pathname) => pathname.startsWith("/profile"),
-  },
-];
-
-const quickActions: NavItem[] = [
-  {
-    label: "Задачи",
-    href: "/tasks",
-    match: (pathname) =>
-      pathname.startsWith("/tasks") ||
-      pathname.startsWith("/topics") ||
-      (pathname.startsWith("/practice/") && !pathname.startsWith("/practice/exam")),
-  },
-  {
-    label: "Смешанная",
-    href: "/practice/exam-demo",
-    match: (pathname) => pathname.startsWith("/practice/exam"),
-  },
-  {
-    label: "Ошибки",
-    href: "/mistakes",
-    match: (pathname) => pathname.startsWith("/mistakes"),
-  },
-  {
-    label: "Прогресс",
-    href: "/profile",
-    match: (pathname) => pathname.startsWith("/profile"),
-  },
-];
-
-function SidebarItem({ item, mobile = false }: { item: NavItem; mobile?: boolean }) {
-  const pathname = usePathname();
-  const active = item.match?.(pathname) ?? false;
-  const baseClass = cn(
-    "group flex items-center rounded-option border font-semibold transition-colors",
-    mobile
-      ? "min-h-[52px] flex-col justify-center gap-1 px-1 py-1.5 text-[10px]"
-      : "min-h-11 gap-3 px-3 text-[13px]",
-  );
-  const stateClass = active
-    ? "border-nova-cyan/50 bg-nova-cyan/[.12] text-white shadow-[inset_2px_0_0_rgba(0,224,255,.85),0_0_22px_rgba(0,224,255,.08)]"
-    : "border-transparent text-white/62 hover:border-white/[.08] hover:bg-white/[.035] hover:text-white/88";
-
-  const content = (
-    <>
-      {item.icon ? (
-        <span className={cn("text-white/58 transition-colors group-hover:text-current", active ? "text-nova-cyan" : null)}>
-          {item.icon}
-        </span>
-      ) : null}
-      <span
-        className={cn(
-          "min-w-0 flex-1",
-          mobile ? "leading-none" : "break-words leading-[1.35]",
-        )}
-      >
-        {item.label}
-      </span>
-      {!mobile && active ? (
-        <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-nova-cyan shadow-cyan-glow" />
-      ) : null}
-    </>
-  );
-
+function Brand() {
   return (
     <Link
-      href={item.href}
-      aria-current={active ? "page" : undefined}
-      className={cn(baseClass, stateClass)}
+      href="/"
+      aria-label="PhysicsLab — на главную"
+      className="physicslab-brand"
     >
-      {content}
+      <span className="physicslab-brand__mark">
+        <Atom size={22} weight="bold" aria-hidden="true" />
+      </span>
+      <span className="physicslab-brand__wordmark">
+        Physics<span>Lab</span>
+      </span>
     </Link>
   );
 }
 
-function SidebarNav() {
-  return (
-    <nav
-      data-testid="desktop-sidebar-nav"
-      className="flex flex-col gap-5"
-      aria-label="Разделы PhysicsLab"
-    >
-      {sidebarGroups.map((group) => (
-        <section key={group.title} className="flex flex-col gap-2">
-          <p className="px-3 text-[10px] font-bold uppercase tracking-[.16em] text-white/42">
-            {group.title}
-          </p>
-          <div className="flex flex-col gap-1.5">
-            {group.items.map((item) => (
-              <SidebarItem key={item.label} item={item} />
-            ))}
-          </div>
-        </section>
-      ))}
-    </nav>
-  );
-}
+function UtilityMenu() {
+  const [open, setOpen] = useState(false);
+  const buttonRef = useRef<HTMLButtonElement>(null);
 
-function MobileSidebarNav() {
-  return (
-    <nav
-      className="grid grid-cols-4 gap-1"
-      data-testid="mobile-bottom-nav"
-      aria-label="Мобильная навигация"
-    >
-      {mobileNavItems.map((item) => (
-        <SidebarItem key={item.label} item={item} mobile />
-      ))}
-    </nav>
-  );
-}
+  useEffect(() => {
+    if (!open) return;
 
-function AppSidebar() {
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      setOpen(false);
+      buttonRef.current?.focus();
+    };
+
+    document.addEventListener("keydown", closeOnEscape);
+    return () => document.removeEventListener("keydown", closeOnEscape);
+  }, [open]);
+
   return (
-    <aside data-testid="app-sidebar" className="sticky top-6 hidden self-start flex-col rounded-card border border-white/[.08] bg-space-900/82 p-4 shadow-card backdrop-blur-md lg:flex">
-      <Link
-        href="/"
-        className="mb-5 shrink-0 rounded-option focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/55 focus-visible:ring-offset-2 focus-visible:ring-offset-space-950"
-        aria-label="PhysicsLab — на главную"
+    <div
+      className={cn(styles.toolsMenu, "ml-auto md:ml-0")}
+      data-open={open || undefined}
+    >
+      <button
+        ref={buttonRef}
+        type="button"
+        className={styles.toolsSummary}
+        aria-label="Быстрый доступ"
+        aria-expanded={open}
+        aria-controls="shell-tools-panel"
+        onClick={() => setOpen((current) => !current)}
       >
-        <span className="block text-[18px] font-black leading-none tracking-tight text-white">
-          Physics<span className="text-nova-cyan">Lab</span>
-        </span>
-        <span className="mt-1 block text-[10px] font-bold uppercase tracking-[.18em] text-white/42">
-          тренажёр
-        </span>
-      </Link>
-
-      <SidebarNav />
-    </aside>
-  );
-}
-
-function MobileBottomNav() {
-  return (
-    <div className="fixed inset-x-0 bottom-0 z-30 border-t border-white/[.08] bg-space-950/92 px-3 py-2 backdrop-blur-xl md:hidden">
-      <MobileSidebarNav />
-    </div>
-  );
-}
-
-function BackButton({ fallbackHref }: { fallbackHref: string }) {
-  const router = useRouter();
-
-  function handleBack() {
-    if (typeof window !== "undefined" && window.history.length > 1) {
-      router.back();
-      return;
-    }
-
-    router.push(fallbackHref);
-  }
-
-  return (
-    <button
-      type="button"
-      onClick={handleBack}
-      className="inline-flex min-h-10 items-center gap-2 rounded-option border border-white/[.08] bg-white/[.025] px-3 text-[13px] font-semibold text-white/68 transition-colors hover:border-white/[.16] hover:bg-white/[.045] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/55 focus-visible:ring-offset-2 focus-visible:ring-offset-space-950"
-    >
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.9} strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4" aria-hidden="true">
-        <path d="m15 18-6-6 6-6" />
-      </svg>
-      Назад
-    </button>
-  );
-}
-
-function ShellTopBar() {
-  const pathname = usePathname();
-
-  if (pathname === "/") {
-    return null;
-  }
-
-  const fallbackHref = pathname.startsWith("/practice/family")
-    ? "/tasks"
-    : pathname.startsWith("/practice/")
-      ? "/topics"
-      : "/";
-
-  return (
-    <div className="mb-5 flex min-w-0 items-center justify-between gap-3">
-      <BackButton fallbackHref={fallbackHref} />
-
-      {/* Быстрые ссылки нужны только на планшете (md–lg), где боковая
-          панель скрыта. На desktop (lg+) их дублирует sidebar, поэтому
-          прячем — иначе одни и те же разделы висят дважды на экране. */}
-      <nav
-        className="hidden min-w-0 items-center gap-1 rounded-card border border-white/[.08] bg-space-900/62 p-1 shadow-[inset_0_1px_0_rgba(255,255,255,.035)] backdrop-blur-md md:flex lg:hidden"
-        data-testid="tablet-quick-actions"
-        aria-label="Быстрые разделы"
-      >
-        {quickActions.map((item) => {
-          const active = item.match?.(pathname) ?? false;
-
-          return (
-            <Link
-              key={item.label}
-              href={item.href ?? "/"}
-              aria-current={active ? "page" : undefined}
-              className={cn(
-                "inline-flex min-h-9 items-center rounded-option px-3 text-[12px] font-bold transition-colors",
-                active
-                  ? "bg-nova-cyan text-space-950 shadow-cyan-glow"
-                  : "text-white/58 hover:bg-white/[.045] hover:text-white",
-              )}
-            >
-              {item.label}
+        <DotsThree size={20} weight="bold" aria-hidden="true" />
+      </button>
+      {open ? (
+        <nav
+          id="shell-tools-panel"
+          className={styles.toolsPanel}
+          aria-label="Формулы, задачи и ошибки"
+        >
+          {CONTEXTUAL_TOOLS.map((tool) => (
+            <Link key={tool.id} href={tool.href} onClick={() => setOpen(false)}>
+              <strong>{tool.label}</strong>
+              <span>{tool.description}</span>
             </Link>
-          );
-        })}
-      </nav>
+          ))}
+        </nav>
+      ) : null}
     </div>
   );
 }
 
-interface AppShellProps {
-  children: ReactNode;
+type Theme = "dark" | "light";
+
+function Header({ theme, onToggleTheme }: { theme: Theme; onToggleTheme: () => void }) {
+  const pathname = usePathname();
+  const isHome = pathname === "/";
+  const activeDestination = getActiveProductDestination(pathname);
+
+  return (
+    <header className={cn(
+      "site-header top-0 z-40",
+      isHome ? "site-header--home absolute inset-x-0" : "site-header--inner sticky",
+    )}>
+      <div className={cn("mx-auto flex min-h-[64px] w-full items-center gap-4 px-4 sm:px-6 md:min-h-[76px] lg:px-8", isHome ? "max-w-none lg:px-12" : "max-w-[1300px]")}>
+        <Brand />
+
+        <div data-testid="desktop-sidebar-nav" className="ml-auto hidden items-center gap-2 md:flex">
+          <nav data-testid="tablet-quick-actions" aria-label="Основная навигация" className="flex items-center gap-1">
+            {PRODUCT_DESTINATIONS.map((item) => {
+              const active = activeDestination?.id === item.id;
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  aria-current={active ? "page" : undefined}
+                  className={cn(
+                    "site-nav-link",
+                    active && "site-nav-link--active",
+                  )}
+                >
+                  {item.label}
+                </Link>
+              );
+            })}
+          </nav>
+        </div>
+        <UtilityMenu />
+        <button
+          type="button"
+          onClick={onToggleTheme}
+          aria-label={theme === "dark" ? "Включить светлую тему" : "Включить тёмную тему"}
+          aria-pressed={theme === "light"}
+          title={theme === "dark" ? "Светлая тема" : "Тёмная тема"}
+          className="shell-icon-button shell-theme-toggle"
+        >
+          {theme === "dark" ? <Sun size={18} weight="bold" /> : <MoonStars size={18} weight="bold" />}
+        </button>
+      </div>
+    </header>
+  );
 }
 
-export function AppShell({ children }: AppShellProps) {
+function MobileNavigation() {
+  const pathname = usePathname();
+  const isFocusScene = pathname === "/practice/acceleration-focus";
+  const activeDestination = getActiveProductDestination(pathname);
+
   return (
-    <div className="app-shell-v1 relative z-10 min-h-screen">
-      <div className="lg:hidden">
-        <NavBar />
-      </div>
+    <nav
+      data-testid="mobile-bottom-nav"
+      aria-label="Основная навигация"
+      className={cn(
+        "mobile-shell-nav fixed inset-x-0 bottom-0 z-50 grid grid-cols-4 px-1.5 pb-[calc(.24rem+env(safe-area-inset-bottom))] pt-1 md:hidden",
+        isFocusScene && "mobile-shell-nav--focus pb-[calc(.2rem+env(safe-area-inset-bottom))] pt-0.5",
+      )}
+    >
+      {PRODUCT_DESTINATIONS.map((item) => {
+        const active = activeDestination?.id === item.id;
+        const Icon = mobileIcons[item.id];
 
-      <div
-        className={cn(
-          "mx-auto grid w-full max-w-[1400px] grid-cols-1 gap-5 px-4 pb-28 pt-5 sm:px-6 sm:pt-6 md:pb-10 lg:grid-cols-[224px_minmax(0,1fr)] lg:gap-5 lg:px-4 lg:pb-10 2xl:grid-cols-[232px_minmax(0,1fr)]",
-        )}
+        return (
+          <Link
+            key={item.href}
+            href={item.href}
+            aria-current={active ? "page" : undefined}
+            className={cn(
+              "mobile-shell-nav__item",
+              isFocusScene && "mobile-shell-nav__item--focus",
+              active && "mobile-shell-nav__item--active",
+            )}
+          >
+            <Icon
+              size={20}
+              weight={active ? "fill" : "regular"}
+              aria-hidden="true"
+            />
+            <span className="max-w-full truncate">{item.label}</span>
+          </Link>
+        );
+      })}
+    </nav>
+  );
+}
+
+function ContextBack() {
+  const pathname = usePathname();
+  const show =
+    pathname.startsWith("/tasks/") ||
+    (pathname.startsWith("/practice/") && !isExamDestination(pathname));
+  if (!show) return null;
+  const href = pathname.startsWith("/tasks/")
+    ? "/tasks"
+    : getProductDestination("learn").href;
+  // Кнопка «Назад» остаётся под липкой шапкой при прокрутке. z-30 держит её
+  // под самой шапкой (z-40), но над содержимым страницы.
+  return (
+    <div className="sticky top-[86px] z-30 mb-5 hidden w-fit md:block">
+      <Link
+        href={href}
+        className="context-back-link"
       >
-        <AppSidebar />
+        <ArrowLeft size={16} weight="bold" aria-hidden="true" />
+        Назад
+      </Link>
+    </div>
+  );
+}
 
-        <main className="app-shell-main min-w-0">
-          <ShellTopBar />
-          {children}
-        </main>
-      </div>
+export function AppShell({ children }: { children: ReactNode }) {
+  const pathname = usePathname();
+  const [theme, setTheme] = useState<Theme>("dark");
+  const [themeReady, setThemeReady] = useState(false);
 
-      <MobileBottomNav />
+  useEffect(() => {
+    // Чтение тоже в try: в приватном режиме и при запрете хранилища сам доступ
+    // к localStorage бросает исключение, и незакрытый вызов ронял всё
+    // приложение в экран «Приложение не запустилось».
+    let saved: string | null = null;
+    try {
+      saved = window.localStorage.getItem("physicslab-theme");
+    } catch {
+      saved = null;
+    }
+    const initial: Theme = saved === "light" || saved === "dark" ? saved : "dark";
+    setTheme(initial);
+    setThemeReady(true);
+  }, []);
+
+  useEffect(() => {
+    if (!themeReady) return;
+    document.documentElement.dataset.theme = theme;
+  }, [theme, themeReady]);
+
+  // Пишем только по нажатию переключателя. Простой просмотр страницы не должен
+  // оставлять следов в хранилище — на это смотрит reference-solutions.spec.ts.
+  const toggleTheme = () => {
+    setTheme((current) => {
+      const next: Theme = current === "dark" ? "light" : "dark";
+      try {
+        window.localStorage.setItem("physicslab-theme", next);
+      } catch {
+        // Тема продолжает работать в памяти, даже если хранилище недоступно.
+      }
+      return next;
+    });
+  };
+
+  return (
+    <div
+      className={cn(
+        "app-shell relative z-10 min-h-screen pb-[calc(4.1rem+env(safe-area-inset-bottom))] md:pb-0",
+        pathname === "/" ? "app-shell--home" : "app-shell--inner",
+      )}
+    >
+      {theme === "dark" ? <StarField /> : null}
+      <SmoothAnchorScroll />
+      <a href="#main-content" className="skip-link">Перейти к содержимому</a>
+      <Header theme={theme} onToggleTheme={toggleTheme} />
+      <MobileNavigation />
+      <main
+        id="main-content"
+        tabIndex={-1}
+        style={pathname === "/" ? { maxWidth: "none" } : undefined}
+        className={cn("app-shell-main relative z-10 min-w-0", pathname === "/" ? "app-shell-main--home p-0" : "px-4 py-5 sm:px-6 sm:py-7 lg:px-8 lg:py-8")}
+      >
+        <ContextBack />
+        {children}
+      </main>
     </div>
   );
 }

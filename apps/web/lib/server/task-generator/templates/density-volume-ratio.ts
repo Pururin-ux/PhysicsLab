@@ -18,8 +18,8 @@ function contextFor(p: Params): string {
 export const densityVolumeRatioBlueprint: TaskBlueprint = {
   id: "density-volume-ratio",
   skill: "Плотность и объём: отношение масс",
-  topic: "Динамика",
-  group: "dynamics",
+  topic: "Молекулярная физика и термодинамика",
+  group: "thermodynamics",
   difficulty: 2,
   params: {
     rho1: { min: 1, max: 8, step: 1, unit: "г/см³" },
@@ -28,12 +28,13 @@ export const densityVolumeRatioBlueprint: TaskBlueprint = {
     a2: { min: 1, max: 4, step: 1, unit: "см" },
   },
   formula: "\\frac{m_1}{m_2} = \\frac{\\rho_1 a_1^3}{\\rho_2 a_2^3}",
-  answerUnit: "раз",
+  // Отношение двух масс безразмерно: слово «раз» — часть речи, не единица.
+  answerUnit: "",
   answerKind: "positive",
   solver: densityVolumeRatio,
   distractors: densityVolumeRatioDistractors,
   textTemplate: (p) =>
-    `${contextFor(p)}. Первый — из материала плотностью ${p.rho1} г/см³ с ребром ${p.a1} см, второй — из материала плотностью ${p.rho2} г/см³ с ребром ${p.a2} см. Найдите отношение массы первого кубика к массе второго, $m_1/m_2$.`,
+    `${contextFor(p)}. Первый — из материала плотностью ${p.rho1} г/см³ с ребром ${p.a1} см, второй — из материала плотностью ${p.rho2} г/см³ с ребром ${p.a2} см. Найдите отношение массы первого кубика к массе второго, m₁/m₂.`,
   explanationTemplate: (p, answer) =>
     `Масса растёт с объёмом, то есть с кубом ребра: $\\frac{m_1}{m_2} = \\frac{\\rho_1 a_1^3}{\\rho_2 a_2^3} = \\frac{${p.rho1} \\cdot ${p.a1}^3}{${p.rho2} \\cdot ${p.a2}^3} = ${formatMathValue(answer)}$. Сравнивать нужно объёмы, а не рёбра.`,
   trap: "Сравнивает рёбра кубиков напрямую, забывая, что масса пропорциональна кубу ребра.",

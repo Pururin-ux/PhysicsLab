@@ -23,6 +23,7 @@ export default function KinematicsDemoPage() {
         eyebrow="Тренировка"
         title="Кинематика"
         description="10 задач: движение, графики и формулы. Если застрянешь — открой разбор темы."
+        learnHref="/practice/kinematics-lesson"
         accent="cyan"
       />
 
@@ -32,10 +33,10 @@ export default function KinematicsDemoPage() {
           generatedTemplate="mixed"
           generatedTopic="Кинематика"
           generatedTitle="Задачи по кинематике"
+          preAnswerGuidance="unlabelled"
           accent="cyan"
-          drawerTitle="Справка по задаче"
-          drawerDescription="Открыт раздел, который нужен для текущего вопроса."
-          subtopics={topicHelpSections.kinematics}
+          drawerTitle="Справка"
+                    subtopics={topicHelpSections.kinematics}
         >
           <div data-help-section-id="uniform-motion">
             <ConceptReveal

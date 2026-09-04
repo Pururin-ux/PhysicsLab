@@ -3,12 +3,24 @@ dist/
 .astro/
 .claude/
 .agents/
+!.agents/
+.agents/*
+!.agents/skills/
+.agents/skills/*
+!.agents/skills/physicslab-visual-verdict/
+!.agents/skills/physicslab-visual-verdict/**
 artifacts/
+**/.artifacts/
 output/
 playwright-report/
 test-results/
 **/tsconfig.tsbuildinfo
 .next/
+**/.next-site-build/
+**/.vinext/
+**/.next-audit/
+**/.next-lighthouse/
+**/.lighthouse-profile/
 .env
 .env.*
 !.env.example
@@ -29,3 +41,16 @@ legacy/**/.emergent/
 legacy/PhysLabProt-main/frontend/build/
 legacy/PhysLabProt-main/test_reports/
 legacy/**/*.pdf
+
+# Исходники арта (PNG-оригиналы вне деплоя; в public/ живут только webp)
+art-src/
+
+# design-sync machine state
+.ds-sync/
+ds-bundle/
+.design-sync/.cache/
+.design-sync/learnings/
+.design-sync/node_modules
+
+# инструменты проверки текста
+.lang-tools/node_modules/

@@ -39,7 +39,7 @@ export function FormulaDetails({
         className,
       )}
     >
-      <p className="text-[11px] font-bold uppercase tracking-[.14em] text-white/50">
+      <p className="text-[11px] font-bold uppercase tracking-[.14em] text-white/60">
         Обозначения
       </p>
       <ul className="divide-y divide-white/[.06] text-[13px] font-normal leading-[1.6]">
@@ -54,7 +54,7 @@ export function FormulaDetails({
       </ul>
       <div className="flex gap-2 rounded-option border border-white/[.08] border-l-2 border-l-nova-blue/60 bg-nova-blue/[.05] px-3.5 py-2.5 text-[12px] font-normal leading-[1.6] text-white/62">
         <p className="shrink-0 font-bold uppercase tracking-[.08em] text-nova-blue/85">
-          Условие
+          Когда работает
         </p>
         <p className="min-w-0">
           <MathText text={limitation} />

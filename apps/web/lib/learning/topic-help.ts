@@ -18,6 +18,7 @@ export type HelpSectionId =
   | "friction"
   | "incline"
   | "weight-lift"
+  | "impulse-force"
   | "momentum"
   | "density-volume"
   | "kinetic-energy"
@@ -89,46 +90,46 @@ export const topicHelpSections: Record<TopicId, TopicHelpSection[]> = {
     {
       id: "motion-graphs",
       label: "Графики v(t), x(t)",
-      shortHint: "Наклон v(t) даёт ускорение, площадь под v(t) даёт перемещение.",
-      formula: "a=\\frac{\\Delta v}{\\Delta t},\\quad s=S_{v(t)}",
-      mistake: "Не бери конечную скорость как путь: путь на v(t) даёт площадь под графиком.",
+      shortHint: "Наклон v(t) даёт ускорение, а знаковая площадь между графиком и осью времени — перемещение.",
+      formula: "a=\\frac{\\Delta v}{\\Delta t},\\quad \\Delta x=\\frac{v_0+v}{2}\\,t",
+      mistake: "Площадь ниже оси времени берётся со знаком минус. Путь получают, складывая модули площадей.",
     },
     {
       id: "average-speed",
-      label: "Средняя скорость",
-      shortHint: "Средняя скорость считается через весь путь и всё время.",
-      formula: "v_{avg}=\\frac{s_{all}}{t_{all}}",
-      mistake: "Не усредняй скорости без учёта времени или пройденного пути.",
+      label: "Средняя путевая скорость",
+      shortHint: "Средняя путевая скорость равна всему пройденному пути, делённому на всё время движения.",
+      formula: "v_{\\text{ср}}=\\frac{s}{t}",
+      mistake: "Не путай её со средней векторной скоростью: та считается через перемещение, а не путь.",
     },
     {
       id: "units-conversion",
       label: "Единицы скорости",
       shortHint: "Перед расчетом пути приведи скорость и время к согласованным единицам.",
-      formula: "1\\ \\mathrm{km/h}=\\frac{1}{3.6}\\ \\mathrm{m/s}",
+      formula: "1\\ \\text{км/ч}=\\frac{1}{3{,}6}\\ \\text{м/с}",
       mistake: "Не умножай км/ч на секунды напрямую: сначала переведи скорость в м/с.",
     },
     {
       id: "vectors-relative-motion",
       label: "Векторы и относительное движение",
-      shortHint: "Скорости складываются по направлению; перпендикулярные — через треугольник.",
-      formula: "\\vec v_{rel}=\\vec v_1-\\vec v_2",
-      mistake: "Сначала выбери направление скоростей: встречное и попутное движение считаются по-разному.",
+      shortHint: "У каждой скорости укажи тело и систему отсчёта; затем складывай векторы с согласованными индексами.",
+      formula: "\\vec v_{A/C}=\\vec v_{A/B}+\\vec v_{B/C}",
+      mistake: "Нельзя складывать скорости с неясными системами отсчёта. Для взаимно перпендикулярных векторов модуль находят по Пифагору.",
     },
   ],
   dynamics: [
     {
       id: "newton-second-law",
       label: "Второй закон Ньютона",
-      shortHint: "Ускорение задаёт сумма сил, а не одна выбранная сила.",
-      formula: "\\sum F = ma",
-      mistake: "Сначала выбери положительное направление и знаки проекций.",
+      shortHint: "Итоговая сила и масса вместе задают ускорение: сначала сравни все силы, потом используй F_рез = ma.",
+      formula: "F_{\\text{рез}}=ma",
+      mistake: "Не бери одну силу наугад: силы в одну сторону складываются, а встречная сила гасит такую же часть тяги. Оси и знаки понадобятся позже.",
     },
     {
       id: "resultant-force",
       label: "Равнодействующая",
-      shortHint: "Складывай силы как векторы, а не просто их модули.",
-      formula: "\\vec F_{res}=\\sum \\vec F",
-      mistake: "Если силы направлены под углом, складывай проекции или используй треугольник.",
+      shortHint: "Равнодействующая — сила, которая остаётся после сложения и взаимного погашения всех сил.",
+      formula: "F_{\\text{рез}}=F_{\\rightarrow}-F_{\\leftarrow}",
+      mistake: "Встречные силы не складывай модулями: сначала отметь направление, затем вычти меньшую из большей. Для сил под углом нужна отдельная схема.",
     },
     {
       id: "friction",
@@ -147,9 +148,16 @@ export const topicHelpSections: Record<TopicId, TopicHelpSection[]> = {
     {
       id: "weight-lift",
       label: "Вес тела / лифт",
-      shortHint: "Вес — это N; ускорение вверх увеличивает его, вниз уменьшает.",
-      formula: "N=m(g\\pm a)",
-      mistake: "Знак зависит от ускорения лифта, а не от того, куда он сейчас движется.",
+      shortHint: "Вес P действует на опору, а реакция N — на тело; при контакте их модули равны.",
+      formula: "P=N=m(g\\pm a)",
+      mistake: "P и N приложены к разным телам. Формула предполагает, что по вертикали действуют только тяжесть и опора; знак задаёт ускорение.",
+    },
+    {
+      id: "impulse-force",
+      label: "Импульс силы",
+      shortHint: "Изменение импульса тела задаёт импульс равнодействующей всех сил.",
+      formula: "\\Delta\\vec p=\\vec F_{\\text{рез}}\\,\\Delta t",
+      mistake: "В формулу входит равнодействующая, а не одна произвольно выбранная сила.",
     },
     {
       id: "momentum",
@@ -157,13 +165,6 @@ export const topicHelpSections: Record<TopicId, TopicHelpSection[]> = {
       shortHint: "Для столкновения смотри импульс всей системы до и после.",
       formula: "m_1v_1+m_2v_2=(m_1+m_2)v",
       mistake: "Сохраняется импульс системы, а не скорости отдельных тел.",
-    },
-    {
-      id: "density-volume",
-      label: "Плотность и объём",
-      shortHint: "Масса зависит от плотности и объёма: m = ρV.",
-      formula: "m=\\rho V",
-      mistake: "Следи за единицами объёма: см³ и м³ дают разные масштабы.",
     },
     {
       id: "kinetic-energy",
@@ -219,6 +220,13 @@ export const topicHelpSections: Record<TopicId, TopicHelpSection[]> = {
   ],
   thermodynamics: [
     {
+      id: "density-volume",
+      label: "Плотность и объём",
+      shortHint: "Масса зависит от плотности и объёма: m = ρV.",
+      formula: "m=\\rho V",
+      mistake: "Следи за единицами объёма: см³ и м³ дают разные масштабы.",
+    },
+    {
       id: "ideal-gas",
       label: "Идеальный газ",
       shortHint: "Давление, объём и температура связаны состоянием газа.",
@@ -228,16 +236,16 @@ export const topicHelpSections: Record<TopicId, TopicHelpSection[]> = {
     {
       id: "gas-equation",
       label: "Уравнение состояния",
-      shortHint: "Температуру подставляй в кельвинах: T = t°C + 273.",
+      shortHint: "T — абсолютная температура в кельвинах, t — температура по шкале Цельсия.",
       formula: "pV=\\nu RT",
-      mistake: "Не подставляй градусы Цельсия напрямую.",
+      mistake: "Переводи численное значение температуры: T[К] = t[°C] + 273.",
     },
     {
       id: "heat-amount",
       label: "Количество теплоты",
-      shortHint: "Для нагревания нужны масса, теплоёмкость и изменение температуры.",
+      shortHint: "Q=cmΔT даёт теплоту, полученную телом, если c постоянно и агрегатное состояние не меняется.",
       formula: "Q=cm\\Delta T",
-      mistake: "В формулу входит изменение температуры, а не конечная температура.",
+      mistake: "В формулу входит изменение температуры. Энергия нагревателя равна Q только при отсутствии потерь и нагрева посуды.",
     },
     {
       id: "heat-balance",
@@ -259,7 +267,7 @@ export const topicHelpSections: Record<TopicId, TopicHelpSection[]> = {
       id: "reflection",
       label: "Отражение",
       shortHint: "Угол отражения равен углу падения; оба отсчитываются от нормали.",
-      formula: "\\theta_r=\\theta_i",
+      formula: "\\beta=\\alpha",
       mistake: "Не отсчитывай углы от поверхности зеркала: в законе отражения углы берутся от нормали.",
     },
     {
@@ -273,22 +281,22 @@ export const topicHelpSections: Record<TopicId, TopicHelpSection[]> = {
       id: "refraction",
       label: "Преломление",
       shortHint: "Отношение показателей преломления равно отношению синусов углов от нормали.",
-      formula: "\\frac{n_2}{n_1}=\\frac{\\sin i}{\\sin r}",
+      formula: "\\frac{\\sin\\alpha}{\\sin\\gamma}=\\frac{n_2}{n_1}",
       mistake: "Дели синусы углов, а не сами углы: закон преломления связывает именно синусы.",
     },
     {
       id: "refractive-index",
       label: "Показатель преломления",
-      shortHint: "Показатель преломления показывает, во сколько раз свет в среде медленнее, чем в вакууме.",
+      shortHint: "Абсолютный показатель n=c/v связывает c с фазовой скоростью света в среде.",
       formula: "n=\\frac{c}{v}",
-      mistake: "Не переворачивай отношение: n = c/v, поэтому у вещества n всегда не меньше единицы.",
+      mistake: "Не переворачивай отношение. В этих задачах речь об обычных прозрачных средах для видимого света, где n>1.",
     },
     {
       id: "thin-lens",
       label: "Тонкая линза",
       shortHint: "Формула линзы связывает фокусное расстояние с расстояниями до предмета и изображения.",
-      formula: "\\frac{1}{F}=\\frac{1}{d_o}+\\frac{1}{d_i}",
-      mistake: "Выражая d_i, следи за знаменателем: там разность d_o − F, а не сумма.",
+      formula: "\\frac{1}{F}=\\frac{1}{d}+\\frac{1}{f}",
+      mistake: "Выражая f, следи за знаменателем: там разность d − F, а не сумма.",
     },
     {
       id: "optical-power",
@@ -300,9 +308,9 @@ export const topicHelpSections: Record<TopicId, TopicHelpSection[]> = {
     {
       id: "magnification",
       label: "Увеличение",
-      shortHint: "Увеличение равно d_i/d_o; во столько же раз изображение выше или ниже предмета.",
-      formula: "|\\Gamma|=\\frac{d_i}{d_o}=\\frac{h_i}{h_o}",
-      mistake: "Не переворачивай отношение расстояний: в увеличении d_i делится на d_o.",
+      shortHint: "Модуль увеличения равен расстоянию линза—изображение, делённому на расстояние предмет—линза.",
+      formula: "|\\Gamma|=\\frac{d_i}{d_o}=\\frac{H}{h}",
+      mistake: "Не путай высоту предмета h с высотой изображения H и не переворачивай отношение dᵢ/dₒ.",
     },
   ],
 };
@@ -328,7 +336,7 @@ const blueprintTargets: Partial<
   "friction-force": { topicId: "dynamics", sectionId: "friction" },
   "incline-force": { topicId: "dynamics", sectionId: "incline" },
   "weight-lift": { topicId: "dynamics", sectionId: "weight-lift" },
-  "impulse-momentum": { topicId: "dynamics", sectionId: "momentum" },
+  "impulse-momentum": { topicId: "dynamics", sectionId: "impulse-force" },
   "inelastic-collision-speed": { topicId: "dynamics", sectionId: "momentum" },
   "kinetic-energy": { topicId: "dynamics", sectionId: "newton-second-law" },
   "work-force-distance": { topicId: "dynamics", sectionId: "work-energy" },
@@ -470,6 +478,7 @@ function inferSection(task: HelpableQuizTask, topicId: TopicId): HelpSectionId {
     if (/трени|\\mu|μ/.test(text)) return "friction";
     if (/наклон|sin|cos|плоскост/.test(text)) return "incline";
     if (/лифт|вес|реакци/.test(text)) return "weight-lift";
+    if (/импульс сил|равнодейств.*времен|delta p|\\delta p/.test(text)) return "impulse-force";
     if (/импульс|столкнов|тележ/.test(text)) return "momentum";
     if (/равнодейств|перпендикуляр|пифагор|направлен|проекци/.test(text)) {
       return "resultant-force";
@@ -487,7 +496,10 @@ function inferSection(task: HelpableQuizTask, topicId: TopicId): HelpSectionId {
   if (/плавл|лед|λ|lambda/.test(text)) return "heating-melting";
   if (/теплот|cm|дельта|\\delta|нагрев/.test(text)) return "heat-amount";
   if (/pv|nrt|кельвин|уравнен/.test(text)) return "gas-equation";
-  return "ideal-gas";
+  if (/газ|давлен|изотерм|изобар|изохор|моль/.test(text)) return "ideal-gas";
+  if (/плотност|\\rho|ρ|объем/.test(text)) return "density-volume";
+
+  return topicHelpSections[topicId][0].id;
 }
 
 function hasKnownHelpSignal(task: HelpableQuizTask) {

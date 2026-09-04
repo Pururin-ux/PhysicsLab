@@ -18,6 +18,7 @@ function emptyTopicProgress(): TopicProgress {
     completedSessions: 0,
     weakTraps: {},
     weakTrapLastSeenAt: {},
+    skillEvidence: {},
     lastPracticedAt: null,
   };
 }
@@ -34,6 +35,7 @@ function progressWith(
 
   return {
     version: PROGRESS_VERSION,
+    pendingMistakes: {},
     topics: Object.fromEntries(
       topicIds.map((topicId) => [
         topicId,
@@ -100,7 +102,7 @@ test("buildReviewDashboard aggregates urgency, attempts and topic focus", () => 
   ).length;
   assert.equal(kinematics.tone, "gold");
   assert.equal(kinematics.dueToday, 2);
-  assert.equal(kinematics.skillCoverageLabel, `2/${kinematicsSkillCount}`);
+  assert.equal(kinematics.skillCoverageLabel, `2 из ${kinematicsSkillCount}`);
   assert.deepEqual(kinematics.topSkillTitles.length, 2);
 
   const electrodynamics = topicById(dashboard, "electrodynamics");
@@ -109,7 +111,7 @@ test("buildReviewDashboard aggregates urgency, attempts and topic focus", () => 
   ).length;
   assert.equal(electrodynamics.tone, "cyan");
   assert.equal(electrodynamics.nextSession, 1);
-  assert.equal(electrodynamics.skillCoverageLabel, `1/${electrodynamicsSkillCount}`);
+  assert.equal(electrodynamics.skillCoverageLabel, `1 из ${electrodynamicsSkillCount}`);
 });
 
 test("buildReviewDashboard keeps an empty review state neutral", () => {

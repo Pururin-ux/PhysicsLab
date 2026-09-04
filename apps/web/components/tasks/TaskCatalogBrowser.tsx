@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { ArrowRight } from "@phosphor-icons/react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { startTransition, useEffect, useMemo, useState } from "react";
 import {
@@ -8,30 +9,36 @@ import {
   type TaskCatalogTopicFilter,
   type TaskTypeCatalogEntry,
 } from "../../lib/learning/task-catalog";
-import type { CoverageSection } from "../../lib/learning/coverage";
 import type { TopicId } from "../../lib/learning/taxonomy";
 import { topics } from "../../lib/topics";
+import { cn } from "../../lib/utils";
 
 interface TaskCatalogBrowserProps {
   entries: readonly TaskTypeCatalogEntry[];
-  coverage: readonly CoverageSection[];
 }
+
+const topicVisual: Record<TopicId, { dot: string }> = {
+  kinematics: { dot: "bg-[var(--topic-kinematics-accent)]" },
+  dynamics: { dot: "bg-[var(--topic-dynamics-accent)]" },
+  electrodynamics: { dot: "bg-[var(--topic-electrodynamics-accent)]" },
+  thermodynamics: { dot: "bg-[var(--topic-thermodynamics-accent)]" },
+  optics: { dot: "bg-[var(--topic-optics-accent)]" },
+};
+
+const compactTopicTitle: Record<TopicId, string> = {
+  kinematics: "Кинематика",
+  dynamics: "Динамика",
+  electrodynamics: "Ток и цепи",
+  thermodynamics: "Теплота",
+  optics: "Оптика",
+};
 
 function isTopicFilter(value: string | null): value is TopicId {
   return topics.some((topic) => topic.id === value);
 }
 
-function answerFormatLabel(format: TaskTypeCatalogEntry["answerFormat"]) {
-  return format === "numeric_input" ? "Числовой ответ" : "Один ответ";
-}
-
-function difficultyLabel(entry: TaskTypeCatalogEntry) {
-  const { min, max } = entry.difficultyRange;
-  return min === max ? `Сложность ${min}` : `Сложность ${min}–${max}`;
-}
-
 function visualLabel(kind: TaskTypeCatalogEntry["visualKinds"][number]) {
-  return kind === "graph" ? "График" : "Схема";
+  return kind === "graph" ? "С графиком" : "Со схемой";
 }
 
 function taskTypeCountLabel(count: number) {
@@ -43,11 +50,7 @@ function taskTypeCountLabel(count: number) {
   return "типов";
 }
 
-function coverageStatusLabel(status: CoverageSection["status"]) {
-  return status === "partial" ? "Частично" : "Пока нет задач";
-}
-
-export function TaskCatalogBrowser({ entries, coverage }: TaskCatalogBrowserProps) {
+export function TaskCatalogBrowser({ entries }: TaskCatalogBrowserProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -57,18 +60,10 @@ export function TaskCatalogBrowser({ entries, coverage }: TaskCatalogBrowserProp
     ? topicFromUrl
     : "all";
   const [query, setQuery] = useState(queryFromUrl);
-  const [coverageOpen, setCoverageOpen] = useState(false);
 
   useEffect(() => {
     setQuery(queryFromUrl);
   }, [queryFromUrl]);
-
-  useEffect(() => {
-    const syncCoverageHash = () => setCoverageOpen(window.location.hash === "#coverage");
-    syncCoverageHash();
-    window.addEventListener("hashchange", syncCoverageHash);
-    return () => window.removeEventListener("hashchange", syncCoverageHash);
-  }, []);
 
   const filteredEntries = useMemo(
     () => filterTaskCatalog(entries, query, activeTopic),
@@ -104,8 +99,11 @@ export function TaskCatalogBrowser({ entries, coverage }: TaskCatalogBrowserProp
   }
 
   return (
-    <div className="flex flex-col gap-6">
-      <section className="flex flex-col gap-4" aria-label="Фильтры каталога">
+    <div className="flex flex-col gap-8">
+      <section
+        className="flex flex-col gap-4 rounded-card border border-[var(--border-muted)] bg-[var(--surface-panel)] p-3.5 shadow-[0_18px_48px_rgba(0,0,0,.28)] sm:p-5"
+        aria-label="Фильтры каталога"
+      >
         <div className="relative" role="search">
           <label htmlFor="task-catalog-search" className="sr-only">
             Поиск по типам задач
@@ -115,29 +113,38 @@ export function TaskCatalogBrowser({ entries, coverage }: TaskCatalogBrowserProp
             type="text"
             value={query}
             onChange={(event) => handleQueryChange(event.target.value)}
-            placeholder="Например: закон Ома, I=U/R или v(t)"
-            className="h-12 w-full rounded-option border border-white/[.12] bg-white/[.03] px-4 pr-24 text-[14px] font-medium text-white placeholder:text-white/35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/55"
+            placeholder="Например: закон Ома или v(t)"
+            className={cn(
+              "h-12 w-full rounded-option border border-[var(--border-muted)] bg-[var(--surface-canvas)] px-4 text-[14px] font-medium text-[var(--text-strong)] shadow-[inset_0_1px_0_rgba(255,255,255,.035)] placeholder:text-[var(--text-quiet)] transition-colors hover:border-[var(--border-emphasis)] focus-visible:border-[var(--focus-ring)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]",
+              // Место под «Очистить» занимаем только когда кнопка есть: иначе
+              // на 360 px подсказка обрывается на полуслове.
+              query ? "pr-24" : "pr-4",
+            )}
           />
           {query ? (
             <button
               type="button"
               onClick={() => handleQueryChange("")}
-              className="absolute right-2 top-1/2 min-h-9 -translate-y-1/2 rounded-option px-3 text-[12px] font-semibold text-white/55 transition-colors hover:bg-white/[.06] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/55"
+              className="absolute right-2 top-1/2 min-h-9 -translate-y-1/2 rounded-option px-3 text-[12px] font-semibold text-[var(--text-quiet)] transition-colors hover:bg-[var(--surface-hover)] hover:text-[var(--text-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
             >
               Очистить
             </button>
           ) : null}
         </div>
 
-        <div className="flex flex-wrap gap-2" role="group" aria-label="Фильтр по теме">
+        <div
+          className="flex flex-wrap gap-2"
+          role="group"
+          aria-label="Фильтр по теме"
+        >
           <button
             type="button"
             aria-pressed={activeTopic === "all"}
             onClick={() => navigate(query, "all")}
-            className={`min-h-10 rounded-option border px-3.5 text-[13px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/55 ${
+            className={`min-h-10 shrink-0 rounded-option border px-3.5 text-[13px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)] ${
               activeTopic === "all"
-                ? "border-nova-cyan/55 bg-nova-cyan/[.12] text-white"
-                : "border-white/[.09] bg-white/[.02] text-white/60 hover:text-white"
+                ? "border-[var(--mode-learn-accent)] bg-[var(--mode-learn-soft)] text-[var(--mode-learn-accent)]"
+                : "border-[var(--border-muted)] bg-[var(--surface-panel-raised)] text-[var(--text-default)] hover:border-[var(--border-emphasis)] hover:text-[var(--text-strong)]"
             }`}
           >
             Все
@@ -146,137 +153,96 @@ export function TaskCatalogBrowser({ entries, coverage }: TaskCatalogBrowserProp
             <button
               key={topic.id}
               type="button"
+              aria-label={topic.title}
               aria-pressed={activeTopic === topic.id}
               onClick={() => navigate(query, topic.id)}
-              className={`min-h-10 rounded-option border px-3.5 text-[13px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/55 ${
+              className={`inline-flex min-h-10 shrink-0 items-center gap-2 rounded-option border px-3.5 text-[13px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)] ${
                 activeTopic === topic.id
-                  ? "border-nova-cyan/55 bg-nova-cyan/[.12] text-white"
-                  : "border-white/[.09] bg-white/[.02] text-white/60 hover:text-white"
+                  ? "border-[var(--mode-learn-accent)] bg-[var(--mode-learn-soft)] text-[var(--mode-learn-accent)]"
+                  : "border-[var(--border-muted)] bg-[var(--surface-panel-raised)] text-[var(--text-default)] hover:border-[var(--border-emphasis)] hover:text-[var(--text-strong)]"
               }`}
             >
-              {topic.title}
+              <span className={`size-1.5 rounded-full ${topicVisual[topic.id].dot}`} aria-hidden="true" />
+              {compactTopicTitle[topic.id]}
             </button>
           ))}
         </div>
 
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <p aria-live="polite" className="text-[13px] font-semibold text-white/55">
-            Найдено типов: <span className="physics-number text-white/80">{filteredEntries.length}</span>
+        <div className="flex flex-col items-start gap-2 border-t border-[var(--border-muted)] pt-3 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
+          <p aria-live="polite" className="text-[13px] font-semibold text-[var(--text-quiet)]">
+            Найдено типов: <span className="physics-number text-[var(--text-strong)]">{filteredEntries.length}</span>
           </p>
           <Link
             href="/topics"
-            className="rounded-option text-[13px] font-semibold text-nova-cyan/80 transition-colors hover:text-nova-cyan focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/55"
+            className="rounded-option text-[13px] font-semibold text-[var(--mode-learn-accent)] transition-colors hover:text-[var(--text-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
           >
             Тренировки по крупным темам
           </Link>
         </div>
       </section>
 
-      <details
-        id="coverage"
-        open={coverageOpen}
-        onToggle={(event) => setCoverageOpen(event.currentTarget.open)}
-        data-testid="program-coverage"
-        className="group rounded-card border border-white/[.09] bg-space-900/45"
-      >
-        <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-4 px-4 py-3 text-[15px] font-[800] text-white marker:content-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-nova-cyan/55 sm:px-5">
-          <span>Покрытие программы</span>
-          <span className="text-[12px] font-semibold text-nova-cyan/80 transition-transform group-open:rotate-45" aria-hidden="true">
-            +
-          </span>
-        </summary>
-        <div className="border-t border-white/[.08] px-4 pb-5 pt-4 sm:px-5">
-          <h2 className="text-lg font-[800] text-white">Что уже покрывает PhysicsLab</h2>
-          <p className="mt-1 max-w-3xl text-[13px] leading-[1.6] text-white/58">
-            Сейчас доступны 35 типов задач в четырёх разделах. Все четыре раздела покрыты частично.
-          </p>
-          <p className="mt-2 text-[12px] font-semibold text-white/50">
-            4 раздела с задачами · 2 раздела без задач
-          </p>
-          <p className="mt-1 text-[12px] leading-[1.55] text-white/45">
-            Количество типов относится ко всему каталогу, а не к текущему фильтру.
-          </p>
-
-          <ul className="mt-4 grid gap-3 lg:grid-cols-2" aria-label="Покрытие разделов физики">
-            {coverage.map((section) => (
-              <li key={section.id} className="border-l-2 border-white/[.13] pl-3.5">
-                <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
-                  <h3 className="text-[14px] font-[800] text-white">{section.title}</h3>
-                  <span className="text-[11px] font-bold text-white/55">{coverageStatusLabel(section.status)}</span>
-                  <span className="text-[11px] font-semibold text-nova-cyan/75">
-                    {section.familyCount} {taskTypeCountLabel(section.familyCount)}
-                  </span>
-                </div>
-                <p className="mt-1 text-[12px] leading-[1.55] text-white/55">{section.summary}</p>
-                <ul className="mt-2 space-y-1 text-[12px] leading-[1.5] text-white/45">
-                  {section.knownGaps.map((gap) => (
-                    <li key={gap}>Не покрыто: {gap}</li>
-                  ))}
-                </ul>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </details>
-
       {groups.length > 0 ? (
-        <div className="flex flex-col gap-7" data-testid="task-catalog-results">
+        <div className="flex flex-col gap-9" data-testid="task-catalog-results">
           {groups.map(({ topic, entries: topicEntries }) => (
             <section key={topic.id} aria-labelledby={`catalog-group-${topic.id}`}>
-              <div className="mb-3 flex flex-wrap items-baseline gap-2">
-                <h2 id={`catalog-group-${topic.id}`} className="text-xl font-[800] text-white">
+              {/* Заголовок раздела — типографикой, без карточки с картинкой:
+                  внутри каталога важны сами типы задач, а не повторный арт. */}
+              <div className="mb-3 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-b border-[var(--border-muted)] pb-2.5">
+                <h2 id={`catalog-group-${topic.id}`} className="type-h2 flex items-center gap-2.5 text-[var(--text-strong)]">
+                  <span className={`size-2 rounded-full ${topicVisual[topic.id].dot}`} aria-hidden="true" />
                   {topic.title}
                 </h2>
-                <span className="text-[12px] font-semibold text-white/60">
+                <span className="type-meta">
                   {topicEntries.length} {taskTypeCountLabel(topicEntries.length)}
                 </span>
               </div>
 
-              <div className="overflow-hidden rounded-card border border-white/[.08] bg-space-900/55">
+              {/* Читаемый список, а не сетка крупных карточек: строка = тип
+                  задачи, вся строка кликабельна. */}
+              <ul>
                 {topicEntries.map((entry) => (
-                  <article
+                  <li
                     key={entry.id}
                     data-testid="task-catalog-item"
                     data-family={entry.slug}
                     data-topic={entry.topicId}
                     data-answer-format={entry.answerFormat}
-                    className="grid gap-3 border-b border-white/[.07] px-4 py-4 last:border-b-0 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center sm:px-5"
+                    className="border-b border-[var(--border-muted)] last:border-b-0"
                   >
-                    <div className="min-w-0">
-                      <h3 className="text-[16px] font-[800] leading-snug text-white">
-                        {entry.title}
-                      </h3>
-                      <p className="mt-1 text-[13px] leading-[1.55] text-white/58">
-                        {entry.shortDescription}
-                      </p>
-                      <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-[11px] font-semibold text-white/60">
-                        <span>{answerFormatLabel(entry.answerFormat)}</span>
-                        <span>{difficultyLabel(entry)}</span>
-                        {entry.visualKinds.map((kind) => (
-                          <span key={kind}>{visualLabel(kind)}</span>
-                        ))}
-                      </div>
-                    </div>
                     <Link
                       href={`/tasks/${entry.slug}`}
                       aria-label={`Открыть тип задачи: ${entry.title}`}
-                      className="inline-flex min-h-10 items-center justify-center rounded-option border border-white/[.12] bg-white/[.035] px-4 text-[13px] font-bold text-white/72 transition-colors hover:border-nova-cyan/45 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/55"
+                      className="group flex min-h-[62px] items-center gap-4 rounded-[10px] px-3 py-3 transition-colors duration-200 hover:bg-[var(--surface-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
                     >
-                      Открыть тип
+                      <span className="min-w-0 flex-1">
+                        <span className="type-title block text-[var(--text-strong)]">{entry.title}</span>
+                        <span className="type-helper mt-0.5 line-clamp-1 block">{entry.shortDescription}</span>
+                      </span>
+                      {entry.visualKinds.length > 0 ? (
+                        <span className="type-meta hidden shrink-0 sm:block">
+                          {entry.visualKinds.map((kind) => visualLabel(kind)).join(" · ")}
+                        </span>
+                      ) : null}
+                      <ArrowRight
+                        size={16}
+                        weight="bold"
+                        aria-hidden="true"
+                        className="shrink-0 text-[var(--text-quiet)] transition-[transform,color] duration-200 group-hover:translate-x-0.5 group-hover:text-[var(--text-default)]"
+                      />
                     </Link>
-                  </article>
+                  </li>
                 ))}
-              </div>
+              </ul>
             </section>
           ))}
         </div>
       ) : (
         <section
-          className="rounded-card border border-white/[.08] bg-space-900/55 px-5 py-8 text-center"
+          className="rounded-card border border-[var(--border-muted)] bg-[var(--surface-panel)] px-5 py-9 text-center shadow-[0_16px_44px_rgba(0,0,0,.28)]"
           data-testid="task-catalog-empty"
         >
-          <h2 className="text-lg font-bold text-white">Ничего не найдено</h2>
-          <p className="mx-auto mt-2 max-w-[520px] text-[13px] leading-[1.6] text-white/55">
+          <h2 className="text-lg font-bold text-[var(--text-strong)]">Ничего не найдено</h2>
+          <p className="mx-auto mt-2 max-w-[520px] text-[13px] leading-[1.6] text-[var(--text-quiet)]">
             Попробуй название закона, формулу или другую тему.
           </p>
           <button
@@ -285,12 +251,13 @@ export function TaskCatalogBrowser({ entries, coverage }: TaskCatalogBrowserProp
               setQuery("");
               navigate("", "all", "replace");
             }}
-            className="mt-4 min-h-10 rounded-option border border-white/[.12] px-4 text-[13px] font-semibold text-white/70 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/55"
+            className="mt-4 min-h-10 rounded-option border border-[var(--border-muted)] px-4 text-[13px] font-semibold text-[var(--text-default)] hover:border-[var(--border-emphasis)] hover:text-[var(--text-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
           >
             Сбросить фильтры
           </button>
         </section>
       )}
+
     </div>
   );
 }

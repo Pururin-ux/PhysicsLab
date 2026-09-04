@@ -44,7 +44,8 @@ export const snellIndexRatioBlueprint: TaskBlueprint = {
     i: { min: 37, max: 64, step: 1, unit: "°" },
     r: { min: 30, max: 45, step: 5, unit: "°" },
   },
-  formula: "\\frac{n_2}{n_1}=\\frac{\\sin i}{\\sin r}",
+  // Школьная запись РБ: α — угол падения, γ — угол преломления.
+  formula: "\\frac{\\sin\\alpha}{\\sin\\gamma}=\\frac{n_2}{n_1}",
   answerUnit: "",
   answerKind: "positive",
   diagram: (p) => ({
@@ -65,12 +66,12 @@ export const snellIndexRatioBlueprint: TaskBlueprint = {
   textTemplate: (p) =>
     `${storyFor(p)} Угол падения равен ${p.i}°, угол преломления равен ${p.r}° (оба отсчитаны от нормали). Во сколько раз показатель преломления второй среды больше показателя преломления первой? Ответ округлён до двух знаков.`,
   explanationTemplate: (p, answer) =>
-    `По закону преломления $\\frac{n_2}{n_1}=\\frac{\\sin i}{\\sin r}=\\frac{\\sin ${p.i}^\\circ}{\\sin ${p.r}^\\circ}=${formatMathValue(answer)}$. Луч отклонился к нормали ($r<i$), значит вторая среда оптически плотнее и отношение больше единицы.`,
+    `По закону преломления $\\frac{n_2}{n_1}=\\frac{\\sin\\alpha}{\\sin\\gamma}=\\frac{\\sin ${p.i}^\\circ}{\\sin ${p.r}^\\circ}=${formatMathValue(answer)}$. Луч отклонился к нормали ($\\gamma<\\alpha$), значит вторая среда оптически плотнее и отношение больше единицы.`,
   trap: "В законе преломления отношение синусов углов, а не самих углов; оба угла — от нормали.",
   coachLines: {
     correct: () => "Верно. Отношение показателей равно отношению синусов углов, отсчитанных от нормали.",
     wrong: (_p, selected, correct) =>
-      `Проверь, что делишь синусы и в правильном порядке: sin i / sin r = ${formatAnswerValue(correct)}, а не ${formatAnswerValue(selected)}.`,
+      `Проверь, что делишь синусы и в правильном порядке: sin α / sin γ = ${formatAnswerValue(correct)}, а не ${formatAnswerValue(selected)}.`,
   },
   constraints: [isCuratedPair, (p) => p.r > 0 && p.r < p.i && p.i < 90],
   variantCount: stories.length,

@@ -31,7 +31,7 @@ async function answerCorrectly(page: Page, task: ApiTask) {
 
 async function openNormalGate(page: Page) {
   await page.goto(EXAM_PATH, { waitUntil: "domcontentloaded" });
-  await expect(page.getByRole("button", { name: "Начать тренировку" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Начать диагностику" })).toBeVisible();
 }
 
 test.describe("exam resume gate", () => {
@@ -45,7 +45,7 @@ test.describe("exam resume gate", () => {
   }) => {
     const tasks = await fetchExam(request);
     await openNormalGate(page);
-    await page.getByRole("button", { name: "Начать тренировку" }).click();
+    await page.getByRole("button", { name: "Начать диагностику" }).click();
     await expect(page.getByTestId("question-card")).toBeVisible({ timeout: 15000 });
 
     for (let index = 0; index < 3; index += 1) {
@@ -56,12 +56,12 @@ test.describe("exam resume gate", () => {
 
     await page.reload({ waitUntil: "domcontentloaded" });
     const candidate = page.getByTestId("exam-resume-candidate");
-    await expect(candidate).toContainText("Незавершённый вариант");
+    await expect(candidate).toContainText("Незавершённая диагностика");
     await expect(candidate).toContainText("задания 4 из 10");
-    await expect(candidate.getByRole("button", { name: "Продолжить вариант" })).toBeVisible();
-    await expect(candidate.getByRole("button", { name: "Начать новый вариант" })).toBeVisible();
+    await expect(candidate.getByRole("button", { name: "Продолжить диагностику" })).toBeVisible();
+    await expect(candidate.getByRole("button", { name: "Начать новую диагностику" })).toBeVisible();
 
-    await candidate.getByRole("button", { name: "Продолжить вариант" }).click();
+    await candidate.getByRole("button", { name: "Продолжить диагностику" }).click();
     await expect(page.getByTestId("practice-progress")).toHaveText("Задание 4 из 10");
 
     await answerCorrectly(page, tasks[3]);
@@ -70,7 +70,7 @@ test.describe("exam resume gate", () => {
     await expect(page.getByTestId("exam-resume-candidate")).toContainText(
       "Ответ на задание 4 уже сохранён",
     );
-    await page.getByRole("button", { name: "Продолжить вариант" }).click();
+    await page.getByRole("button", { name: "Продолжить диагностику" }).click();
     await expect(page.getByTestId("next-task-button")).toBeVisible();
     await expect(page.getByText("Верно", { exact: true })).toBeVisible();
     await expect.poll(() => page.evaluate((key) => localStorage.getItem(key), XP_KEY)).toBe(
@@ -82,7 +82,7 @@ test.describe("exam resume gate", () => {
       const raw = sessionStorage.getItem(key);
       return raw ? (JSON.parse(raw) as { attemptId: string }).attemptId : null;
     }, SNAPSHOT_KEY);
-    await page.getByRole("button", { name: "Начать новый вариант" }).click();
+    await page.getByRole("button", { name: "Начать новую диагностику" }).click();
     await expect(page.getByTestId("practice-progress")).toHaveText("Задание 1 из 10");
     const freshAttemptId = await expect
       .poll(() =>
@@ -141,7 +141,7 @@ test.describe("exam resume gate", () => {
     await page.goto(EXAM_PATH, { waitUntil: "domcontentloaded" });
     await expect(page.getByTestId("exam-resume-candidate")).toBeVisible();
     expect(requestedBatches).toEqual([]);
-    await page.getByRole("button", { name: "Продолжить вариант" }).click();
+    await page.getByRole("button", { name: "Продолжить диагностику" }).click();
     await expect(page.getByTestId("question-card")).toBeVisible({ timeout: 15000 });
     expect(requestedBatches.length).toBeGreaterThan(0);
     expect(new Set(requestedBatches)).toEqual(new Set(["4"]));
@@ -177,7 +177,7 @@ test.describe("exam resume gate", () => {
     }, SNAPSHOT_KEY);
 
     await page.goto(EXAM_PATH, { waitUntil: "domcontentloaded" });
-    await page.getByRole("button", { name: "Продолжить вариант" }).click();
+    await page.getByRole("button", { name: "Продолжить диагностику" }).click();
     await expect(page.getByTestId("question-card")).toBeVisible({ timeout: 15000 });
     await expect(page.getByTestId("practice-progress")).toHaveText("Задание 1 из 10");
     await expect(page.getByTestId("session-restored-notice")).toHaveCount(0);
@@ -185,7 +185,7 @@ test.describe("exam resume gate", () => {
 
   test("start new preserves a snapshot replaced after the gate was rendered", async ({ page }) => {
     await openNormalGate(page);
-    await page.getByRole("button", { name: "Начать тренировку" }).click();
+    await page.getByRole("button", { name: "Начать диагностику" }).click();
     await expect(page.getByTestId("question-card")).toBeVisible({ timeout: 15000 });
     await page.reload({ waitUntil: "domcontentloaded" });
     await expect(page.getByTestId("exam-resume-candidate")).toBeVisible();
@@ -195,7 +195,7 @@ test.describe("exam resume gate", () => {
       ({ key, value }) => sessionStorage.setItem(key, value),
       { key: SNAPSHOT_KEY, value: futureSnapshot },
     );
-    await page.getByRole("button", { name: "Начать новый вариант" }).click();
+    await page.getByRole("button", { name: "Начать новую диагностику" }).click();
     await expect(page.getByTestId("question-card")).toBeVisible({ timeout: 15000 });
     await expect
       .poll(() => page.evaluate((key) => sessionStorage.getItem(key), SNAPSHOT_KEY))
@@ -210,7 +210,7 @@ test.describe("exam resume gate", () => {
       .not.toBeNull();
     void practiceSnapshot;
     await page.goto(EXAM_PATH, { waitUntil: "domcontentloaded" });
-    await expect(page.getByRole("button", { name: "Начать тренировку" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Начать диагностику" })).toBeVisible();
     await expect(page.getByTestId("exam-resume-candidate")).toHaveCount(0);
 
     await page.evaluate((key) => sessionStorage.removeItem(key), SNAPSHOT_KEY);
@@ -219,13 +219,13 @@ test.describe("exam resume gate", () => {
       SNAPSHOT_KEY,
     );
     await page.reload({ waitUntil: "domcontentloaded" });
-    await expect(page.getByRole("button", { name: "Начать тренировку" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Начать диагностику" })).toBeVisible();
     await expect(page.getByTestId("exam-resume-candidate")).toHaveCount(0);
     await expect
       .poll(() => page.evaluate((key) => sessionStorage.getItem(key), SNAPSHOT_KEY))
       .toContain('"version":99');
 
-    await page.getByRole("button", { name: "Начать тренировку" }).click();
+    await page.getByRole("button", { name: "Начать диагностику" }).click();
     await expect(page.getByTestId("question-card")).toBeVisible({ timeout: 15000 });
     await expect
       .poll(() => page.evaluate((key) => sessionStorage.getItem(key), SNAPSHOT_KEY))
@@ -233,31 +233,34 @@ test.describe("exam resume gate", () => {
 
     await page.evaluate((key) => sessionStorage.setItem(key, "{broken"), SNAPSHOT_KEY);
     await page.reload({ waitUntil: "domcontentloaded" });
-    await expect(page.getByRole("button", { name: "Начать тренировку" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Начать диагностику" })).toBeVisible();
     await expect.poll(() => page.evaluate((key) => sessionStorage.getItem(key), SNAPSHOT_KEY)).toBeNull();
   });
 });
 
-test("exam resume gate fits above mobile navigation", async ({ page }, testInfo) => {
+// Навигация переехала в липкую шапку, поэтому проверяем не «выше нижней
+// панели», а что кнопка не уезжает под шапку и видна целиком.
+test("exam resume gate stays clear of the sticky mobile header", async ({ page }, testInfo) => {
   test.skip(!testInfo.project.name.startsWith("mobile"), "Mobile geometry only.");
 
   await openNormalGate(page);
-  await page.getByRole("button", { name: "Начать тренировку" }).click();
+  await page.getByRole("button", { name: "Начать диагностику" }).click();
   await expect(page.getByTestId("question-card")).toBeVisible({ timeout: 15000 });
   await page.reload({ waitUntil: "domcontentloaded" });
 
   const candidate = page.getByTestId("exam-resume-candidate");
-  const newButton = candidate.getByRole("button", { name: "Начать новый вариант" });
+  const newButton = candidate.getByRole("button", { name: "Начать новую диагностику" });
   await expect(candidate).toBeVisible();
   await newButton.scrollIntoViewIfNeeded();
 
-  const [buttonBox, navBox] = await Promise.all([
+  const [buttonBox, headerBox] = await Promise.all([
     newButton.boundingBox(),
-    page.getByRole("navigation", { name: "Мобильная навигация" }).boundingBox(),
+    page.locator("header").first().boundingBox(),
   ]);
   expect(buttonBox).not.toBeNull();
-  expect(navBox).not.toBeNull();
-  expect(navBox!.y - (buttonBox!.y + buttonBox!.height)).toBeGreaterThanOrEqual(8);
+  expect(headerBox).not.toBeNull();
+  expect(buttonBox!.y).toBeGreaterThanOrEqual(headerBox!.y + headerBox!.height);
+  expect(buttonBox!.y + buttonBox!.height).toBeLessThanOrEqual(page.viewportSize()!.height);
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(
     page.viewportSize()!.width + 1,
   );

@@ -1,29 +1,351 @@
-@import "tailwindcss";
 @import 'katex/dist/katex.min.css';
+@import "tailwindcss" source(none);
+@source "../app";
+@source "../components";
 @config "../tailwind.config.ts";
 
+/* Tailwind v4 consumes these variables directly, so legacy utility names keep
+   working while their visual meaning moves to the new graphite system. */
+@theme {
+  --color-space-950: #0f1115;
+  --color-space-925: #101317;
+  --color-space-900: #11161a;
+  --color-space-850: #1b2024;
+  --color-space-800: #22282c;
+  --color-space-700: #2b3135;
+
+  --color-nova-cyan: #06bad5;
+  --color-nova-cyan-20: rgba(6, 186, 213, 0.2);
+  --color-nova-cyan-10: rgba(6, 186, 213, 0.1);
+  --color-nova-cyan-05: rgba(6, 186, 213, 0.05);
+  --color-nova-blue: #06bad5;
+  --color-nova-indigo: #06bad5;
+  --color-nova-indigo-20: rgba(6, 186, 213, 0.2);
+  --color-nova-indigo-10: rgba(6, 186, 213, 0.1);
+  --color-nova-gold: #a47c65;
+  --color-nova-gold-20: rgba(130, 97, 80, 0.2);
+  --color-nova-gold-10: rgba(130, 97, 80, 0.1);
+  --color-nova-ember: #d07965;
+  --color-nova-ember-20: rgba(208, 121, 101, 0.2);
+  --color-nova-ember-10: rgba(208, 121, 101, 0.1);
+  --color-feedback-success: var(--feedback-success);
+  --color-feedback-warning: var(--feedback-warning);
+  --color-feedback-danger: var(--feedback-danger);
+  --color-action: var(--action-primary);
+  --color-brand: var(--brand-accent);
+  --color-mode-learn: var(--mode-learn-accent);
+  --color-mode-exam: var(--mode-exam-accent);
+  --color-ambient-warm: var(--ambient-warm);
+  --color-topic-optics: var(--topic-optics-accent);
+
+  --font-sans: var(--font-manrope), system-ui, sans-serif;
+  --font-display: var(--font-manrope), system-ui, sans-serif;
+  --radius-card: 12px;
+  --radius-option: 8px;
+  --radius-badge: 6px;
+  --shadow-cyan-glow: 0 0 0 1px rgba(6, 186, 213, 0.14);
+  --shadow-indigo-glow: 0 8px 18px rgba(0, 0, 0, 0.22);
+  --shadow-warm-glow: 0 0 0 1px color-mix(in srgb, var(--feedback-warning) 30%, transparent);
+  --shadow-ember-glow: 0 0 0 1px rgba(130, 97, 80, 0.18);
+  --shadow-card: 0 16px 34px rgba(0, 0, 0, 0.28);
+  --shadow-lamp: 0 10px 28px rgba(0, 0, 0, 0.2);
+}
+
 :root {
-  --bg: #0B0F17;
-  --font-physics-ui: var(--font-inter), system-ui, sans-serif;
-  --font-physics-math: "STIX Two Math", "Cambria Math", "Latin Modern Math", "Times New Roman", serif;
+  color-scheme: dark;
+  /* Matte graphite foundation. Semantic names stay stable while pages migrate
+     away from the old space/purple utilities. */
+  --background-deep: #0f1115;
+  --surface-primary: #11161a;
+  --surface-secondary: #1b2024;
+  --surface-elevated: #22282c;
+  --action-primary: #08b8d2;
+  --action-pressed: #087b8d;
+  --action-hover: #0799b0;
+  --action-ink: #061519;
+  --ambient-warm: #826150;
+  --brand-accent: #06bad5;
+  --physics-cyan: #06bad5;
+  --text-primary: #e5dfd9;
+  --text-secondary: #aaa39d;
+  --text-muted: #817b76;
+  --border-subtle: rgba(181, 145, 119, 0.16);
+  --border-strong: rgba(181, 145, 119, 0.28);
+  --surface-hover: rgba(229, 223, 217, 0.055);
+  --focus-ring: #06bad5;
+  --surface-canvas: var(--background-deep);
+  --surface-panel: var(--surface-primary);
+  --surface-panel-raised: var(--surface-secondary);
+  --text-strong: var(--text-primary);
+  --text-default: var(--text-secondary);
+  --text-quiet: var(--text-muted);
+  --border-muted: var(--border-subtle);
+  --border-emphasis: var(--border-strong);
+  --mode-learn-accent: #20c5dd;
+  --mode-learn-soft: rgba(6, 186, 213, 0.12);
+  --mode-learn-on-accent: #061519;
+  --mode-exam-accent: #e0ad68;
+  --mode-exam-soft: rgba(224, 173, 104, 0.12);
+  --mode-exam-on-accent: #171108;
+  --math-accent: var(--physics-cyan);
+  --feedback-success: #4fc49c;
+  --feedback-warning: #e0ad68;
+  --feedback-danger: #e4776c;
+  --formula-lesson-background: linear-gradient(138deg, #10242a 0%, #111a1e 52%, #0f1115 100%);
+  --formula-lesson-border: rgba(6, 186, 213, 0.24);
+  --formula-lesson-label: #75d7e5;
+  --formula-lesson-text: #e5dfd9;
+  --formula-lesson-caption: #aaa39d;
+  --topic-kinematics-accent: #f06d5f;
+  --topic-kinematics-label: #f5a192;
+  --topic-dynamics-accent: #7bc6d9;
+  --topic-dynamics-label: #9bd6e3;
+  --topic-thermodynamics-accent: #d8aa62;
+  --topic-thermodynamics-label: #e2bd80;
+  --topic-electrodynamics-accent: #72d2d7;
+  --topic-electrodynamics-label: #91dfe1;
+  --topic-optics-accent: #7f98e7;
+  --topic-optics-label: #a2b2ef;
+  --radius-control: 8px;
+  --radius-surface: 12px;
+
+  /* Обратная совместимость со старыми именами переменных. */
+  --bg: var(--background-deep);
+  --surface-shell: #0f1115;
+  --surface-base: var(--surface-primary);
+  --surface-raised: var(--surface-secondary);
+  --action: var(--action-primary);
+  --brand: var(--brand-accent);
+  --data: var(--physics-cyan);
+
+  --font-physics-ui: var(--font-manrope), system-ui, sans-serif;
+  --font-physics-math: "KaTeX_Main", "Cambria Math", "Times New Roman", serif;
   --font-physics-numeric: "JetBrains Mono", "Roboto Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  /* Shared page grammar for discovery, reference and learning surfaces.
+     The layouts stay different by job, while their measure and type rhythm
+     remain recognisably one PhysicsLab product. */
+  --physics-content-max: 1180px;
+  --physics-gutter: clamp(0.75rem, 2.8vw, 2rem);
+  --physics-type-display: clamp(2.45rem, 5.4vw, 4.55rem);
+  --physics-type-section: clamp(1.95rem, 3.6vw, 3.35rem);
+  --physics-type-title: clamp(1.08rem, 1.8vw, 1.35rem);
+  --physics-type-body: clamp(0.92rem, 1.15vw, 1rem);
+  --physics-type-meta: 0.7rem;
 }
 
 body {
-  background-color: var(--bg);
-  color: white;
-  font-family: var(--font-inter), system-ui, sans-serif;
+  background-color: var(--background-deep);
+  background-image: none;
+  color: var(--text-primary);
+  font-family: var(--font-physics-ui);
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
   overflow-x: hidden;
+}
+
+/* Централизованная типографическая шкала. Уровни отчётливо различаются
+   размером и насыщенностью, а не только цветом кикера. */
+.type-display {
+  font-size: clamp(2.4rem, 5vw, 3rem);
+  line-height: 1.06;
+  font-weight: 800;
+  letter-spacing: -0.035em;
+}
+.type-h1 {
+  font-size: clamp(1.75rem, 3.4vw, 2.1rem);
+  line-height: 1.14;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+.type-h2 {
+  font-size: 1.3rem;
+  line-height: 1.25;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+.type-title {
+  font-size: 1.06rem;
+  line-height: 1.35;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+.type-body {
+  font-size: 0.95rem;
+  line-height: 1.65;
+  font-weight: 400;
+}
+.type-helper {
+  font-size: 0.84rem;
+  line-height: 1.55;
+  font-weight: 400;
+  color: var(--text-secondary);
+}
+.type-meta {
+  font-size: 0.75rem;
+  line-height: 1.4;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+.type-eyebrow {
+  font-size: 0.7rem;
+  line-height: 1.2;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+h1,
+h2,
+.font-display {
+  font-family: var(--font-manrope), system-ui, sans-serif;
+  font-synthesis: none;
 }
 
 html {
   background-color: var(--bg);
-  /* Тёмный скроллбар: системный светлый разрывает space-тему на Windows. */
-  scrollbar-color: #1E293B var(--bg);
+  scrollbar-color: #4a4541 var(--bg);
   /* НЕ включать здесь scroll-behavior: smooth — глобальный smooth ломает
      сброс прокрутки Next.js при переходах между страницами (новая страница
      открывалась не с начала, а с прокрученного места предыдущей). */
+}
+
+/* Контент страницы мягко поднимается при открытии — один общий вдох вместо
+   резкого появления. Только transform/opacity (без layout-работы) и только
+   когда пользователь не просил убрать анимации. */
+@media (prefers-reduced-motion: no-preference) {
+  .app-shell-main > * {
+    animation: page-rise 0.4s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+  }
+}
+
+@keyframes page-rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Главная — одна цельная иллюстрированная сцена. Все эффекты используют
+   реальные растровые слои, поэтому персонажи и предметы не подменяются
+   декоративной CSS-графикой. */
+.home-study-hero {
+  --scene-x: 0px;
+  --scene-y: 0px;
+}
+
+.home-study-scene {
+  background: var(--background-deep);
+  transform: translate3d(var(--scene-x), var(--scene-y), 0) scale(1.018);
+  transition: transform 420ms cubic-bezier(0.22, 0.61, 0.36, 1);
+  will-change: transform;
+}
+
+.home-study-art {
+  object-fit: cover;
+  object-position: 56% 0;
+  transform: scale(1.1);
+  transform-origin: 56% 0;
+}
+
+.home-window-light {
+  background:
+    radial-gradient(ellipse 31% 34% at 72% 23%, rgba(6, 186, 213, .2), rgba(6, 186, 213, .06) 42%, transparent 76%);
+  mix-blend-mode: screen;
+  opacity: 0.13;
+  animation: home-window-breathe 7.4s ease-in-out infinite;
+}
+
+.home-desk-light {
+  background:
+    radial-gradient(ellipse 26% 24% at 80% 74%, rgba(130, 97, 80, .3), rgba(6, 186, 213, .05) 48%, transparent 78%);
+  mix-blend-mode: screen;
+  opacity: 0.11;
+  animation: home-desk-breathe 5.6s ease-in-out infinite;
+}
+
+@keyframes home-window-breathe {
+  0%, 100% { opacity: 0.08; }
+  44% { opacity: 0.17; }
+  51% { opacity: 0.12; }
+  58% { opacity: 0.19; }
+}
+
+@keyframes home-desk-breathe {
+  0%, 100% { opacity: 0.07; }
+  50% { opacity: 0.16; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .home-study-art {
+    animation: home-scene-drift 18s ease-in-out infinite alternate;
+  }
+
+  .home-copy-kicker,
+  .home-copy-title,
+  .home-copy-actions {
+    animation: home-copy-arrive 0.72s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+  }
+
+  .home-copy-title { animation-delay: 0.08s; }
+  .home-copy-actions { animation-delay: 0.2s; }
+  .home-scroll-arrow { animation: home-scroll-nudge 1.8s ease-in-out infinite; }
+}
+
+@keyframes home-scene-drift {
+  from { transform: scale(1.1) translate3d(0, 0, 0); }
+  to { transform: scale(1.116) translate3d(-0.18%, -0.12%, 0); }
+}
+
+@keyframes home-copy-arrive {
+  from { opacity: 0; transform: translate3d(0, 22px, 0); }
+  to { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+@keyframes home-scroll-nudge {
+  0%, 100% { transform: translateY(-1px); }
+  50% { transform: translateY(4px); }
+}
+
+@media (min-width: 768px) and (max-height: 920px) {
+  .home-scroll-prompt {
+    display: none !important;
+  }
+}
+
+@media (max-width: 767px) {
+  .home-study-scene {
+    inset: 0;
+    transform: none;
+  }
+
+  .home-study-art {
+    inset: auto !important;
+    top: auto !important;
+    right: auto !important;
+    bottom: -80px !important;
+    left: 50% !important;
+    width: 900px !important;
+    min-width: 900px !important;
+    max-width: none !important;
+    height: auto !important;
+    object-fit: contain;
+    object-position: center;
+    transform: translateX(calc(-50% - 120px));
+    transform-origin: center;
+    animation: none;
+    /* Верхний край кадра иначе читается как приклеенный прямоугольник:
+       иллюстрация обрывается ровной линией посреди фона. Мягкий растворяющийся
+       край оставляет ту же самую картинку, но убирает шов. */
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0, rgba(0, 0, 0, .55) 44px, #000 104px);
+    mask-image: linear-gradient(to bottom, transparent 0, rgba(0, 0, 0, .55) 44px, #000 104px);
+  }
+
 }
 
 /* The fixed mobile nav must count as occupied viewport space when a focused
@@ -45,24 +367,293 @@ html {
 }
 
 *::-webkit-scrollbar-thumb {
-  background: #1E293B;
-  border-radius: 8px;
+  background: #4a4541;
+  border-radius: 6px;
   border: 2px solid var(--bg);
 }
 
 *::-webkit-scrollbar-thumb:hover {
-  background: #2b3b52;
+  background: #625b56;
 }
 
 ::selection {
-  background: rgba(0, 224, 255, 0.28);
-  color: #fff;
+  background: rgba(6, 186, 213, 0.34);
+  color: var(--text-primary);
+}
+
+.skip-link {
+  position: fixed;
+  top: calc(0.75rem + env(safe-area-inset-top));
+  left: 0.75rem;
+  z-index: 100;
+  transform: translateY(calc(-100% - 2rem));
+  border: 1px solid var(--focus-ring);
+  border-radius: var(--radius-control);
+  background: var(--surface-elevated);
+  color: var(--text-primary);
+  padding: 0.7rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 800;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.42);
+  transition: transform 0.16s ease;
+}
+
+.skip-link:focus-visible {
+  transform: translateY(0);
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 3px;
 }
 
 .app-shell-main {
   width: 100%;
-  max-width: min(1200px, 100%);
+  max-width: min(1220px, 100%);
   margin: 0 auto;
+}
+
+.app-shell-main.app-shell-main--home {
+  max-width: none;
+}
+
+.app-shell-main:focus {
+  outline: none;
+}
+
+/* App chrome is deliberately opaque and quiet: the learning material, not a
+   glass dashboard, owns the visual hierarchy. */
+.app-shell {
+  background:
+    radial-gradient(circle at 50% -10%, rgba(6, 186, 213, 0.07), transparent 42%),
+    var(--background-deep);
+  color: var(--text-primary);
+}
+
+.app-shell--inner {
+  min-height: 100svh;
+}
+
+.site-header {
+  border-bottom: 1px solid transparent;
+}
+
+.site-header--inner {
+  border-bottom-color: var(--border-subtle);
+  background: var(--surface-shell);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.18);
+}
+
+.site-header--home {
+  background: transparent;
+}
+
+/* The home hero remains an intentionally dark photographic scene in both
+   themes. Keep the chrome that sits on top of it in the same dark material
+   context instead of inheriting paper-theme text and button surfaces. */
+html[data-theme="light"] .site-header--home {
+  --surface-primary: rgba(12, 24, 33, 0.88);
+  --surface-secondary: rgba(20, 35, 44, 0.94);
+  --surface-hover: rgba(242, 244, 242, 0.09);
+  --text-primary: #f2f4f2;
+  --text-secondary: #c0c7c6;
+  --text-muted: #a3acab;
+  --border-subtle: rgba(147, 218, 226, 0.28);
+  --border-strong: rgba(147, 218, 226, 0.46);
+  --brand-accent: #20c5dd;
+  --physics-cyan: #20c5dd;
+  --focus-ring: #20c5dd;
+}
+
+.physicslab-brand {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 0.65rem;
+  border-radius: var(--radius-control);
+  color: var(--text-primary);
+  text-decoration: none;
+}
+
+.physicslab-brand__mark {
+  display: grid;
+  width: 2.4rem;
+  height: 2.4rem;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, var(--brand-accent) 68%, transparent);
+  border-radius: var(--radius-control);
+  background: var(--surface-primary);
+  color: var(--brand-accent);
+  transition: transform 180ms ease, border-color 180ms ease, background-color 180ms ease;
+}
+
+.physicslab-brand:hover .physicslab-brand__mark {
+  transform: translateY(-1px) rotate(-3deg);
+  border-color: var(--brand-accent);
+  background: color-mix(in srgb, var(--brand-accent) 8%, var(--surface-primary));
+}
+
+.physicslab-brand__wordmark {
+  min-width: 0;
+  font-size: 1.22rem;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.045em;
+}
+
+.physicslab-brand__wordmark > span {
+  color: var(--physics-cyan);
+}
+
+.site-nav-link {
+  position: relative;
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  border-radius: var(--radius-control);
+  padding-inline: 0.9rem;
+  color: var(--text-secondary);
+  font-size: 0.8125rem;
+  font-weight: 750;
+  letter-spacing: -0.01em;
+  transition: color 160ms ease, background-color 160ms ease;
+}
+
+.site-nav-link:hover {
+  background: var(--surface-hover);
+  color: var(--text-primary);
+}
+
+.site-nav-link--active {
+  color: var(--text-primary);
+}
+
+.site-nav-link--active::after {
+  position: absolute;
+  right: 0.9rem;
+  bottom: -1px;
+  left: 0.9rem;
+  height: 2px;
+  background: var(--physics-cyan);
+  content: "";
+}
+
+.shell-icon-button,
+.shell-progress-link,
+.context-back-link {
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-control);
+  background: var(--surface-primary);
+  color: var(--text-secondary);
+  transition: transform 160ms ease, border-color 160ms ease, background-color 160ms ease, color 160ms ease;
+}
+
+.shell-icon-button {
+  display: grid;
+  width: 2.5rem;
+  height: 2.5rem;
+  flex-shrink: 0;
+  place-items: center;
+}
+
+.shell-progress-link,
+.context-back-link {
+  display: inline-flex;
+  min-height: 2.5rem;
+  align-items: center;
+  gap: 0.5rem;
+  padding-inline: 0.85rem;
+  font-size: 0.8125rem;
+  font-weight: 700;
+}
+
+.shell-icon-button:hover,
+.shell-progress-link:hover,
+.context-back-link:hover {
+  transform: translateY(-1px);
+  border-color: var(--border-strong);
+  background: var(--surface-secondary);
+  color: var(--text-primary);
+}
+
+.shell-icon-button--home {
+  background: var(--surface-primary);
+}
+
+.shell-theme-toggle {
+  color: var(--physics-cyan);
+}
+
+.physicslab-brand:focus-visible,
+.site-nav-link:focus-visible,
+.shell-icon-button:focus-visible,
+.shell-progress-link:focus-visible,
+.context-back-link:focus-visible,
+.mobile-shell-nav__item:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 3px;
+}
+
+.mobile-shell-nav {
+  border-top: 1px solid var(--border-subtle);
+  background: var(--surface-shell);
+  box-shadow: 0 -8px 20px rgba(0, 0, 0, 0.22);
+  isolation: isolate;
+}
+
+.mobile-shell-nav--focus {
+  background: var(--surface-shell);
+  box-shadow: 0 -5px 14px rgba(0, 0, 0, 0.18);
+}
+
+.mobile-shell-nav__item {
+  position: relative;
+  display: flex;
+  min-width: 0;
+  min-height: 2.8rem;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.18rem;
+  border-radius: var(--radius-control);
+  padding-inline: 0.25rem;
+  color: var(--text-muted);
+  font-size: 0.625rem;
+  font-weight: 700;
+  line-height: 1;
+  transition: background-color 160ms ease, color 160ms ease;
+}
+
+.mobile-shell-nav__item:hover {
+  background: var(--surface-hover);
+  color: var(--text-secondary);
+}
+
+.mobile-shell-nav__item--active {
+  background: color-mix(in srgb, var(--physics-cyan) 11%, transparent);
+  color: var(--text-primary);
+}
+
+.mobile-shell-nav__item--active::before {
+  position: absolute;
+  top: -0.375rem;
+  right: 0.8rem;
+  left: 0.8rem;
+  height: 2px;
+  background: var(--physics-cyan);
+  content: "";
+}
+
+.mobile-shell-nav__item--active svg {
+  color: var(--physics-cyan);
+}
+
+.mobile-shell-nav__item--focus {
+  min-height: 2.75rem;
+  gap: 0.125rem;
+  background: transparent;
+  font-size: 0.625rem;
+}
+
+.mobile-shell-nav__item--focus.mobile-shell-nav__item--active::before {
+  top: -0.25rem;
 }
 
 .physics-math {
@@ -82,25 +673,15 @@ html {
 }
 
 .formula-cyan .katex {
-  color: rgba(159, 234, 242, 0.94) !important;
-  font-family: var(--font-physics-math);
+  color: var(--physics-cyan) !important;
   font-weight: 500;
   letter-spacing: 0;
 }
 
 .formula-white .katex {
-  color: rgba(244, 247, 250, 0.9) !important;
-  font-family: var(--font-physics-math);
+  color: var(--text-primary) !important;
   font-weight: 500;
   letter-spacing: 0;
-}
-
-.formula-cyan .katex .mtext,
-.formula-cyan .katex .text,
-.formula-white .katex .mtext,
-.formula-white .katex .text {
-  font-family: var(--font-physics-ui) !important;
-  font-style: normal;
 }
 
 .katex-display { margin: 0 !important; }
@@ -251,18 +832,18 @@ html {
 /* Бабл Nova светлый (текст тёмный), а .formula-white красит KaTeX в почти-белый
    для тёмных карточек — здесь эту раскраску нужно перебить на тёмную. */
 .nova-bubble-light .formula-white .katex {
-  color: #0B0F17 !important;
+  color: #17191c !important;
 }
 
 /* Акцент как в конспекте: цвет шрифта, без фона-маркера. */
 mark.nova-highlight {
   background: none;
-  color: #5CE8FF;
+  color: var(--physics-cyan);
   font-weight: 600;
 }
 
 .nova-bubble-light mark.nova-highlight {
-  color: #0089B3;
+  color: #087e90;
 }
 
 /* Прорисовка графика: линия "рисуется" при появлении, точки всплывают по очереди. */
@@ -327,6 +908,622 @@ mark.nova-highlight {
   transform: rotate(90deg);
 }
 
+/* Коты-кураторы связывают большие разделы, а формулы читаются как отдельные
+   листы справочника — крупно и одинаково контрастно в обеих темах. */
+.formula-section-header {
+  --formula-section-accent: var(--physics-cyan);
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  overflow: visible;
+  border: 0;
+  border-left: 2px solid;
+  border-left-color: var(--formula-section-accent);
+  background:
+    linear-gradient(105deg, color-mix(in srgb, var(--formula-section-accent) 8%, transparent), transparent 44%);
+  padding: 0.25rem 0 0.25rem 0.9rem;
+  box-shadow: none;
+}
+
+.formula-section-cyan { --formula-section-accent: var(--physics-cyan); }
+.formula-section-gold { --formula-section-accent: #a47c65; }
+.formula-section-blue { --formula-section-accent: var(--physics-cyan); }
+.formula-section-pink { --formula-section-accent: var(--topic-optics-accent); }
+.formula-section-ember { --formula-section-accent: #d07965; }
+.formula-section-neutral { --formula-section-accent: var(--text-muted); }
+
+.formula-curator-portrait {
+  border: 0;
+  background: var(--surface-primary);
+  box-shadow: none;
+}
+
+.formula-curator-note {
+  width: fit-content;
+  max-width: 100%;
+  border-left: 1px solid color-mix(in srgb, var(--formula-section-accent) 38%, transparent);
+  padding-left: 0.65rem;
+}
+
+/* A precise matte workbench for graphs and diagrams. */
+.physics-stage {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-surface);
+  border: 1px solid var(--border-subtle);
+  background: var(--surface-primary);
+  padding: 0.75rem;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+}
+
+.formula-row {
+  --formula-card-accent: var(--physics-cyan);
+}
+
+.formula-row[data-tone="cyan"] { --formula-card-accent: var(--physics-cyan); }
+.formula-row[data-tone="gold"] { --formula-card-accent: #a47c65; }
+.formula-row[data-tone="blue"] { --formula-card-accent: var(--physics-cyan); }
+.formula-row[data-tone="pink"] { --formula-card-accent: var(--topic-optics-accent); }
+.formula-row[data-tone="ember"] { --formula-card-accent: #d07965; }
+.formula-row[data-tone="neutral"] { --formula-card-accent: var(--text-muted); }
+
+/* Formula panels use one matte surface and a semantic edge accent. */
+.formula-paper {
+  border: 0;
+  background: var(--surface-secondary);
+  color: var(--text-primary);
+  box-shadow: inset 2px 0 0 color-mix(in srgb, var(--formula-card-accent, var(--physics-cyan)) 72%, transparent);
+}
+
+.formula-paper .katex {
+  color: var(--text-primary) !important;
+  font-weight: 460;
+  letter-spacing: 0;
+}
+
+.formula-lesson {
+  border-color: var(--formula-lesson-border);
+  background-image: var(--formula-lesson-background);
+  background-color: var(--surface-primary);
+  color: var(--formula-lesson-text);
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.24);
+}
+
+.formula-lesson .katex {
+  color: var(--formula-lesson-text) !important;
+}
+
+.formula-lesson-label {
+  color: var(--formula-lesson-label);
+}
+
+.formula-lesson-equation {
+  color: var(--formula-lesson-text);
+}
+
+.formula-lesson-caption {
+  color: var(--formula-lesson-caption);
+}
+
+/* Справочник формул — не каталог карточек, а тихий стол наблюдений.  Первая
+   формула показывает путь от явления к графику и живой задаче, а последующие
+   читаются как заметки, к которым можно вернуться без ощущения dashboard. */
+.formula-library-page {
+  position: relative;
+}
+
+.formula-library-intro {
+  position: relative;
+}
+
+.formula-library-intro::after {
+  content: "";
+  display: block;
+  width: 4.75rem;
+  height: 1px;
+  margin-top: 0.9rem;
+  background: linear-gradient(90deg, var(--brand-accent), transparent);
+}
+
+.formula-observation-stage {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 0.84fr) minmax(320px, 1.16fr);
+  align-items: stretch;
+  gap: clamp(1.75rem, 5vw, 5rem);
+  overflow: hidden;
+  padding: clamp(1.5rem, 4vw, 3.5rem) clamp(1rem, 4vw, 3.4rem);
+  isolation: isolate;
+}
+
+.formula-observation-stage::before {
+  position: absolute;
+  z-index: -2;
+  inset: 8% -10% 0;
+  content: "";
+  border: 1px solid var(--border-subtle);
+  background: var(--surface-primary);
+}
+
+.formula-observation-stage::after {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  content: "";
+  opacity: 0.14;
+  background-image: url('/art/production/paper-texture.webp');
+  background-size: 420px auto;
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+}
+
+.formula-observation-copy {
+  align-self: center;
+  max-width: 31rem;
+}
+
+.formula-observation-eyebrow {
+  margin: 0 0 0.8rem;
+  color: #bd9279;
+  font-size: 0.73rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.formula-observation-copy h2 {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: clamp(1.7rem, 2.9vw, 2.65rem);
+  font-weight: 760;
+  line-height: 1.08;
+  letter-spacing: -0.045em;
+}
+
+.formula-observation-copy > p:not(.formula-observation-eyebrow) {
+  max-width: 29rem;
+  margin: 1.15rem 0 0;
+  color: var(--text-secondary);
+  font-size: 0.97rem;
+  line-height: 1.7;
+}
+
+.formula-observation-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.9rem 1.2rem;
+  margin-top: 1.55rem;
+  font-size: 0.86rem;
+  font-weight: 700;
+}
+
+.formula-observation-primary,
+.formula-observation-secondary {
+  display: inline-flex;
+  min-height: 2.55rem;
+  align-items: center;
+  transition: color 160ms ease, border-color 160ms ease, background-color 160ms ease;
+}
+
+.formula-observation-primary {
+  border-bottom: 1px solid color-mix(in srgb, var(--brand-accent) 70%, transparent);
+  color: var(--brand-accent);
+}
+
+.formula-observation-primary:hover { color: var(--text-primary); }
+
+.formula-observation-secondary {
+  color: var(--physics-cyan);
+}
+
+.formula-observation-secondary:hover { color: var(--text-primary); }
+
+.formula-observation-visual {
+  position: relative;
+  min-height: 23rem;
+  padding: 1.1rem 1rem 0.6rem;
+}
+
+.formula-observation-route {
+  position: absolute;
+  right: 8%;
+  bottom: 4%;
+  left: 7%;
+  height: 33%;
+  border-bottom: 1px solid var(--border-strong);
+}
+
+.formula-observation-rail {
+  position: absolute;
+  right: 0;
+  bottom: 0.55rem;
+  left: 0;
+  border-top: 1px solid color-mix(in srgb, var(--physics-cyan) 46%, transparent);
+  box-shadow: none;
+}
+
+.formula-observation-tram {
+  position: absolute;
+  bottom: 0.8rem;
+  left: 27%;
+  color: #bd9279;
+  font-size: 3.3rem;
+  line-height: 1;
+  letter-spacing: -0.38em;
+  text-shadow: none;
+  transform: skewX(-8deg);
+}
+
+.formula-observation-stop {
+  position: absolute;
+  bottom: 2.1rem;
+  left: 1%;
+  color: var(--text-muted);
+  font-size: 0.65rem;
+  letter-spacing: 0.06em;
+}
+
+.formula-observation-lamp {
+  position: absolute;
+  bottom: 1.2rem;
+  left: 10%;
+  width: 1px;
+  height: 5rem;
+  background: linear-gradient(var(--physics-cyan), rgba(130, 97, 80, 0.25));
+}
+
+.formula-observation-visual svg {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: min(100%, 30rem);
+  height: auto;
+  margin: 0 auto;
+  overflow: visible;
+}
+
+.formula-graph-grid { fill: none; stroke: rgba(229, 223, 217, 0.14); stroke-width: 1; }
+.formula-graph-area { fill: url(#formula-graph-line); opacity: 0.08; }
+.formula-graph-line { fill: none; stroke: url(#formula-graph-line); stroke-width: 3; stroke-linecap: round; }
+.formula-graph-point { fill: var(--text-primary); stroke: var(--physics-cyan); stroke-width: 2; }
+.formula-graph-label { fill: rgba(229, 223, 217, 0.78); font: 600 11px Manrope, sans-serif; text-anchor: middle; }
+.formula-graph-unit { fill: rgba(170, 163, 157, 0.66); font: 600 10px Manrope, sans-serif; }
+
+.formula-observation-equation {
+  position: absolute;
+  z-index: 2;
+  right: 2%;
+  bottom: 30%;
+  padding: 0.6rem 0.85rem;
+  color: var(--text-primary);
+  font-size: clamp(1.1rem, 2vw, 1.5rem);
+  border: 1px solid var(--border-subtle);
+  background: var(--surface-secondary);
+  box-shadow: 0 8px 24px rgba(3, 5, 16, 0.17);
+}
+
+.formula-library-search {
+  border: 0;
+  border-bottom: 1px solid var(--border-subtle);
+  background: transparent;
+  border-radius: 0;
+  transition: border-color 160ms ease;
+}
+
+.formula-library-search:hover { border-bottom-color: var(--border-strong); }
+.formula-library-search:focus { border-bottom-color: var(--physics-cyan); }
+
+.formula-library-nav {
+  border-bottom: 1px solid var(--border-subtle);
+  background: var(--surface-shell);
+}
+
+@media (max-width: 760px) {
+  .formula-observation-stage {
+    grid-template-columns: 1fr;
+    gap: 0.2rem;
+    padding: 1.4rem 0.2rem 0.6rem;
+  }
+
+  .formula-observation-copy { padding: 0 1rem; }
+  .formula-observation-copy h2 { font-size: 1.82rem; }
+  .formula-observation-visual { min-height: 20rem; padding: 1rem 0.55rem 0; }
+  .formula-observation-equation { right: 6%; bottom: 31%; }
+}
+
+@media (max-width: 639px) {
+  .formula-section-header {
+    align-items: flex-start;
+    gap: 0.8rem;
+    padding: 0.75rem;
+  }
+}
+
+/* The optional classroom theme uses warm paper neutrals, never lavender. */
+html[data-theme="light"] {
+  color-scheme: light;
+  --color-space-950: #f2efea;
+  --color-space-925: #f7f4ef;
+  --color-space-900: #fcfaf6;
+  --color-space-850: #e7e1db;
+  --color-space-800: #ddd5ce;
+  --color-space-700: #cbc2ba;
+  --color-nova-cyan: #087e90;
+  --color-nova-blue: #087e90;
+  --color-nova-indigo: #087e90;
+  --color-nova-gold: #826150;
+  --color-nova-ember: #a95243;
+  --background-deep: #f2efea;
+  --surface-shell: #f2efea;
+  --surface-primary: #fcfaf6;
+  --surface-secondary: #e7e1db;
+  --surface-elevated: #dcd5cf;
+  --action-primary: #087e90;
+  --action-pressed: #075e6c;
+  --action-hover: #087183;
+  --action-ink: #ffffff;
+  --ambient-warm: #826150;
+  --brand-accent: #087e90;
+  --physics-cyan: #087183;
+  --text-primary: #24211f;
+  --text-secondary: #625c57;
+  --text-muted: #716861;
+  --border-subtle: rgba(92, 67, 51, 0.16);
+  --border-strong: rgba(92, 67, 51, 0.28);
+  --surface-hover: rgba(92, 67, 51, 0.065);
+  --focus-ring: #087e90;
+  --mode-learn-accent: #087e90;
+  --mode-learn-soft: rgba(8, 126, 144, 0.1);
+  --mode-learn-on-accent: #ffffff;
+  --mode-exam-accent: #76561a;
+  --mode-exam-soft: rgba(118, 86, 26, 0.09);
+  --mode-exam-on-accent: #ffffff;
+  --feedback-success: #237a61;
+  --feedback-warning: #76561a;
+  --feedback-danger: #a64038;
+  --formula-lesson-background: linear-gradient(138deg, #fcfaf6 0%, #f2efea 100%);
+  --formula-lesson-border: rgba(8, 126, 144, 0.28);
+  --formula-lesson-label: #087183;
+  --formula-lesson-text: #24211f;
+  --formula-lesson-caption: #625c57;
+  --topic-kinematics-accent: #8f382f;
+  --topic-kinematics-label: #8f382f;
+  --topic-dynamics-accent: #286d7b;
+  --topic-dynamics-label: #286d7b;
+  --topic-thermodynamics-accent: #775819;
+  --topic-thermodynamics-label: #775819;
+  --topic-electrodynamics-accent: #1f7074;
+  --topic-electrodynamics-label: #1f7074;
+  --topic-optics-accent: #4d5fa4;
+  --topic-optics-label: #4d5fa4;
+  --bg: var(--background-deep);
+  scrollbar-color: #aaa19a var(--background-deep);
+}
+
+html[data-theme="light"] body {
+  background-color: var(--background-deep);
+  background-image: none;
+  color: var(--text-primary);
+}
+
+html[data-theme="light"] .app-shell {
+  color: var(--text-primary);
+}
+
+html[data-theme="light"] .app-shell--inner > header {
+  border-color: var(--border-subtle) !important;
+  background: var(--surface-shell) !important;
+  box-shadow: 0 8px 22px rgba(66, 52, 42, 0.1) !important;
+}
+
+html[data-theme="light"] .app-shell--inner > header [class*="text-white"] {
+  color: var(--text-primary) !important;
+}
+
+html[data-theme="light"] .app-shell--inner > header [class*="border-white"] {
+  border-color: var(--border-subtle) !important;
+}
+
+html[data-theme="light"] .app-shell--inner > header [class*="bg-white"] {
+  background-color: var(--surface-hover) !important;
+}
+
+html[data-theme="light"] .app-shell--inner > header [class*="text-nova-cyan"] {
+  color: var(--physics-cyan) !important;
+}
+
+html[data-theme="light"] .app-shell .app-shell-main [class*="bg-space-950"] {
+  background-color: #f2efea !important;
+}
+
+html[data-theme="light"] .app-shell .app-shell-main [class*="bg-space-925"] {
+  background-color: #f7f4ef !important;
+}
+
+html[data-theme="light"] .app-shell .app-shell-main [class*="bg-space-900"] {
+  background-color: #fcfaf6 !important;
+}
+
+html[data-theme="light"] .app-shell .app-shell-main [class*="bg-space-850"],
+html[data-theme="light"] .app-shell .app-shell-main [class*="bg-space-800"] {
+  background-color: #e7e1db !important;
+}
+
+/* В тёмной теме подложка карточки темы почти не видна, поэтому острые углы
+   не мешают. На светлом фоне та же подложка становится белым прямоугольником
+   без границ — рядом с иллюстрацией он читается как дырка в макете. Здесь
+   карточка получает бумажный вид, как на страницах задач и формул. */
+html[data-theme="light"] .app-shell .app-shell-main .topic-card-surface[class*="bg-space-900"] {
+  background-color: #fcfaf6 !important;
+  border-radius: var(--radius-surface);
+  box-shadow: 0 12px 28px rgba(66, 52, 42, 0.08);
+}
+
+html[data-theme="light"] .app-shell .app-shell-main [class*="text-white"] {
+  color: var(--text-primary) !important;
+}
+
+html[data-theme="light"] .app-shell .app-shell-main [class*="border-white"] {
+  border-color: var(--border-subtle) !important;
+}
+
+html[data-theme="light"] .app-shell .app-shell-main [class*="text-nova-cyan"] {
+  color: var(--physics-cyan) !important;
+}
+
+html[data-theme="light"] .app-shell .app-shell-main [class*="text-nova-blue"],
+html[data-theme="light"] .app-shell .app-shell-main [class*="text-nova-indigo"] {
+  color: var(--physics-cyan) !important;
+}
+
+html[data-theme="light"] .app-shell .app-shell-main [class*="text-nova-gold"] {
+  color: var(--ambient-warm) !important;
+}
+
+html[data-theme="light"] .app-shell .app-shell-main input::placeholder,
+html[data-theme="light"] .app-shell .app-shell-main textarea::placeholder {
+  color: var(--text-muted) !important;
+  opacity: 1;
+}
+
+html[data-theme="light"] .app-shell .app-shell-main [class*="shadow-"] {
+  --tw-shadow-color: rgba(66, 52, 42, 0.12);
+}
+
+html[data-theme="light"] .app-shell .app-shell-main [class*="bg-nova-indigo"],
+html[data-theme="light"] .app-shell .app-shell-main [class*="bg-nova-blue"][class*="text-white"] {
+  background-color: var(--action-primary) !important;
+  color: #ffffff !important;
+}
+
+html[data-theme="light"] .app-shell .app-shell-main .formula-white .katex,
+html[data-theme="light"] .app-shell .app-shell-main .katex {
+  color: var(--text-primary) !important;
+}
+
+html[data-theme="light"] .app-shell .app-shell-main .formula-section-header {
+  background:
+    linear-gradient(105deg, color-mix(in srgb, var(--formula-section-accent) 10%, transparent), transparent 44%);
+  box-shadow: none;
+}
+
+html[data-theme="light"] .app-shell .app-shell-main .formula-paper {
+  background: var(--surface-secondary);
+  border-color: transparent;
+  box-shadow: inset 2px 0 0 color-mix(in srgb, var(--formula-card-accent, var(--physics-cyan)) 72%, transparent);
+}
+
+html[data-theme="light"] .app-shell .app-shell-main .formula-paper,
+html[data-theme="light"] .app-shell .app-shell-main .formula-paper .katex {
+  color: var(--text-primary) !important;
+}
+
+html[data-theme="light"] .app-shell .app-shell-main .formula-cyan .katex {
+  color: var(--physics-cyan) !important;
+}
+
+html[data-theme="light"] .app-shell .app-shell-main :is([data-theme-preserve="dark"], [data-theme-preserve="dark"] *)[class*="bg-space-950"] {
+  background-color: #0f1115 !important;
+}
+
+html[data-theme="light"] .app-shell .app-shell-main :is([data-theme-preserve="dark"], [data-theme-preserve="dark"] *)[class*="bg-space-925"] {
+  background-color: #101317 !important;
+}
+
+html[data-theme="light"] .app-shell .app-shell-main :is([data-theme-preserve="dark"], [data-theme-preserve="dark"] *)[class*="bg-space-900"] {
+  background-color: #11161a !important;
+}
+
+html[data-theme="light"] .app-shell .app-shell-main :is([data-theme-preserve="dark"], [data-theme-preserve="dark"] *)[class*="bg-space-850"] {
+  background-color: #1b2024 !important;
+}
+
+html[data-theme="light"] .app-shell .app-shell-main :is([data-theme-preserve="dark"], [data-theme-preserve="dark"] *)[class*="bg-space-800"] {
+  background-color: #22282c !important;
+}
+
+html[data-theme="light"] .app-shell .app-shell-main :is([data-theme-preserve="dark"], [data-theme-preserve="dark"] *)[class*="text-white"] {
+  color: #e5dfd9 !important;
+}
+
+html[data-theme="light"] .app-shell .app-shell-main :is([data-theme-preserve="dark"], [data-theme-preserve="dark"] *)[class*="border-white"] {
+  border-color: rgba(181, 145, 119, 0.16) !important;
+}
+
+html[data-theme="light"] .app-shell .app-shell-main :is([data-theme-preserve="dark"], [data-theme-preserve="dark"] *)[class*="text-nova-cyan"] {
+  color: #06bad5 !important;
+}
+
+html[data-theme="light"] .app-shell .app-shell-main :is([data-theme-preserve="dark"], [data-theme-preserve="dark"] *)[class*="text-nova-blue"],
+html[data-theme="light"] .app-shell .app-shell-main :is([data-theme-preserve="dark"], [data-theme-preserve="dark"] *)[class*="text-nova-indigo"] {
+  color: #06bad5 !important;
+}
+
+html[data-theme="light"] .app-shell .app-shell-main :is([data-theme-preserve="dark"], [data-theme-preserve="dark"] *)[class*="text-nova-gold"] {
+  color: #a47c65 !important;
+}
+
+html[data-theme="light"] .app-shell .app-shell-main [data-theme-preserve="dark"] {
+  --topic-kinematics-accent: #f06d5f;
+  --topic-kinematics-label: #f5a192;
+  --topic-dynamics-accent: #7bc6d9;
+  --topic-dynamics-label: #9bd6e3;
+  --topic-thermodynamics-accent: #d8aa62;
+  --topic-thermodynamics-label: #e2bd80;
+  --topic-electrodynamics-accent: #72d2d7;
+  --topic-electrodynamics-label: #91dfe1;
+  --topic-optics-accent: #7f98e7;
+  --topic-optics-label: #a2b2ef;
+  --formula-lesson-background: linear-gradient(138deg, #10242a 0%, #111a1e 52%, #0f1115 100%);
+  --formula-lesson-border: rgba(6, 186, 213, 0.24);
+  --formula-lesson-label: #75d7e5;
+  --formula-lesson-text: #e5dfd9;
+  --formula-lesson-caption: #aaa39d;
+}
+
+/* Acceleration and dynamics intentionally keep their cinematic dark lesson
+   surface in the optional paper theme. The preservation boundary previously
+   restored light text without giving the engine its own dark canvas, which
+   made entire stages disappear against the page. */
+html[data-theme="light"] .app-shell .app-shell-main [data-theme-preserve="dark"][data-lesson-engine] {
+  border: 1px solid rgba(6, 186, 213, 0.18);
+  border-radius: var(--radius-surface);
+  background:
+    radial-gradient(circle at 14% 0%, rgba(6, 186, 213, 0.08), transparent 31%),
+    #0f1115;
+  color: #e5dfd9;
+  padding-inline: clamp(0.85rem, 2vw, 1.25rem);
+  padding-top: clamp(0.85rem, 2vw, 1.25rem);
+  box-shadow: 0 18px 42px rgba(66, 52, 42, 0.16);
+}
+
+html[data-theme="light"] .app-shell .app-shell-main :is([data-theme-preserve="dark"], [data-theme-preserve="dark"] *) .formula-white .katex,
+html[data-theme="light"] .app-shell .app-shell-main :is([data-theme-preserve="dark"], [data-theme-preserve="dark"] *) .katex {
+  color: rgba(229, 223, 217, 0.94) !important;
+}
+
+html[data-theme="light"] .app-shell .app-shell-main [data-theme-preserve="dark"] .dark-ghost-control {
+  background-color: rgba(27, 32, 36, 0.94) !important;
+  color: rgba(229, 223, 217, 0.9) !important;
+}
+
+html[data-theme="light"] [data-testid="quiz-session"] [data-testid="question-card"] {
+  background: #fcfaf6 !important;
+  border-color: var(--border-subtle) !important;
+  box-shadow: 0 16px 36px rgba(66, 52, 42, 0.1) !important;
+}
+
+html[data-theme="light"] [data-testid="quiz-session"] .quiz-option[data-state="idle"] {
+  background: #e7e1db !important;
+  border-color: var(--border-subtle) !important;
+  box-shadow: 0 8px 18px rgba(66, 52, 42, 0.06);
+}
+
+html[data-theme="light"] [data-testid="quiz-session"] .quiz-option[data-state="idle"]:hover {
+  background: #ddd5ce !important;
+  border-color: rgba(8, 126, 144, 0.5) !important;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
@@ -357,5 +1554,20 @@ mark.nova-highlight {
 
   .gas-particle {
     animation: none !important;
+  }
+
+  .home-window-light,
+  .home-desk-light,
+  .home-study-art,
+  .home-copy-kicker,
+  .home-copy-title,
+  .home-copy-actions,
+  .home-scroll-arrow {
+    animation: none !important;
+  }
+
+  .home-study-scene {
+    transform: none;
+    transition: none;
   }
 }

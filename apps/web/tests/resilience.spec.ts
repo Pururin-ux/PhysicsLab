@@ -5,6 +5,8 @@ import {
   type Page,
   type Route,
 } from "@playwright/test";
+import { mkdir } from "node:fs/promises";
+import { join } from "node:path";
 
 // Матрица устойчивости public beta: детерминированные сценарии сетевых
 // сбоев, восстановления сессии, повреждённого storage и route-фолбэков.
@@ -95,6 +97,84 @@ async function expectErrorCard(page: Page, heading: string | RegExp) {
   await expect(page.getByTestId("quiz-load-retry")).toBeVisible();
   await expect(card.getByRole("link", { name: "К темам" })).toBeVisible();
 }
+
+async function captureFaultEvidence(page: Page, projectName: string, state: string) {
+  const evidenceDir = process.env.PHYSICSLAB_EVIDENCE_DIR;
+  if (!evidenceDir) return;
+  await mkdir(evidenceDir, { recursive: true });
+  await page.screenshot({
+    path: join(evidenceDir, `${state}-${projectName}.png`),
+    animations: "disabled",
+  });
+}
+
+test.describe("deterministic loading/error/retry contract", () => {
+  test("loading → 503 → keyboard retry восстанавливает тот же batch", async ({
+    page,
+    request,
+  }, testInfo) => {
+    const tasks = await fetchTasks(request, "mixed", 10, 0);
+    const batches: string[] = [];
+    let call = 0;
+    let releaseFailure!: () => void;
+    const failureGate = new Promise<void>((resolve) => {
+      releaseFailure = resolve;
+    });
+
+    await prime(page, 10);
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.route("**/api/tasks?*", async (route) => {
+      if (!isMixedRequest(route)) return route.continue();
+      call += 1;
+      batches.push(new URL(route.request().url()).searchParams.get("batch") ?? "");
+      if (call === 1) {
+        await failureGate;
+        return route.fulfill({ status: 503, contentType: "application/json", body: "{}" });
+      }
+      return route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({ tasks }),
+      });
+    });
+
+    await page.goto(KINEMATICS, { waitUntil: "domcontentloaded" });
+    const loading = page.getByTestId("quiz-loading-card");
+    await expect(loading).toBeVisible();
+    await expect(loading).toHaveAttribute("aria-busy", "true");
+    await expect(page.getByRole("heading", { name: "Кинематика" })).toBeVisible();
+    await page.evaluate(() => document.fonts.ready);
+    await captureFaultEvidence(page, testInfo.project.name, "loading");
+
+    releaseFailure();
+    const card = page.getByTestId("quiz-load-error-card");
+    await expect(card).toBeVisible({ timeout: 10000 });
+    const heading = card.getByRole("heading", { name: "Сервер временно недоступен" });
+    await expect(heading).toBeFocused();
+
+    const retry = page.getByTestId("quiz-load-retry");
+    await retry.scrollIntoViewIfNeeded();
+    const [retryBox, viewport] = await Promise.all([
+      retry.boundingBox(),
+      Promise.resolve(page.viewportSize()),
+    ]);
+    expect(retryBox).not.toBeNull();
+    expect(viewport).not.toBeNull();
+    expect(retryBox!.y).toBeGreaterThanOrEqual(0);
+    expect(retryBox!.y + retryBox!.height).toBeLessThanOrEqual(viewport!.height + 1);
+    await captureFaultEvidence(page, testInfo.project.name, "error");
+
+    await page.keyboard.press("Tab");
+    await expect(retry).toBeFocused();
+    await page.keyboard.press("Enter");
+    await expect(page.getByTestId("question-card")).toBeVisible({ timeout: 15000 });
+    await expect(page.getByTestId("quiz-load-error-card")).toHaveCount(0);
+    await captureFaultEvidence(page, testInfo.project.name, "recovered");
+
+    expect(batches).toHaveLength(2);
+    expect(new Set(batches).size).toBe(1);
+  });
+});
 
 test.describe("quiz loading resilience", () => {
   test.beforeEach(async ({}, testInfo) => {
@@ -267,6 +347,10 @@ test.describe("quiz loading resilience", () => {
     expect(staleTasks[0].text).not.toBe(freshTasks[0].text);
 
     let call = 0;
+    let markStaleSettled!: () => void;
+    const staleSettled = new Promise<void>((resolve) => {
+      markStaleSettled = resolve;
+    });
     await prime(page, 10);
     await page.route("**/api/tasks?*", async (route) => {
       if (!isMixedRequest(route)) return route.continue();
@@ -276,9 +360,18 @@ test.describe("quiz loading resilience", () => {
         // перезагружается, запрос abort-ится. Он не должен ни показать
         // ошибку, ни перезаписать данные нового запроса.
         await new Promise((resolve) => setTimeout(resolve, 2500));
-        return route
-          .fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ tasks: staleTasks }) })
-          .catch(() => {});
+        try {
+          await route.fulfill({
+            status: 200,
+            contentType: "application/json",
+            body: JSON.stringify({ tasks: staleTasks }),
+          });
+        } catch {
+          // Ожидаемый abort при уходе со старого mount.
+        } finally {
+          markStaleSettled();
+        }
+        return;
       }
       return route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ tasks: freshTasks }) });
     });
@@ -288,13 +381,14 @@ test.describe("quiz loading resilience", () => {
 
     // Новый mount тех же параметров: свежий запрос отвечает мгновенно.
     await page.goto(KINEMATICS, { waitUntil: "domcontentloaded" });
+    await expect.poll(() => call, { message: "new mount must issue its own request" }).toBeGreaterThanOrEqual(2);
     await expect(page.getByTestId("question-card")).toBeVisible({ timeout: 15000 });
     await expect(page.getByTestId("question-card")).toContainText(
       freshTasks[0].text.slice(0, 40),
     );
 
     // Устаревший ответ «дозревает» — состояние не меняется и ошибок нет.
-    await page.waitForTimeout(2200);
+    await staleSettled;
     await expect(page.getByTestId("question-card")).toContainText(
       freshTasks[0].text.slice(0, 40),
     );
@@ -487,7 +581,7 @@ test.describe("session recovery", () => {
     expect(second?.correct).toBe(4);
   });
 
-  test("exam: повторный вариант того же batch записывается, дубль одной попытки — нет", async ({
+  test("exam: повторная диагностика того же batch записывается, дубль одной попытки — нет", async ({
     page,
     request,
   }) => {
@@ -512,21 +606,21 @@ test.describe("session recovery", () => {
 
     const completeExam = async () => {
       await page.goto("/practice/exam-demo", { waitUntil: "domcontentloaded" });
-      await page.getByRole("button", { name: "Начать тренировку" }).click();
+      await page.getByRole("button", { name: "Начать диагностику" }).click();
       await expect(page.getByTestId("question-card")).toBeVisible({ timeout: 15000 });
       await answerCorrectly(page, tasks[0]);
       await page.getByTestId("next-task-button").click();
       await answerCorrectly(page, tasks[1]);
       // Двойной клик по «Показать итог» — одна попытка, одна запись.
       await page.getByTestId("next-task-button").click({ clickCount: 2, delay: 40 });
-      await expect(page.getByText("Итог тренировки", { exact: true })).toBeVisible();
+      await expect(page.getByText("Итог диагностики", { exact: true })).toBeVisible();
     };
 
     await completeExam();
     expect(await readAttempts()).toBe(1);
 
     await completeExam();
-    expect(await readAttempts(), "второй вариант того же batch записан").toBe(2);
+    expect(await readAttempts(), "вторая диагностика того же batch записана").toBe(2);
   });
 
   test("Restart очищает снапшот и начинает новый batch", async ({ page, request }) => {
@@ -799,13 +893,16 @@ test.describe("mobile error layout", () => {
 
     const retry = page.getByTestId("quiz-load-retry");
     await retry.evaluate((element) => element.scrollIntoView({ block: "end" }));
-    const [retryBox, navBox] = await Promise.all([
+    const [retryBox, headerBox, viewportHeight] = await Promise.all([
       retry.boundingBox(),
-      page.getByRole("navigation", { name: "Мобильная навигация" }).boundingBox(),
+      page.locator("header").first().boundingBox(),
+      page.evaluate(() => window.innerHeight),
     ]);
     expect(retryBox).not.toBeNull();
-    expect(navBox).not.toBeNull();
-    expect(navBox!.y - (retryBox!.y + retryBox!.height)).toBeGreaterThanOrEqual(4);
+    expect(headerBox).not.toBeNull();
+    // Навигация теперь сверху: кнопка не должна прятаться под липкой шапкой.
+    expect(retryBox!.y).toBeGreaterThanOrEqual(headerBox!.y + headerBox!.height);
+    expect(retryBox!.y + retryBox!.height).toBeLessThanOrEqual(viewportHeight);
 
     // Retry доступен с клавиатуры.
     await retry.focus();

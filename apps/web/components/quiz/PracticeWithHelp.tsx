@@ -20,7 +20,6 @@ interface PracticeWithHelpProps {
   generatedTitle: string;
   accent?: "cyan" | "gold" | "blue" | "ember";
   drawerTitle: string;
-  drawerDescription: string;
   drawerLayout?: "grid" | "stack";
   subtopics?: TopicTheorySubtopic[] | TopicHelpSection[];
   children: ReactNode;
@@ -28,6 +27,7 @@ interface PracticeWithHelpProps {
   restartLabel?: string;
   nextHref?: string;
   nextLabel?: string;
+  preAnswerGuidance?: "guided" | "unlabelled";
 }
 
 function sameTarget(left: HelpTarget, right: HelpTarget) {
@@ -45,7 +45,6 @@ export function PracticeWithHelp({
   generatedTitle,
   accent = "cyan",
   drawerTitle,
-  drawerDescription,
   drawerLayout = "grid",
   subtopics = [],
   children,
@@ -53,6 +52,7 @@ export function PracticeWithHelp({
   restartLabel,
   nextHref,
   nextLabel,
+  preAnswerGuidance = "guided",
 }: PracticeWithHelpProps) {
   const defaultTarget = useMemo(() => getDefaultHelpTarget(topicId), [topicId]);
   const [currentTarget, setCurrentTarget] = useState(defaultTarget);
@@ -70,9 +70,10 @@ export function PracticeWithHelp({
     setHelpOpen(true);
     window.requestAnimationFrame(() => {
       if (!window.matchMedia("(min-width: 1180px)").matches) {
+        const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
         document
           .getElementById("theory")
-          ?.scrollIntoView({ behavior: "smooth", block: "start" });
+          ?.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "start" });
       }
     });
   }, [updateTarget]);
@@ -106,11 +107,11 @@ export function PracticeWithHelp({
         restartLabel={restartLabel}
         nextHref={nextHref}
         nextLabel={nextLabel}
+        preAnswerGuidance={preAnswerGuidance}
       />
 
       <TopicTheoryDrawer
         title={drawerTitle}
-        description={drawerDescription}
         layout={drawerLayout}
         accent={accent}
         subtopics={subtopics}

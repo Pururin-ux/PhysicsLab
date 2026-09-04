@@ -47,52 +47,78 @@ for (const route of productRoutes) {
   });
 }
 
-test("смешанная тренировка честно обозначает открытый scope", async ({ page }) => {
+test("диагностика до старта показывает честную карту всей программы", async ({ page }) => {
   await page.goto("/practice/exam-demo", { waitUntil: "domcontentloaded" });
 
   await expect(
-    page.getByRole("heading", { name: "Смешанная тренировка" }),
+    page.getByRole("heading", {
+      name: "Диагностика: 10 задач по 5 открытым темам",
+      exact: true,
+    }),
   ).toBeVisible();
+  const coverage = page.getByTestId("exam-coverage-map");
+  await expect(coverage.getByRole("list", { name: "Покрытие разделов программы" }).getByRole("listitem")).toHaveCount(6);
+  await expect(coverage).toContainText("Полностью: 0 · Частично: 4 · Пока нет: 2");
+  await expect(coverage.getByText("Покрыто частично", { exact: true })).toHaveCount(4);
+  await expect(coverage.getByText("Пока нет задач", { exact: true })).toHaveCount(2);
   await expect(
-    page.getByText(
-      "Это тренировочный набор, а не полный вариант ЦТ/ЦЭ: квантовая и атомно-ядерная физика пока не включены.",
-    ),
+    coverage.getByText(/не полный вариант ЦТ\/ЦЭ/i),
   ).toBeVisible();
-  await expect(
-    page.getByRole("button", { name: "Начать тренировку" }),
-  ).toBeVisible();
+  const start = page.getByRole("button", { name: "Начать диагностику" });
+  await expect(start).toBeVisible();
+  const [coverageBox, startBox] = await Promise.all([
+    coverage.boundingBox(),
+    start.boundingBox(),
+  ]);
+  expect(coverageBox).not.toBeNull();
+  expect(startBox).not.toBeNull();
+  expect(startBox!.y).toBeGreaterThanOrEqual(coverageBox!.y + coverageBox!.height);
 });
 
 test(
   "справочник рендерит весь корпус формул и ищет по содержимому",
   async ({ page }) => {
     await page.goto("/formulas", { waitUntil: "domcontentloaded" });
-    await page.waitForLoadState("networkidle");
 
-    const formulaRows = page.locator(".formula-row");
+    const formulaEntries = page.locator("[data-formula-id]");
     const formulaCount = formulaReference.reduce(
       (count, group) => count + group.entries.length,
       0,
     );
-    await expect(formulaRows).toHaveCount(formulaCount);
+    await expect(formulaEntries).toHaveCount(formulaCount);
     await expect(page.locator(".katex-error")).toHaveCount(0);
     expect(await page.locator(".katex-mathml").count()).toBeGreaterThanOrEqual(
       formulaCount,
     );
 
-    const averageSpeedRow = formulaRows.filter({
-      hasText: "Средняя скорость на участках",
-    });
-    await averageSpeedRow.getByRole("button").click();
-    await expect(averageSpeedRow).toHaveAttribute("data-open", "true");
-    await expect(
-      averageSpeedRow.locator(".formula-cyan .katex-mathml"),
-    ).toHaveCount(3);
+    const averageSpeedEntry = page.locator('[data-formula-id="average-speed-segments"]');
+    await expect(averageSpeedEntry).toContainText("Средняя путевая скорость");
+    const symbols = averageSpeedEntry.locator("details");
+    await symbols.locator("summary").click();
+    await expect(symbols).toHaveAttribute("open", "");
+    await expect(symbols.locator("dl")).toBeVisible();
 
     await page
-      .getByRole("searchbox", { name: "Поиск по формулам" })
+      .getByRole("searchbox", { name: "Найти формулу" })
       .fill("внутреннее сопротивление");
-    await expect(formulaRows).toHaveCount(1);
-    await expect(formulaRows).toContainText("Закон Ома для полной цепи");
+    await expect(formulaEntries).toHaveCount(1);
+    await expect(formulaEntries).toContainText("Закон Ома для полной цепи");
   },
 );
+
+test("справочник объясняет способ чтения и связывает формулу с практикой", async ({ page }) => {
+  await page.goto("/formulas?formula=ohm-law", { waitUntil: "domcontentloaded" });
+
+  await expect(page.getByRole("heading", { name: "Найди нужную связь." })).toBeVisible();
+  await expect(page.getByLabel("Как читать формулы")).toContainText("запись");
+  await expect(page.getByLabel("Как читать формулы")).toContainText("физический смысл");
+  const formula = page.locator('[data-formula-id="ohm-law"]');
+  await expect(formula.getByRole("link", { name: "Разобрать тип" })).toHaveAttribute(
+    "href",
+    "/tasks/ohm-law",
+  );
+  await expect(formula.getByRole("link", { name: "Потренироваться" })).toHaveAttribute(
+    "href",
+    "/practice/family/ohm-law",
+  );
+});

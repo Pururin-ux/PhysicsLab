@@ -1,283 +1,150 @@
-"use client";
-
-import { useStore } from "@nanostores/react";
+import { ArrowRight } from "@phosphor-icons/react/dist/ssr";
+import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { getTopWeaknessesForTopic } from "../../lib/learning/weakness-labels";
-import { getLearningNextStep } from "../../lib/learning/next-step";
-import { buildReviewPlan } from "../../lib/learning/review-plan";
-import { topics, upcomingTopics } from "../../lib/topics";
-import { $examLog, getBestAttempt } from "../../lib/stores/exam-log-store";
-import {
-  $appProgress,
-} from "../../lib/stores/progress-store";
-import { Badge } from "../ui/Badge";
-import { Button } from "../ui/Button";
-import { Card } from "../ui/Card";
-import { MathText } from "../ui/MathText";
-import { TopicGlyph } from "./TopicGlyph";
+import { topics } from "../../lib/topics";
 
-const topicStyles = {
+const topicArt = {
+  kinematics: "/art/production/topic-kinematics-cozy.webp",
+  dynamics: "/art/production/topic-dynamics.webp",
+  electrodynamics: "/art/production/topic-electricity.webp",
+  thermodynamics: "/art/production/topic-thermodynamics-clean-v2.webp",
+  optics: "/art/production/topic-optics.webp",
+} as const;
+
+// Порядок соответствует крупным разделам школьной программы. Визуальный вес
+// у разделов одинаковый: без данных о прогрессе каталог не назначает ученику
+// «главную» тему от себя.
+const topicOrder = [
+  "kinematics",
+  "dynamics",
+  "thermodynamics",
+  "electrodynamics",
+  "optics",
+] as const;
+
+const topicPresentation = {
   kinematics: {
-    border: "border-white/[.08] border-l-nova-cyan/55",
-    depth:
-      "!shadow-[0_14px_38px_rgba(0,0,0,0.34),inset_0_1px_0_rgba(255,255,255,0.045)]",
-    badge: "cyan",
-    button: "mt-auto",
-    tile: "border-nova-cyan/25 bg-nova-cyan/[.08] text-nova-cyan",
+    accent: "var(--topic-kinematics-accent)",
+    label: "var(--topic-kinematics-label)",
+    imagePosition: "object-[58%_center]",
   },
   dynamics: {
-    border: "border-white/[.08] border-l-nova-gold/55",
-    depth:
-      "!shadow-[0_14px_38px_rgba(0,0,0,0.34),inset_0_1px_0_rgba(255,255,255,0.045)]",
-    badge: "gold",
-    button:
-      "mt-auto border-nova-gold bg-nova-gold shadow-gold-glow focus-visible:ring-nova-gold/50",
-    tile: "border-nova-gold/25 bg-nova-gold/[.08] text-nova-gold",
-  },
-  electrodynamics: {
-    border: "border-white/[.08] border-l-nova-blue/55",
-    depth:
-      "!shadow-[0_14px_38px_rgba(0,0,0,0.34),inset_0_1px_0_rgba(255,255,255,0.045)]",
-    badge: "blue",
-    button:
-      "mt-auto border-nova-blue bg-nova-blue shadow-[0_0_22px_rgba(45,156,255,0.25)] focus-visible:ring-nova-blue/50",
-    tile: "border-nova-blue/25 bg-nova-blue/[.08] text-nova-blue",
+    accent: "var(--topic-dynamics-accent)",
+    label: "var(--topic-dynamics-label)",
+    imagePosition: "object-center",
   },
   thermodynamics: {
-    border: "border-white/[.08] border-l-nova-ember/55",
-    depth:
-      "!shadow-[0_14px_38px_rgba(0,0,0,0.34),inset_0_1px_0_rgba(255,255,255,0.045)]",
-    badge: "ember",
-    button:
-      "mt-auto border-nova-ember bg-nova-ember shadow-ember-glow focus-visible:ring-nova-ember/50",
-    tile: "border-nova-ember/25 bg-nova-ember/[.08] text-nova-ember",
+    accent: "var(--topic-thermodynamics-accent)",
+    label: "var(--topic-thermodynamics-label)",
+    imagePosition: "object-center",
   },
-  // Оптика переиспользует cyan (лучи света) — новых токенов не заводим.
+  electrodynamics: {
+    accent: "var(--topic-electrodynamics-accent)",
+    label: "var(--topic-electrodynamics-label)",
+    imagePosition: "object-center",
+  },
   optics: {
-    border: "border-white/[.08] border-l-nova-cyan/55",
-    depth:
-      "!shadow-[0_14px_38px_rgba(0,0,0,0.34),inset_0_1px_0_rgba(255,255,255,0.045)]",
-    badge: "cyan",
-    button: "mt-auto",
-    tile: "border-nova-cyan/25 bg-nova-cyan/[.08] text-nova-cyan",
+    accent: "var(--topic-optics-accent)",
+    label: "var(--topic-optics-label)",
+    imagePosition: "object-center",
   },
 } as const;
 
-export function TopicCards() {
-  const progress = useStore($appProgress);
-  const examLog = useStore($examLog);
-  const [mounted, setMounted] = useState(false);
+const orderedTopics = topicOrder.map(
+  (id) => topics.find((topic) => topic.id === id)!,
+);
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  const bestExam = mounted ? getBestAttempt(examLog) : null;
-  const nextStep = mounted ? getLearningNextStep(progress, Boolean(bestExam)) : null;
-  const reviewPlan = mounted ? buildReviewPlan(progress, 8) : [];
+function TopicActions({
+  learnHref,
+  learnLabel = "Разобрать тему",
+  practiceHref,
+  topicTitle,
+}: {
+  learnHref: string;
+  learnLabel?: string;
+  practiceHref: string;
+  topicTitle: string;
+}) {
+  const shared =
+    "inline-flex min-h-11 items-center justify-center gap-2 rounded-[8px] px-4 text-[13px] font-[800] transition-[background-color,border-color,color,transform] duration-150 hover:-translate-y-px focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background-deep)]";
 
   return (
-    <>
-    {nextStep ? (
-      <Card
-        className={`flex flex-col gap-4 !p-4 sm:flex-row sm:items-center sm:justify-between md:!p-5 ${
-          nextStep.tone === "gold"
-            ? "border-nova-gold/25 bg-nova-gold/[.055]"
-            : "border-nova-cyan/22 bg-nova-cyan/[.045]"
-        }`}
-        aria-label="Что сделать сейчас"
+    <div className="grid grid-cols-2 gap-2 sm:flex sm:justify-end">
+      <Link
+        href={learnHref}
+        aria-label={`${learnLabel} «${topicTitle}»`}
+        className={`${shared} bg-[var(--action-primary)] text-[var(--action-ink)] hover:bg-[var(--action-hover)] sm:min-w-[158px]`}
       >
-        <div className="flex min-w-0 flex-col gap-2">
-          <p
-            className={`text-[11px] font-bold uppercase tracking-[.14em] ${
-              nextStep.tone === "gold" ? "text-nova-gold/80" : "text-nova-cyan/80"
-            }`}
-          >
-            {nextStep.label}
-          </p>
-          <div className="flex flex-col gap-1">
-            <h2 className="text-[18px] font-[800] leading-tight text-white">
-              {nextStep.title}
-            </h2>
-            <p className="max-w-[680px] text-[13px] leading-[1.65] text-white/68">
-              <MathText text={nextStep.body} />
-            </p>
-          </div>
-        </div>
-        <Button
-          asChild
-          size="sm"
-          className={
-            nextStep.tone === "gold"
-              ? "shrink-0 border-nova-gold bg-nova-gold shadow-gold-glow focus-visible:ring-nova-gold/50"
-              : "shrink-0"
-          }
-        >
-          <Link href={nextStep.href}>{nextStep.cta}</Link>
-        </Button>
-      </Card>
-    ) : null}
+        <span>{learnLabel}</span>
+        <ArrowRight size={16} weight="bold" aria-hidden="true" />
+      </Link>
+      <Link
+        href={practiceHref}
+        aria-label={`Решать задачи по теме «${topicTitle}»`}
+        className={`${shared} border border-[var(--border-strong)] bg-[var(--surface-panel)] text-[var(--text-strong)] hover:border-[var(--mode-learn-accent)] hover:bg-[var(--surface-hover)] sm:min-w-[158px]`}
+      >
+        <span>Решать задачи</span>
+        <ArrowRight size={16} weight="bold" aria-hidden="true" />
+      </Link>
+    </div>
+  );
+}
 
-    <section
-      className="grid gap-4 md:grid-cols-2"
-      aria-label="Темы для повторения"
-    >
-      {topics.map((topic) => {
-        const style = topicStyles[topic.id];
-        const topicProgress = mounted ? progress.topics[topic.id] : null;
-        const solved = topicProgress?.solved ?? 0;
-        const correct = topicProgress?.correct ?? 0;
-        const sessions = topicProgress?.completedSessions ?? 0;
-        const hasProgress = Boolean(
-          topicProgress &&
-            (topicProgress.completedSessions > 0 || topicProgress.solved > 0),
-        );
-        const weakTrapCount = topicProgress
-          ? Object.keys(topicProgress.weakTraps).length
-          : 0;
-        const topWeaknesses = topicProgress
-          ? getTopWeaknessesForTopic(topicProgress.weakTraps, topic.id, 2)
-          : [];
-        const topWeaknessLabels = Array.from(
-          new Set(topWeaknesses.map((weakness) => weakness.skillTitle)),
-        );
-        const reviewItem = reviewPlan.find((item) => item.topicId === topic.id);
+export function TopicCards() {
+  return (
+    <section aria-label="Темы физики">
+      <ul className="divide-y divide-[var(--border-subtle)] border-y border-[var(--border-strong)]">
+        {orderedTopics.map((topic) => {
+          const presentation = topicPresentation[topic.id];
 
-        return (
-          <Card
-            key={topic.id}
-            variant="elevated"
-            className={`card-lift flex flex-col gap-3 border-l-2 !p-4 md:!p-5 ${style.border} ${style.depth}`}
-          >
-            <div className="flex items-start gap-3">
-              <span
-                className={`grid h-12 w-12 shrink-0 place-items-center rounded-option border ${style.tile}`}
-              >
-                <TopicGlyph topic={topic.id} className="h-7 w-7" />
-              </span>
-              <div className="flex min-w-0 flex-1 flex-col gap-1.5">
-                <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
-                  <h2 className="text-lg font-[800] leading-tight text-white">
+          return (
+            <li key={topic.id} id={topic.id} className="scroll-mt-28">
+              <article className="group grid grid-cols-[84px_minmax(0,1fr)] gap-x-4 gap-y-4 py-5 sm:grid-cols-[112px_minmax(0,1fr)] sm:gap-x-6 sm:py-6 lg:grid-cols-[144px_minmax(0,1fr)_auto] lg:items-center lg:gap-x-8">
+                <div className="relative h-[84px] overflow-hidden rounded-[8px] bg-[var(--surface-panel-raised)] ring-1 ring-[var(--border-subtle)] sm:h-[96px] lg:h-[104px]">
+                  <Image
+                    src={topicArt[topic.id]}
+                    alt=""
+                    fill
+                    loading="eager"
+                    quality={90}
+                    sizes="(max-width: 639px) 84px, (max-width: 1023px) 112px, 144px"
+                    className={`object-cover saturate-[.84] transition-[filter,transform] duration-500 group-hover:scale-[1.035] group-hover:saturate-100 ${presentation.imagePosition}`}
+                  />
+                  <span
+                    aria-hidden="true"
+                    className="absolute inset-y-0 left-0 w-[3px]"
+                    style={{ backgroundColor: presentation.accent }}
+                  />
+                </div>
+
+                <div className="min-w-0 self-center">
+                  <p
+                    className="text-[10px] font-[800] uppercase tracking-[.15em]"
+                    style={{ color: presentation.label }}
+                  >
+                    {topic.modeLabel}
+                  </p>
+                  <h2 className="mt-1.5 text-[21px] font-[830] leading-[1.08] tracking-[-.03em] text-[var(--text-strong)] sm:text-[26px]">
                     {topic.title}
                   </h2>
-                  <Badge tone={style.badge} className="w-fit shrink-0">
-                    {hasProgress ? "В процессе" : "Не начато"}
-                  </Badge>
+                  <p className="mt-1.5 text-[13px] leading-[1.5] text-[var(--text-default)] sm:max-w-[58ch] sm:text-[14px]">
+                    {topic.description}
+                  </p>
                 </div>
-                <p className="line-clamp-2 text-[13px] leading-[1.5] text-white/68">
-                  {topic.description}
-                </p>
-              </div>
-            </div>
 
-            {hasProgress ? (
-              <div className="flex flex-wrap gap-1.5">
-                <span className="rounded-badge border border-white/[.08] bg-white/[.03] px-2 py-1 text-[11px] font-semibold leading-none text-white/70">
-                  <span className="physics-number">{solved}</span> решено
-                </span>
-                <span className="rounded-badge border border-white/[.08] bg-white/[.03] px-2 py-1 text-[11px] font-semibold leading-none text-white/70">
-                  <span className="physics-number">{correct}</span> верно
-                </span>
-                <span className="rounded-badge border border-white/[.08] bg-white/[.03] px-2 py-1 text-[11px] font-semibold leading-none text-white/70">
-                  <span className="physics-number">{sessions}</span>{" "}
-                  {sessions === 1 ? "тренировка" : "тренировок"}
-                </span>
-                {weakTrapCount > 0 ? (
-                  <span
-                    className="rounded-badge border border-nova-gold/25 bg-nova-gold/[.06] px-2 py-1 text-[11px] font-semibold leading-none text-nova-gold/85"
-                    title={topWeaknessLabels.join(", ")}
-                  >
-                    {weakTrapCount === 1 ? "1 слабое место" : `${weakTrapCount} слабых места`}
-                  </span>
-                ) : null}
-                {reviewItem ? (
-                  <span
-                    className={
-                      reviewItem.urgency === "today"
-                        ? "rounded-badge border border-nova-gold/25 bg-nova-gold/[.07] px-2 py-1 text-[11px] font-semibold leading-none text-nova-gold/90"
-                        : "rounded-badge border border-nova-cyan/20 bg-nova-cyan/[.05] px-2 py-1 text-[11px] font-semibold leading-none text-nova-cyan/80"
-                    }
-                    title={reviewItem.reason}
-                  >
-                    {reviewItem.dueLabel}
-                  </span>
-                ) : null}
-              </div>
-            ) : (
-              <p className="text-[12px] font-semibold leading-[1.5] text-white/60">
-                Короткая тренировка из 10 задач.
-              </p>
-            )}
-
-            <Button asChild size="sm" className={style.button}>
-              <Link href={topic.href}>{hasProgress ? "Продолжить" : "Начать"}</Link>
-            </Button>
-          </Card>
-        );
-      })}
+                <div className="col-span-2 lg:col-span-1">
+                  <TopicActions
+                    learnHref={topic.learnHref}
+                    learnLabel={"learnLabel" in topic ? topic.learnLabel : undefined}
+                    practiceHref={topic.practiceHref}
+                    topicTitle={topic.title}
+                  />
+                </div>
+              </article>
+            </li>
+          );
+        })}
+      </ul>
     </section>
-
-    <section aria-label="Смешанная тренировка">
-      <Card
-        variant="elevated"
-        className="card-lift flex flex-col gap-4 border-l-2 border-nova-gold/30 !p-5 md:flex-row md:items-center md:justify-between md:!p-6"
-      >
-        <div className="flex min-w-0 flex-col gap-2">
-          <div className="flex items-center gap-2.5">
-            <Badge tone="gold">Смешанная тренировка</Badge>
-            <span className="text-[11px] font-bold uppercase tracking-[.12em] text-white/60">
-              открытые темы
-            </span>
-          </div>
-          <p className="text-[14px] leading-[1.65] text-white/70">
-            10 задач: механика, электродинамика, термодинамика и оптика вперемешку.
-            Это тренировка по открытым темам, не полный вариант ЦТ/ЦЭ.
-          </p>
-          {bestExam ? (
-            <p className="text-[12px] font-semibold text-white/50">
-              Лучший результат:{" "}
-              <span className="physics-number text-nova-gold">
-                {bestExam.score}/{bestExam.total}
-              </span>
-            </p>
-          ) : null}
-        </div>
-        <Button
-          asChild
-          className="shrink-0 border-nova-gold bg-nova-gold shadow-gold-glow focus-visible:ring-nova-gold/50"
-        >
-          <Link href="/practice/exam-demo">
-            {bestExam ? "Ещё тренировка" : "Начать тренировку"}
-          </Link>
-        </Button>
-      </Card>
-    </section>
-
-    <section aria-label="Будущие темы" className="flex flex-col gap-3">
-      <h2 className="text-[13px] font-bold uppercase tracking-[.14em] text-white/45">
-        Скоро
-      </h2>
-      <div className="flex flex-col gap-4 sm:flex-row">
-        {upcomingTopics.map((topic) => (
-          <Card
-            key={topic.id}
-            className="flex flex-1 flex-col gap-3 border-white/[.07] bg-space-900/60 !p-5 shadow-none sm:max-w-sm"
-          >
-            <Badge className="w-fit">Скоро</Badge>
-            <h3 className="text-[17px] font-[800] leading-snug text-white/85">
-              {topic.title}
-            </h3>
-            <p className="text-[13px] leading-[1.65] text-white/55">
-              {topic.description}
-            </p>
-            <p className="mt-auto pt-1 text-[12px] font-semibold leading-[1.5] text-white/50">
-              Задачи и разборы готовятся — тема откроется позже.
-            </p>
-          </Card>
-        ))}
-      </div>
-    </section>
-    </>
   );
 }
