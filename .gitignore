@@ -61,3 +61,5 @@ ds-bundle/
 .lang-tools/node_modules/
 .playwright-cli/
 fox-that-never-was-debug-apk.zip
+PhysicsChannelKit/.venv/
+PhysicsDungeon-vertical-slice-*.zip
