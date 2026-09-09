@@ -2,11 +2,21 @@
 
 ## Scope
 
-- `apps/web` is the PhysicsLab web trainer. Its canonical runtime is Next.js.
+- `apps/web` is the PhysicsLab web learning platform. Its canonical runtime is Next.js.
 - `apps/game` is a separate Godot product. Its active context is
   `docs/game-preproduction/CONTEXT.md`.
-- Do not transfer product, design, learning, technical, or quality requirements
-  between these products without an explicit user request.
+- `PhysicsChannelKit` and `PhysicsChannelOutput` belong to a separate physics
+  content/Telegram production workflow. They are not web runtime or web product
+  requirements.
+- Do not transfer product, design, learning, technical, character, or quality
+  requirements between these scopes without an explicit user request.
+
+## Start here
+
+For any `apps/web` task, read `docs/current/START_HERE.md` first, then the
+relevant current documents and the affected route/code. Do not reconstruct the
+product direction from repository-wide grep results, old asset names, archived
+screenshots, or whichever prototype has the most files.
 
 ## Sources of truth
 
@@ -16,14 +26,23 @@ For `apps/web`, use this order when sources disagree:
 2. `docs/current/`;
 3. a `CANON` decision in `docs/decisions/`;
 4. current code and CI configuration for observable behaviour;
-5. `docs/archive/` only as historical evidence.
+5. `docs/archive/` and `legacy/` only as historical evidence.
 
 `docs/current/*` and `CANON` decisions must not contradict each other. A
 conflict between them is a repository-state error: report it explicitly rather
 than choosing one source silently.
 
 Archived documents are not current requirements. Do not restore old UI,
-routes, copy, tests, or product assumptions merely because they appear there.
+routes, copy, characters, tests, or product assumptions merely because they
+appear there.
+
+Current approved web companion identity is defined in
+`docs/current/MIO_CHARACTER.md`. Legacy `Nova*` components and `public/mascot*`
+assets do not override it. Before deleting legacy-named code, verify active
+imports; before adding new character work, follow the current Mio contract.
+
+Project-local skills under `.agents/` are implementation/review aids. They must
+follow this hierarchy and may not independently redefine product direction.
 
 ## Working conventions
 
@@ -51,5 +70,7 @@ routes, copy, tests, or product assumptions merely because they appear there.
   proposing a solution.
 - When exploration is requested, alternatives must differ structurally, not
   only in styling or copy.
+- Do not turn one successful lesson, page, interaction, or illustration into a
+  universal template without evidence.
 - When a `CANON` decision changes, update the relevant current document or
   decision record.

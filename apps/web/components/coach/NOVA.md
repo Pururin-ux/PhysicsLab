@@ -1,36 +1,30 @@
-> **Component-local guidance.** It does not define product direction; use
-> `docs/current/` and `docs/decisions/` for current web requirements.
+> **LEGACY component-local notes.** Current web product direction is defined by
+> `docs/current/`, and the approved companion is **Mio** (`docs/current/MIO_CHARACTER.md`).
+> The Nova-named components/assets below are historical technical debt, not a
+> second approved character direction. Do not add new Nova behaviour or copy.
+> Before removing or migrating them, verify active imports and tests.
 
-# Nova mascot integration
+# Nova legacy component notes
 
-Nova is not a standalone product showcase. The Claude prototype is treated as a
-sandbox for assets and motion ideas only.
+These components came from an earlier mascot/coach experiment. They may still be
+useful as implementation reference or transitional code, but they must not
+redefine current PhysicsLab product identity.
 
 ## Components
 
-| File | Role |
+| File | Historical role |
 | --- | --- |
-| `CoachBubble.tsx` | Optional coach surface outside the core practice hierarchy. Practice sessions do not render it before or after an answer. |
-| `CoachAvatar.tsx` | Compact emotional avatar for tight UI surfaces. Uses `public/mascot/nova-{state}.png`. |
-| `NovaStage.tsx` | Lightweight presentation character for the landing hero or dev previews. It must not introduce its own product section. |
-| `useCoach.ts` | Keeps `session_start`, `correct_answer`, `wrong_answer`, `pause`, and `session_end` events available without making them a required visual surface. |
-| `useTypewriter.ts` | Optional typewriter effect that keeps inline formula fragments intact. |
+| `CoachBubble.tsx` | Optional coach surface outside the core practice hierarchy |
+| `CoachAvatar.tsx` | Compact emotional avatar using old `public/mascot/nova-{state}.png` assets |
+| `NovaStage.tsx` | Presentation character for an earlier landing/dev-preview direction |
+| `useCoach.ts` | Event helper for `session_start`, `correct_answer`, `wrong_answer`, `pause`, `session_end` |
+| `useTypewriter.ts` | Optional typewriter helper that keeps inline formula fragments intact |
 
-## Pedagogical rule
+## Migration rule
 
-Nova should ask a useful learning question, not fill empty space. After a wrong
-answer, prefer the selected option's misconception label and a diagnostic prompt
-over generic encouragement or a duplicate solution.
-
-The post-answer surface (`AnswerFeedback.tsx`) is static and compact: status and
-one task-specific line are announced once. The primary next action follows it;
-the explanation and contextual help remain collapsed secondary actions. Coach
-events must not reintroduce an avatar, typewriter, or duplicate diagnostic there.
-
-## Asset rule
-
-- `public/mascot/nova-{state}.png`: compact bust avatars for coach bubbles and small UI.
-- `public/mascot-anime/{state}.png`: larger transparent character art for presentation-only surfaces.
-
-Do not copy the whole Claude demo scene into the product. Use its states,
-poses, and lines where the student is already receiving feedback.
+- Do not use `public/mascot/nova-*` or `public/mascot-anime/*` for new product work.
+- If a current route still imports one of these components, treat that as an
+  implementation fact to inspect, not evidence that Nova remains canonical.
+- When a scoped task replaces the last active import, remove the obsolete code
+  and assets only after relevant browser/tests confirm no regression.
+- New companion work belongs to Mio and follows `docs/current/MIO_CHARACTER.md`.

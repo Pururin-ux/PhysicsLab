@@ -1,6 +1,6 @@
 ---
 name: physicslab-visual-verdict
-description: Verify and refine the rendered PhysicsLab interface against its established visual language and learning UX. Use for any change to PhysicsLab pages, components, typography, formulas, graphs, illustrations, navigation, responsive layout, loading behavior, or visible copy; for screenshot comparisons; and before declaring frontend work complete.
+description: Verify and refine the rendered PhysicsLab interface against its current visual and learning contracts. Use for changes to PhysicsLab pages, components, typography, formulas, graphs, illustrations, navigation, responsive layout, loading behavior, or visible copy; for screenshot comparisons; and before declaring frontend work complete.
 ---
 
 # PhysicsLab visual verdict
@@ -9,13 +9,17 @@ description: Verify and refine the rendered PhysicsLab interface against its est
 > `AGENTS.md`, `docs/current/`, and `docs/decisions/`; this skill and its
 > references do not independently define product direction.
 
-Treat the rendered product as the source of truth. Preserve the existing dark educational identity, Nova, production art, KaTeX, and the distinction between learning and CT/CE preparation unless the user explicitly changes that direction.
+Treat the rendered product as evidence of current behaviour, not as authority
+for product direction. Preserve the current canonical identity and contracts
+from `docs/current/`. At present the approved web companion is **Mio**; do not
+revive Nova, a dark-only visual identity, cats, cosmic framing, or other legacy
+motifs merely because old components/assets still exist.
 
 ## Load the acceptance contract
 
-Read [references/acceptance-contract.md](references/acceptance-contract.md) before browser work. It defines the canonical routes, states, viewports, visual invariants, and evidence required for this project.
+Read [references/acceptance-contract.md](references/acceptance-contract.md) before browser work. It defines the current route/state evidence expected for this project.
 
-For any request about beauty, taste, composition, atmosphere, originality, visual realism, or whether the site feels AI-generated, also read [references/visual-direction.md](references/visual-direction.md) and [references/aesthetic-rubric.md](references/aesthetic-rubric.md). The visual direction records the project's taste so a new reviewer does not reinvent the identity. Complete the screenshot-first judgment before inspecting implementation details or automated scores.
+For requests about beauty, taste, composition, atmosphere, originality, visual realism, or whether the site feels AI-generated, also read [references/visual-direction.md](references/visual-direction.md) and [references/aesthetic-rubric.md](references/aesthetic-rubric.md). For Mio-specific identity, read `docs/current/MIO_CHARACTER.md`; do not restate or override her canonical invariants in this skill.
 
 When the claim concerns how real students perceive the site, whether it feels childish, trustworthy, memorable, or worth returning to, read [references/student-perception-test.md](references/student-perception-test.md). Do not substitute an AI aesthetic score for student evidence.
 
@@ -46,10 +50,11 @@ Use production performance measurements for performance claims. Do not treat war
 
 ## Visual decisions
 
-- Reuse existing tokens and components before creating another visual vocabulary.
+- Reuse existing tokens/components when they fit the current contract; do not preserve stale vocabulary just because it exists.
 - Prefer an open composition, a scene, a note, or one real interactive surface over repeated generic cards.
 - Keep supporting prose short and readable; the interface must not narrate its own pedagogy or implementation process.
-- Use generated raster art or existing production assets for characters and scenes. Do not substitute handcrafted SVG scenes, CSS drawings, emoji, or placeholders.
+- For finished character/scene art, use authored painted assets, carefully reviewed generated raster art, or appropriate artist tools. Do not substitute generic geometric placeholders for visual art.
+- Precise formulas, graphs, vectors, instrument marks and explanatory diagrams may and often should remain deterministic SVG/DOM/KaTeX when accuracy requires it.
 - Verify image crop and subject placement at each viewport. A technically loaded image can still be compositionally wrong.
 - Keep KaTeX fonts and metrics intact. Never judge formula correctness from appearance alone; pair visual checks with physics tests.
 - Motion must communicate state, remain smooth, and have a reduced-motion alternative.

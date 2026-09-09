@@ -1,14 +1,22 @@
 # PhysicsLab acceptance contract
 
+This reference is a review checklist. Product routes and ownership come from
+`docs/current/PRODUCT.md` and `apps/web/lib/product-routes.ts`.
+
 ## Canonical surfaces
 
-| Surface | Route | Required states |
+Choose the affected surface; do not run every route without a reason.
+
+| Surface | Route | Required states when relevant |
 | --- | --- | --- |
-| Home | `/` | hero; physics sections; keyboard focus on primary links |
-| Topics | `/topics` | continuation link; asymmetric topic composition; mobile stacking |
-| Learning | `/practice/kinematics-demo` | opening explanation; answer state; explanation revealed |
-| Exam preparation | `/practice/exam-demo` | entry; active task; restored session when available |
-| Formulas | `/formulas` | loaded list; first formula open; search/filter when changed |
+| Home | `/` | new/returning learner; primary actions; Mio crop; keyboard focus |
+| Learn hub | `/topics` | navigation to textbook, tasks, experiments/lessons and formulas; mobile stacking |
+| Textbook | `/learn` and affected chapter | contents/filter; chapter reading; worked example/model/self-check where changed |
+| Mio investigation | `/practice/average-speed-lesson` | hypothesis; changed condition/observation; explanation; independent transfer; save/restore when changed |
+| Task practice | `/tasks` or affected family | browse/search; active task; feedback/help/next action |
+| Exam preparation | `/practice/exam-demo` | entry; active task; restored session when available; no Mio intervention in the exam |
+| Progress | `/profile` | observed evidence; review links; data export/restore when changed |
+| Formulas | `/formulas` | loaded list; details; search/filter when changed |
 
 Add the exact route and states affected by the current request. Do not broaden the run to every page without a reason.
 
@@ -30,17 +38,19 @@ For each required viewport, verify:
 - the main landmark has a positive visible bounding box inside the viewport;
 - no visible image has `naturalWidth === 0`;
 - no heading, formula, option, or action is clipped;
-- the sticky mobile header stays visible without covering the focused control;
+- the mobile header stays usable without covering the focused control;
 - interactive targets remain usable by keyboard and touch;
 - no relevant console warning/error, framework overlay, or failed application request exists.
 
 ## Product-specific visual invariants
 
-- Learning and CT/CE preparation are immediately distinguishable without long explanatory copy.
-- Nova and cats support the content; they do not cover formulas, questions, controls, or essential diagrams.
+- Learning and ЦТ/ЦЭ preparation are immediately distinguishable without long explanatory copy.
+- Mio supports authored learning scenes without covering formulas, questions, controls, or essential diagrams; she can be hidden where the product contract allows it.
+- Former Nova/cat assets are not visual invariants and must not be restored as product identity by default.
+- Light and dark themes are both first-class surfaces; do not force a dark-only identity onto light mode.
 - Repeated cards do not become the dominant page structure. Visual repetition must correspond to repeated user behavior.
-- Formula surfaces use the site palette and `KaTeX_Main`; indices, fractions, roots, and units remain legible.
-- Graph axes, labels, units, plotted values, and explanatory text agree.
+- Formula surfaces use correct math typography; indices, fractions, roots, units and labels remain legible.
+- Graph axes, labels, units, plotted values, instrument pointers and explanatory text agree physically.
 - Decorative effects do not reduce contrast or create constant movement.
 - Desktop and mobile crops preserve the subject, useful negative space, and intended reading order.
 - Visible text avoids developer-facing labels, fake progress, invented statistics, and prose explaining how the interface is teaching.
@@ -49,10 +59,10 @@ For each required viewport, verify:
 
 Keep the final evidence small and useful:
 
-- the unedited three-second visual reaction recorded before source inspection;
-- the observed route of the eye and the strongest AI-slop credibility signal;
+- the unedited first visual reaction recorded before source inspection;
+- the observed route of the eye and the strongest credibility/AI-slop signal;
 - one before/after comparison for each materially changed surface;
-- final desktop and mobile screenshots for the core flow;
+- final desktop and mobile screenshots for the core affected flow;
 - the exact interaction exercised and observed state change;
 - console, overflow, visible-image, focus, and test results;
 - unresolved limitations stated plainly.
