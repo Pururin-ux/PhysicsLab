@@ -73,6 +73,7 @@ export const learningStagePlans = {
 } as const satisfies Record<LearningStagePlanId, LearningStagePlan>;
 
 export const CONCEPT_NODE_IDS = [
+  "dynamics-contact-pressure",
   "core-quantities-and-units",
   "core-algebra-and-proportions",
   "core-vectors-and-projections",
@@ -145,7 +146,8 @@ type ConceptNodeCommon = {
 type LearnableConceptNodeDefinition = ConceptNodeCommon & {
   availability: "learnable";
   isIntroduction: boolean;
-  stagePlanId: LearningStagePlanId;
+  /** Optional authoring reference; learnability is defined by the concept graph. */
+  stagePlanId: LearningStagePlanId | null;
 };
 
 type NonLearnableConceptNodeDefinition = ConceptNodeCommon & {
@@ -446,6 +448,9 @@ const conceptNodeDefinitions = {
     prerequisiteIds: ["kinematics-motion-description", "core-algebra-and-proportions"],
     helpSectionIds: ["kinetic-energy"],
     formulaSupport: [formula("kinetic-energy")],
+  },
+  "dynamics-contact-pressure": {
+    domainId:"dynamics",order:130,title:"Давление на опору",summary:"Результат действия силы зависит от площади контакта.",availability:"learnable",isIntroduction:false,stagePlanId:"concept-first-v1",prerequisiteIds:["dynamics-interactions"],helpSectionIds:["contact-pressure"],formulaSupport:[formula("contact-pressure")],
   },
   "dynamics-work": {
     domainId: "dynamics",
@@ -755,6 +760,7 @@ export const conceptNodes: readonly ConceptNode[] = CONCEPT_NODE_IDS.map((id) =>
 }));
 
 export const taskFamilyConceptNodeIds = {
+  "contact-pressure":"dynamics-contact-pressure",
   "free-fall": "kinematics-free-fall",
   "vt-slope": "kinematics-vt-slope",
   "vt-area": "kinematics-vt-area",
@@ -896,13 +902,10 @@ export function validateConceptGraph(
 
     const hasStagePlan =
       node.stagePlanId !== null && node.stagePlanId in learningStagePlans;
-    if (
-      (node.availability === "learnable" && !hasStagePlan) ||
-      (node.availability !== "learnable" && node.stagePlanId !== null)
-    ) {
+    if (node.stagePlanId !== null && !hasStagePlan) {
       issues.push({
         code: "invalid-stage-plan",
-        message: `Concept node "${node.id}" has an invalid stage plan for ${node.availability}.`,
+        message: `Concept node "${node.id}" references an unknown stage plan.`,
       });
     }
 

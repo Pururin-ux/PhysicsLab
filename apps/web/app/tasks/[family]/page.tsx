@@ -5,7 +5,7 @@ import { notFound } from "next/navigation";
 import { ReferenceSolution } from "../../../components/tasks/ReferenceSolution";
 import { Button } from "../../../components/ui/Button";
 import { FormulaBox } from "../../../components/ui/FormulaBox";
-import { MathText } from "../../../components/ui/MathText";
+
 import { getReferenceSolution } from "../../../lib/learning/reference-solutions";
 import {
   buildFormulaHref,
@@ -13,7 +13,7 @@ import {
   getLearningDestinationForFamily,
 } from "../../../lib/learning/learning-links";
 import { getTaskCatalog, getTaskCatalogEntry } from "../../../lib/server/task-catalog";
-import { topics } from "../../../lib/topics";
+import { getFamilyLesson } from "../../../lib/learning/family-lesson";
 
 type TaskTypePageProps = {
   params: Promise<{ family: string }>;
@@ -40,7 +40,7 @@ export default async function TaskTypePage({ params }: TaskTypePageProps) {
   if (!entry) notFound();
   const referenceSolution = getReferenceSolution(entry.id);
   const destination = getLearningDestinationForFamily(entry.id);
-  const topic = topics.find((item) => item.id === entry.topicId);
+  const lesson = getFamilyLesson(entry.id);
   const relatedFormulas = (destination?.formulaIds ?? []).flatMap((formulaId) => {
     const formula = getFormulaEntry(formulaId);
     return formula ? [formula] : [];
@@ -81,12 +81,12 @@ export default async function TaskTypePage({ params }: TaskTypePageProps) {
             </Button>
           ) : null}
         </div>
-        {topic ? (
+        {lesson ? (
           <Link
-            href={topic.learnHref}
+            href={lesson.href}
             className="inline-flex min-h-10 w-fit items-center gap-2 text-[13px] font-semibold text-nova-cyan/85 transition-colors hover:text-nova-cyan focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-blue/55"
           >
-            Если тема пока незнакома — сначала разберём её
+            {lesson.label}
             <ArrowRight size={15} weight="bold" aria-hidden="true" />
           </Link>
         ) : null}
@@ -126,18 +126,8 @@ export default async function TaskTypePage({ params }: TaskTypePageProps) {
 
       {referenceSolution ? <ReferenceSolution solution={referenceSolution} /> : null}
 
-      {/* Если разбор примера есть, ошибка уже разобрана внутри него — второй
-          раз о ней не говорим. */}
-      {!referenceSolution && entry.commonMistake ? (
-        <section className="border-t border-white/[.08] pt-6" aria-labelledby="common-mistake-title">
-          <h2 id="common-mistake-title" className="type-h2 text-white">
-            На чём легко сбиться
-          </h2>
-          <p className="mt-3 border-l-2 border-feedback-warning/60 pl-4 text-[15px] leading-[1.7] text-white/76">
-            <MathText text={entry.commonMistake} />
-          </p>
-        </section>
-      ) : null}
     </div>
   );
 }
+
+

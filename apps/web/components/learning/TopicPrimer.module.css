@@ -970,3 +970,7 @@
     transform: none;
   }
 }
+
+.observationIntro {
+  grid-column: 1 / -1;
+}

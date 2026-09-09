@@ -134,7 +134,7 @@ export function DataTransfer({
 
     const summary = summarizeExport(file);
     if (!summary) {
-      setError("Файл повреждён — данные из него прочитать нельзя.");
+      setError("Не удалось восстановить прогресс. Браузер мог запретить запись; сохрани файл и попробуй ещё раз.");
       return;
     }
 
@@ -149,7 +149,7 @@ export function DataTransfer({
     const applied = applyImport(pending.file);
     setPending(null);
     if (!applied) {
-      setError("Файл повреждён — данные из него прочитать нельзя.");
+      setError("Не удалось восстановить прогресс. Браузер мог запретить запись; сохрани файл и попробуй ещё раз.");
       return;
     }
 

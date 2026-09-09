@@ -3,10 +3,7 @@
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useRef } from "react";
 import type { ReactNode } from "react";
-import {
-  getLessonStageDefinition,
-  type LessonStageSequenceItem,
-} from "../../lib/learning/lesson-stage-contract";
+import type { LessonStageSequenceItem } from "../../lib/learning/lesson-stage-contract";
 
 type LessonStageEngineClasses = {
   root: string;
@@ -136,7 +133,7 @@ export function LessonStageEngine({
         {identity}
         <div className={classes.progressMeta}>
           <span>
-            <b>{getLessonStageDefinition(activeStage.id).label}</b> · {activeIndex + 1} из {stages.length}
+            <b>{activeStage.label}</b> · {activeIndex + 1} из {stages.length}
           </span>
           <div
             className={classes.progressTrack}
@@ -145,7 +142,7 @@ export function LessonStageEngine({
             aria-valuemin={1}
             aria-valuemax={stages.length}
             aria-valuenow={activeIndex + 1}
-            aria-valuetext={`${getLessonStageDefinition(activeStage.id).label}, шаг ${activeIndex + 1} из ${stages.length}`}
+            aria-valuetext={`${activeStage.label}, шаг ${activeIndex + 1} из ${stages.length}`}
           >
             <motion.span
               initial={false}

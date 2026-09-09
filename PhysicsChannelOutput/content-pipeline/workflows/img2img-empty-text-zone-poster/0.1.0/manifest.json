@@ -1,0 +1,14 @@
+{
+  "id": "img2img-empty-text-zone-poster",
+  "version": "0.1.0",
+  "api_json": "workflow.api.json",
+  "purpose": "Polish a deterministic blank-layout image while preserving protected overlay zones.",
+  "compatible_checkpoint_type": "SDXL-style checkpoint",
+  "default_checkpoint": "animagine-xl-4.0-zero.safetensors",
+  "rules": [
+    "Use low denoise to preserve large empty areas.",
+    "Generated output is still not a final post.",
+    "Final Russian text, formulas, graph labels, and answers remain deterministic overlays."
+  ]
+}
+

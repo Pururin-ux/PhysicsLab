@@ -1,0 +1,145 @@
+:root {
+  --bg: #050505;
+  --card: #111;
+  --accent: #ffee00;
+  --blue: #3b82f6;
+  --red: #ef4444;
+}
+
+.latex { font-family: 'Merriweather', serif; font-style: italic; }
+
+.block {
+  background: rgba(17,17,17,0.6);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 18px;
+  padding: 28px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+}
+
+.label {
+  font-size: 11px;
+  color: #777;
+  letter-spacing: 0.25em;
+  font-weight: 700;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+}
+
+.title {
+  font-size: clamp(32px, 6vw, 60px);
+  color: #fff;
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+.grad {
+  background: linear-gradient(90deg, var(--accent), #f6c400);
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.key-points {
+  margin-top: 18px;
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.desc { color: #9aa0a6; }
+
+.panel {
+  background: var(--card);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.panel-title {
+  font-size: 11px;
+  color: #888;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.scenario-btn {
+  border: 1px solid rgba(255,255,255,0.1);
+  padding: 12px;
+  border-radius: 12px;
+  color: #9aa0a6;
+  text-align: left;
+  background: transparent;
+  font-weight: 700;
+  transition: all 0.2s ease;
+}
+.scenario-btn span { display: block; font-size: 10px; color: #666; margin-top: 4px; }
+.scenario-btn.active {
+  border-color: var(--blue);
+  color: white;
+  background: rgba(59,130,246,0.15);
+}
+
+.data-box {
+  margin-top: auto;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  padding-top: 12px;
+  font-size: 13px;
+}
+.accent { color: var(--accent); font-weight: 700; }
+
+.canvas-wrapper {
+  background: var(--card);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  min-height: 420px;
+  overflow: hidden;
+}
+
+.formula-card .formula {
+  font-size: clamp(26px, 5vw, 52px);
+  font-family: 'Merriweather', serif;
+  font-style: italic;
+  color: #fff;
+  margin: 12px 0;
+}
+.formula-notes {
+  display: grid;
+  gap: 6px;
+  color: #b0b0b0;
+  font-size: 13px;
+}
+
+.example-card .example-task { color: #d1d1d1; margin-bottom: 10px; }
+.example-card .example-solution div { margin: 4px 0; }
+
+.quiz .q { margin-bottom: 12px; }
+.quiz button {
+  margin-top: 6px;
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.2);
+  color: #fff;
+  padding: 6px 12px;
+  border-radius: 8px;
+}
+.answer, .hint { display: none; margin-top: 6px; color: #ffee00; }
+
+.practice {
+  border: 1px dashed rgba(255,255,255,0.2);
+  padding: 14px;
+  border-radius: 12px;
+  margin-bottom: 12px;
+}
+.practice h3 { font-weight: 800; letter-spacing: 0.2em; }
+
+.next-card { text-align: center; }
+.next-btn {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 10px 18px;
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 10px;
+  color: white;
+}

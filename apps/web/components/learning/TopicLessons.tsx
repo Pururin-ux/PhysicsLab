@@ -8,6 +8,7 @@ import { ReflectionAngleLab } from "./ReflectionAngleLab";
 import { TopicPrimer, type TopicPrimerConfig } from "./TopicPrimer";
 
 const electroConfig: TopicPrimerConfig = {
+  draftId: "electro",
   topic: "Электричество",
   title: "От чего зависит ток в цепи",
   meta: "закон Ома",
@@ -101,12 +102,13 @@ const electroConfig: TopicPrimerConfig = {
 };
 
 const densityConfig: TopicPrimerConfig = {
-  topic: "Молекулярная физика",
+  draftId: "density",
+  topic: "7 класс · Масса и плотность",
   title: "Как связаны масса и объём",
   meta: "плотность вещества",
   prediction: {
     title: "Объём вырос вдвое. Что станет с массой?",
-    body: "Оба образца сделаны из одного алюминия, без пустот. Объём второго вдвое больше.",
+    body: "Оба образца сделаны из одного алюминия, без пустот, при одинаковой температуре. Объём второго вдвое больше.",
     question: "Как изменится масса?",
     visual: <DensityPredictionPlot />,
     choices: [
@@ -129,7 +131,7 @@ const densityConfig: TopicPrimerConfig = {
       { label: "Одно вещество", explanation: "Плотность постоянна в рамках модели." },
       { label: "Объём больше", explanation: "Масса растёт во столько же раз." },
     ],
-    boundary: "Сравниваем однородные образцы без полостей и используем согласованные единицы массы и объёма.",
+    boundary: "Сравниваем однородные образцы одного вещества без полостей, в одном состоянии и при одинаковой температуре. Единицы массы и объёма должны быть согласованы.",
   },
   workedExample: {
     title: "Найдём массу алюминиевого образца",
@@ -157,10 +159,10 @@ const densityConfig: TopicPrimerConfig = {
   },
   independentProblem: {
     title: "Теперь найди саму плотность",
-    problem: "Образец массой 270 г занимает 100 см³. Чему равна плотность?",
+    problem: "Сплошной однородный образец массой 270 г занимает 100 см³. Чему равна плотность его вещества?",
     answer: {
       kind: "input",
-      prompt: "Раздели массу на объём.",
+      prompt: "Выбери способ решения и запиши результат.",
       label: "ρ =",
       suffix: "г/см³",
       validation: { kind: "number", expected: 2.7 },
@@ -170,7 +172,7 @@ const densityConfig: TopicPrimerConfig = {
   },
   transfer: {
     title: "Сравним два тела без вычислений",
-    body: "Два тела сделаны из одного материала. Объём второго в три раза больше.",
+    body: "Два сплошных однородных тела сделаны из одного материала, при одинаковой температуре. Объём второго в три раза больше.",
     problem: "Во сколько раз масса второго тела больше массы первого?",
     answer: {
       kind: "input",
@@ -181,12 +183,13 @@ const densityConfig: TopicPrimerConfig = {
       incorrectFeedback: "Плотность сокращается: m₂/m₁ = V₂/V₁.",
     },
     practiceHref: "/practice/family/density-volume-ratio",
-    practiceLabel: "Решить 5 задач на плотность",
+    practiceLabel: "5 задач сложнее: плотности и рёбра кубов",
     completionText: "Ты связал формулу, график и пропорцию одного вещества.",
   },
 };
 
 const opticsConfig: TopicPrimerConfig = {
+  draftId: "optics",
   topic: "Оптика",
   title: "Откуда считать угол луча",
   meta: "отражение света",

@@ -96,6 +96,7 @@ export function TopicCards() {
       <ul className="divide-y divide-[var(--border-subtle)] border-y border-[var(--border-strong)]">
         {orderedTopics.map((topic) => {
           const presentation = topicPresentation[topic.id];
+          const title = topic.id === "thermodynamics" ? "Масса и плотность" : topic.title;
 
           return (
             <li key={topic.id} id={topic.id} className="scroll-mt-28">
@@ -125,7 +126,7 @@ export function TopicCards() {
                     {topic.modeLabel}
                   </p>
                   <h2 className="mt-1.5 text-[21px] font-[830] leading-[1.08] tracking-[-.03em] text-[var(--text-strong)] sm:text-[26px]">
-                    {topic.title}
+                    {title}
                   </h2>
                   <p className="mt-1.5 text-[13px] leading-[1.5] text-[var(--text-default)] sm:max-w-[58ch] sm:text-[14px]">
                     {topic.description}
@@ -137,7 +138,7 @@ export function TopicCards() {
                     learnHref={topic.learnHref}
                     learnLabel={"learnLabel" in topic ? topic.learnLabel : undefined}
                     practiceHref={topic.practiceHref}
-                    topicTitle={topic.title}
+                    topicTitle={title}
                   />
                 </div>
               </article>

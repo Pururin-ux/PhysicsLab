@@ -77,7 +77,7 @@ export const CONTEXTUAL_TOOLS = [
     id: "mistakes",
     label: "Мои ошибки",
     href: "/mistakes",
-    description: "Вернуться к месту, где сломалась мысль.",
+    description: "Повторить задачи с ошибками.",
     owner: "progress",
   },
 ] as const;

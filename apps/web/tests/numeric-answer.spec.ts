@@ -241,7 +241,7 @@ test.describe("numeric answer desktop flows", () => {
     await expect(page.getByTestId("numeric-answer")).toContainText(
       commaOf(misconception.value),
     );
-    await expect(page.getByTestId("numeric-correct-answer")).toBeVisible();
+    await expect(page.getByTestId("numeric-correct-answer")).toHaveCount(0);
     await expect(page.getByTestId("solution-toggle")).toHaveAttribute(
       "aria-expanded",
       "false",
@@ -281,6 +281,9 @@ test.describe("numeric answer desktop flows", () => {
       page.getByRole("status").filter({ hasText: signMistake!.label }),
     ).toHaveCount(1);
 
+    await page.getByTestId("retry-task-button").click();
+    await page.getByTestId("numeric-answer-input").fill(String(task.answer.value));
+    await page.getByTestId("numeric-submit").click();
     await page.getByTestId("next-task-button").click();
     await page.getByRole("button", { name: "Ещё 10 задач" }).click();
     await expectNumericReady(page, task);
@@ -333,7 +336,11 @@ test.describe("numeric answer desktop flows", () => {
       "data-state",
       "wrong",
     );
-    await expect(page.getByTestId("numeric-correct-answer")).toContainText("°C");
+    await expect(page.getByTestId("numeric-correct-answer")).toHaveCount(0);
+    await expect(page.getByTestId("numeric-answer")).toContainText("°C");
+    await page.getByTestId("retry-task-button").click();
+    await page.getByTestId("numeric-answer-input").fill(String(tasks[0].answer.value));
+    await page.getByTestId("numeric-submit").click();
 
     await page.getByTestId("next-task-button").click();
     await expectNumericReady(page, tasks[1]);
@@ -391,6 +398,8 @@ test.describe("numeric answer desktop flows", () => {
     const optionButtons = page.locator(".quiz-option");
     await expect(optionButtons).toHaveCount(singleChoice.options.length);
     await optionButtons.nth(wrongOptionIndex).click();
+    await page.getByTestId("retry-task-button").click();
+    await optionButtons.nth(singleChoice.options.findIndex((option) => option.correct)).click();
     await page.getByTestId("next-task-button").click();
 
     const numericTask = numeric as NumericTask;
@@ -475,12 +484,12 @@ test.describe("numeric answer mobile layout", () => {
       "aria-expanded",
       "false",
     );
-    await expectReachableBetweenShellBars(page.getByTestId("next-task-button"), header, mobileNav);
+    await expectReachableBetweenShellBars(page.getByTestId("retry-task-button"), header, mobileNav);
 
     await page.getByTestId("solution-toggle").click();
     await expect(page.getByTestId("solution-content")).toBeVisible();
     await expect(page.getByTestId("solution-formula")).toHaveCount(0);
-    await expectReachableBetweenShellBars(page.getByTestId("next-task-button"), header, mobileNav);
+    await expectReachableBetweenShellBars(page.getByTestId("retry-task-button"), header, mobileNav);
     await expectNoHorizontalOverflow(page);
   });
 });

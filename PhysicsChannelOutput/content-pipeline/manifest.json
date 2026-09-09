@@ -1,0 +1,9 @@
+{
+  "name": "physics-channel-content-pipeline",
+  "version": "0.1.0",
+  "created_at": "2026-06-06T12:00:00+03:00",
+  "root": "C:/Users/lalad/OneDrive/Desktop/PhysicsChannelOutput/content-pipeline",
+  "purpose": "Local multi-agent production skeleton for Telegram physics/math posts using ImageGen drafts, deterministic text/formula layout, voice QA, and character continuity.",
+  "comfyui_base_url": "http://127.0.0.1:8001",
+  "human_review_required": true
+}

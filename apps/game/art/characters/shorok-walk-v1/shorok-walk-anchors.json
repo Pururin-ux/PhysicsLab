@@ -1,0 +1,266 @@
+[
+  {
+    "index": 0,
+    "source_cell": [
+      0,
+      0,
+      384,
+      512
+    ],
+    "source_alpha_bbox": [
+      38,
+      163,
+      384,
+      426
+    ],
+    "subject_size": [
+      346,
+      263
+    ],
+    "canvas": [
+      512,
+      512
+    ],
+    "placement": [
+      83,
+      181
+    ],
+    "paw_baseline": 444,
+    "pivot_normalized": [
+      0.5,
+      0.8671875
+    ],
+    "file": "shorok-walk-00.png"
+  },
+  {
+    "index": 1,
+    "source_cell": [
+      1,
+      0,
+      384,
+      512
+    ],
+    "source_alpha_bbox": [
+      0,
+      178,
+      384,
+      426
+    ],
+    "subject_size": [
+      384,
+      248
+    ],
+    "canvas": [
+      512,
+      512
+    ],
+    "placement": [
+      64,
+      196
+    ],
+    "paw_baseline": 444,
+    "pivot_normalized": [
+      0.5,
+      0.8671875
+    ],
+    "file": "shorok-walk-01.png"
+  },
+  {
+    "index": 2,
+    "source_cell": [
+      2,
+      0,
+      384,
+      512
+    ],
+    "source_alpha_bbox": [
+      0,
+      163,
+      384,
+      426
+    ],
+    "subject_size": [
+      384,
+      263
+    ],
+    "canvas": [
+      512,
+      512
+    ],
+    "placement": [
+      64,
+      181
+    ],
+    "paw_baseline": 444,
+    "pivot_normalized": [
+      0.5,
+      0.8671875
+    ],
+    "file": "shorok-walk-02.png"
+  },
+  {
+    "index": 3,
+    "source_cell": [
+      3,
+      0,
+      384,
+      512
+    ],
+    "source_alpha_bbox": [
+      0,
+      168,
+      360,
+      422
+    ],
+    "subject_size": [
+      360,
+      254
+    ],
+    "canvas": [
+      512,
+      512
+    ],
+    "placement": [
+      76,
+      190
+    ],
+    "paw_baseline": 444,
+    "pivot_normalized": [
+      0.5,
+      0.8671875
+    ],
+    "file": "shorok-walk-03.png"
+  },
+  {
+    "index": 4,
+    "source_cell": [
+      0,
+      1,
+      384,
+      512
+    ],
+    "source_alpha_bbox": [
+      39,
+      52,
+      384,
+      317
+    ],
+    "subject_size": [
+      345,
+      265
+    ],
+    "canvas": [
+      512,
+      512
+    ],
+    "placement": [
+      84,
+      179
+    ],
+    "paw_baseline": 444,
+    "pivot_normalized": [
+      0.5,
+      0.8671875
+    ],
+    "file": "shorok-walk-04.png"
+  },
+  {
+    "index": 5,
+    "source_cell": [
+      1,
+      1,
+      384,
+      512
+    ],
+    "source_alpha_bbox": [
+      0,
+      68,
+      384,
+      317
+    ],
+    "subject_size": [
+      384,
+      249
+    ],
+    "canvas": [
+      512,
+      512
+    ],
+    "placement": [
+      64,
+      195
+    ],
+    "paw_baseline": 444,
+    "pivot_normalized": [
+      0.5,
+      0.8671875
+    ],
+    "file": "shorok-walk-05.png"
+  },
+  {
+    "index": 6,
+    "source_cell": [
+      2,
+      1,
+      384,
+      512
+    ],
+    "source_alpha_bbox": [
+      0,
+      55,
+      384,
+      317
+    ],
+    "subject_size": [
+      384,
+      262
+    ],
+    "canvas": [
+      512,
+      512
+    ],
+    "placement": [
+      64,
+      182
+    ],
+    "paw_baseline": 444,
+    "pivot_normalized": [
+      0.5,
+      0.8671875
+    ],
+    "file": "shorok-walk-06.png"
+  },
+  {
+    "index": 7,
+    "source_cell": [
+      3,
+      1,
+      384,
+      512
+    ],
+    "source_alpha_bbox": [
+      0,
+      65,
+      362,
+      314
+    ],
+    "subject_size": [
+      362,
+      249
+    ],
+    "canvas": [
+      512,
+      512
+    ],
+    "placement": [
+      75,
+      195
+    ],
+    "paw_baseline": 444,
+    "pivot_normalized": [
+      0.5,
+      0.8671875
+    ],
+    "file": "shorok-walk-07.png"
+  }
+]

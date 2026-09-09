@@ -5,14 +5,21 @@ import { formulaReference } from "../lib/physics/formula-reference.ts";
 // и доступность всех продуктовых страниц, а не только главных трёх.
 
 test("ученик отвечает на задачу и переходит к следующей", async ({ page }) => {
+  const taskResponse = page.waitForResponse((response) => response.url().includes("/api/tasks?"));
   await page.goto("/practice/electro-demo", { waitUntil: "domcontentloaded" });
+  const { tasks } = await (await taskResponse).json() as { tasks: { options: { correct?: boolean }[] }[] };
+  const correctIndex = tasks[0].options.findIndex((option) => option.correct);
+  expect(correctIndex).toBeGreaterThanOrEqual(0);
 
   const options = page.getByRole("list", { name: "Варианты ответа" });
   await expect(options).toBeVisible();
 
-  // Любой вариант приводит в состояние «отвечено»: появляется реакция Nova
-  // и кнопка перехода. Правильность ответа для сценария не важна.
-  await options.getByRole("button").first().click();
+  // After a wrong answer the learner retries before moving on.
+  const wrongIndex = tasks[0].options.findIndex((option) => !option.correct);
+  await options.getByRole("button").nth(wrongIndex).click();
+  await expect(page.getByRole("button", { name: "Следующая задача" })).toBeHidden();
+  await page.getByRole("button", { name: "Попробовать ещё раз", exact: true }).click();
+  await options.getByRole("button").nth(correctIndex).click();
 
   const nextButton = page.getByRole("button", { name: "Следующая задача" });
   await expect(nextButton).toBeVisible();
@@ -52,7 +59,7 @@ test("диагностика до старта показывает честну
 
   await expect(
     page.getByRole("heading", {
-      name: "Диагностика: 10 задач по 5 открытым темам",
+      name: "Подготовка к ЦТ/ЦЭ",
       exact: true,
     }),
   ).toBeVisible();
@@ -110,9 +117,12 @@ test("справочник объясняет способ чтения и св�
   await page.goto("/formulas?formula=ohm-law", { waitUntil: "domcontentloaded" });
 
   await expect(page.getByRole("heading", { name: "Найди нужную связь." })).toBeVisible();
-  await expect(page.getByLabel("Как читать формулы")).toContainText("запись");
-  await expect(page.getByLabel("Как читать формулы")).toContainText("физический смысл");
   const formula = page.locator('[data-formula-id="ohm-law"]');
+  await expect(formula).toContainText("ток растёт с напряжением и падает с сопротивлением");
+  await expect(formula).toContainText("сопротивление считаем постоянным");
+  await formula.getByText("Разобрать обозначения").click();
+  await expect(formula).toContainText("сила тока, А");
+  await expect(formula).toContainText("сопротивление участка, Ом");
   await expect(formula.getByRole("link", { name: "Разобрать тип" })).toHaveAttribute(
     "href",
     "/tasks/ohm-law",

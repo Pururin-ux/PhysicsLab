@@ -8,20 +8,21 @@ import type { ReactNode, RefObject } from "react";
 import { defineLessonStageSequence } from "../../lib/learning/lesson-stage-contract";
 import { MathText } from "../ui/MathText";
 import { cn } from "../../lib/utils";
+import { useLessonDraft } from "../../lib/learning/use-lesson-draft";
 import { LessonStageEngine } from "./LessonStageEngine";
 import styles from "./DynamicsLesson.module.css";
 
 const DYNAMICS_STAGES = defineLessonStageSequence([
-  { id: "context", nextAction: "Сделать прогноз" },
-  { id: "prediction", nextAction: "Запустить опыт" },
-  { id: "observation", nextAction: "Разобрать силы" },
-  { id: "causal-explanation", nextAction: "Записать правило" },
-  { id: "representation", nextAction: "Посмотреть пример" },
-  { id: "worked-example", nextAction: "Решить похожую" },
-  { id: "faded-example", nextAction: "Решить без подсказки" },
-  { id: "independent-practice", nextAction: "Разобрать торможение" },
-  { id: "transfer", nextAction: "Подвести итог" },
-  { id: "summary" },
+  { id: "context", label: "Ситуация", nextAction: "Сделать прогноз" },
+  { id: "prediction", label: "Прогноз", nextAction: "Запустить опыт" },
+  { id: "observation", label: "Наблюдение", nextAction: "Разобрать силы" },
+  { id: "causal-explanation", label: "Почему так", nextAction: "Записать правило" },
+  { id: "representation", label: "Схема и формула", nextAction: "Посмотреть пример" },
+  { id: "worked-example", label: "Разбор", nextAction: "Решить похожую" },
+  { id: "faded-example", label: "Дополни решение", nextAction: "Решить без подсказки" },
+  { id: "independent-practice", label: "Реши сам", nextAction: "Разобрать торможение" },
+  { id: "transfer", label: "Перенос", nextAction: "Подвести итог" },
+  { id: "summary", label: "Итог" },
 ] as const);
 
 const dynamicsEngineClasses = {
@@ -245,6 +246,24 @@ export function DynamicsLesson() {
   const [summaryText, setSummaryText] = useState("");
   const [summaryTried, setSummaryTried] = useState(false);
   const [summarySaved, setSummarySaved] = useState(false);
+  const draftState = { step, prediction, observed, forceChoice, practiceForce, practiceAcceleration, practiceChecked, independentForce, independentAcceleration, independentChecked, brakingAnswer, brakingChecked, summaryText, summaryTried, summarySaved };
+  const lessonDraft = useLessonDraft("dynamics", draftState, (draft) => {
+    setStep(draft.step);
+    setPrediction(draft.prediction);
+    setObserved(draft.observed);
+    setForceChoice(draft.forceChoice);
+    setPracticeForce(draft.practiceForce);
+    setPracticeAcceleration(draft.practiceAcceleration);
+    setPracticeChecked(draft.practiceChecked);
+    setIndependentForce(draft.independentForce);
+    setIndependentAcceleration(draft.independentAcceleration);
+    setIndependentChecked(draft.independentChecked);
+    setBrakingAnswer(draft.brakingAnswer);
+    setBrakingChecked(draft.brakingChecked);
+    setSummaryText(draft.summaryText);
+    setSummaryTried(draft.summaryTried);
+    setSummarySaved(draft.summarySaved);
+  }, DYNAMICS_STAGES.length);
   const headingRef = useRef<HTMLHeadingElement>(null);
   const feedbackRef = useRef<HTMLDivElement>(null);
   const timerRef = useRef<number | null>(null);
@@ -302,7 +321,7 @@ export function DynamicsLesson() {
 
     if (step === 8) return <div className={styles.brakingStage}><div className={styles.brakingVisual}><BrakingBicycleDiagram /></div><div className={styles.brakingCopy}><p className={styles.eyebrow}>Теперь торможение</p><h2 ref={headingRef} tabIndex={-1}>Велосипед едет вправо, а сила направлена влево</h2><p className={styles.lead}>Общая масса велосипедиста и велосипеда — 60 кг. Результирующая сила торможения — 180 Н влево. Найди модуль ускорения.</p><NumberField id="dynamics-braking" label="Модуль ускорения" value={brakingAnswer} onChange={(value) => { setBrakingAnswer(value); setBrakingChecked(false); }} suffix="м/с² влево" /><button type="button" className={styles.checkButton} onClick={() => setBrakingChecked(true)}>Проверить ответ</button>{brakingChecked ? <Feedback containerRef={feedbackRef} kind={brakingCorrect ? "good" : "try"}>{brakingCorrect ? "180 Н ÷ 60 кг = 3 м/с² влево. Ускорение направлено против скорости, поэтому велосипед замедляется." : "Раздели силу торможения 180 Н на общую массу 60 кг."}</Feedback> : null}{brakingCorrect ? <div className={styles.practiceLinks} aria-label="Следующие задачи"><Link href="/practice/family/newton-second" className={styles.practiceLink}>Ещё задачи на второй закон <ArrowRight size={18} weight="bold" /></Link><Link href="/practice/family/friction-force" className={styles.practiceLinkSecondary}>Перейти к силе трения <ArrowRight size={18} weight="bold" /></Link></div> : null}</div></div>;
 
-    return <div className={styles.summaryStage}><div className={styles.stageIntro}><p className={styles.eyebrow}>Итог</p><h2 ref={headingRef} tabIndex={-1}>Что осталось главным?</h2><p className={styles.lead}>Запиши связь своими словами — так будет проще узнать её в следующей задаче.</p></div><label className={styles.summaryLabel} htmlFor="dynamics-summary">Объяснение для себя</label><textarea id="dynamics-summary" className={styles.summaryInput} value={summaryText} onChange={(event) => { setSummaryText(event.target.value); setSummaryTried(false); setSummarySaved(false); }} rows={5} placeholder="Например: при той же силе более тяжёлое тело получает меньшее ускорение…" aria-describedby="dynamics-summary-hint" /><p id="dynamics-summary-hint" className={styles.summaryHint}>Достаточно одной-двух фраз. Пиши так, как объяснил бы другу.</p><button type="button" className={styles.summaryButton} onClick={() => { if (!summaryReady) { setSummaryTried(true); setSummarySaved(false); return; } setSummarySaved(true); }}>Сохранить итог</button>{summaryTried && !summaryReady ? <p className={styles.summaryError} role="alert">Добавь ещё немного слов — хотя бы одну законченную мысль.</p> : null}{summarySaved ? <div className={styles.practiceLinks} aria-label="Следующие задачи"><p>Связь сформулирована. Можно потренироваться ещё.</p><Link href="/practice/family/newton-second" className={styles.practiceLink}>Ещё задачи на второй закон <ArrowRight size={18} weight="bold" /></Link></div> : null}</div>;
+    return <div className={styles.summaryStage}><div className={styles.stageIntro}><p className={styles.eyebrow}>Итог</p><h2 ref={headingRef} tabIndex={-1}>Что осталось главным?</h2><p className={styles.lead}>Запиши связь своими словами — так будет проще узнать её в следующей задаче.</p></div><label className={styles.summaryLabel} htmlFor="dynamics-summary">Объяснение для себя</label><textarea id="dynamics-summary" className={styles.summaryInput} value={summaryText} onChange={(event) => { setSummaryText(event.target.value); setSummaryTried(false); setSummarySaved(false); }} maxLength={10000} rows={5} placeholder="Например: при той же силе более тяжёлое тело получает меньшее ускорение…" aria-describedby="dynamics-summary-hint" /><p id="dynamics-summary-hint" className={styles.summaryHint}>Достаточно одной-двух фраз. Пиши так, как объяснил бы другу.</p><button type="button" className={styles.summaryButton} onClick={() => { if (!summaryReady) { setSummaryTried(true); setSummarySaved(false); return; } setSummarySaved(lessonDraft.save({ ...draftState, summarySaved: true })); }}>Сохранить итог</button>{summaryTried && !summaryReady ? <p className={styles.summaryError} role="alert">Добавь ещё немного слов — хотя бы одну законченную мысль.</p> : null}{summarySaved && !lessonDraft.error ? <div className={styles.practiceLinks} aria-label="Следующие задачи"><p>Итог сохранён в этом браузере. Можно потренироваться ещё.</p><Link href="/practice/family/newton-second" className={styles.practiceLink}>Ещё задачи на второй закон <ArrowRight size={18} weight="bold" /></Link></div> : null}</div>;
   }
 
   return (
@@ -327,6 +346,7 @@ export function DynamicsLesson() {
       themePreserveDark
       renderNextLabel={(label) => <>{label} <ArrowRight size={18} weight="bold" /></>}
     >
+      {lessonDraft.error ? <p role="alert" className={styles.summaryError}>{lessonDraft.error}</p> : null}
       {renderStep()}
     </LessonStageEngine>
   );

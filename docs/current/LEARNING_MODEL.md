@@ -16,6 +16,10 @@ Scope: current behaviour implemented in `apps/web`.
   has priority when the learner returns.
 - The profile reports observed practice evidence; it does not claim a global
   mastery percentage.
+- Authored lessons with an итог explanation preserve their position, answers,
+  and explanation in browser drafts. Saving a lesson is not mastery evidence.
+  Drafts are included in progress backups and the confirmed full data reset
+  (decision 0004).
 
 ## Boundaries
 

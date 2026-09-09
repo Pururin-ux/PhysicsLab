@@ -1,7 +1,7 @@
 import { densityVolumeRatioDistractors } from "../distractors.ts";
 import { densityVolumeRatio } from "../solver.ts";
 import type { Params, TaskBlueprint } from "../types.ts";
-import { formatAnswerValue, formatMathValue } from "../validator.ts";
+import { formatAnswerValue, formatMathValue, normalizeAnswerValue } from "../validator.ts";
 
 const materialContexts = [
   "Для демонстрационного опыта вырезали два кубика из разных материалов",
@@ -34,9 +34,9 @@ export const densityVolumeRatioBlueprint: TaskBlueprint = {
   solver: densityVolumeRatio,
   distractors: densityVolumeRatioDistractors,
   textTemplate: (p) =>
-    `${contextFor(p)}. Первый — из материала плотностью ${p.rho1} г/см³ с ребром ${p.a1} см, второй — из материала плотностью ${p.rho2} г/см³ с ребром ${p.a2} см. Найдите отношение массы первого кубика к массе второго, m₁/m₂.`,
+    `${contextFor(p)}. Кубики сплошные и однородные, без полостей. Первый — из материала плотностью ${p.rho1} г/см³ с ребром ${p.a1} см, второй — из материала плотностью ${p.rho2} г/см³ с ребром ${p.a2} см. Найдите отношение массы первого кубика к массе второго, m₁/m₂. При необходимости округлите до тысячных.`,
   explanationTemplate: (p, answer) =>
-    `Масса растёт с объёмом, то есть с кубом ребра: $\\frac{m_1}{m_2} = \\frac{\\rho_1 a_1^3}{\\rho_2 a_2^3} = \\frac{${p.rho1} \\cdot ${p.a1}^3}{${p.rho2} \\cdot ${p.a2}^3} = ${formatMathValue(answer)}$. Сравнивать нужно объёмы, а не рёбра.`,
+    `Объём куба $V=a^3$, а масса $m=\\rho V$. Поэтому $\\frac{m_1}{m_2} = \\frac{\\rho_1 a_1^3}{\\rho_2 a_2^3} = \\frac{${p.rho1} \\cdot ${p.a1}^3}{${p.rho2} \\cdot ${p.a2}^3} ${Math.abs(normalizeAnswerValue(densityVolumeRatio(p))-densityVolumeRatio(p))>1e-10 ? "\\approx" : "="} ${formatMathValue(answer)}$. Сравнивать нужно объёмы, а не рёбра. Плотности разных материалов тоже учитываются.`,
   trap: "Сравнивает рёбра кубиков напрямую, забывая, что масса пропорциональна кубу ребра.",
   coachLines: {
     correct: () =>

@@ -1,0 +1,4 @@
+interface:
+  display_name: "PhysicsLab Visual Verdict"
+  short_description: "Проверка интерфейса PhysicsLab в браузере"
+  default_prompt: "Use $physicslab-visual-verdict to verify the current PhysicsLab UI on desktop and mobile."

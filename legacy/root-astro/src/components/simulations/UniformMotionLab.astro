@@ -1,0 +1,1390 @@
+---
+import Badge from "../ui/Badge.astro";
+import SurfaceCard from "../ui/SurfaceCard.astro";
+import ControlDock from "./ControlDock.astro";
+import InstrumentGraph from "./InstrumentGraph.astro";
+import MotionTrack from "./MotionTrack.astro";
+import type { GraphDomain, GraphTick } from "../../lib/physics/graphView";
+
+interface Props {
+  visualTarget?: boolean;
+}
+
+const { visualTarget = false } = Astro.props;
+
+const graphTimeTicks: GraphTick[] = [
+  { value: 0, label: "0" },
+  { value: 2, label: "2" },
+  { value: 4, label: "4" },
+  { value: 6, label: "6" },
+  { value: 8, label: "8" }
+];
+const uniformXGraphDomain: GraphDomain = { xMin: 0, xMax: 8, yMin: -24, yMax: 24 };
+const uniformVGraphDomain: GraphDomain = { xMin: 0, xMax: 8, yMin: -4.5, yMax: 4.5 };
+const uniformXTicks: GraphTick[] = [
+  { value: -24, label: "-24" },
+  { value: 0, label: "0" },
+  { value: 24, label: "24" }
+];
+const uniformVTicks: GraphTick[] = [
+  { value: -4, label: "-4" },
+  { value: 0, label: "0" },
+  { value: 4, label: "4" }
+];
+const uniformControlSliders = [
+  {
+    key: "v",
+    label: "Скорость v",
+    description: "Чем больше скорость, тем круче линия.",
+    value: 2,
+    min: -4,
+    max: 4,
+    step: 0.5,
+    unit: "м/с",
+    dataInput: "v",
+    dataOutput: "v",
+    ariaLabel: "Скорость v в метрах в секунду",
+    hero: true
+  }
+] as const;
+const uniformControlReadouts = [
+  { label: "t", value: "0 с", dataValue: "t" },
+  { label: "x", value: "0 м", dataValue: "x" }
+] as const;
+const uniformControlScenarios = [
+  { key: "forward", label: "вперёд", pressed: true },
+  { key: "still", label: "стоит", pressed: false },
+  { key: "backward", label: "назад", pressed: false }
+] as const;
+---
+
+<SurfaceCard variant="lab">
+  <section
+    class="uniform-lab pl-lab-glass-panel pl-neon-border"
+    data-uniform-motion-lab
+    data-visual-target={visualTarget ? "v1" : undefined}
+    aria-labelledby="uniform-lab-title"
+  >
+    <div class="lab-heading">
+      <div>
+        <p class="component-label">Интерактивная лаборатория</p>
+        <h3 id="uniform-lab-title">Посмотри, как скорость меняет график</h3>
+        <p class="lab-goal">
+          Двигай скорость или нажми запуск. Точка поедет, а график покажет,
+          как меняется координата.
+        </p>
+      </div>
+      <Badge tone="info">демо · нужна проверка автора</Badge>
+    </div>
+
+    <div class="start-strip" aria-live="polite">
+      <p data-guidance>Нажми «Запустить» и смотри на точку.</p>
+      {
+        !visualTarget && (
+          <ControlDock variant="time-actions" />
+        )
+      }
+    </div>
+
+    <div class="simple-lab-grid">
+      <div class="motion-card pl-motion-track" aria-label="Точка на прямой">
+        <div class="simple-card-head">
+          <span>Вот точка</span>
+          <strong data-observation>Едет вправо</strong>
+        </div>
+        <MotionTrack />
+        <p>
+          Это не дорога на карте. Мы просто смотрим, где точка сейчас.
+        </p>
+      </div>
+
+      <InstrumentGraph
+        title="График x(t)"
+        graphKind="x"
+        xAxisLabel="t, с"
+        yAxisLabel="x, м"
+        ariaLabel="График координаты от времени"
+        note="Жёлтая точка на графике показывает, где тело сейчас."
+        domain={uniformXGraphDomain}
+        xTicks={graphTimeTicks}
+        yTicks={uniformXTicks}
+        showProjection
+        showTickLabels
+      />
+    </div>
+
+    <ControlDock
+      showTimeActions={visualTarget}
+      sliders={uniformControlSliders}
+      readouts={uniformControlReadouts}
+      scenarios={uniformControlScenarios}
+    />
+
+    <div class="explain-card pl-quiz-console" aria-labelledby="uniform-check-title">
+      <div>
+        <p class="panel-label">Проверь себя</p>
+        <h4 id="uniform-check-title">
+          Если увеличить скорость, что станет с линией x(t)?
+        </h4>
+      </div>
+      <div class="answer-row" role="group" aria-label="Варианты ответа">
+        <button type="button" class="pl-lab-button" data-answer="correct">Станет круче</button>
+        <button type="button" class="pl-lab-button" data-answer="flat">Станет плоской</button>
+        <button type="button" class="pl-lab-button" data-answer="path">Превратится в путь по карте</button>
+      </div>
+      <p class="feedback" data-feedback aria-live="polite">
+        Выбери ответ. Если промахнёшься, ничего страшного: разберём по графику.
+      </p>
+    </div>
+
+    <button
+      type="button"
+      class="details-toggle pl-lab-button"
+      data-details-toggle
+      aria-expanded="false"
+      aria-controls="uniform-motion-details"
+    >
+      Показать подробнее
+    </button>
+
+    <div
+      id="uniform-motion-details"
+      class="details-panel pl-lab-glass-panel"
+      data-details-panel
+      hidden
+    >
+      <div class="formula-panel pl-instrument-panel" aria-label="Формула равномерного движения">
+        <p class="panel-label">Что происходит в формуле?</p>
+        <div class="live-formula" aria-live="polite">
+          <span>x</span>
+          <span>=</span>
+          <span class="formula-token" data-formula-token="x0">x₀</span>
+          <span>+</span>
+          <span class="formula-term" data-formula-token="vt">
+            <span class="formula-token" data-formula-token="v">v</span><span class="formula-token" data-formula-token="t">t</span>
+          </span>
+        </div>
+        <ul class="formula-meaning">
+          <li><b>x₀</b> — откуда стартуем.</li>
+          <li><b>vt</b> — изменение координаты за время t.</li>
+          <li><b>x</b> — где оказались.</li>
+        </ul>
+        <div class="substitution-box" aria-live="polite">
+          <p class="substitution-title">Подстановка</p>
+          <p class="substitution-line">
+            x =
+            <span data-formula-highlight="x0" data-substitution="x0">0</span>
+            +
+            <span data-formula-highlight="vt">
+              <span data-formula-highlight="v" data-substitution="v">2</span>
+              ·
+              <span data-formula-highlight="t" data-substitution="t">0</span>
+            </span>
+            =
+            <strong data-substitution="x">0 м</strong>
+          </p>
+          <p class="substitution-delta">
+            Δx = vt:
+            <b data-formula-highlight="vt" data-substitution="delta">0 м</b>
+          </p>
+        </div>
+      </div>
+
+      <div class="exact-panel pl-instrument-panel" aria-label="Точные ручки и значения">
+        <p class="panel-label">Точные ручки</p>
+        <label class="slider-field">
+          <span>
+            <b>x₀</b>
+            <span>откуда стартуем</span>
+          </span>
+          <output data-output="x0">0 м</output>
+          <input
+            type="range"
+            min="-6"
+            max="6"
+            step="0.5"
+            value="0"
+            data-input="x0"
+            aria-label="Начальная координата x ноль в метрах"
+          />
+        </label>
+
+        <label class="slider-field">
+          <span>
+            <b>t</b>
+            <span>ручная перемотка</span>
+          </span>
+          <output data-output="t">0 с</output>
+          <input
+            type="range"
+            min="0"
+            max="8"
+            step="0.01"
+            value="0"
+            data-input="t"
+            aria-label="Ручная перемотка времени t в секундах"
+          />
+        </label>
+
+        <div class="value-grid" aria-label="Точные численные значения">
+          <div><span>x₀</span><b data-value="x0">0 м</b></div>
+          <div><span>v</span><b data-value="v">2 м/с</b></div>
+          <div><span>Δx = vt</span><b data-value="delta">0 м</b></div>
+        </div>
+      </div>
+
+      <InstrumentGraph
+        title="График v(t)"
+        graphKind="v"
+        variant="detail"
+        xAxisLabel="t, с"
+        yAxisLabel="v, м/с"
+        ariaLabel="График скорости от времени"
+        note="При равномерном движении скорость не меняется."
+        domain={uniformVGraphDomain}
+        xTicks={graphTimeTicks}
+        yTicks={uniformVTicks}
+      />
+    </div>
+  </section>
+</SurfaceCard>
+
+<script>
+  import {
+    clampNumber,
+    formatPhysicsNumber,
+    generatePartialUniformMotionSeries,
+    generatePartialUniformVelocitySeries,
+    generateUniformMotionSeries,
+    generateUniformVelocitySeries,
+    getUniformMotionDirection,
+    normalizeUniformMotionTime,
+    uniformPosition
+  } from "../../lib/physics/kinematics";
+  import { mapToGraphPoint, seriesToPolyline } from "../../lib/physics/graphView";
+  import type { GraphDomain, GraphPoint } from "../../lib/physics/graphView";
+
+  type LabState = { x0: number; v: number; t: number };
+  type InputName = keyof LabState;
+  type Domain = { min: number; max: number };
+
+  const SVG_HEIGHT = 220;
+  const PAD = { left: 42, right: 18, top: 18, bottom: 32 };
+  const T_MAX = 8;
+  const X_DOMAIN: Domain = { min: -24, max: 24 };
+  const V_DOMAIN: Domain = { min: -4.5, max: 4.5 };
+  const X_GRAPH_DOMAIN: GraphDomain = { xMin: 0, xMax: T_MAX, yMin: X_DOMAIN.min, yMax: X_DOMAIN.max };
+  const V_GRAPH_DOMAIN: GraphDomain = { xMin: 0, xMax: T_MAX, yMin: V_DOMAIN.min, yMax: V_DOMAIN.max };
+  const PLAYBACK_RATE = 1;
+  const REDUCED_MOTION_STEP = 0.5;
+
+  const scenarios = {
+    forward: { x0: 0, v: 2, t: 0 },
+    still: { x0: 2, v: 0, t: 0 },
+    backward: { x0: 4, v: -2, t: 0 }
+  } satisfies Record<string, LabState>;
+
+  type ScenarioName = keyof typeof scenarios;
+  type Direction = ReturnType<typeof getUniformMotionDirection>;
+
+  document.querySelectorAll<HTMLElement>("[data-uniform-motion-lab]").forEach((lab) => {
+    const inputs = {
+      x0: mustFind<HTMLInputElement>(lab, '[data-input="x0"]'),
+      v: mustFind<HTMLInputElement>(lab, '[data-input="v"]'),
+      t: mustFind<HTMLInputElement>(lab, '[data-input="t"]')
+    };
+
+    const outputs = {
+      x0: mustFind<HTMLOutputElement>(lab, '[data-output="x0"]'),
+      v: mustFind<HTMLOutputElement>(lab, '[data-output="v"]'),
+      t: mustFind<HTMLOutputElement>(lab, '[data-output="t"]')
+    };
+
+    const values = {
+      x0: mustFind<HTMLElement>(lab, '[data-value="x0"]'),
+      v: mustFind<HTMLElement>(lab, '[data-value="v"]'),
+      t: mustFind<HTMLElement>(lab, '[data-value="t"]'),
+      x: mustFind<HTMLElement>(lab, '[data-value="x"]'),
+      delta: mustFind<HTMLElement>(lab, '[data-value="delta"]')
+    };
+
+    const substitution = {
+      x0: mustFind<HTMLElement>(lab, '[data-substitution="x0"]'),
+      v: mustFind<HTMLElement>(lab, '[data-substitution="v"]'),
+      t: mustFind<HTMLElement>(lab, '[data-substitution="t"]'),
+      delta: mustFind<HTMLElement>(lab, '[data-substitution="delta"]'),
+      x: mustFind<HTMLElement>(lab, '[data-substitution="x"]')
+    };
+
+    const xBaseLine = mustFind<SVGPolylineElement>(lab, '[data-polyline="x"]');
+    const vBaseLine = mustFind<SVGPolylineElement>(lab, '[data-polyline="v"]');
+    const xCurrentLine = mustFind<SVGPolylineElement>(lab, '[data-current-polyline="x"]');
+    const vCurrentLine = mustFind<SVGPolylineElement>(lab, '[data-current-polyline="v"]');
+    const xPoint = mustFind<SVGCircleElement>(lab, '[data-point="x"]');
+    const vPoint = mustFind<SVGCircleElement>(lab, '[data-point="v"]');
+    const motionPoint = mustFind<HTMLElement>(lab, "[data-motion-point]");
+    const velocityArrow = mustFind<HTMLElement>(lab, "[data-velocity-arrow]");
+    const motionXLabel = mustFind<HTMLElement>(lab, "[data-motion-x-label]");
+    const xProjection = {
+      time: mustFind<SVGLineElement>(lab, '[data-projection-line="time"]'),
+      position: mustFind<SVGLineElement>(lab, '[data-projection-line="position"]'),
+      label: mustFind<SVGTextElement>(lab, '[data-projection-label="x"]')
+    };
+    const observation = mustFind<HTMLElement>(lab, "[data-observation]");
+    const guidance = mustFind<HTMLElement>(lab, "[data-guidance]");
+    const xNote = mustFind<HTMLElement>(lab, '[data-graph-note="x"]');
+    const vNote = mustFind<HTMLElement>(lab, '[data-graph-note="v"]');
+    const playButton = mustFind<HTMLButtonElement>(lab, "[data-play-toggle]");
+    const resetButton = mustFind<HTMLButtonElement>(lab, "[data-reset]");
+    const detailsToggle = mustFind<HTMLButtonElement>(lab, "[data-details-toggle]");
+    const detailsPanel = mustFind<HTMLElement>(lab, "[data-details-panel]");
+    const scenarioButtons = lab.querySelectorAll<HTMLButtonElement>("[data-scenario]");
+    const answerButtons = lab.querySelectorAll<HTMLButtonElement>("[data-answer]");
+    const feedback = mustFind<HTMLElement>(lab, "[data-feedback]");
+    const reducedMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+    let state: LabState = { ...scenarios.forward };
+    let isPlaying = false;
+    let isReducedMotion = reducedMotionQuery.matches;
+    let hasStarted = false;
+    let animationFrameId: number | null = null;
+    let previousFrameTime: number | null = null;
+
+    const syncInputs = () => {
+      inputs.x0.value = formatPhysicsNumber(state.x0);
+      inputs.v.value = formatPhysicsNumber(state.v);
+      inputs.t.value = formatPhysicsNumber(state.t, 2);
+    };
+
+    const setState = (nextState: LabState, changed: InputName = "x0") => {
+      state = normalizeState(nextState);
+      updateLab(changed);
+    };
+
+    const setActiveScenario = (name: ScenarioName | "") => {
+      scenarioButtons.forEach((button) => {
+        const active = button.dataset.scenario === name;
+        button.setAttribute("aria-pressed", String(active));
+      });
+    };
+
+    const stopAnimation = () => {
+      if (animationFrameId !== null) {
+        window.cancelAnimationFrame(animationFrameId);
+        animationFrameId = null;
+      }
+
+      previousFrameTime = null;
+      isPlaying = false;
+      updatePlaybackControls();
+    };
+
+    const startAnimation = () => {
+      hasStarted = true;
+
+      if (isReducedMotion) {
+        stepForward();
+        return;
+      }
+
+      if (state.t >= T_MAX) {
+        state = normalizeState({ ...state, t: 0 });
+      }
+
+      isPlaying = true;
+      previousFrameTime = null;
+      updateLab("t", { fromPlayback: true });
+      animationFrameId = window.requestAnimationFrame(tickAnimation);
+    };
+
+    const stepForward = () => {
+      stopAnimation();
+      hasStarted = true;
+      const nextT = state.t >= T_MAX
+        ? 0
+        : normalizeUniformMotionTime(state.t + REDUCED_MOTION_STEP, T_MAX);
+      state = normalizeState({ ...state, t: nextT });
+      setActiveScenario("");
+      updateLab("t");
+    };
+
+    const tickAnimation = (timestamp: number) => {
+      if (!isPlaying) return;
+
+      if (previousFrameTime === null) {
+        previousFrameTime = timestamp;
+      }
+
+      const deltaSeconds = ((timestamp - previousFrameTime) / 1000) * PLAYBACK_RATE;
+      previousFrameTime = timestamp;
+      const nextT = normalizeUniformMotionTime(state.t + deltaSeconds, T_MAX);
+      state = normalizeState({ ...state, t: nextT });
+      updateLab("t", { fromPlayback: true });
+
+      if (nextT >= T_MAX) {
+        stopAnimation();
+        return;
+      }
+
+      animationFrameId = window.requestAnimationFrame(tickAnimation);
+    };
+
+    const updatePlaybackControls = () => {
+      lab.dataset.playing = String(isPlaying);
+      lab.dataset.animationState = isPlaying ? "running" : "paused";
+
+      if (isReducedMotion) {
+        playButton.textContent = "Шаг вперёд";
+        playButton.setAttribute("aria-label", "Шаг вперёд по времени");
+        playButton.setAttribute("aria-pressed", "false");
+        playButton.dataset.mode = "step";
+        return;
+      }
+
+      playButton.textContent = isPlaying ? "Пауза" : "Запустить";
+      playButton.setAttribute(
+        "aria-label",
+        isPlaying ? "Пауза: остановить анимацию" : "Запустить анимацию"
+      );
+      playButton.setAttribute("aria-pressed", String(isPlaying));
+      playButton.dataset.mode = isPlaying ? "pause" : "play";
+    };
+
+    const updateLab = (changed: InputName, options: { fromPlayback?: boolean } = {}) => {
+      state = normalizeState(state);
+      syncInputs();
+      const x = uniformPosition(state.x0, state.v, state.t);
+      const delta = state.v * state.t;
+      const direction = getUniformMotionDirection(state.v);
+
+      lab.dataset.currentTime = formatPhysicsNumber(state.t, 2);
+      lab.dataset.currentX = formatPhysicsNumber(x, 2);
+      lab.dataset.motionDirection = direction;
+
+      outputs.x0.value = `${formatPhysicsNumber(state.x0)} м`;
+      outputs.v.value = `${formatPhysicsNumber(state.v)} м/с`;
+      outputs.t.value = `${formatPhysicsNumber(state.t, 2)} с`;
+
+      values.x0.textContent = `${formatPhysicsNumber(state.x0)} м`;
+      values.v.textContent = `${formatPhysicsNumber(state.v)} м/с`;
+      values.t.textContent = `${formatPhysicsNumber(state.t, 2)} с`;
+      values.x.textContent = `${formatPhysicsNumber(x)} м`;
+      values.delta.textContent = `${formatPhysicsNumber(delta)} м`;
+
+      substitution.x0.textContent = formatPhysicsNumber(state.x0);
+      substitution.v.textContent = formatPhysicsNumber(state.v);
+      substitution.t.textContent = formatPhysicsNumber(state.t, 2);
+      substitution.delta.textContent = `${formatPhysicsNumber(delta)} м`;
+      substitution.x.textContent = `${formatPhysicsNumber(x)} м`;
+
+      const positionSeries = generateUniformMotionSeries({
+        x0: state.x0,
+        v: state.v,
+        tMax: T_MAX,
+        step: 0.25
+      });
+      const velocitySeries = generateUniformVelocitySeries({
+        x0: state.x0,
+        v: state.v,
+        tMax: T_MAX,
+        step: 0.25
+      });
+      const currentPositionSeries = generatePartialUniformMotionSeries({
+        x0: state.x0,
+        v: state.v,
+        t: state.t,
+        tMax: T_MAX,
+        step: 0.05
+      });
+      const currentVelocitySeries = generatePartialUniformVelocitySeries({
+        x0: state.x0,
+        v: state.v,
+        t: state.t,
+        tMax: T_MAX,
+        step: 0.05
+      });
+
+      xBaseLine.setAttribute(
+        "points",
+        seriesToPolyline(positionSeries, (point) =>
+          mapToGraphPoint(point.t, point.x, X_GRAPH_DOMAIN)
+        )
+      );
+      vBaseLine.setAttribute(
+        "points",
+        seriesToPolyline(velocitySeries, (point) =>
+          mapToGraphPoint(point.t, point.v, V_GRAPH_DOMAIN)
+        )
+      );
+      xCurrentLine.setAttribute(
+        "points",
+        seriesToPolyline(currentPositionSeries, (point) =>
+          mapToGraphPoint(point.t, point.x, X_GRAPH_DOMAIN)
+        )
+      );
+      vCurrentLine.setAttribute(
+        "points",
+        seriesToPolyline(currentVelocitySeries, (point) =>
+          mapToGraphPoint(point.t, point.v, V_GRAPH_DOMAIN)
+        )
+      );
+      xCurrentLine.dataset.currentTime = formatPhysicsNumber(state.t, 2);
+      vCurrentLine.dataset.currentTime = formatPhysicsNumber(state.t, 2);
+
+      const currentX = mapToGraphPoint(state.t, x, X_GRAPH_DOMAIN);
+      const currentV = mapToGraphPoint(state.t, state.v, V_GRAPH_DOMAIN);
+      setSvgPoint(xPoint, currentX);
+      setSvgPoint(vPoint, currentV);
+      setProjectionLines(xProjection, currentX);
+
+      const pointPercent = clampNumber(((x - X_DOMAIN.min) / (X_DOMAIN.max - X_DOMAIN.min)) * 100, 3, 97);
+      motionPoint.style.setProperty("--point-left", `${pointPercent}%`);
+      motionXLabel.style.setProperty("--point-left", `${pointPercent}%`);
+      motionXLabel.textContent = `x = ${formatPhysicsNumber(x)} м`;
+      motionPoint.dataset.motionLabel = getMotionLabel(direction);
+      velocityArrow.style.setProperty("--point-left", `${pointPercent}%`);
+      velocityArrow.style.setProperty("--velocity-width", `${getVelocityArrowWidth(state.v)}px`);
+      velocityArrow.dataset.direction = direction;
+
+      observation.textContent = getObservation(direction);
+      guidance.textContent = getGuidance(direction, hasStarted);
+      xNote.textContent = getPositionNote(direction);
+      vNote.textContent = getVelocityNote(direction);
+
+      highlightFormula(lab, changed, options.fromPlayback === true);
+      updatePlaybackControls();
+    };
+
+    (Object.entries(inputs) as Array<[InputName, HTMLInputElement]>).forEach(([name, input]) => {
+      input.addEventListener("input", () => {
+        setActiveScenario("");
+        if (name === "t") {
+          stopAnimation();
+        }
+        if (name === "v") {
+          hasStarted = true;
+        }
+
+        state = normalizeState({
+          ...state,
+          [name]: Number(input.value)
+        });
+        updateLab(name);
+      });
+    });
+
+    playButton.addEventListener("click", () => {
+      if (isReducedMotion) {
+        stepForward();
+        return;
+      }
+
+      if (isPlaying) {
+        stopAnimation();
+      } else {
+        startAnimation();
+      }
+    });
+
+    scenarioButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        const scenario = button.dataset.scenario as ScenarioName | undefined;
+        if (!scenario || !(scenario in scenarios)) {
+          return;
+        }
+        stopAnimation();
+        hasStarted = true;
+        setActiveScenario(scenario);
+        setState(scenarios[scenario], "v");
+      });
+    });
+
+    resetButton.addEventListener("click", () => {
+      stopAnimation();
+      hasStarted = false;
+      setActiveScenario("forward");
+      setState(scenarios.forward, "x0");
+      answerButtons.forEach((button) => {
+        button.classList.remove("is-correct", "is-wrong");
+        button.removeAttribute("aria-pressed");
+      });
+      feedback.textContent = "Выбери ответ. Если промахнёшься, ничего страшного: разберём по графику.";
+      feedback.dataset.state = "idle";
+    });
+
+    detailsToggle.addEventListener("click", () => {
+      const nextExpanded = detailsPanel.hidden;
+      detailsPanel.hidden = !nextExpanded;
+      detailsToggle.setAttribute("aria-expanded", String(nextExpanded));
+      detailsToggle.textContent = nextExpanded ? "Скрыть подробности" : "Показать подробнее";
+    });
+
+    const handleReducedMotionChange = () => {
+      isReducedMotion = reducedMotionQuery.matches;
+      if (isReducedMotion) {
+        stopAnimation();
+      }
+      updatePlaybackControls();
+    };
+
+    reducedMotionQuery.addEventListener("change", handleReducedMotionChange);
+
+    answerButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        const correct = button.dataset.answer === "correct";
+
+        answerButtons.forEach((item) => {
+          item.classList.remove("is-correct", "is-wrong");
+          item.setAttribute("aria-pressed", "false");
+        });
+
+        button.setAttribute("aria-pressed", "true");
+        button.classList.add(correct ? "is-correct" : "is-wrong");
+        feedback.dataset.state = correct ? "success" : "warning";
+        feedback.textContent = correct
+          ? "Да. Скорость — это наклон графика x(t). Больше скорость → круче линия."
+          : "Не совсем. График x(t) не рисует дорогу. Он показывает, как координата меняется со временем.";
+      });
+    });
+
+    setState(scenarios.forward, "x0");
+  });
+
+  function normalizeState(state: LabState): LabState {
+    return {
+      x0: Number.isFinite(state.x0) ? state.x0 : 0,
+      v: Number.isFinite(state.v) ? state.v : 0,
+      t: normalizeUniformMotionTime(state.t, T_MAX)
+    };
+  }
+
+  function setSvgPoint(element: SVGCircleElement, point: GraphPoint): void {
+    element.setAttribute("cx", formatPhysicsNumber(point.x, 1));
+    element.setAttribute("cy", formatPhysicsNumber(point.y, 1));
+  }
+
+  function setProjectionLines(
+    projection: { time: SVGLineElement; position: SVGLineElement; label: SVGTextElement },
+    point: GraphPoint
+  ): void {
+    const x = formatPhysicsNumber(point.x, 1);
+    const y = formatPhysicsNumber(point.y, 1);
+    projection.time.setAttribute("x1", x);
+    projection.time.setAttribute("x2", x);
+    projection.time.setAttribute("y1", y);
+    projection.time.setAttribute("y2", String(SVG_HEIGHT - PAD.bottom));
+    projection.position.setAttribute("x1", String(PAD.left));
+    projection.position.setAttribute("x2", x);
+    projection.position.setAttribute("y1", y);
+    projection.position.setAttribute("y2", y);
+    projection.label.setAttribute("x", formatPhysicsNumber(point.x + 8, 1));
+    projection.label.setAttribute("y", formatPhysicsNumber(point.y - 8, 1));
+  }
+
+  function highlightFormula(root: ParentNode, changed: InputName, soft = false): void {
+    const targets = changed === "x0"
+      ? ["x0"]
+      : changed === "v"
+        ? ["v", "vt"]
+        : ["t", "vt"];
+    const activeTargets = new Set(targets);
+
+    root.querySelectorAll<HTMLElement>("[data-formula-token], [data-formula-highlight]").forEach((token) => {
+      const name = token.dataset.formulaToken ?? token.dataset.formulaHighlight ?? "";
+      const active = activeTargets.has(name);
+      token.classList.toggle("is-active", active);
+      token.classList.toggle("is-soft-active", active && soft);
+    });
+  }
+
+  function getMotionLabel(direction: Direction): string {
+    if (direction === "forward") return "вперёд";
+    if (direction === "backward") return "назад";
+    return "стоит";
+  }
+
+  function getObservation(direction: Direction): string {
+    if (direction === "forward") return "Едет вправо";
+    if (direction === "backward") return "Едет назад";
+    return "Стоит";
+  }
+
+  function getGuidance(direction: Direction, hasStarted: boolean): string {
+    if (!hasStarted) {
+      return "Нажми «Запустить» и смотри на точку.";
+    }
+
+    if (direction === "forward") {
+      return "Видишь? Точка едет вправо, поэтому линия x(t) идёт вверх.";
+    }
+
+    if (direction === "backward") {
+      return "Точка едет назад. Координата уменьшается, поэтому линия идёт вниз.";
+    }
+
+    return "Точка стоит. Координата не меняется, поэтому график горизонтальный.";
+  }
+
+  function getPositionNote(direction: Direction): string {
+    if (direction === "forward") {
+      return "Жёлтая точка показывает, где тело сейчас. Чем больше скорость, тем круче линия вверх.";
+    }
+
+    if (direction === "backward") {
+      return "Жёлтая точка показывает, где тело сейчас. Скорость меньше нуля — линия идёт вниз.";
+    }
+
+    return "Жёлтая точка показывает, где тело сейчас. Скорость ноль — линия плоская.";
+  }
+
+  function getVelocityNote(direction: Direction): string {
+    if (direction === "still") {
+      return "Скорость равна нулю, поэтому линия v(t) лежит на нуле.";
+    }
+
+    return "Скорость постоянная, поэтому линия v(t) горизонтальная.";
+  }
+
+  function getVelocityArrowWidth(v: number): number {
+    if (v === 0) return 0;
+    return clampNumber(24 + Math.abs(v) * 14, 0, 86);
+  }
+
+  function mustFind<TElement extends Element>(
+    root: ParentNode,
+    selector: string
+  ): TElement {
+    const element = root.querySelector<TElement>(selector);
+    if (!element) {
+      throw new Error(`UniformMotionLab: missing required element ${selector}`);
+    }
+    return element;
+  }
+</script>
+
+<style>
+  :global(.surface-card--lab) {
+    padding: 0;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .uniform-lab {
+    display: grid;
+    gap: clamp(var(--pl-space-3), 1.8vw, var(--pl-space-5));
+    padding: clamp(var(--pl-space-4), 2.1vw, var(--pl-space-6));
+    isolation: isolate;
+  }
+
+  .lab-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--pl-space-4);
+  }
+
+  .component-label,
+  .panel-label {
+    display: inline-flex;
+    align-items: center;
+    min-height: 26px;
+    margin: 0 0 var(--pl-space-2);
+    padding: 4px 10px;
+    border: 1px solid rgba(255, 216, 77, 0.26);
+    border-radius: 999px;
+    color: var(--pl-accent);
+    background: rgba(255, 216, 77, 0.055);
+    font-size: 0.72rem;
+    font-weight: 900;
+    text-transform: uppercase;
+  }
+
+  .lab-heading h3 {
+    max-width: 760px;
+    margin-bottom: var(--pl-space-2);
+    font-size: clamp(1.55rem, 3.6vw, 2.4rem);
+  }
+
+  .lab-goal {
+    max-width: 720px;
+    margin: 0;
+    font-size: clamp(1rem, 1.7vw, 1.08rem);
+    line-height: 1.55;
+  }
+
+  .start-strip,
+  .motion-card,
+  .explain-card,
+  .formula-panel,
+  .exact-panel {
+    min-width: 0;
+    padding: var(--pl-space-4);
+    border: 1px solid rgba(88, 216, 255, 0.24);
+    border-radius: 12px;
+    background:
+      linear-gradient(180deg, rgba(88, 216, 255, 0.055), transparent 54%),
+      radial-gradient(circle at 50% 18%, rgba(88, 216, 255, 0.06), transparent 24rem),
+      rgba(3, 13, 27, 0.78);
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 255, 255, 0.03),
+      inset 0 0 30px rgba(88, 216, 255, 0.025),
+      0 16px 42px rgba(0, 0, 0, 0.22);
+  }
+
+  .start-strip {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(240px, 0.48fr);
+    gap: var(--pl-space-4);
+    align-items: center;
+    border-color: rgba(255, 216, 77, 0.24);
+    background:
+      linear-gradient(90deg, rgba(255, 216, 77, 0.075), transparent 58%),
+      rgba(3, 13, 27, 0.58);
+  }
+
+  .start-strip p {
+    margin: 0;
+    color: var(--pl-text);
+    font-size: clamp(1.08rem, 2vw, 1.22rem);
+    font-weight: 850;
+    line-height: 1.45;
+  }
+
+  .answer-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--pl-space-2);
+  }
+
+  .answer-row button,
+  .details-toggle {
+    min-height: 44px;
+    border: 1px solid rgba(88, 216, 255, 0.3);
+    border-radius: 10px;
+    color: var(--pl-text);
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.018)),
+      rgba(5, 18, 34, 0.86);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.06),
+      inset 0 -10px 20px rgba(0, 0, 0, 0.12),
+      0 8px 22px rgba(0, 0, 0, 0.2);
+    font-weight: 900;
+    transition:
+      border-color 160ms ease,
+      color 160ms ease,
+      background 160ms ease,
+      transform 160ms ease,
+      box-shadow 160ms ease;
+  }
+
+  .answer-row button:hover,
+  .details-toggle:hover {
+    border-color: rgba(255, 216, 77, 0.42);
+    transform: translateY(-1px);
+  }
+
+  .simple-lab-grid {
+    display: grid;
+    grid-template-columns: minmax(280px, 0.9fr) minmax(320px, 1.1fr);
+    gap: var(--pl-space-4);
+    align-items: stretch;
+  }
+
+  .simple-card-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--pl-space-3);
+    color: var(--pl-text);
+    font-weight: 900;
+  }
+
+  .simple-card-head strong {
+    color: var(--pl-accent);
+    text-align: right;
+  }
+
+  .motion-card p,
+  .feedback,
+  .substitution-delta {
+    margin: 0;
+    font-size: 0.96rem;
+    line-height: 1.55;
+  }
+
+  .slider-field {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: var(--pl-space-3);
+    align-items: center;
+    min-width: 0;
+  }
+
+  .slider-field > span {
+    display: grid;
+    gap: var(--pl-space-1);
+    min-width: 0;
+  }
+
+  .slider-field b {
+    color: var(--pl-text);
+  }
+
+  .slider-field span span,
+  .slider-field output {
+    color: var(--pl-text-muted);
+    font-size: 0.94rem;
+  }
+
+  .slider-field output {
+    min-width: 74px;
+    color: var(--pl-text);
+    font-weight: 900;
+    text-align: right;
+  }
+
+  .slider-field input {
+    grid-column: 1 / -1;
+    width: 100%;
+    accent-color: var(--pl-accent);
+  }
+
+  .slider-field input[type="range"] {
+    height: 24px;
+    background: transparent;
+  }
+
+  .slider-field input[type="range"]::-webkit-slider-runnable-track {
+    height: 7px;
+    border: 1px solid rgba(88, 216, 255, 0.18);
+    border-radius: 999px;
+    background:
+      linear-gradient(90deg, rgba(255, 216, 77, 0.95), rgba(255, 216, 77, 0.56)),
+      rgba(255, 255, 255, 0.08);
+  }
+
+  .slider-field input[type="range"]::-webkit-slider-thumb {
+    width: 20px;
+    height: 20px;
+    margin-top: -7px;
+    border: 3px solid rgba(8, 14, 24, 0.96);
+    border-radius: 50%;
+    background: var(--pl-accent);
+    box-shadow: 0 0 0 5px rgba(255, 216, 77, 0.12);
+    appearance: none;
+  }
+
+  .slider-field input[type="range"]::-moz-range-track {
+    height: 7px;
+    border: 1px solid rgba(88, 216, 255, 0.18);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  .slider-field input[type="range"]::-moz-range-progress {
+    height: 7px;
+    border-radius: 999px;
+    background: rgba(255, 216, 77, 0.9);
+  }
+
+  .slider-field input[type="range"]::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border: 3px solid rgba(8, 14, 24, 0.96);
+    border-radius: 50%;
+    background: var(--pl-accent);
+    box-shadow: 0 0 0 5px rgba(255, 216, 77, 0.12);
+  }
+
+  .slider-field input:focus-visible,
+  .answer-row button:focus-visible,
+  .details-toggle:focus-visible {
+    outline: 3px solid var(--pl-accent);
+    outline-offset: 4px;
+  }
+
+  .explain-card {
+    display: grid;
+    gap: var(--pl-space-3);
+  }
+
+  .explain-card h4 {
+    margin: 0;
+    color: var(--pl-text);
+    font-size: 1.08rem;
+  }
+
+  .answer-row button {
+    flex: 1 1 180px;
+    padding: 10px 12px;
+    text-align: left;
+  }
+
+  .answer-row button.is-correct {
+    border-color: rgba(110, 231, 168, 0.72);
+    color: var(--pl-green);
+    background: rgba(110, 231, 168, 0.08);
+  }
+
+  .answer-row button.is-wrong {
+    border-color: rgba(255, 107, 107, 0.62);
+    color: var(--pl-red);
+    background: rgba(255, 107, 107, 0.08);
+  }
+
+  .feedback {
+    min-height: 1.6em;
+    padding: var(--pl-space-3);
+    border: 1px solid var(--pl-border-soft);
+    border-radius: var(--pl-radius);
+    background: rgba(255, 255, 255, 0.035);
+  }
+
+  .feedback[data-state="success"] {
+    border-color: rgba(110, 231, 168, 0.5);
+  }
+
+  .feedback[data-state="warning"] {
+    border-color: rgba(255, 107, 107, 0.45);
+  }
+
+  .details-toggle {
+    justify-self: start;
+    padding: 10px 14px;
+    border-color: rgba(88, 216, 255, 0.36);
+    color: var(--pl-text);
+  }
+
+  .details-panel {
+    display: grid;
+    grid-template-columns: minmax(260px, 0.95fr) minmax(240px, 0.75fr);
+    gap: var(--pl-space-4);
+    padding: var(--pl-space-4);
+    border: 1px solid rgba(88, 216, 255, 0.18);
+    border-radius: var(--pl-radius);
+    background:
+      linear-gradient(135deg, rgba(88, 216, 255, 0.055), transparent 52%),
+      rgba(7, 13, 22, 0.54);
+  }
+
+  .details-panel[hidden] {
+    display: none;
+  }
+
+  .live-formula {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.36em;
+    margin-bottom: var(--pl-space-3);
+    color: var(--pl-text);
+    font-family: "Cascadia Mono", "JetBrains Mono", Consolas, monospace;
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 900;
+    line-height: 1.08;
+  }
+
+  .formula-token,
+  .formula-term,
+  [data-formula-highlight] {
+    border-radius: var(--pl-radius-sm);
+    transition:
+      color 160ms ease,
+      background-color 160ms ease,
+      box-shadow 160ms ease;
+  }
+
+  .formula-token {
+    padding: 0 0.06em;
+  }
+
+  .formula-term,
+  [data-formula-highlight] {
+    padding: 0 0.1em;
+  }
+
+  .formula-token.is-active,
+  .formula-term.is-active,
+  [data-formula-highlight].is-active {
+    color: #0b0d12;
+    background: var(--pl-accent);
+    box-shadow: 0 0 0 5px rgba(255, 216, 77, 0.12);
+  }
+
+  .formula-token.is-soft-active,
+  .formula-term.is-soft-active,
+  [data-formula-highlight].is-soft-active {
+    box-shadow: 0 0 0 5px rgba(255, 216, 77, 0.08);
+  }
+
+  .formula-meaning {
+    display: grid;
+    gap: var(--pl-space-2);
+    margin: 0 0 var(--pl-space-4);
+    padding-left: 1.2rem;
+    color: var(--pl-text-muted);
+    line-height: 1.5;
+  }
+
+  .formula-meaning b {
+    color: var(--pl-text);
+  }
+
+  .substitution-box {
+    display: grid;
+    gap: var(--pl-space-2);
+    padding: var(--pl-space-3);
+    border: 1px solid rgba(88, 216, 255, 0.18);
+    border-radius: var(--pl-radius);
+    background: rgba(88, 216, 255, 0.045);
+  }
+
+  .substitution-title,
+  .substitution-line {
+    margin: 0;
+  }
+
+  .substitution-title {
+    color: var(--pl-cyan);
+    font-size: 0.82rem;
+    font-weight: 900;
+    text-transform: uppercase;
+  }
+
+  .substitution-line {
+    color: var(--pl-text);
+    font-family: "Cascadia Mono", "JetBrains Mono", Consolas, monospace;
+    font-size: clamp(1.05rem, 2.6vw, 1.24rem);
+    font-weight: 850;
+    line-height: 1.55;
+  }
+
+  .substitution-delta b {
+    color: var(--pl-cyan);
+  }
+
+  .exact-panel {
+    display: grid;
+    gap: var(--pl-space-4);
+  }
+
+  .value-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--pl-space-2);
+  }
+
+  .value-grid div {
+    min-width: 0;
+    padding: var(--pl-space-3);
+    border: 1px solid var(--pl-border-soft);
+    border-radius: var(--pl-radius);
+    background: rgba(255, 255, 255, 0.035);
+  }
+
+  .value-grid span {
+    display: block;
+    margin-bottom: var(--pl-space-1);
+    color: var(--pl-text-soft);
+    font-size: 0.86rem;
+  }
+
+  .value-grid b {
+    color: var(--pl-cyan);
+    font-size: 1.04rem;
+  }
+
+  @media (max-width: 1040px) {
+    .simple-lab-grid,
+    .details-panel {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .uniform-lab {
+      gap: var(--pl-space-3);
+    }
+
+    .lab-heading,
+    .start-strip {
+      grid-template-columns: 1fr;
+    }
+
+    .lab-heading {
+      display: grid;
+    }
+
+    .answer-row {
+      display: grid;
+      grid-template-columns: 1fr;
+    }
+
+    .slider-field,
+    .value-grid {
+      grid-template-columns: 1fr;
+      gap: var(--pl-space-2);
+    }
+
+    .slider-field output {
+      text-align: left;
+    }
+
+    .details-toggle {
+      width: 100%;
+    }
+
+    .live-formula {
+      font-size: clamp(1.75rem, 11vw, 2.35rem);
+    }
+  }
+
+  .uniform-lab[data-visual-target="v1"] {
+    gap: clamp(var(--pl-space-4), 2vw, var(--pl-space-6));
+    padding: clamp(var(--pl-space-4), 2.4vw, var(--pl-space-7));
+    border-color: rgba(88, 216, 255, 0.2);
+    border-radius: 28px;
+    background:
+      radial-gradient(ellipse at 50% -16%, rgba(38, 209, 255, 0.12), transparent 38rem),
+      radial-gradient(ellipse at 78% 20%, rgba(255, 216, 77, 0.08), transparent 30rem),
+      linear-gradient(rgba(88, 216, 255, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(88, 216, 255, 0.026) 1px, transparent 1px),
+      rgba(4, 12, 24, 0.88);
+    background-size:
+      auto,
+      auto,
+      34px 34px,
+      34px 34px,
+      auto;
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 255, 255, 0.035),
+      inset 0 0 58px rgba(88, 216, 255, 0.06),
+      0 0 0 1px rgba(88, 216, 255, 0.1),
+      0 28px 90px rgba(0, 0, 0, 0.38);
+  }
+
+  .uniform-lab[data-visual-target="v1"] .lab-heading {
+    padding: 0 clamp(0px, 0.7vw, var(--pl-space-2));
+  }
+
+  .uniform-lab[data-visual-target="v1"] .lab-heading h3 {
+    max-width: 680px;
+    text-shadow:
+      0 0 18px rgba(88, 216, 255, 0.16),
+      0 0 44px rgba(88, 216, 255, 0.08);
+  }
+
+  .uniform-lab[data-visual-target="v1"] .start-strip,
+  .uniform-lab[data-visual-target="v1"] .explain-card,
+  .uniform-lab[data-visual-target="v1"] .details-panel,
+  .uniform-lab[data-visual-target="v1"] .formula-panel,
+  .uniform-lab[data-visual-target="v1"] .exact-panel {
+    border-color: rgba(126, 179, 218, 0.12);
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.012)),
+      rgba(7, 15, 28, 0.58);
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 255, 255, 0.026),
+      inset 0 0 26px rgba(88, 216, 255, 0.018),
+      0 16px 42px rgba(0, 0, 0, 0.18);
+  }
+
+  .uniform-lab[data-visual-target="v1"] .start-strip {
+    grid-template-columns: 1fr;
+    padding-block: var(--pl-space-3);
+  }
+
+  .uniform-lab[data-visual-target="v1"] .start-strip p {
+    color: var(--pl-text);
+    font-size: clamp(1rem, 1.55vw, 1.14rem);
+    font-weight: 720;
+  }
+
+  .uniform-lab[data-visual-target="v1"] .simple-lab-grid {
+    grid-template-columns: minmax(320px, 0.96fr) minmax(380px, 1.18fr);
+    gap: clamp(var(--pl-space-4), 1.9vw, var(--pl-space-5));
+  }
+
+  .uniform-lab[data-visual-target="v1"] .motion-card {
+    border-color: rgba(88, 216, 255, 0.2);
+    border-radius: 20px;
+    background:
+      radial-gradient(ellipse at 48% 8%, rgba(88, 216, 255, 0.13), transparent 24rem),
+      linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.012)),
+      rgba(4, 13, 26, 0.76);
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 255, 255, 0.03),
+      inset 0 0 34px rgba(88, 216, 255, 0.04),
+      0 20px 60px rgba(0, 0, 0, 0.26);
+  }
+
+  .uniform-lab[data-visual-target="v1"] .motion-card p,
+  .uniform-lab[data-visual-target="v1"] .feedback,
+  .uniform-lab[data-visual-target="v1"] .substitution-delta {
+    color: rgba(214, 226, 240, 0.82);
+    font-weight: 520;
+  }
+
+  .uniform-lab[data-visual-target="v1"] .explain-card,
+  .uniform-lab[data-visual-target="v1"] .details-panel {
+    color: rgba(214, 226, 240, 0.86);
+  }
+
+  @media (max-width: 1040px) {
+    .uniform-lab[data-visual-target="v1"] .simple-lab-grid,
+    .uniform-lab[data-visual-target="v1"] .details-panel {
+      grid-template-columns: 1fr;
+    }
+
+  }
+
+  @media (max-width: 600px) {
+    .uniform-lab[data-visual-target="v1"] {
+      padding: var(--pl-space-3);
+      border-radius: 22px;
+      gap: var(--pl-space-4);
+      background-size:
+        auto,
+        auto,
+        28px 28px,
+        28px 28px,
+        auto;
+    }
+
+    .uniform-lab[data-visual-target="v1"] .lab-heading h3 {
+      font-size: clamp(1.55rem, 7vw, 2rem);
+    }
+
+    .uniform-lab[data-visual-target="v1"] .lab-goal {
+      font-size: 1rem;
+    }
+
+    .uniform-lab[data-visual-target="v1"] .start-strip,
+    .uniform-lab[data-visual-target="v1"] .motion-card,
+    .uniform-lab[data-visual-target="v1"] .explain-card,
+    .uniform-lab[data-visual-target="v1"] .details-panel,
+    .uniform-lab[data-visual-target="v1"] .formula-panel,
+    .uniform-lab[data-visual-target="v1"] .exact-panel {
+      padding: var(--pl-space-3);
+      border-radius: 18px;
+    }
+
+    .uniform-lab[data-visual-target="v1"] .simple-lab-grid {
+      gap: var(--pl-space-4);
+    }
+
+    .uniform-lab[data-visual-target="v1"] .slider-field input[type="range"] {
+      height: 32px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .formula-token,
+    .formula-term,
+    [data-formula-highlight] {
+      transition: none;
+    }
+  }
+</style>

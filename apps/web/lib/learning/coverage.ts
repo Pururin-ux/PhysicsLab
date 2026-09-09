@@ -24,14 +24,15 @@ export type CoverageCatalogDestination = {
 
 type CoverageDefinition = Omit<
   CoverageSection,
-  "familyIds" | "familyCount" | "catalogDestinations"
+  "familyIds" | "familyCount" | "catalogDestinations" | "status"
 >;
 
 export const EXAM_PROGRAM_SOURCE = {
   label: "Спецификация экзаменационной работы по физике ЦЭ/ЦТ 2026",
   organization: "Республиканский институт контроля знаний",
   url: "https://rikc.by/ru/specification/2026/03.pdf",
-  checkedOn: "13.07.2026",
+  verificationStatus: "pending",
+  lastAccessAttempt: "08.09.2026",
 } as const;
 
 const catalogDestinationDefinitions: Record<
@@ -49,56 +50,50 @@ const coverageDefinitions: readonly CoverageDefinition[] = [
   {
     id: "mechanics",
     title: "Механика",
-    status: "partial",
     summary: "Кинематика и динамика: движение, силы, энергия и импульс.",
     knownGaps: [
       "Не все темы официальной программы представлены отдельными типами задач.",
-      "Колебания и волны пока не покрыты отдельными тренировками.",
+      "Задач на колебания и волны пока нет.",
     ],
   },
   {
     id: "molecular",
     title: "Молекулярная физика и термодинамика",
-    status: "partial",
     summary: "Идеальный газ, нагревание, плавление и тепловой баланс.",
     knownGaps: [
-      "Нет полного набора графических процессов.",
-      "Не все классы задач раздела представлены.",
+      "Задачи на графики газовых процессов пока есть не для всех случаев.",
+      "Некоторые виды задач этого раздела пока недоступны.",
     ],
   },
   {
     id: "electrodynamics",
     title: "Электродинамика",
-    status: "partial",
     summary: "Постоянный ток, цепи, заряд и конденсатор.",
     knownGaps: [
-      "Магнитное поле и электромагнитная индукция пока не покрыты.",
+      "Задач на магнитное поле и электромагнитную индукцию пока нет.",
       "Не все типы электрических цепей представлены.",
     ],
   },
   {
     id: "optics",
     title: "Оптика",
-    status: "partial",
     summary: "Отражение, преломление и базовые задачи на линзы.",
     knownGaps: [
-      "Оптика v1 ограничена базовыми моделями.",
-      "Волновая оптика пока не покрыта.",
+      "Пока доступны только базовые задачи геометрической оптики.",
+      "Задач по волновой оптике пока нет.",
     ],
   },
   {
     id: "quantum",
     title: "Квантовая физика",
-    status: "not-covered",
     summary: "В каталоге пока нет задач этого раздела.",
-    knownGaps: ["Нужны отдельные task families и учебные разборы."],
+    knownGaps: ["Для этого раздела ещё нет задач и учебных объяснений."],
   },
   {
     id: "atomic",
     title: "Атомная и ядерная физика",
-    status: "not-covered",
     summary: "В каталоге пока нет задач этого раздела.",
-    knownGaps: ["Нужны отдельные task families и учебные разборы."],
+    knownGaps: ["Для этого раздела ещё нет задач и учебных объяснений."],
   },
 ];
 
@@ -144,9 +139,11 @@ export function buildCoverageSections(
 
     return {
       ...definition,
+      status: familyIds.length > 0 ? "partial" : "not-covered",
       familyIds,
       familyCount: familyIds.length,
       catalogDestinations,
     };
   });
 }
+

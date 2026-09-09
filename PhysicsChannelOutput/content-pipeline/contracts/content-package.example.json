@@ -1,0 +1,99 @@
+{
+  "schema_version": "1.0.0",
+  "id": "summer-kinematics-minus-sign",
+  "created_at": "2026-06-06T12:00:00+03:00",
+  "status": "brief",
+  "audience": {
+    "grade_range": "9-11",
+    "subject": "physics",
+    "curriculum_context": "school mechanics, kinematics"
+  },
+  "objective": {
+    "topic": "minus sign in acceleration",
+    "learning_goal": "Explain that negative acceleration means the projection of acceleration is opposite to the chosen positive axis, not always braking.",
+    "main_misconception": "a < 0 always means the body slows down",
+    "difficulty": "medium"
+  },
+  "sources": [
+    {
+      "title": "Internal PhysicsLab mechanics notes",
+      "type": "internal",
+      "notes": "Check final formulas against the local PhysicsLab chapter before publishing."
+    }
+  ],
+  "format": {
+    "post_type": "mini_guide",
+    "surface": "telegram_portrait",
+    "width": 1080,
+    "height": 1350
+  },
+  "copy": {
+    "language": "ru",
+    "title": "Минус в ускорении",
+    "subtitle": "это не всегда торможение",
+    "blocks": [
+      {
+        "id": "rule",
+        "kind": "body",
+        "text": "Смотри на ось: знак показывает направление проекции.",
+        "importance": "primary"
+      },
+      {
+        "id": "formula",
+        "kind": "formula",
+        "text": "v = v_0 + a t",
+        "importance": "primary"
+      },
+      {
+        "id": "example",
+        "kind": "worked_step",
+        "text": "Если ось вправо, а ускорение влево, то a_x < 0.",
+        "importance": "secondary"
+      },
+      {
+        "id": "cta",
+        "kind": "cta",
+        "text": "Сохрани, чтобы не терять баллы на знаках.",
+        "importance": "secondary"
+      }
+    ]
+  },
+  "visual": {
+    "route": "generated_fusion",
+    "style_lane": "Light Summer Checkpoint",
+    "art_direction": "Lined notebook paper, handmade stickers, small original student character at the side, clear empty space for deterministic labels and formula. Friendly, not glossy, not a copied reference layout.",
+    "negative_prompt": "readable text, letters, numbers, formulas, fake UI, watermark, logo, crowded text zones, photorealistic glossy lighting",
+    "protected_zones": [
+      {
+        "id": "title_zone",
+        "x": 70,
+        "y": 70,
+        "width": 900,
+        "height": 210,
+        "purpose": "title and subtitle"
+      },
+      {
+        "id": "formula_zone",
+        "x": 90,
+        "y": 360,
+        "width": 620,
+        "height": 430,
+        "purpose": "formula and sign explanation"
+      }
+    ]
+  },
+  "assets": {
+    "generated_layers": [],
+    "overlay_source": "",
+    "final_png": "",
+    "contact_sheet": ""
+  },
+  "checks": {
+    "physics_qc": "pending",
+    "copy_locked": false,
+    "visual_qc": "pending",
+    "human_review": "pending",
+    "notes": "Example package only."
+  }
+}
+

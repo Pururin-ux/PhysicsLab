@@ -14,13 +14,12 @@ import {
   PRODUCT_DESTINATIONS,
 } from "../../lib/product-routes";
 import { useHomeLearningState } from "../landing/HomeLearningState";
-import { MathText } from "../ui/MathText";
 import styles from "./HomeEditorial.module.css";
 
 const learnDestination = getProductDestination("learn");
 const examDestination = getProductDestination("exam");
 const taskTool = CONTEXTUAL_TOOLS.find((tool) => tool.id === "tasks")!;
-const heroArt = "/art/production/hero-night-study-ultrawide-v3.webp";
+const heroArt = "/images/mio/mio-thinking-v1.png";
 
 const homeActions = [
   {
@@ -53,12 +52,11 @@ export function HomeEditorial() {
     <div className={styles.page}>
       <section
         className={styles.hero}
-        data-theme-preserve="dark"
         aria-labelledby="home-title"
       >
         <div
           className={styles.heroScene}
-          data-art-id="home-night-study"
+          data-art-id="home-mio"
           data-art-source={heroArt}
           data-art-viewport-policy="single-source-crop"
           aria-hidden="true"
@@ -70,10 +68,9 @@ export function HomeEditorial() {
             priority
             unoptimized
             quality={92}
-            sizes="100vw"
+            sizes="(max-width:700px) 110px, 440px"
             className={styles.heroArt}
           />
-          <div className={styles.heroShade} />
         </div>
 
         <div className={styles.heroInner}>
@@ -85,7 +82,7 @@ export function HomeEditorial() {
               <>
                 <h1 id="home-title">Продолжим?</h1>
                 <p className={styles.heroLead}>
-                  Вернись к теме, задаче или подготовке с того места, где тебе удобно.
+                  Выбери урок или продолжи с прошлого раза.
                 </p>
                 <aside
                   className={styles.todayStep}
@@ -95,7 +92,6 @@ export function HomeEditorial() {
                   <div className={styles.todayCopy}>
                     <p>{learningState.nextStep.label}</p>
                     <h2>{learningState.nextStep.title}</h2>
-                    <span><MathText text={learningState.nextStep.body} /></span>
                   </div>
                   <Link href={learningState.nextStep.href}>
                     {learningState.nextStep.cta}
@@ -106,11 +102,10 @@ export function HomeEditorial() {
             ) : (
               <>
                 <h1 id="home-title">
-                  Физика. Без ощущения, что ты должен был уже всё понять.
+                  Физика с Мио
                 </h1>
                 <p className={styles.heroLead}>
-                  Принёс задачу — найдём похожую. Не понял тему — разберём.
-                  Скоро ЦТ/ЦЭ — посмотрим, что уже держится.
+                  Уроки, опыты и задачи — в одном месте.
                 </p>
               </>
             )}
@@ -130,7 +125,7 @@ export function HomeEditorial() {
 
             {!learningState.hasActivity ? (
               <Link className={styles.diagnosticLink} href="/practice/diagnostic">
-                Не знаешь, с чего начать? Попробуй 10 задач без таймера
+                Проверить себя: 10 задач
                 <ArrowRight size={16} weight="bold" aria-hidden="true" />
               </Link>
             ) : null}
@@ -141,10 +136,10 @@ export function HomeEditorial() {
       <section className={styles.tools} aria-labelledby="tools-title">
         <header className={styles.toolsHeading}>
           <p className={styles.eyebrow}>
-            {learningState.hasActivity ? "Быстрый доступ" : "Если уже знаешь, что ищешь"}
+            Под рукой
           </p>
           <h2 id="tools-title">
-            {learningState.hasActivity ? "Вернуться к нужному" : "Формулы, задачи и ошибки"}
+            Справочник и записи
           </h2>
         </header>
 

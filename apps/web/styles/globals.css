@@ -441,27 +441,6 @@ html {
   box-shadow: 0 8px 22px rgba(0, 0, 0, 0.18);
 }
 
-.site-header--home {
-  background: transparent;
-}
-
-/* The home hero remains an intentionally dark photographic scene in both
-   themes. Keep the chrome that sits on top of it in the same dark material
-   context instead of inheriting paper-theme text and button surfaces. */
-html[data-theme="light"] .site-header--home {
-  --surface-primary: rgba(12, 24, 33, 0.88);
-  --surface-secondary: rgba(20, 35, 44, 0.94);
-  --surface-hover: rgba(242, 244, 242, 0.09);
-  --text-primary: #f2f4f2;
-  --text-secondary: #c0c7c6;
-  --text-muted: #a3acab;
-  --border-subtle: rgba(147, 218, 226, 0.28);
-  --border-strong: rgba(147, 218, 226, 0.46);
-  --brand-accent: #20c5dd;
-  --physics-cyan: #20c5dd;
-  --focus-ring: #20c5dd;
-}
-
 .physicslab-brand {
   display: inline-flex;
   flex-shrink: 0;
@@ -1571,3 +1550,4 @@ html[data-theme="light"] [data-testid="quiz-session"] .quiz-option[data-state="i
     transition: none;
   }
 }
+

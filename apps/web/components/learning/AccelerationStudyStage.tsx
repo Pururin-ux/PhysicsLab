@@ -61,7 +61,7 @@ export function AccelerationStudyStage({
       className={cn("relative isolate overflow-hidden border-y border-white/[.12] bg-[#11161a]", className)}
       aria-labelledby={`${rangeId}-title`}
     >
-      <div className={cn("relative overflow-hidden", compact ? "h-[230px] sm:h-[274px]" : "h-[300px] sm:h-[394px]")}>
+      <div className={cn("relative flex flex-col justify-between gap-8 overflow-hidden p-4 sm:p-8", compact ? "min-h-[300px] sm:min-h-[340px]" : "min-h-[340px] sm:min-h-[394px]")}>
         <Image
           src="/art/production/lesson-acceleration-trolleybus-cozy.webp"
           alt="Ночной троллейбус у остановки на мокрой городской улице"
@@ -76,11 +76,12 @@ export function AccelerationStudyStage({
         <div className="pointer-events-none absolute bottom-[35%] left-[30%] right-[9%] h-px bg-[#f1c47d]/30" aria-hidden="true" />
         <div
           className="pointer-events-none absolute bottom-[calc(35%_-_4px)] size-2 rounded-full bg-[#f4d29f] transition-[left] duration-500 motion-reduce:transition-none"
-          style={{ left: `${30 + time * 20}%` }}
+          style={{ left: `${30 + (moment.distance / MOMENTS[3].distance) * 60}%` }}
           aria-hidden="true"
         />
 
-        <div className="absolute left-4 top-5 max-w-[250px] sm:left-[max(2rem,calc((100%_-_940px)/2))] sm:top-8">
+        <div className="relative z-10 w-full max-w-[940px] self-center">
+          <div className="max-w-[300px]">
           <p className="text-[13px] font-semibold text-[#f4cd91]">Ускорение в движении</p>
           <h2 id={`${rangeId}-title`} className="mt-1 text-[24px] font-[800] leading-[1.08] tracking-[-.035em] text-white sm:text-[34px]">
             Смотри, как он набирает ход
@@ -90,26 +91,16 @@ export function AccelerationStudyStage({
               ? "Троллейбус уже едет со скоростью 2 м/с и начинает разгоняться. Нажимай отметки времени."
               : `Через ${time} с: ${moment.velocity} м/с и ${moment.distance} м от начальной отметки.`}
           </p>
+          </div>
         </div>
 
-        <div className="absolute bottom-4 left-4 right-4 sm:bottom-6 sm:left-[max(2rem,calc((100%_-_940px)/2))] sm:right-auto sm:w-[520px]">
-          <label htmlFor={rangeId} className="sr-only">Выбери отметку времени</label>
-          <input
-            id={rangeId}
-            type="range"
-            min="0"
-            max="3"
-            step="1"
-            value={time}
-            onChange={(event) => selectMoment(Number(event.target.value))}
-            className="sr-only"
-            aria-valuetext={`${time} секунд, скорость ${moment.velocity} метров в секунду, путь ${moment.distance} метров`}
-          />
+        <div className="relative z-10 w-full max-w-[940px] self-center">
+          <div className="max-w-[520px]">
           <div className="flex items-center justify-between gap-3 text-[12px] font-semibold text-white/74">
             <p>Моменты движения</p>
             <span className="text-[#f6d6a4]">{moment.distance} м · {time} с</span>
           </div>
-          <div className="relative mt-3 grid grid-cols-4 gap-2" aria-label="Моменты движения">
+          <div className="relative mt-3 grid grid-cols-4 gap-2" role="group" aria-label="Моменты движения">
             <span className="absolute left-[6%] right-[6%] top-[9px] h-px bg-white/28" aria-hidden="true" />
             {MOMENTS.map((item) => {
               const active = item.time === time;
@@ -129,6 +120,7 @@ export function AccelerationStudyStage({
                 </button>
               );
             })}
+          </div>
           </div>
         </div>
       </div>

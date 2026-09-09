@@ -1,0 +1,13 @@
+{
+  "updated_at": "2026-06-06T12:00:00+03:00",
+  "models": [],
+  "loras": [],
+  "controlnets": [],
+  "ip_adapters": [],
+  "notes": [
+    "Fill this after choosing the actual local ComfyUI checkpoints.",
+    "Do not train or publish with copyrighted textbook pages or reference-board images as a dataset.",
+    "Use reference images as mood evidence only."
+  ]
+}
+

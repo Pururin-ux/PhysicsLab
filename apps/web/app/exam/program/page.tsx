@@ -3,9 +3,9 @@ import { buildCoverageSections } from "../../../lib/learning/coverage";
 import { getTaskCatalog } from "../../../lib/server/task-catalog";
 
 export const metadata = {
-  title: "Карта программы ЦТ/ЦЭ по физике | PhysicsLab",
+  title: "Темы для подготовки к ЦТ/ЦЭ | PhysicsLab",
   description:
-    "Все шесть разделов программы и честная граница доступных тренировок PhysicsLab.",
+    "Доступные разделы каталога PhysicsLab и темы, для которых пока нет тренировок.",
 };
 
 export default function ExamProgramPage() {
@@ -14,3 +14,4 @@ export default function ExamProgramPage() {
 
   return <ExamProgramCoverage coverage={coverage} />;
 }
+

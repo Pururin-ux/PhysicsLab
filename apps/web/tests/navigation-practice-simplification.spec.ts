@@ -1,8 +1,8 @@
 import { expect, test, type Page } from "@playwright/test";
 
-// На всех размерах остаются те же пять долговечных направлений. На телефоне
+// На всех размерах остаются те же четыре основных направления. На телефоне
 // они переезжают в нижнюю панель, но не меняют названия и не прячутся в «Ещё».
-const durableLabels = ["Главная", "Темы", "Формулы", "Задачи", "Прогресс"] as const;
+const durableLabels = ["Главная", "Учиться", "ЦТ/ЦЭ", "Прогресс"] as const;
 
 async function answerOhmWrong(page: Page) {
   const responsePromise = page.waitForResponse((response) => {
@@ -22,13 +22,13 @@ async function answerOhmWrong(page: Page) {
     .click();
 }
 
-test("desktop header exposes five durable destinations", async ({ page }, testInfo) => {
+test("desktop header exposes four canonical destinations", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "desktop", "Desktop navigation contract.");
   await page.goto("/tasks", { waitUntil: "domcontentloaded" });
 
   const navigation = page.getByTestId("desktop-sidebar-nav");
   await expect(navigation).toBeVisible();
-  await expect(navigation.getByRole("link")).toHaveCount(5);
+  await expect(navigation.getByRole("link")).toHaveCount(4);
   expect(
     (await navigation.getByRole("link").allTextContents()).map((label) => label.trim()),
   ).toEqual(durableLabels);
@@ -48,11 +48,11 @@ test("desktop header exposes five durable destinations", async ({ page }, testIn
   await expect(progressLink).toHaveAttribute("href", "/profile");
   await progressLink.click();
   await expect(page).toHaveURL("/profile");
-  await expect(page.getByRole("heading", { name: "Твоя физика", level: 1 })).toBeVisible();
-  await expect(page).toHaveTitle("Твоя физика | PhysicsLab");
+  await expect(page.getByRole("heading", { name: "Прогресс", level: 1 })).toBeVisible();
+  await expect(page).toHaveTitle("Прогресс | PhysicsLab");
 });
 
-test("mobile navigation keeps the same five destinations and practice stays under Tasks", async ({ page }, testInfo) => {
+test("mobile navigation keeps the same four destinations and practice stays under Learn", async ({ page }, testInfo) => {
   test.skip(!testInfo.project.name.startsWith("mobile"), "Mobile navigation contract.");
   await page.goto("/practice/family/ohm-law", { waitUntil: "domcontentloaded" });
   await expect(page.getByTestId("question-card")).toBeVisible();
@@ -63,8 +63,8 @@ test("mobile navigation keeps the same five destinations and practice stays unde
     (await navigation.getByRole("link").allTextContents()).map((label) => label.trim()),
   ).toEqual([...durableLabels]);
 
-  // Тренировка по типу задач относится к постоянному пункту «Задачи».
-  await expect(navigation.getByRole("link", { name: "Задачи", exact: true })).toHaveAttribute(
+  // Тренировка по типу задач относится к основному пункту «Учиться».
+  await expect(navigation.getByRole("link", { name: "Учиться", exact: true })).toHaveAttribute(
     "aria-current",
     "page",
   );
@@ -107,7 +107,7 @@ test("tablet quick actions remain a single four-item row", async ({ page }, test
   );
 });
 
-test("practice removes metadata noise and puts Next before optional detail", async ({ page }, testInfo) => {
+test("practice puts retry before optional detail after an incorrect answer", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "desktop", "Hierarchy is asserted once on desktop.");
   await answerOhmWrong(page);
 
@@ -122,7 +122,7 @@ test("practice removes metadata noise and puts Next before optional detail", asy
   await expect(page.getByRole("img", { name: "Nova" })).toHaveCount(0);
   await expect(page.locator(".nova-caret")).toHaveCount(0);
 
-  const next = page.getByTestId("next-task-button");
+  const next = page.getByTestId("retry-task-button");
   const secondary = page.getByTestId("secondary-answer-actions");
   const nextBeforeSecondary = await next.evaluate((element, secondaryTestId) => {
     const other = document.querySelector(`[data-testid="${secondaryTestId}"]`);
@@ -141,7 +141,7 @@ test("practice removes metadata noise and puts Next before optional detail", asy
   await expect(page.getByTestId("solution-formula")).toHaveCount(0);
 
   await page.reload({ waitUntil: "domcontentloaded" });
-  await expect(page.getByTestId("next-task-button")).toBeVisible();
+  await expect(page.getByTestId("retry-task-button")).toBeVisible();
   await expect(page.getByTestId("solution-toggle")).toHaveAttribute("aria-expanded", "false");
   await expect(page.getByTestId("solution-content")).toHaveCount(0);
 });

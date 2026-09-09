@@ -1,0 +1,58 @@
+{
+  "contract_version": "1.0.0",
+  "job_id": "summer-kinematics-bg-001",
+  "content_package_id": "summer-kinematics-minus-sign",
+  "safety_profile": "laptop-8gb",
+  "asset_kind": "background",
+  "target_surface": {
+    "name": "telegram_portrait_probe",
+    "width": 768,
+    "height": 960
+  },
+  "workflow": {
+    "id": "empty-text-zone-poster",
+    "version": "0.1.0",
+    "api_json_path": "workflows/empty-text-zone-poster/0.1.0/workflow.api.json",
+    "workflow_sha256": ""
+  },
+  "prompt": {
+    "positive": "Original friendly school notebook poster background for a physics/math Telegram post, light lined paper, handmade stickers, small student character near the lower right, empty clean zones for later text overlay, subtle paper grain, teen-friendly, not glossy, not corporate.",
+    "negative": "readable text, letters, numbers, formulas, fake UI labels, watermark, logo, signature, cluttered text zones, photorealistic glossy lighting, copied reference layout",
+    "language_policy": "no_readable_text"
+  },
+  "generation": {
+    "width": 768,
+    "height": 960,
+    "batch_size": 1,
+    "seed": 424242,
+    "seed_mode": "fixed",
+    "steps": 16,
+    "sampler": "euler",
+    "scheduler": "karras",
+    "guidance": 5.0
+  },
+  "models": {
+    "base": "",
+    "controlnet": "",
+    "ip_adapter": "",
+    "loras": []
+  },
+  "inputs": {
+    "control_images": [],
+    "reference_images": []
+  },
+  "output": {
+    "destination": "runs/summer-kinematics-bg-001/outputs",
+    "format": "png",
+    "color_space": "srgb",
+    "write_sidecar_metadata": true,
+    "strip_public_metadata": true
+  },
+  "qc_policy": {
+    "require_no_readable_text": true,
+    "require_correct_dimensions": true,
+    "require_not_blank": true,
+    "human_review_required": true,
+    "protected_zones_mask": ""
+  }
+}

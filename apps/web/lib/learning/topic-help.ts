@@ -7,6 +7,7 @@ import {
 import { skillMetadata, type TopicId } from "./taxonomy.ts";
 
 export type HelpSectionId =
+  | "contact-pressure"
   | "uniform-motion"
   | "accelerated-motion"
   | "motion-graphs"
@@ -172,6 +173,9 @@ export const topicHelpSections: Record<TopicId, TopicHelpSection[]> = {
       shortHint: "Энергия движения равна mv²/2 и зависит от квадрата скорости.",
       formula: "E_k=\\frac{mv^2}{2}",
       mistake: "Если скорость выросла в два раза, энергия выросла в четыре раза.",
+    },
+    {
+      id:"contact-pressure",label:"Давление на опору",shortHint:"Давление — перпендикулярная сила на единицу площади контакта. Для нескольких опор сложи их площади.",formula:"p=F/S",mistake:"1 см² = 0,0001 м²; 1 кПа = 1000 Па. Не дели полную силу только на площадь одной опоры.",
     },
     {
       id: "work-energy",
@@ -587,6 +591,10 @@ export function getHelpTargetForMistake(
   }
 
   if (topicId === "thermodynamics") {
+    // «Масса», «объём» и «температура» встречаются в разных разделах.
+    // Известная задача важнее этих общих слов в описании ошибки.
+    // Стабильная misconception с более точной целью уже обработана выше.
+    if (taskMetadata) return createTargetFromMetadata(taskMetadata, "mistake");
     if (/плавл|лед|стади/.test(mistakeText)) {
       return createTarget(topicId, "heating-melting", "mistake");
     }

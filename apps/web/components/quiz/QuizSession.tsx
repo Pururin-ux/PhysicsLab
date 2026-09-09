@@ -40,6 +40,7 @@ import { newAttemptId } from "../../lib/quiz/attempt-id";
 import { integrityError } from "../../lib/quiz/quiz-load-error";
 import { Button } from "../ui/Button";
 import { getTaskFocus } from "../../lib/learning/task-focus";
+import { getTaskLearningMetadata } from "../../lib/learning/task-metadata";
 import {
   getHelpTargetForMistake,
   getHelpTargetForTask,
@@ -463,6 +464,7 @@ export function QuizSession({
             : `Ещё ${generatedCount} задач`)
         }
         topic={activeData?.topic}
+        focus={getTaskLearningMetadata(generatedTemplate)}
         nextHref={nextStep?.href}
         nextLabel={nextStep?.label}
         variant={summaryVariant}

@@ -19,6 +19,7 @@ test-results/
 **/.next-site-build/
 **/.vinext/
 **/.next-audit/
+**/.next-production-audit/
 **/.next-lighthouse/
 **/.lighthouse-profile/
 apps/web/.wrangler/
@@ -58,3 +59,5 @@ ds-bundle/
 
 # инструменты проверки текста
 .lang-tools/node_modules/
+.playwright-cli/
+fox-that-never-was-debug-apk.zip

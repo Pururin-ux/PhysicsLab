@@ -1,11 +1,11 @@
-import { topics } from "../topics";
+import { topics } from "../topics.ts";
 import {
   DELAYED_RECALL_MIN_MS,
   type AppProgress,
-} from "../stores/progress-store";
-import { buildReviewPlan } from "./review-plan";
-import { skillMetadata, type SkillId } from "./taxonomy";
-import { mixedPracticeHrefByTopic } from "./topic-practice-routes";
+} from "../stores/progress-store.ts";
+import { buildReviewPlan } from "./review-plan.ts";
+import { skillMetadata, type SkillId } from "./taxonomy.ts";
+import { mixedPracticeHrefByTopic } from "./topic-practice-routes.ts";
 
 export type LearningNextStep = {
   label: string;

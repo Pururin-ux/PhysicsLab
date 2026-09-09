@@ -4,7 +4,7 @@ import { useStore } from "@nanostores/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import type { CoverageSection } from "../../lib/learning/coverage";
+import styles from "./ExamEntry.module.css";
 import { $examLog, getBestAttempt } from "../../lib/stores/exam-log-store";
 import { Button } from "../ui/Button";
 import { QuizSession } from "../quiz/QuizSession";
@@ -21,29 +21,6 @@ const ERROR_CATEGORIES = [
   "Единицы СИ",
   "Вычисление",
 ] as const;
-
-function MixedPracticeArt() {
-  return (
-    <div
-      className="absolute inset-0 overflow-hidden"
-      role="img"
-      aria-label="Кот готовит черновик к диагностике"
-    >
-      <Image
-        src="/art/production/cat-exam-scratch-paper.webp"
-        alt=""
-        fill
-        sizes="(max-width: 767px) 100vw, 340px"
-        className="object-contain object-center p-3 md:p-5"
-        priority
-      />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_42%,var(--mode-exam-soft),transparent_44%)]"
-      />
-    </div>
-  );
-}
 
 function ExamHistoryLine() {
   const log = useStore($examLog);
@@ -118,86 +95,7 @@ function ExamTools() {
   );
 }
 
-function coverageStatusLabel(status: CoverageSection["status"]) {
-  return status === "partial" ? "Покрыто частично" : "Пока нет задач";
-}
-
-function primaryCoverageGap(section: CoverageSection) {
-  return (
-    section.knownGaps.find(
-      (gap) => !gap.startsWith("Не все") && !gap.includes("v1"),
-    ) ?? section.knownGaps[0]
-  );
-}
-
-function ExamCoverageMap({ coverage }: { coverage: readonly CoverageSection[] }) {
-  const partialCount = coverage.filter((section) => section.status === "partial").length;
-  const missingCount = coverage.filter((section) => section.status === "not-covered").length;
-
-  return (
-    <section aria-labelledby="exam-coverage-title" data-testid="exam-coverage-map">
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <p className="text-[11px] font-[850] uppercase tracking-[.16em] text-nova-cyan/78">
-            Карта программы до старта
-          </p>
-          <h3 id="exam-coverage-title" className="mt-1 text-[22px] font-[820] tracking-[-.025em] text-white">
-            Что эта диагностика проверяет — и чего в ней нет
-          </h3>
-        </div>
-        <p className="text-[12px] font-semibold text-white/58">
-          Полностью: 0 · Частично: {partialCount} · Пока нет: {missingCount}
-        </p>
-      </div>
-
-      <p className="mt-4 border-l-2 border-[var(--mode-exam-accent)] pl-3.5 text-[13px] leading-[1.65] text-white/72">
-        Это короткая диагностика открытой части каталога, а не полный вариант
-        ЦТ/ЦЭ. Квантовая, атомная и ядерная физика пока не включены.
-      </p>
-
-      <ul className="mt-5 grid grid-cols-2 border-t border-white/[.12] xl:grid-cols-3" aria-label="Покрытие разделов программы">
-        {coverage.map((section) => (
-          <li
-            key={section.id}
-            className="border-b border-white/[.1] px-3 py-4 odd:border-r first:pl-0 [&:nth-child(even)]:pr-0 xl:border-r xl:px-4 xl:odd:border-r xl:[&:nth-child(3n+1)]:pl-0 xl:[&:nth-child(3n)]:border-r-0 xl:[&:nth-child(3n)]:pr-0"
-          >
-            <h4 className="text-[13px] font-[800] leading-[1.35] text-white sm:text-[14px]">{section.title}</h4>
-            <span
-              className={
-                section.status === "partial"
-                  ? "mt-1.5 block text-[9px] font-[800] uppercase leading-[1.35] tracking-[.07em] text-nova-cyan sm:text-[10px]"
-                  : "mt-1.5 block text-[9px] font-[800] uppercase leading-[1.35] tracking-[.07em] text-[var(--mode-exam-accent)] sm:text-[10px]"
-              }
-            >
-              {coverageStatusLabel(section.status)}
-            </span>
-            <p className="mt-1.5 text-[12px] font-semibold text-white/64">
-              {section.familyCount > 0 ? `${section.familyCount} типов задач в каталоге` : section.summary}
-            </p>
-            {section.status === "partial" ? (
-              <p className="mt-2 text-[11px] leading-[1.5] text-white/58">
-                Не покрыто: {primaryCoverageGap(section)}
-              </p>
-            ) : null}
-          </li>
-        ))}
-      </ul>
-
-      <p className="mt-4 text-[12px] leading-[1.6] text-white/58">
-        Результат покажет слабые места только в этих десяти задачах. Он не
-        является оценкой готовности ко всей программе ЦТ/ЦЭ.
-      </p>
-      <Link
-        href="/exam/program"
-        className="mt-3 inline-flex min-h-10 items-center rounded-option text-[12px] font-bold text-[var(--mode-exam-accent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--mode-exam-accent)]"
-      >
-        Открыть подробную карту программы
-      </Link>
-    </section>
-  );
-}
-
-export function ExamDemo({ coverage }: { coverage: readonly CoverageSection[] }) {
+export function ExamDemo() {
   const [started, setStarted] = useState<"normal" | "resume" | "fresh" | null>(null);
   const [resumeCandidate, setResumeCandidate] = useState<ExamResumeCandidate | null>();
   const [discardedAttemptId, setDiscardedAttemptId] = useState<string | undefined>();
@@ -234,33 +132,15 @@ export function ExamDemo({ coverage }: { coverage: readonly CoverageSection[] })
   }
 
   return (
-    <section aria-labelledby="exam-entry-title" className="mx-auto flex w-full max-w-[920px] flex-col gap-6">
-      {/* Одна карточка-заставка: слева — начать или продолжить, справа — арт во
-          всю высоту колонки. Раньше блоки шли столбиком, а картинка висела
-          отдельно с пустотой под ней. */}
-      <div className="overflow-hidden rounded-card border border-white/[.1] bg-space-900/55">
-        <div className="grid md:grid-cols-[minmax(0,1fr)_340px]">
-        <div className="flex flex-col p-6 sm:p-8">
-          <h2 id="exam-entry-title" className="text-[26px] font-[800] leading-tight tracking-[-.025em] text-white sm:text-[32px]">
-            Короткая диагностика
-          </h2>
-          <p className="mt-2.5 text-[14px] leading-[1.65] text-white/72">
-            10 задач по пяти открытым темам. Черновик рядом, время не
-            ограничено, помощь и разбор доступны после ответа.
-          </p>
-
-          <ExamHistoryLine />
-        </div>
-
-        <div className="relative order-first min-h-[270px] border-b border-white/[.1] bg-[linear-gradient(145deg,var(--background-deep),var(--surface-primary))] md:order-last md:min-h-full md:border-b-0 md:border-l">
-          <MixedPracticeArt />
-        </div>
-        </div>
-
-        <div className="border-t border-white/[.1] px-6 py-6 sm:px-8 sm:py-7">
-          <ExamCoverageMap coverage={coverage} />
-
-          <div className="mt-6 border-t border-white/[.1] pt-5">
+    <section aria-labelledby="exam-entry-title" className={styles.entry}>
+      <Link href="/exam/program" className={styles.topics}>
+        <span><strong>Выбрать тему</strong><small>Задачи по разделам физики</small></span><span aria-hidden="true">→</span>
+      </Link>
+      <div className={styles.check}>
+        <div className={styles.body}>
+          <h2 id="exam-entry-title">Проверить себя</h2>
+          <p>10 задач: движение, силы, электричество, теплота и оптика. Решай в своём темпе, затем посмотри разбор.</p>
+          <div className={styles.actions}>
             {resumeCandidate === undefined ? (
               <Button size="lg" disabled aria-label="Проверяем незавершённую диагностику" className="sm:w-auto">
                 Проверяем сохранение…
@@ -294,15 +174,12 @@ export function ExamDemo({ coverage }: { coverage: readonly CoverageSection[] })
               </Button>
             )}
 
-            <Link
-              href="/topics"
-              className="mt-3 inline-flex min-h-10 items-center rounded-option text-[13px] font-bold text-[var(--mode-exam-accent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
-            >
-              Сначала разобрать тему
-            </Link>
           </div>
+          <ExamHistoryLine />
         </div>
+        <Image src="/images/mio/mio-attentive-v1.png" width={1254} height={1254} alt="Мио внимательно слушает, держа блокнот" className={styles.mio} sizes="(max-width:640px) 110px, 240px" />
       </div>
+      <p className={styles.note}>Это проверка отдельных тем, а не полный вариант ЦТ/ЦЭ. Результат поможет выбрать, что повторить.</p>
     </section>
   );
 }

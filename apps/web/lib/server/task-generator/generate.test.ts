@@ -20,6 +20,7 @@ const kinematicsTemplateIds = [
   "unit-conversion-speed",
 ] as const;
 const dynamicsTemplateIds = [
+  "contact-pressure",
   "newton-second",
   "friction-force",
   "incline-force",

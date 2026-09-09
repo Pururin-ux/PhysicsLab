@@ -1,0 +1,379 @@
+{
+  "asset_id": "shorok-walk-blender-v1",
+  "status": "WIP_RUNTIME_QA_REQUIRED",
+  "canvas": [
+    512,
+    512
+  ],
+  "frame_count": 24,
+  "source_fps": 24,
+  "baseline_y": 444,
+  "ground_socket": [
+    256,
+    444
+  ],
+  "scale_channels": 0,
+  "prep": "whole-canvas translation only; no resize, crop, warp, or interpolation",
+  "frames": [
+    {
+      "frame": 0,
+      "source": "apps/game/art/characters/shorok-walk-blender-v1/frames/shorok-walk-0001.png",
+      "runtime": "apps/game/art/characters/shorok-walk-runtime-v1/shorok-walk-00.png",
+      "translation_px": [
+        0,
+        0
+      ],
+      "visible_bounds": [
+        21,
+        185,
+        487,
+        444
+      ]
+    },
+    {
+      "frame": 1,
+      "source": "apps/game/art/characters/shorok-walk-blender-v1/frames/shorok-walk-0002.png",
+      "runtime": "apps/game/art/characters/shorok-walk-runtime-v1/shorok-walk-01.png",
+      "translation_px": [
+        0,
+        0
+      ],
+      "visible_bounds": [
+        21,
+        187,
+        488,
+        444
+      ]
+    },
+    {
+      "frame": 2,
+      "source": "apps/game/art/characters/shorok-walk-blender-v1/frames/shorok-walk-0003.png",
+      "runtime": "apps/game/art/characters/shorok-walk-runtime-v1/shorok-walk-02.png",
+      "translation_px": [
+        0,
+        0
+      ],
+      "visible_bounds": [
+        21,
+        188,
+        488,
+        444
+      ]
+    },
+    {
+      "frame": 3,
+      "source": "apps/game/art/characters/shorok-walk-blender-v1/frames/shorok-walk-0004.png",
+      "runtime": "apps/game/art/characters/shorok-walk-runtime-v1/shorok-walk-03.png",
+      "translation_px": [
+        0,
+        1
+      ],
+      "visible_bounds": [
+        21,
+        190,
+        488,
+        444
+      ]
+    },
+    {
+      "frame": 4,
+      "source": "apps/game/art/characters/shorok-walk-blender-v1/frames/shorok-walk-0005.png",
+      "runtime": "apps/game/art/characters/shorok-walk-runtime-v1/shorok-walk-04.png",
+      "translation_px": [
+        0,
+        3
+      ],
+      "visible_bounds": [
+        21,
+        193,
+        488,
+        444
+      ]
+    },
+    {
+      "frame": 5,
+      "source": "apps/game/art/characters/shorok-walk-blender-v1/frames/shorok-walk-0006.png",
+      "runtime": "apps/game/art/characters/shorok-walk-runtime-v1/shorok-walk-05.png",
+      "translation_px": [
+        0,
+        3
+      ],
+      "visible_bounds": [
+        21,
+        193,
+        489,
+        444
+      ]
+    },
+    {
+      "frame": 6,
+      "source": "apps/game/art/characters/shorok-walk-blender-v1/frames/shorok-walk-0007.png",
+      "runtime": "apps/game/art/characters/shorok-walk-runtime-v1/shorok-walk-06.png",
+      "translation_px": [
+        0,
+        3
+      ],
+      "visible_bounds": [
+        21,
+        193,
+        489,
+        444
+      ]
+    },
+    {
+      "frame": 7,
+      "source": "apps/game/art/characters/shorok-walk-blender-v1/frames/shorok-walk-0008.png",
+      "runtime": "apps/game/art/characters/shorok-walk-runtime-v1/shorok-walk-07.png",
+      "translation_px": [
+        0,
+        3
+      ],
+      "visible_bounds": [
+        21,
+        193,
+        489,
+        444
+      ]
+    },
+    {
+      "frame": 8,
+      "source": "apps/game/art/characters/shorok-walk-blender-v1/frames/shorok-walk-0009.png",
+      "runtime": "apps/game/art/characters/shorok-walk-runtime-v1/shorok-walk-08.png",
+      "translation_px": [
+        0,
+        3
+      ],
+      "visible_bounds": [
+        21,
+        192,
+        489,
+        444
+      ]
+    },
+    {
+      "frame": 9,
+      "source": "apps/game/art/characters/shorok-walk-blender-v1/frames/shorok-walk-0010.png",
+      "runtime": "apps/game/art/characters/shorok-walk-runtime-v1/shorok-walk-09.png",
+      "translation_px": [
+        0,
+        3
+      ],
+      "visible_bounds": [
+        21,
+        192,
+        489,
+        444
+      ]
+    },
+    {
+      "frame": 10,
+      "source": "apps/game/art/characters/shorok-walk-blender-v1/frames/shorok-walk-0011.png",
+      "runtime": "apps/game/art/characters/shorok-walk-runtime-v1/shorok-walk-10.png",
+      "translation_px": [
+        0,
+        3
+      ],
+      "visible_bounds": [
+        21,
+        191,
+        490,
+        444
+      ]
+    },
+    {
+      "frame": 11,
+      "source": "apps/game/art/characters/shorok-walk-blender-v1/frames/shorok-walk-0012.png",
+      "runtime": "apps/game/art/characters/shorok-walk-runtime-v1/shorok-walk-11.png",
+      "translation_px": [
+        0,
+        3
+      ],
+      "visible_bounds": [
+        21,
+        190,
+        490,
+        444
+      ]
+    },
+    {
+      "frame": 12,
+      "source": "apps/game/art/characters/shorok-walk-blender-v1/frames/shorok-walk-0013.png",
+      "runtime": "apps/game/art/characters/shorok-walk-runtime-v1/shorok-walk-12.png",
+      "translation_px": [
+        0,
+        0
+      ],
+      "visible_bounds": [
+        21,
+        186,
+        490,
+        444
+      ]
+    },
+    {
+      "frame": 13,
+      "source": "apps/game/art/characters/shorok-walk-blender-v1/frames/shorok-walk-0014.png",
+      "runtime": "apps/game/art/characters/shorok-walk-runtime-v1/shorok-walk-13.png",
+      "translation_px": [
+        0,
+        0
+      ],
+      "visible_bounds": [
+        22,
+        187,
+        490,
+        444
+      ]
+    },
+    {
+      "frame": 14,
+      "source": "apps/game/art/characters/shorok-walk-blender-v1/frames/shorok-walk-0015.png",
+      "runtime": "apps/game/art/characters/shorok-walk-runtime-v1/shorok-walk-14.png",
+      "translation_px": [
+        0,
+        0
+      ],
+      "visible_bounds": [
+        22,
+        185,
+        491,
+        444
+      ]
+    },
+    {
+      "frame": 15,
+      "source": "apps/game/art/characters/shorok-walk-blender-v1/frames/shorok-walk-0016.png",
+      "runtime": "apps/game/art/characters/shorok-walk-runtime-v1/shorok-walk-15.png",
+      "translation_px": [
+        0,
+        0
+      ],
+      "visible_bounds": [
+        22,
+        183,
+        491,
+        444
+      ]
+    },
+    {
+      "frame": 16,
+      "source": "apps/game/art/characters/shorok-walk-blender-v1/frames/shorok-walk-0017.png",
+      "runtime": "apps/game/art/characters/shorok-walk-runtime-v1/shorok-walk-16.png",
+      "translation_px": [
+        0,
+        0
+      ],
+      "visible_bounds": [
+        22,
+        182,
+        490,
+        444
+      ]
+    },
+    {
+      "frame": 17,
+      "source": "apps/game/art/characters/shorok-walk-blender-v1/frames/shorok-walk-0018.png",
+      "runtime": "apps/game/art/characters/shorok-walk-runtime-v1/shorok-walk-17.png",
+      "translation_px": [
+        0,
+        0
+      ],
+      "visible_bounds": [
+        22,
+        181,
+        489,
+        444
+      ]
+    },
+    {
+      "frame": 18,
+      "source": "apps/game/art/characters/shorok-walk-blender-v1/frames/shorok-walk-0019.png",
+      "runtime": "apps/game/art/characters/shorok-walk-runtime-v1/shorok-walk-18.png",
+      "translation_px": [
+        0,
+        0
+      ],
+      "visible_bounds": [
+        22,
+        181,
+        489,
+        444
+      ]
+    },
+    {
+      "frame": 19,
+      "source": "apps/game/art/characters/shorok-walk-blender-v1/frames/shorok-walk-0020.png",
+      "runtime": "apps/game/art/characters/shorok-walk-runtime-v1/shorok-walk-19.png",
+      "translation_px": [
+        0,
+        0
+      ],
+      "visible_bounds": [
+        22,
+        182,
+        488,
+        444
+      ]
+    },
+    {
+      "frame": 20,
+      "source": "apps/game/art/characters/shorok-walk-blender-v1/frames/shorok-walk-0021.png",
+      "runtime": "apps/game/art/characters/shorok-walk-runtime-v1/shorok-walk-20.png",
+      "translation_px": [
+        0,
+        0
+      ],
+      "visible_bounds": [
+        21,
+        182,
+        488,
+        444
+      ]
+    },
+    {
+      "frame": 21,
+      "source": "apps/game/art/characters/shorok-walk-blender-v1/frames/shorok-walk-0022.png",
+      "runtime": "apps/game/art/characters/shorok-walk-runtime-v1/shorok-walk-21.png",
+      "translation_px": [
+        0,
+        0
+      ],
+      "visible_bounds": [
+        21,
+        183,
+        488,
+        444
+      ]
+    },
+    {
+      "frame": 22,
+      "source": "apps/game/art/characters/shorok-walk-blender-v1/frames/shorok-walk-0023.png",
+      "runtime": "apps/game/art/characters/shorok-walk-runtime-v1/shorok-walk-22.png",
+      "translation_px": [
+        0,
+        0
+      ],
+      "visible_bounds": [
+        21,
+        183,
+        488,
+        444
+      ]
+    },
+    {
+      "frame": 23,
+      "source": "apps/game/art/characters/shorok-walk-blender-v1/frames/shorok-walk-0024.png",
+      "runtime": "apps/game/art/characters/shorok-walk-runtime-v1/shorok-walk-23.png",
+      "translation_px": [
+        0,
+        0
+      ],
+      "visible_bounds": [
+        21,
+        184,
+        488,
+        444
+      ]
+    }
+  ]
+}

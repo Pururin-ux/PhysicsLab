@@ -190,6 +190,7 @@ export const misconceptionMetadataById: Record<string, MisconceptionMetadata> = 
 };
 
 export const taskLearningMetadataByTemplateId: Record<string, TaskLearningMetadata> = {
+  "contact-pressure":{templateId:"contact-pressure",topicId:"dynamics",helpSectionId:"contact-pressure",skillId:"contact-pressure",focusLabel:"Давление на опору",shortHint:"Вырази искомую величину из p=F/S: F — полная сила, S — общая площадь контакта. Согласуй Па, Н и м²."},
   "free-fall": {
     templateId: "free-fall",
     topicId: "kinematics",
@@ -223,7 +224,7 @@ export const taskLearningMetadataByTemplateId: Record<string, TaskLearningMetada
     helpSectionId: "vectors-relative-motion",
     skillId: "relative-velocity-vectors",
     focusLabel: "Относительная скорость",
-    shortHint: "Согласуй системы отсчёта: v⃗A/C = v⃗A/B + v⃗B/C; перпендикулярные векторы сложи по Пифагору.",
+    shortHint: "Найди скорость тела относительно другого тела. Учитывай не только значения скоростей, но и их направления.",
   },
   "average-speed-segments": {
     templateId: "average-speed-segments",
@@ -519,3 +520,4 @@ export function getMisconceptionMetadata(misconceptionId: string | undefined) {
 
   return misconceptionMetadataById[misconceptionId];
 }
+

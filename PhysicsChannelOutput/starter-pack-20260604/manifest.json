@@ -1,0 +1,47 @@
+{
+  "createdAt": "2026-06-04T19:27:04.010Z",
+  "posts": [
+    {
+      "id": "01-kinematics-cheatsheet",
+      "title": "Кинематика: 4 формулы",
+      "format": "1080x1350",
+      "svgPath": "C:\\Users\\lalad\\OneDrive\\Desktop\\PhysicsChannelOutput\\starter-pack-20260604\\01-kinematics-cheatsheet.svg",
+      "pngPath": "C:\\Users\\lalad\\OneDrive\\Desktop\\PhysicsChannelOutput\\starter-pack-20260604\\01-kinematics-cheatsheet.png",
+      "width": 1080,
+      "height": 1350,
+      "checks": [
+        "formulas deterministic",
+        "phone portrait",
+        "no generated text"
+      ]
+    },
+    {
+      "id": "02-acceleration-task",
+      "title": "Разбор задачи на ускорение",
+      "format": "1080x1350",
+      "svgPath": "C:\\Users\\lalad\\OneDrive\\Desktop\\PhysicsChannelOutput\\starter-pack-20260604\\02-acceleration-task.svg",
+      "pngPath": "C:\\Users\\lalad\\OneDrive\\Desktop\\PhysicsChannelOutput\\starter-pack-20260604\\02-acceleration-task.png",
+      "width": 1080,
+      "height": 1350,
+      "checks": [
+        "a = 4 м/с²",
+        "s = 50 м",
+        "graph is schematic"
+      ]
+    },
+    {
+      "id": "03-minus-sign-meme",
+      "title": "Мем про знак ускорения",
+      "format": "1080x1080",
+      "svgPath": "C:\\Users\\lalad\\OneDrive\\Desktop\\PhysicsChannelOutput\\starter-pack-20260604\\03-minus-sign-meme.svg",
+      "pngPath": "C:\\Users\\lalad\\OneDrive\\Desktop\\PhysicsChannelOutput\\starter-pack-20260604\\03-minus-sign-meme.png",
+      "width": 1080,
+      "height": 1080,
+      "checks": [
+        "original doodle",
+        "formula deterministic",
+        "square meme"
+      ]
+    }
+  ]
+}

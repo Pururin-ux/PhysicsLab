@@ -15,6 +15,7 @@ type TaskFocusInput = {
 };
 
 const focusByBlueprint: Record<string, TaskFocus> = {
+  "contact-pressure":{title:"Давление на опору",check:"Определи общую площадь контакта и проверь единицы силы и площади."},
   "formula-substitution": {
     title: "Подстановка в формулу",
     check:
@@ -59,6 +60,7 @@ const focusByBlueprint: Record<string, TaskFocus> = {
 // Экспорт — только для consistency.test.ts: тест обязывает заводить копию
 // для каждого нового навыка, чтобы ученик не видел generic-fallback.
 export const checkBySkill: Partial<Record<SkillId, string>> = {
+  "contact-pressure":"Определи, что ищем: давление, силу или общую площадь. Вырази эту величину из p=F/S и согласуй единицы.",
   "vt-slope": "Смотри на наклон: нужно изменение скорости за выбранный промежуток времени.",
   "vt-area": "Считай площадь под графиком скорости за весь интервал, а не одно значение скорости.",
   "free-fall": "Для падения из покоя путь растёт как $t^2$: используй $h=\\frac{gt^2}{2}$.",

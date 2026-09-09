@@ -1,0 +1,14 @@
+{
+  "id": "empty-text-zone-poster",
+  "version": "0.1.0",
+  "api_json": "workflow.api.json",
+  "purpose": "Generate a non-text visual layer with reserved empty areas for deterministic overlays.",
+  "compatible_checkpoint_type": "SDXL-style checkpoint",
+  "default_checkpoint": "SSD-1B.safetensors",
+  "rules": [
+    "Generated output is not a final post.",
+    "No final readable Russian text, formulas, graph labels, or answers.",
+    "Use deterministic overlays after generation."
+  ]
+}
+

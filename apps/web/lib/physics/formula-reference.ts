@@ -172,6 +172,13 @@ export const formulaReference: FormulaReferenceGroup[] = [
     status: "active",
     entries: [
       {
+        id: "contact-pressure",
+        relatedSkillIds:["contact-pressure"],
+        title:"Давление на опору",formula:"p=\\frac{F}{S}",caption:"сила на единицу площади контакта",
+        symbols:[{latex:"p",description:"давление, Па"},{latex:"F",description:"перпендикулярная сила, Н"},{latex:"S",description:"общая площадь контакта, м²"}],
+        limitation:"При равномерном распределении силы. Для неравномерного распределения отношение полной силы к общей площади даёт среднее давление.",
+      },
+      {
         id: "newton-second",
         relatedSkillIds: ["newton-second"],
         title: "Второй закон Ньютона",

@@ -1,4 +1,4 @@
-import { OpticsLesson } from "../../../components/learning/TopicLessons";
+import { ReflectionContentLesson } from "../../../components/learning/ReflectionContentLesson";
 
 export const metadata = {
   title: "Отражение света | PhysicsLab",
@@ -6,5 +6,5 @@ export const metadata = {
 };
 
 export default function OpticsLessonPage() {
-  return <OpticsLesson />;
+  return <ReflectionContentLesson />;
 }

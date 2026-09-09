@@ -2,8 +2,8 @@ import { defineConfig } from "@playwright/test";
 
 // Смок против production-сборки: next start на 3100 (не 3000, чтобы не
 // столкнуться с локальным dev). Перед запуском обязан быть выполнен
-// npm run build; локально dev-сервер должен быть остановлен — build и dev
-// делят .next (см. README, «известные грабли»).
+// npm run build. Чтобы сохранить dev-сервер, передай одинаковый NEXT_DIST_DIR
+// при build и smoke: например .next-production-audit. Без него оба используют .next.
 export default defineConfig({
   testDir: "./tests",
   testMatch: "prod-smoke.spec.ts",

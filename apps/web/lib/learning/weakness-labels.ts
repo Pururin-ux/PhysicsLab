@@ -20,6 +20,7 @@ export const weaknessCopyBySkill: Partial<Record<SkillId, {
   title: string;
   hint: string;
 }>> = {
+  "contact-pressure":{title:"Давление на опору",hint:"Полная сила действует на ==суммарную площадь== опор. Проверь перевод квадратных единиц."},
   "vt-slope": {
     title: "Наклон v(t)",
     hint: "Смотри на изменение скорости за выбранное время: $\\frac{\\Delta v}{\\Delta t}$.",

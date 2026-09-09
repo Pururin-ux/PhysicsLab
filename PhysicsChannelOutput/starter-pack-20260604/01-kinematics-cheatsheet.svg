@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1350" viewBox="0 0 1080 1350">
+  <style>
+    text { dominant-baseline: alphabetic; letter-spacing: 0; }
+    .strokeText { paint-order: stroke; stroke: #1b1712; stroke-width: 8px; stroke-linejoin: round; }
+  </style>
+  <rect width="1080" height="1350" fill="#f4f1ea"/>
+  <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.75" numOctaves="2" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/></filter>
+  <rect width="1080" height="1350" filter="url(#grain)" opacity="0.05"/>
+  <path d="M 56 110 H 1024" stroke="#ddd7cc" stroke-width="2" opacity="0.45"/><path d="M 56 152 H 1024" stroke="#ddd7cc" stroke-width="2" opacity="0.45"/><path d="M 56 194 H 1024" stroke="#ddd7cc" stroke-width="2" opacity="0.45"/><path d="M 56 236 H 1024" stroke="#ddd7cc" stroke-width="2" opacity="0.45"/><path d="M 56 278 H 1024" stroke="#ddd7cc" stroke-width="2" opacity="0.45"/><path d="M 56 320 H 1024" stroke="#ddd7cc" stroke-width="2" opacity="0.45"/><path d="M 56 362 H 1024" stroke="#ddd7cc" stroke-width="2" opacity="0.45"/><path d="M 56 404 H 1024" stroke="#ddd7cc" stroke-width="2" opacity="0.45"/><path d="M 56 446 H 1024" stroke="#ddd7cc" stroke-width="2" opacity="0.45"/><path d="M 56 488 H 1024" stroke="#ddd7cc" stroke-width="2" opacity="0.45"/><path d="M 56 530 H 1024" stroke="#ddd7cc" stroke-width="2" opacity="0.45"/><path d="M 56 572 H 1024" stroke="#ddd7cc" stroke-width="2" opacity="0.45"/><path d="M 56 614 H 1024" stroke="#ddd7cc" stroke-width="2" opacity="0.45"/><path d="M 56 656 H 1024" stroke="#ddd7cc" stroke-width="2" opacity="0.45"/><path d="M 56 698 H 1024" stroke="#ddd7cc" stroke-width="2" opacity="0.45"/><path d="M 56 740 H 1024" stroke="#ddd7cc" stroke-width="2" opacity="0.45"/><path d="M 56 782 H 1024" stroke="#ddd7cc" stroke-width="2" opacity="0.45"/><path d="M 56 824 H 1024" stroke="#ddd7cc" stroke-width="2" opacity="0.45"/><path d="M 56 866 H 1024" stroke="#ddd7cc" stroke-width="2" opacity="0.45"/><path d="M 56 908 H 1024" stroke="#ddd7cc" stroke-width="2" opacity="0.45"/><path d="M 56 950 H 1024" stroke="#ddd7cc" stroke-width="2" opacity="0.45"/><path d="M 56 992 H 1024" stroke="#ddd7cc" stroke-width="2" opacity="0.45"/><path d="M 56 1034 H 1024" stroke="#ddd7cc" stroke-width="2" opacity="0.45"/><path d="M 56 1076 H 1024" stroke="#ddd7cc" stroke-width="2" opacity="0.45"/><path d="M 56 1118 H 1024" stroke="#ddd7cc" stroke-width="2" opacity="0.45"/><path d="M 56 1160 H 1024" stroke="#ddd7cc" stroke-width="2" opacity="0.45"/><path d="M 56 1202 H 1024" stroke="#ddd7cc" stroke-width="2" opacity="0.45"/><path d="M 56 1244 H 1024" stroke="#ddd7cc" stroke-width="2" opacity="0.45"/><path d="M 56 1286 H 1024" stroke="#ddd7cc" stroke-width="2" opacity="0.45"/><path d="M 56 1328 H 1024" stroke="#ddd7cc" stroke-width="2" opacity="0.45"/>
+  
+    <g transform="rotate(-4 176.74 95.95)">
+    <path d="M 82.6353697029408 59.51367860590108 L 271.6172351997998 64.40525483735837 Q 283.43657558180394 60.26947953365743 285.82188949107194 72.90551751479506 L 284.04419430300595 119.00371570568532 Q 283.05847726438196 130.9684321038425 271.10898476049306 132.37411472839304 L 81.77635563584045 129.84394158711657 Q 69.14344669412822 128.66349431369454 68.19466791697778 117.41872382545844 L 68.7376194819808 72.27246567467228 Q 68.17091883998364 61.70952782314271 82.6353697029408 59.51367860590108 Z" fill="#e8c14a" stroke="#24211d" stroke-width="3" stroke-linejoin="round" opacity="1" />
+    <text x="88" y="101" fill="#24211d" font-size="34" font-weight="800" font-family="Rubik, Nunito, Arial, sans-serif" text-anchor="start"><tspan x="88" dy="0">шпаргалка</tspan></text>
+  </g>
+    <text x="70" y="182" fill="#24211d" font-size="60" font-weight="900" font-family="Rubik, Nunito, Arial, sans-serif" text-anchor="start"><tspan x="70" dy="0">Кинематика:</tspan><tspan x="70" dy="69.6">4 формулы,</tspan><tspan x="70" dy="69.6">которые спасают</tspan></text>
+    <text x="74" y="390" fill="#6e625a" font-size="31" font-weight="600" font-family="Rubik, Nunito, Arial, sans-serif" text-anchor="start"><tspan x="74" dy="0">если движение равноускоренное и всё по одной</tspan><tspan x="74" dy="35.96">прямой</tspan></text>
+    <g>
+    <path d="M 100.05793524323963 470.1497320411727 L 480.54059282061644 470.45078817987815 Q 498.71405829302967 469.10442544706166 501.75388348056003 490.19011148717254 L 497.90013080695644 588.1525275583845 Q 499.5836703442037 607.5078531103209 480.5386829189956 607.7516244533472 L 99.90021234960295 609.7176033603027 Q 80.33003632817417 606.5099257891998 79.59987875423394 588.8510379458312 L 80.90764293563552 488.30407057190314 Q 80.38832783605903 470.3061550017446 100.05793524323963 470.1497320411727 Z" fill="#fffaf0" stroke="#24211d" stroke-width="4" stroke-linejoin="round" opacity="1" />
+    <rect x="96" y="484" width="16" height="110" rx="8" fill="#e65a3a"/>
+    <text x="132" y="537" fill="#24211d" font-size="44" font-weight="800" font-family="JetBrains Mono, Consolas, monospace" text-anchor="start"><tspan x="132" dy="0">v = v₀ + at</tspan></text>
+    <text x="134" y="578" fill="#6e625a" font-size="24" font-weight="600" font-family="Rubik, Nunito, Arial, sans-serif" text-anchor="start"><tspan x="134" dy="0">скорость через время</tspan></text>
+  </g>
+    <g>
+    <path d="M 598.9407545677386 467.87833754438907 L 980.4008053324651 472.20680220169015 Q 1000.1254713013768 471.1922084884718 998.2638579467312 487.56843904033303 L 1000.9800189652015 588.7006515690591 Q 1001.989912500605 606.963869702071 980.2740461495705 609.1823453789111 L 597.6521992927883 610.1403575967997 Q 579.2195433564484 609.5669516129419 579.1322045796551 588.0764140172396 L 581.2486039218493 490.76231358689256 Q 579.5509521691129 469.71527554187924 598.9407545677386 467.87833754438907 Z" fill="#fffaf0" stroke="#24211d" stroke-width="4" stroke-linejoin="round" opacity="1" />
+    <rect x="596" y="484" width="16" height="110" rx="8" fill="#6e7a61"/>
+    <text x="632" y="537" fill="#24211d" font-size="44" font-weight="800" font-family="JetBrains Mono, Consolas, monospace" text-anchor="start"><tspan x="632" dy="0">s = v₀t + at²/2</tspan></text>
+    <text x="634" y="578" fill="#6e625a" font-size="24" font-weight="600" font-family="Rubik, Nunito, Arial, sans-serif" text-anchor="start"><tspan x="634" dy="0">путь / перемещение</tspan></text>
+  </g>
+    <g>
+    <path d="M 100.33161324681714 649.3005858082324 L 477.852954226546 647.7408342598937 Q 500.3092472329736 650.4619949487969 497.68385434057564 667.5338686280884 L 497.9560372547712 767.2708693479653 Q 498.490685634315 788.5859041493386 480.2913776959758 789.8529907788616 L 100.77783431857824 789.2967254512478 Q 79.73774663638324 788.6232565585524 78.95634256652556 766.3319787820801 L 80.30358733492903 669.3262980750296 Q 79.35653121396899 648.4131451062858 100.33161324681714 649.3005858082324 Z" fill="#fffaf0" stroke="#24211d" stroke-width="4" stroke-linejoin="round" opacity="1" />
+    <rect x="96" y="664" width="16" height="110" rx="8" fill="#7e908e"/>
+    <text x="132" y="717" fill="#24211d" font-size="44" font-weight="800" font-family="JetBrains Mono, Consolas, monospace" text-anchor="start"><tspan x="132" dy="0">v² − v₀² = 2as</tspan></text>
+    <text x="134" y="758" fill="#6e625a" font-size="24" font-weight="600" font-family="Rubik, Nunito, Arial, sans-serif" text-anchor="start"><tspan x="134" dy="0">когда времени нет</tspan></text>
+  </g>
+    <g>
+    <path d="M 599.7397907171398 649.6290483011398 L 980.0535000162199 649.269246760523 Q 999.7017662683502 651.7275039181113 998.471489866497 669.6276735828724 L 1000.8610294398386 765.553533562459 Q 998.2719327406958 788.5774104138836 982.1759531332646 789.879114882322 L 599.3060438346583 785.8127762884833 Q 579.0214331001043 789.0899483934045 581.2968298047781 765.5534597714432 L 578.3134178130422 669.1841109131929 Q 579.568965561688 651.8081632209942 599.7397907171398 649.6290483011398 Z" fill="#fffaf0" stroke="#24211d" stroke-width="4" stroke-linejoin="round" opacity="1" />
+    <rect x="596" y="664" width="16" height="110" rx="8" fill="#9e6b55"/>
+    <text x="632" y="717" fill="#24211d" font-size="44" font-weight="800" font-family="JetBrains Mono, Consolas, monospace" text-anchor="start"><tspan x="632" dy="0">s = (v + v₀)t/2</tspan></text>
+    <text x="634" y="758" fill="#6e625a" font-size="24" font-weight="600" font-family="Rubik, Nunito, Arial, sans-serif" text-anchor="start"><tspan x="634" dy="0">средняя скорость</tspan></text>
+  </g>
+    <path d="M 108.86128058028407 851.6797301871702 L 973.2483022653032 847.7445856912527 Q 996.8557592695579 851.0413256594911 995.5836966577917 873.2281388642732 L 993.8762587858364 1066.1577023889404 Q 997.3783731805161 1087.134364247322 973.562359794043 1088.8178635314107 L 107.10211967886426 1089.1511930986308 Q 85.51885236985981 1089.3327759793028 84.36345051485114 1063.6092747943476 L 85.09598034876399 871.7376516803633 Q 85.08933354075998 851.2152863573283 108.86128058028407 851.6797301871702 Z" fill="#fffbec" stroke="#24211d" stroke-width="4" stroke-linejoin="round" opacity="1" />
+    <text x="126" y="930" fill="#e65a3a" font-size="46" font-weight="900" font-family="Rubik, Nunito, Arial, sans-serif" text-anchor="start"><tspan x="126" dy="0">ловушка</tspan></text>
+    <text x="126" y="990" fill="#24211d" font-size="38" font-weight="650" font-family="Rubik, Nunito, Arial, sans-serif" text-anchor="start"><tspan x="126" dy="0">v₀ — это начальная скорость, а не «первая</tspan><tspan x="126" dy="44.08">попавшаяся v» из условия.</tspan></text>
+    <path d="M 776 970 Q 826.1158651742153 934.9139399989508 904 875" fill="none" stroke="#e65a3a" stroke-width="5" stroke-linecap="round"/>
+  <path d="M 904 875 L 896.1095759312532 895.5363387198239 M 904 875 L 882.0585859975589 876.6044785986359" fill="none" stroke="#e65a3a" stroke-width="5" stroke-linecap="round"/>
+    <text x="650" y="1165" fill="#6e625a" font-size="31" font-weight="800" font-family="Rubik, Nunito, Arial, sans-serif" text-anchor="start" transform="rotate(-3 650 1165)"><tspan x="650" dy="0">единицы: м/с, м/с², с, м</tspan></text>
+    <g transform="translate(90 1128) scale(1.18)">
+    <path d="M 32 98 C 8 76 12 38 38 24 L 46 3 L 65 19 C 83 13 102 16 116 25 L 137 9 L 140 38 C 165 65 151 110 116 125 C 80 140 48 128 32 98 Z" fill="#f8f3e9" stroke="#24211d" stroke-width="7" stroke-linejoin="round"/>
+    <circle cx="61" cy="69" r="8" fill="#24211d"/>
+    <circle cx="111" cy="69" r="8" fill="#24211d"/>
+    <path d="L 72 99 Q 86 111 101 99" fill="none" stroke="#24211d" stroke-width="6" stroke-linecap="round"/>
+    <path d="M 83 80 L 91 80 L 87 88 Z" fill="#e65a3a"/>
+    <path d="M 22 70 C 2 62 -5 50 -18 39 M 23 83 C 0 82 -10 83 -27 91 M 128 83 C 154 83 165 88 180 99 M 126 69 C 150 58 163 48 176 34" fill="none" stroke="#24211d" stroke-width="4" stroke-linecap="round"/>
+  </g>
+    <text x="258" y="1248" fill="#24211d" font-size="34" font-weight="800" font-family="Rubik, Nunito, Arial, sans-serif" text-anchor="start"><tspan x="258" dy="0">сначала выбери ось, потом ставь</tspan><tspan x="258" dy="39.44">знаки</tspan></text>
+  
+</svg>

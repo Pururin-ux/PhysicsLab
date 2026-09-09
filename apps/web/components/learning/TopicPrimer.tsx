@@ -7,23 +7,23 @@ import { useId, useState } from "react";
 import type { ReactNode } from "react";
 import {
   defineLessonStageSequence,
-  getLessonStageDefinition,
 } from "../../lib/learning/lesson-stage-contract";
 import { MathText } from "../ui/MathText";
+import { useLessonDraft } from "../../lib/learning/use-lesson-draft";
 import { LessonStageEngine } from "./LessonStageEngine";
 import styles from "./TopicPrimer.module.css";
 
 const TOPIC_PRIMER_STAGES = defineLessonStageSequence([
-  { id: "context", nextAction: "Сделать прогноз" },
-  { id: "prediction", nextAction: "Сравнить с наблюдением" },
-  { id: "observation", nextAction: "Объяснить результат" },
-  { id: "causal-explanation", nextAction: "Записать связь" },
-  { id: "representation", nextAction: "Разобрать пример" },
-  { id: "worked-example", nextAction: "Дополнить решение" },
-  { id: "faded-example", nextAction: "Решить самостоятельно" },
-  { id: "independent-practice", nextAction: "Перенести идею" },
-  { id: "transfer", nextAction: "Подвести итог" },
-  { id: "summary" },
+  { id: "context", label: "Ситуация", nextAction: "Сделать прогноз" },
+  { id: "prediction", label: "Прогноз", nextAction: "Сравнить с наблюдением" },
+  { id: "observation", label: "Наблюдение", nextAction: "Объяснить результат" },
+  { id: "causal-explanation", label: "Почему так", nextAction: "Записать связь" },
+  { id: "representation", label: "Схема и формула", nextAction: "Разобрать пример" },
+  { id: "worked-example", label: "Разбор", nextAction: "Дополнить решение" },
+  { id: "faded-example", label: "Дополни решение", nextAction: "Решить самостоятельно" },
+  { id: "independent-practice", label: "Реши сам", nextAction: "Перенести идею" },
+  { id: "transfer", label: "Перенос", nextAction: "Подвести итог" },
+  { id: "summary", label: "Итог" },
 ] as const);
 
 const primerEngineClasses = {
@@ -161,6 +161,7 @@ export interface TopicPrimerTransfer extends TopicPrimerStageCopy {
 }
 
 export interface TopicPrimerConfig {
+  draftId: string;
   topic: string;
   title: string;
   meta?: string;
@@ -386,6 +387,17 @@ export function TopicPrimer({ config, className }: TopicPrimerProps) {
   const [summaryText, setSummaryText] = useState("");
   const [summaryTried, setSummaryTried] = useState(false);
   const [summarySaved, setSummarySaved] = useState(false);
+  const draftState = { stage, predictionId, faded: { ...faded }, independent: { ...independent }, transfer: { ...transfer }, summaryText, summaryTried, summarySaved };
+  const lessonDraft = useLessonDraft(config.draftId, draftState, (draft) => {
+    setStage(draft.stage);
+    setPredictionId(draft.predictionId);
+    setFaded(draft.faded);
+    setIndependent(draft.independent);
+    setTransfer(draft.transfer);
+    setSummaryText(draft.summaryText);
+    setSummaryTried(draft.summaryTried);
+    setSummarySaved(draft.summarySaved);
+  }, TOPIC_PRIMER_STAGES.length);
   const reduceMotion = useReducedMotion();
   const id = useId().replace(/:/g, "");
 
@@ -414,7 +426,7 @@ export function TopicPrimer({ config, className }: TopicPrimerProps) {
     return (
       <div className={styles.stageIntro}>
         <p className={styles.eyebrow}>
-          {eyebrow ?? getLessonStageDefinition(TOPIC_PRIMER_STAGES[stage].id).label}
+          {eyebrow ?? TOPIC_PRIMER_STAGES[stage].label}
         </p>
         <h3 data-lesson-stage-heading tabIndex={-1}>{title}</h3>
         {body ? <div className={styles.lead}>{body}</div> : null}
@@ -467,8 +479,11 @@ export function TopicPrimer({ config, className }: TopicPrimerProps) {
       const current = config.observation;
       return (
         <div className={`${styles.stageGrid}${current.asset || current.visual ? "" : ` ${styles.stageGridSingle}`}`}>
-          <div className={styles.copyColumn}>
+          <div className={`${styles.copyColumn} ${styles.observationIntro}`}>
             {stageHeading(current.eyebrow ?? "Наблюдение", current.title, current.body)}
+          </div>
+          <StageMedia asset={current.asset} visual={current.visual} />
+          <div className={styles.copyColumn}>
             {current.insight || predictionChoice?.reflection ? (
               <div className={styles.observationReading}>
                 <span>Что видно</span>
@@ -482,7 +497,6 @@ export function TopicPrimer({ config, className }: TopicPrimerProps) {
               </div>
             ) : null}
           </div>
-          <StageMedia asset={current.asset} visual={current.visual} />
         </div>
       );
     }
@@ -615,8 +629,8 @@ export function TopicPrimer({ config, className }: TopicPrimerProps) {
             setSummaryTried(false);
             setSummarySaved(false);
           }}
-          rows={5}
-          placeholder="Например: если масса больше, то при той же силе ускорение меньше…"
+          maxLength={10000} rows={5}
+          placeholder="Какая связь объясняет наблюдение? При каких условиях она работает?"
           aria-describedby={`${id}-summary-hint`}
         />
         <p id={`${id}-summary-hint`} className={styles.summaryHint}>
@@ -631,7 +645,7 @@ export function TopicPrimer({ config, className }: TopicPrimerProps) {
               setSummarySaved(false);
               return;
             }
-            setSummarySaved(true);
+            setSummarySaved(lessonDraft.save({ ...draftState, summarySaved: true }));
           }}
         >
           Сохранить итог
@@ -639,9 +653,11 @@ export function TopicPrimer({ config, className }: TopicPrimerProps) {
         {summaryTried && !summaryReady ? (
           <p className={styles.summaryError} role="alert">Добавь ещё немного слов — хотя бы одну законченную мысль.</p>
         ) : null}
-        {summarySaved ? (
+        {summarySaved && !lessonDraft.error ? (
           <div className={styles.practiceFinish}>
-            <p>{current.completionText ?? "Связь сформулирована. Можно потренироваться ещё."}</p>
+            <p>Итог сохранён в этом браузере. Это твоя запись, а не автоматическая оценка объяснения.</p>
+            <p>{current.completionText ?? "Итог сохранён в этом браузере. Можно потренироваться ещё."}</p>
+            <Link className={styles.practiceLink} href="/profile/notebook">Открыть свою тетрадь</Link>
             <Link className={styles.practiceLink} href={current.practiceHref}>{current.practiceLabel}</Link>
           </div>
         ) : null}
@@ -668,6 +684,7 @@ export function TopicPrimer({ config, className }: TopicPrimerProps) {
       reduceMotion={Boolean(reduceMotion)}
       classes={primerEngineClasses}
     >
+      {lessonDraft.error ? <p role="alert" className={styles.summaryError}>{lessonDraft.error}</p> : null}
       {renderStage()}
     </LessonStageEngine>
   );

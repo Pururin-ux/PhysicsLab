@@ -1,0 +1,63 @@
+{
+  "channel": "physics_math_school_telegram",
+  "date": "2026-06-05",
+  "rules": [
+    "One main idea per post",
+    "Use ImageGen for original mood/scene/texture only",
+    "Render Russian copy, formulas, graph labels, and numbers deterministically",
+    "Treat user examples as quality anchors, not templates",
+    "Rotate visual modes so the feed is not monotonous"
+  ],
+  "posts": [
+    {
+      "id": "01-fizmat-letom-da",
+      "topic": "Физмат летом? Да",
+      "type": "meme_hook",
+      "purpose": "Снять сопротивление к летнему повтору",
+      "style": "Manga Marker Chaos / loud marker mode",
+      "learning_point": "Летом лучше повторять понемногу, а не героически за ночь",
+      "hook": "Физмат летом? да, но без фанатизма",
+      "candidate": true
+    },
+    {
+      "id": "02-letniy-checkpoint",
+      "topic": "Летний чекпоинт физматника",
+      "type": "saveable_checklist",
+      "purpose": "Дать список тем на август",
+      "style": "Light Summer Checkpoint",
+      "learning_point": "База: квадраты/графики/тригонометрия + кинематика/Ньютон/энергия",
+      "hook": "15 минут в день > паника 31 августа",
+      "candidate": true
+    },
+    {
+      "id": "03-minus-v-uskorenii",
+      "topic": "Минус в ускорении",
+      "type": "mini_guide",
+      "purpose": "Закрепить смысл отрицательного ускорения",
+      "style": "Dark Pixel Study Desk or Notebook Sketch",
+      "learning_point": "Минус у ускорения показывает направление относительно выбранной оси",
+      "hook": "Минус — это не украшение",
+      "candidate": true
+    },
+    {
+      "id": "04-kinematika-5-formul",
+      "topic": "5 формул кинематики",
+      "type": "cheatsheet",
+      "purpose": "Дать базовые формулы равноускоренного движения",
+      "style": "Warm Night Corkboard / light paper",
+      "learning_point": "v=v0+at; s=v0t+at²/2; v²-v0²=2as; s=(v+v0)t/2; a=(v-v0)/t",
+      "hook": "Сначала ось, потом формулы",
+      "candidate": true
+    },
+    {
+      "id": "05-edinitsy-kradut-bally",
+      "topic": "Единицы измерения крадут баллы",
+      "type": "meme_plus_tip",
+      "purpose": "Напомнить про СИ",
+      "style": "Mistake notebook / sticker chaos",
+      "learning_point": "Перед подстановкой переводить км/ч в м/с, минуты в секунды, см в метры",
+      "hook": "Ответ правильный, а баллы ушли гулять",
+      "candidate": true
+    }
+  ]
+}

@@ -111,7 +111,7 @@ function Header({ theme, onToggleTheme }: { theme: Theme; onToggleTheme: () => v
   return (
     <header className={cn(
       "site-header top-0 z-40",
-      isHome ? "site-header--home absolute inset-x-0" : "site-header--inner sticky",
+      "site-header--inner sticky",
     )}>
       <div className={cn("mx-auto flex min-h-[64px] w-full items-center gap-4 px-4 sm:px-6 md:min-h-[76px] lg:px-8", isHome ? "max-w-none lg:px-12" : "max-w-[1300px]")}>
         <Brand />
@@ -281,3 +281,4 @@ export function AppShell({ children }: { children: ReactNode }) {
     </div>
   );
 }
+

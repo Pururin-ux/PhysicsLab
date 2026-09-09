@@ -1,0 +1,143 @@
+---
+interface Props {
+  role?: string;
+  speaker?: string;
+  tone?: "lab" | "mentor" | "warning" | "exam";
+  state?: "calm" | "encouraging" | "surprised" | "thinking" | "warning";
+}
+
+const {
+  role = "лаборант",
+  speaker = "Персонаж-заглушка",
+  tone = "lab",
+  state = "calm"
+} = Astro.props;
+
+type MascotState = NonNullable<Props["state"]>;
+
+const stateLabels: Record<MascotState, string> = {
+  calm: "спокойная подсказка",
+  encouraging: "поддержка",
+  surprised: "неожиданный факт",
+  thinking: "размышление",
+  warning: "предупреждение"
+};
+
+const stateLabel = stateLabels[state];
+---
+
+<aside
+  class:list={["character-bubble", `character-bubble--${tone}`, `character-bubble--state-${state}`]}
+  data-mascot-state={state}
+  data-mascot-label={stateLabel}
+  aria-label={`${speaker}: ${role}, ${stateLabel}`}
+>
+  <div class="mascot" aria-hidden="true" data-state={state}></div>
+  <div>
+    <p class="bubble-role">Реплика персонажа - {role}</p>
+    <strong>{speaker}</strong>
+    <p><slot /></p>
+  </div>
+</aside>
+
+<style>
+  .character-bubble {
+    display: grid;
+    grid-template-columns: 76px minmax(0, 1fr);
+    gap: var(--pl-space-4);
+    align-items: center;
+    padding: var(--pl-space-4);
+    border: 1px solid rgba(181, 156, 255, 0.36);
+    border-radius: var(--pl-radius);
+    background:
+      linear-gradient(135deg, rgba(181, 156, 255, 0.11), transparent 48%),
+      var(--pl-surface);
+    box-shadow: var(--pl-shadow-soft);
+  }
+
+  .character-bubble--warning {
+    border-color: rgba(255, 107, 107, 0.42);
+  }
+
+  .character-bubble--exam {
+    border-color: rgba(255, 216, 77, 0.5);
+  }
+
+  .mascot {
+    position: relative;
+    width: 70px;
+    height: 90px;
+    border: 1px solid rgba(181, 156, 255, 0.46);
+    border-radius: 35px 35px 16px 16px;
+    background:
+      linear-gradient(135deg, rgba(255, 216, 77, 0.35), transparent 46%),
+      #263142;
+  }
+
+  .mascot::before,
+  .mascot::after {
+    content: "";
+    position: absolute;
+  }
+
+  .mascot::before {
+    top: 14px;
+    left: 17px;
+    width: 36px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--pl-bg-lab);
+  }
+
+  .mascot::after {
+    right: 12px;
+    bottom: 16px;
+    left: 12px;
+    height: 22px;
+    border: 2px solid var(--pl-accent);
+    border-radius: 999px;
+  }
+
+  .bubble-role {
+    margin-bottom: var(--pl-space-2);
+    color: var(--pl-violet);
+    font-size: 0.78rem;
+    font-weight: 900;
+    text-transform: uppercase;
+  }
+
+  strong {
+    display: block;
+    margin-bottom: var(--pl-space-2);
+  }
+
+  p:last-child {
+    margin-bottom: 0;
+  }
+
+  @media (max-width: 600px) {
+    .character-bubble {
+      grid-template-columns: 58px minmax(0, 1fr);
+      gap: var(--pl-space-3);
+    }
+
+    .mascot {
+      width: 54px;
+      height: 72px;
+    }
+
+    .mascot::before {
+      top: 12px;
+      left: 13px;
+      width: 28px;
+      height: 24px;
+    }
+
+    .mascot::after {
+      right: 10px;
+      bottom: 12px;
+      left: 10px;
+      height: 18px;
+    }
+  }
+</style>

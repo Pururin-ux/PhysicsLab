@@ -87,8 +87,37 @@ test.describe("optics desktop flows", () => {
     await opticsLinks.click();
 
     await expect(page).toHaveURL(/\/practice\/optics-lesson/);
-    await expect(page.getByRole("heading", { name: "Откуда считать угол луча" })).toBeVisible();
-    await expect(page.getByRole("button", { name: "25°" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Отражение света" })).toBeVisible();
+    await expect(page.getByText("Когда свет встречает поверхность")).toBeVisible();
+  });
+
+  test("content-first урок: задача не раскрывает решение до попытки, помощь и успех работают", async ({ page }) => {
+    await page.goto("/practice/optics-lesson", { waitUntil: "domcontentloaded" });
+    const task = page.getByTestId("reflection-independent-task");
+    await task.scrollIntoViewIfNeeded();
+    await expect(task).toBeVisible();
+    await expect(task).not.toContainText("62°");
+    await expect(task.getByTestId("reflection-task-success")).toHaveCount(0);
+
+    const group = task.getByTestId("reflection-task-radiogroup");
+    await group.focus();
+    await page.keyboard.press("Enter");
+    await expect(task.getByTestId("reflection-task-wrong")).toHaveText(
+      "Угол в условии отмечен к поверхности зеркала. Закон отражения сравнивает углы от нормали.Попробуй ещё раз.",
+    );
+
+    await task.getByRole("button", { name: "Помощь" }).click();
+    await expect(task.getByTestId("reflection-analogue-help")).toContainText("18°");
+    await expect(task).not.toContainText("62°");
+
+    await group.focus();
+    await page.keyboard.press("End");
+    await page.keyboard.press("Enter");
+    await expect(task.getByTestId("reflection-task-success")).toBeVisible();
+    await expect(task.getByRole("link", { name: "Тренироваться на задачах" })).toHaveAttribute(
+      "href",
+      "/practice/family/reflection-angle",
+    );
   });
 
   test("отражение: луч-решение появляется только после ответа", async ({ page, request }) => {

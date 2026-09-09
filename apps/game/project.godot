@@ -1,0 +1,33 @@
+; Engine configuration file.
+; Edit through the Godot editor when practical.
+config_version=5
+
+[application]
+
+config/name="The Fox That Never Was"
+config/icon="res://art/branding/shorok-app-icon-v1.png"
+run/main_scene="res://src/main.tscn"
+
+[display]
+
+window/size/viewport_width=390
+window/size/viewport_height=844
+window/size/window_width_override=390
+window/size/window_height_override=844
+window/stretch/mode="canvas_items"
+window/handheld/orientation=1
+
+[input_devices]
+
+pointing/emulate_touch_from_mouse=true
+
+[rendering]
+
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
+textures/default_filters/use_nearest_mipmap_filter=false
+textures/vram_compression/import_etc2_astc=true
+
+[environment]
+
+defaults/default_clear_color=Color(0.043, 0.039, 0.035, 1)

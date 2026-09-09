@@ -6,9 +6,70 @@ import {
   buildExportFile,
   parseExportFile,
   summarizeExport,
+  applyImport,
 } from "./progress-export.ts";
 import { $appProgress, resetProgress, recordCompletedSession } from "./progress-store.ts";
 import { $xp } from "./session-store.ts";
+import { replaceLiveLessonDraft } from "../learning/lesson-draft.ts";
+
+test("textbook checks are included in backups and invalid check fields are rejected", () => {
+  const key = "physicslab-lesson-draft-textbook-check-reading-scales";
+  const draft = { stage:0, summaryText:"", summarySaved:false, answer:"5 см на деление", checked:true, questionKey:"question-v1" };
+  replaceLiveLessonDraft(key,draft);
+  try {
+    const file=buildExportFile();
+    assert.deepEqual(file.stores[key],{version:1,data:draft});
+    assert.ok(summarizeExport(file));
+    file.stores[key]={version:1,data:{...draft,checked:"yes"}};
+    assert.equal(summarizeExport(file),null);
+  } finally { replaceLiveLessonDraft(key,null); }
+});
+
+test("failed import rolls back storage and successful import restores lesson drafts", () => {
+  const descriptor = Object.getOwnPropertyDescriptor(globalThis, "window");
+  const key = "physicslab-lesson-draft-acceleration";
+  const checkKey = "physicslab-lesson-draft-textbook-check-reading-scales";
+  const file = buildExportFile();
+  file.stores[key] = {version: 1, data: {screen: 9, summaryText: "Моё объяснение ускорения", summarySaved: true}};
+  file.stores[checkKey] = {version:1,data:{stage:0,summaryText:"",summarySaved:false,answer:"5 см на деление",checked:true,questionKey:"question-v1"}};
+  const storage = new Map([["physicslab-v3-progress-v1", "previous progress"], [key, "previous personal draft"]]);
+  const previous = new Map(storage);
+  let writes = 0;
+  Object.defineProperty(globalThis, "window", {configurable: true, value: {localStorage: {
+    getItem: (key: string) => storage.get(key) ?? null,
+    removeItem: (key: string) => storage.delete(key),
+    setItem: (key: string, value: string) => {
+      if (++writes === 2) throw new DOMException("Full", "QuotaExceededError");
+      storage.set(key, value);
+    },
+  }}});
+  try {
+    assert.equal(applyImport(file), false);
+    assert.deepEqual(storage, previous);
+    assert.equal(applyImport(file), true);
+    assert.deepEqual(JSON.parse(storage.get(key)!), file.stores[key]);
+    assert.deepEqual(JSON.parse(storage.get(checkKey)!),file.stores[checkKey]);
+  } finally {
+    replaceLiveLessonDraft(key, null);
+    replaceLiveLessonDraft(checkKey, null);
+    if (descriptor) Object.defineProperty(globalThis, "window", descriptor);
+    else Reflect.deleteProperty(globalThis, "window");
+  }
+});
+
+test("export includes lesson explanations and rejects corrupt imported drafts", () => {
+  const key = "physicslab-lesson-draft-acceleration";
+  const draft = {screen: 9, summaryText: "Ускорение показывает изменение скорости", summarySaved: true};
+  replaceLiveLessonDraft(key, draft);
+  const file = buildExportFile();
+  assert.deepEqual(file.stores[key], {version: 1, data: draft});
+  assert.ok(summarizeExport(file));
+  file.stores[key] = {version: 1, data: {...draft, screen: 100}};
+  assert.equal(summarizeExport(file), null);
+  delete file.stores[key];
+  assert.ok(summarizeExport(file), "old backups without lesson drafts still work");
+  replaceLiveLessonDraft(key, null);
+});
 
 // applyImport пишет в localStorage и в node не проверяется — его покрывает
 // e2e (tests/flows.spec.ts). Здесь — построение, разбор и сводка файла.

@@ -17,19 +17,20 @@ import { SpeedometerStrip } from "./SpeedometerStrip";
 import { AccelerationStudyStage } from "./AccelerationStudyStage";
 import { cn } from "../../lib/utils";
 import { defineLessonStageSequence } from "../../lib/learning/lesson-stage-contract";
+import { useLessonDraft } from "../../lib/learning/use-lesson-draft";
 import { LessonStageEngine } from "./LessonStageEngine";
 
 const ACCELERATION_STAGES = defineLessonStageSequence([
-  { id: "context", nextAction: "Сделать прогноз" },
-  { id: "prediction", nextAction: "Посмотреть на метки" },
-  { id: "observation", nextAction: "Сверить со спидометром" },
-  { id: "causal-explanation", nextAction: "Назвать связь" },
-  { id: "representation", nextAction: "Разобрать запись" },
-  { id: "worked-example", nextAction: "Дополнить расчёт" },
-  { id: "faded-example", nextAction: "Решить самостоятельно" },
-  { id: "independent-practice", nextAction: "Проверить величину" },
-  { id: "transfer", nextAction: "Подвести итог" },
-  { id: "summary" },
+  { id: "context", label: "Ситуация", nextAction: "Сделать прогноз" },
+  { id: "prediction", label: "Прогноз", nextAction: "Посмотреть на метки" },
+  { id: "observation", label: "Наблюдение", nextAction: "Сверить со спидометром" },
+  { id: "causal-explanation", label: "Почему так", nextAction: "Назвать связь" },
+  { id: "representation", label: "Схема и формула", nextAction: "Разобрать запись" },
+  { id: "worked-example", label: "Разбор", nextAction: "Дополнить расчёт" },
+  { id: "faded-example", label: "Дополни решение", nextAction: "Решить самостоятельно" },
+  { id: "independent-practice", label: "Реши сам", nextAction: "Применить в другой ситуации" },
+  { id: "transfer", label: "Перенос", nextAction: "Подвести итог" },
+  { id: "summary", label: "Итог" },
 ] as const);
 
 const accelerationEngineClasses = {
@@ -151,7 +152,7 @@ function SceneChoice({
         )}
         aria-hidden="true"
       >
-        {selected ? "✓" : ""}
+        {selected ? <span className="size-2 rounded-full bg-current" /> : null}
       </span>
       {children}
     </button>
@@ -234,18 +235,40 @@ export function AccelerationLesson() {
   const [workedAnswer, setWorkedAnswer] = useState("");
   const [workedChecked, setWorkedChecked] = useState(false);
   const [finalAnswer, setFinalAnswer] = useState("");
+  const [transferAnswer, setTransferAnswer] = useState("");
+  const [transferFeedback, setTransferFeedback] = useState<string | null>(null);
+  const [transferAttempts, setTransferAttempts] = useState(0);
   const [finalDirection, setFinalDirection] = useState<"left" | "right" | null>(null);
   const [finalFeedback, setFinalFeedback] = useState<string | null>(null);
   const [magnitudeChecked, setMagnitudeChecked] = useState(false);
   const [summaryText, setSummaryText] = useState("");
   const [summaryTried, setSummaryTried] = useState(false);
   const [summarySaved, setSummarySaved] = useState(false);
+  const draftState = { screen, feeling, unitGuess, workedAnswer, workedChecked, finalAnswer, transferAnswer, transferFeedback, transferAttempts, finalDirection, finalFeedback, magnitudeChecked, summaryText, summaryTried, summarySaved };
+  const lessonDraft = useLessonDraft("acceleration", draftState, (draft) => {
+    setScreen(draft.screen);
+    setFeeling(draft.feeling);
+    setUnitGuess(draft.unitGuess);
+    setWorkedAnswer(draft.workedAnswer);
+    setWorkedChecked(draft.workedChecked);
+    setFinalAnswer(draft.finalAnswer);
+    setTransferAnswer(draft.transferAnswer);
+    setTransferFeedback(draft.transferFeedback);
+    setTransferAttempts(draft.transferAttempts);
+    setFinalDirection(draft.finalDirection);
+    setFinalFeedback(draft.finalFeedback);
+    setMagnitudeChecked(draft.magnitudeChecked);
+    setSummaryText(draft.summaryText);
+    setSummaryTried(draft.summaryTried);
+    setSummarySaved(draft.summarySaved);
+  }, ACCELERATION_STAGES.length);
   const headingRef = useRef<HTMLHeadingElement>(null);
   const reduceMotion = useReducedMotion();
 
   const workedCorrect = parseNumber(workedAnswer) === 2;
   const finalMagnitudeCorrect = parseNumber(finalAnswer) === 3;
-  const finalCorrect = finalMagnitudeCorrect && finalDirection === "left";
+  const transferMagnitudeCorrect = parseNumber(transferAnswer) === 2;
+  const finalCorrect = transferMagnitudeCorrect && finalDirection === "left";
   const summaryReady = summaryText.trim().length >= 12;
   const canContinue = screen === 1
     ? feeling !== null
@@ -256,7 +279,7 @@ export function AccelerationLesson() {
         : screen === 7
           ? magnitudeChecked && finalMagnitudeCorrect
           : screen === 8
-            ? finalFeedback !== null && finalCorrect
+            ? transferFeedback !== null && finalCorrect
             : screen === 9
               ? summarySaved
               : true;
@@ -465,8 +488,8 @@ export function AccelerationLesson() {
                 <p className="mt-2 text-[15px] font-bold leading-[1.55] text-white">Скорость выросла с 2 до 8 м/с за 3 секунды.</p>
                 <div className="mt-4 grid gap-3 border-y border-white/[.1] py-4 text-[14px] leading-[1.6] text-white/72">
                   <p><strong className="text-white">Изменение скорости:</strong> <MathText text="$8-2=6$" /> м/с.</p>
-                  <p><strong className="text-white">Время:</strong> <MathText text="$\\Delta t=3$" /> с.</p>
-                  <p><strong className="text-white">Ускорение:</strong> <MathText text="$a=6\\div3=2$" /> м/с².</p>
+                  <p><strong className="text-white">Время:</strong> <MathText text={"$\\Delta t=3$"} /> с.</p>
+                  <p><strong className="text-white">Ускорение:</strong> <MathText text={"$a=6\\div3=2$"} /> м/с².</p>
                 </div>
                 <p className="mt-4 border-l-2 border-nova-cyan/55 pl-4 text-[13px] leading-[1.6] text-white/70">Каждую секунду скорость прибавлялась на 2 м/с — это и есть ускорение.</p>
               </div>
@@ -573,15 +596,15 @@ export function AccelerationLesson() {
             id="acceleration-summary"
             value={summaryText}
             onChange={(event) => { setSummaryText(event.target.value); setSummaryTried(false); setSummarySaved(false); }}
-            rows={5}
+            maxLength={10000} rows={5}
             placeholder="Например: ускорение показывает, на сколько меняется скорость за одну секунду…"
             className="mt-2 block min-h-[132px] w-full max-w-[700px] rounded-option border border-white/[.16] bg-[#0f1115] px-3 py-3 text-[14px] leading-[1.6] text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/75"
             aria-describedby="acceleration-summary-hint"
           />
           <p id="acceleration-summary-hint" className="mt-2 max-w-[64ch] text-[12px] leading-[1.55] text-white/60">Одной-двух фраз достаточно. Пиши так, как объяснил бы другу.</p>
-          <Button type="button" className="mt-4" onClick={() => { if (!summaryReady) { setSummaryTried(true); setSummarySaved(false); return; } setSummarySaved(true); }}>Сохранить итог</Button>
+          <Button type="button" className="mt-4" onClick={() => { if (!summaryReady) { setSummaryTried(true); setSummarySaved(false); return; } setSummarySaved(lessonDraft.save({ ...draftState, summarySaved: true })); }}>Сохранить итог</Button>
           {summaryTried && !summaryReady ? <p role="alert" className="mt-3 text-[12px] leading-[1.5] text-[#e8b66d]">Добавь ещё немного слов — хотя бы одну законченную мысль.</p> : null}
-          {summarySaved ? <div className="mt-5 border-l-2 border-nova-cyan/65 pl-4"><p className="text-[14px] leading-[1.6] text-white/75">Связь сформулирована. Можно потренироваться ещё.</p><Link href="/practice/family/vt-slope" className="mt-3 inline-flex min-h-11 items-center gap-2 font-bold text-nova-cyan focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/75">5 задач на ускорение по графику <ArrowRight size={17} weight="bold" /></Link></div> : null}
+          {summarySaved && !lessonDraft.error ? <div className="mt-5 border-l-2 border-nova-cyan/65 pl-4"><p className="text-[14px] leading-[1.6] text-white/75">Итог сохранён в этом браузере. Можно потренироваться ещё.</p><Link href="/practice/family/vt-slope" className="mt-3 inline-flex min-h-11 items-center gap-2 font-bold text-nova-cyan focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/75">5 задач на ускорение по графику <ArrowRight size={17} weight="bold" /></Link></div> : null}
         </div>
       );
     }
@@ -589,15 +612,15 @@ export function AccelerationLesson() {
     if (screen === 8) {
       return (
       <div className="mx-auto max-w-[900px] py-2">
-        <h2 ref={headingRef} tabIndex={-1} className="text-[30px] font-[800] leading-tight tracking-[-.025em] text-white focus:outline-none sm:text-[40px]">Теперь торможение</h2>
-        <p className="mt-3 max-w-[64ch] text-[15px] leading-[1.7] text-white/70">Троллейбус едет вправо и снижает скорость с 10 до 4 м/с за 2 секунды. Найди, насколько велико ускорение, и укажи его направление.</p>
+        <h2 ref={headingRef} tabIndex={-1} className="text-[30px] font-[800] leading-tight tracking-[-.025em] text-white focus:outline-none sm:text-[40px]">Другая ситуация: велосипед</h2>
+        <p className="mt-3 max-w-[64ch] text-[15px] leading-[1.7] text-white/70">Велосипедист едет влево и увеличивает скорость с 3 до 11 м/с за 4 секунды. Найди, насколько велико ускорение, и укажи его направление.</p>
         <div className="mt-5 max-w-[430px] border-y border-white/[.12] py-5">
-          <label htmlFor="final-answer" className="text-[14px] font-bold text-white">Величина ускорения</label>
+          <label htmlFor="transfer-answer" className="text-[14px] font-bold text-white">Величина ускорения</label>
           <div className="mt-2 flex items-center gap-2">
             <input
-              id="final-answer"
-              value={finalAnswer}
-              onChange={(event) => { setFinalAnswer(event.target.value); setFinalFeedback(null); }}
+              id="transfer-answer"
+              value={transferAnswer}
+              onChange={(event) => { setTransferAnswer(event.target.value); setTransferFeedback(null); }}
               inputMode="decimal"
               className="h-12 min-w-0 flex-1 rounded-option border border-white/[.16] bg-[#0f1115] px-3 text-[17px] font-bold text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/75"
             />
@@ -606,27 +629,27 @@ export function AccelerationLesson() {
           <fieldset className="mt-5">
             <legend className="text-[14px] font-bold text-white">Куда направлено ускорение?</legend>
             <div className="mt-2 grid gap-x-5 sm:grid-cols-2">
-              <SceneChoice selected={finalDirection === "left"} onClick={() => { setFinalDirection("left"); setFinalFeedback(null); }}>Влево, против движения</SceneChoice>
-              <SceneChoice selected={finalDirection === "right"} onClick={() => { setFinalDirection("right"); setFinalFeedback(null); }}>Вправо, по движению</SceneChoice>
+              <SceneChoice selected={finalDirection === "left"} onClick={() => { setFinalDirection("left"); setTransferFeedback(null); }}>Влево</SceneChoice>
+              <SceneChoice selected={finalDirection === "right"} onClick={() => { setFinalDirection("right"); setTransferFeedback(null); }}>Вправо</SceneChoice>
             </div>
           </fieldset>
           <Button
             type="button"
             className="mt-4 w-full sm:w-auto"
-            disabled={finalAnswer.trim().length === 0 || finalDirection === null}
-            onClick={() => setFinalFeedback(
+            disabled={transferAnswer.trim().length === 0 || finalDirection === null}
+            onClick={() => { setTransferAttempts((count) => count + 1); setTransferFeedback(
               finalCorrect
-                ? "Скорость уменьшилась на 6 м/с за 2 секунды: 6 ÷ 2 = 3 м/с². Ускорение направлено влево — против движения."
-                : !finalMagnitudeCorrect
-                  ? hintForWrongAnswer(finalAnswer)
-                  : "Величина верная. При торможении ускорение направлено против движения — здесь влево.",
-            )}
+                ? "Скорость выросла на 8 м/с за 4 секунды: 8 ÷ 4 = 2 м/с². При разгоне ускорение направлено по движению — здесь влево."
+                : !transferMagnitudeCorrect
+                  ? "Найди изменение скорости: 11 − 3. Раздели его на 4 секунды."
+                  : "Величина верная. Велосипедист разгоняется: ускорение направлено в ту же сторону, что и движение.",
+            ); }}
           >Проверить решение</Button>
         </div>
-        {finalFeedback ? (
+        {transferFeedback ? (
           <div role={finalCorrect ? "status" : "alert"} aria-live="polite" className={cn("mt-5 border-l-2 pl-4", finalCorrect ? "border-nova-cyan/65" : "border-[#e8b66d]/70")}>
-            <p className="text-[11px] font-bold uppercase tracking-[.1em] text-white/52">{finalCorrect ? "Готово" : "Смотри сюда"}</p>
-            <p className="mt-1 text-[14px] leading-[1.65] text-white/76">{finalFeedback}</p>
+            <p className="text-[11px] font-bold uppercase tracking-[.1em] text-white/52">{finalCorrect ? (transferAttempts === 1 ? "Получилось с первой попытки" : "Получилось после разбора") : "Смотри сюда"}</p>
+            <p className="mt-1 text-[14px] leading-[1.65] text-white/76">{transferFeedback}</p>
             {/* Урок заканчивается тренажёром темы — так же, как урок динамики
                 ведёт в /practice/dynamics-demo. */}
             {finalCorrect ? (
@@ -636,11 +659,11 @@ export function AccelerationLesson() {
             ) : null}
           </div>
         ) : null}
-        {finalFeedback ? (
+        {transferFeedback ? (
           <div className="mt-5">
             <CatStateHint
               state="support"
-              text={finalCorrect ? "Ускорение описывает и разгон, и торможение. Здесь величина и направление записаны отдельно; знаки появятся позже, вместе с координатной осью." : "Сначала сравни скорости: троллейбус замедляется, поэтому ускорение направлено против движения."}
+              text={finalCorrect ? "Ускорение описывает и разгон, и торможение. Здесь величина и направление записаны отдельно; знаки появятся позже, вместе с координатной осью." : "Сравни начальную и конечную скорости и вспомни, в какую сторону едет велосипедист."}
             />
           </div>
         ) : null}
@@ -670,6 +693,7 @@ export function AccelerationLesson() {
       themePreserveDark
       renderNextLabel={(label) => <>{label}<ArrowRight size={17} weight="bold" /></>}
     >
+      {lessonDraft.error ? <p role="alert" className="mb-4 border-l-2 border-[#e8b66d] pl-4 text-sm text-[#f4cd91]">{lessonDraft.error}</p> : null}
       {renderScreen()}
     </LessonStageEngine>
   );

@@ -1,4 +1,5 @@
 import { useId } from "react";
+import styles from "./VectorDiagram.module.css";
 import type { VectorDiagramSpec, VectorTone } from "../../lib/physics/vector-diagram-spec";
 import { cn } from "../../lib/utils";
 import {
@@ -18,16 +19,16 @@ type VectorDiagramProps = {
 };
 
 const TONE_COLOR: Record<VectorTone, string> = {
-  cyan: "#00E0FF",
-  gold: "#D4AF37",
-  blue: "#2D9CFF",
-  ember: "#FF7A45",
-  muted: "rgba(226, 232, 240, 0.55)",
+  cyan: "var(--vector-cyan)",
+  gold: "var(--vector-gold)",
+  blue: "var(--vector-blue)",
+  ember: "var(--vector-ember)",
+  muted: "var(--text-secondary)",
 };
 
-const SURFACE = "rgba(8, 13, 22, 0.62)";
-const GRID_LINE = "rgba(226, 232, 240, 0.07)";
-const AXIS_LINE = "rgba(226, 232, 240, 0.42)";
+const SURFACE = "var(--surface-primary)";
+const GRID_LINE = "var(--border-subtle)";
+const AXIS_LINE = "var(--text-secondary)";
 
 const WIDTH = 320;
 const HEIGHT = 260;
@@ -163,7 +164,7 @@ export function VectorDiagram({ spec, className, ariaLabel }: VectorDiagramProps
   return (
     <div
       data-testid="vector-diagram"
-      className={cn("w-full min-w-0 overflow-hidden rounded-option", className)}
+      className={cn("w-full min-w-0 overflow-hidden rounded-option", styles.diagram, className)}
     >
       <svg
         viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
@@ -249,7 +250,7 @@ export function VectorDiagram({ spec, className, ariaLabel }: VectorDiagramProps
         ) : null}
 
         {spec.layout === "concurrent" ? (
-          <circle cx={originPx.x} cy={originPx.y} r="3.5" fill="rgba(248, 250, 252, 0.7)" />
+          <circle cx={originPx.x} cy={originPx.y} r="3.5" fill="var(--text-primary)" />
         ) : null}
 
         {resultant ? (() => {
@@ -295,7 +296,7 @@ export function VectorDiagram({ spec, className, ariaLabel }: VectorDiagramProps
                 x={labelPx.x}
                 y={labelPx.y}
                 textAnchor="middle"
-                size={13.5}
+                size={17}
                 fill={TONE_COLOR[resultantTone]}
               />
             </g>
@@ -331,7 +332,7 @@ export function VectorDiagram({ spec, className, ariaLabel }: VectorDiagramProps
                   x={labelPx.x}
                   y={labelPx.y}
                   textAnchor="middle"
-                  size={13.5}
+                  size={17}
                   fill={TONE_COLOR[tone]}
                 />
               ) : null}
@@ -352,14 +353,14 @@ export function VectorDiagram({ spec, className, ariaLabel }: VectorDiagramProps
 
           return (
             <g key={`angle-${index}`}>
-              <path d={arc.path} fill="none" stroke="rgba(248, 250, 252, 0.65)" strokeWidth="1.5" />
+              <path d={arc.path} fill="none" stroke="var(--text-secondary)" strokeWidth="1.5" />
               <SvgMathLabel
                 label={mark.label ?? `${arc.deltaDeg}°`}
                 x={arc.labelPoint.x}
                 y={arc.labelPoint.y}
                 textAnchor="middle"
-                size={11.5}
-                fill="rgba(248, 250, 252, 0.78)"
+                size={14}
+                fill="var(--text-primary)"
               />
             </g>
           );
@@ -368,3 +369,5 @@ export function VectorDiagram({ spec, className, ariaLabel }: VectorDiagramProps
     </div>
   );
 }
+
+

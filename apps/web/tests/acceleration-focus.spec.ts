@@ -32,8 +32,9 @@ test("моменты маршрута и график доступны не то
 
 test("урок ведёт к той же живой сцене движения", async ({ page }) => {
   await page.goto("/practice/kinematics-lesson", { waitUntil: "domcontentloaded" });
+  await page.getByRole("button", { name: "Сделать прогноз", exact: true }).click();
   await page.getByRole("button", { name: "Становится больше" }).click();
-  await page.getByRole("button", { name: "Дальше" }).click();
+  await page.getByRole("button", { name: "Посмотреть на метки", exact: true }).click();
 
   await expect(page.getByRole("heading", { name: "Оставим метки на дороге" })).toBeVisible();
   const finalMoment = page.getByRole("button", { name: "3 с 8 м/с" });

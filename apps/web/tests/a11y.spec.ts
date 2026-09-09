@@ -19,6 +19,7 @@ const routes = [
   "/practice/acceleration-focus",
   "/practice/dynamics-lesson",
   "/practice/kinematics-demo",
+  "/practice/optics-lesson",
   "/practice/optics-demo",
   "/practice/exam-demo",
 ] as const;
@@ -82,7 +83,7 @@ for (const route of routes) {
   });
 }
 
-test("@a11y диагностика: карта покрытия читаема в светлой теме", async ({ page }) => {
+test("@a11y диагностика: вход читаем в светлой теме", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.addInitScript(() => {
     window.localStorage.setItem("physicslab-theme", "light");
@@ -91,9 +92,7 @@ test("@a11y диагностика: карта покрытия читаема �
   await page.waitForLoadState("networkidle");
 
   await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
-  await expect(page.getByTestId("exam-coverage-map")).toContainText(
-    "Полностью: 0 · Частично: 4 · Пока нет: 2",
-  );
+  await expect(page.getByRole("link", {name: /Выбрать тему Задачи/})).toBeVisible();
   const start = page.getByRole("button", { name: "Начать диагностику" });
   await start.focus();
   await expect(start).toBeFocused();

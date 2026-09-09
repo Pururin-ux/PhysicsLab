@@ -21,11 +21,11 @@ import {
   validateConceptGraph,
 } from "./concept-graph.ts";
 
-test("concept graph maps every one of the 35 task families exactly once", () => {
+test("concept graph maps every one of the 36 task families exactly once", () => {
   const templateIds = templateRegistry.map((entry) => entry.id).sort();
   const mappedFamilyIds = Object.keys(taskFamilyConceptNodeIds).sort();
 
-  assert.equal(templateIds.length, 35);
+  assert.equal(templateIds.length, 36);
   assert.deepEqual(mappedFamilyIds, templateIds);
   assert.equal(new Set(mappedFamilyIds).size, templateIds.length);
 
@@ -129,29 +129,29 @@ test("every active topic has one introductory learnable concept", () => {
     assert.equal(introduction.domainId, topic.id);
     assert.equal(introduction.availability, "learnable");
     assert.equal(introduction.isIntroduction, true);
+    // Current introductory nodes use the default plan, but the plan does not
+    // define whether a concept is learnable.
     assert.ok(getStagePlanForConceptNode(introduction.id));
   }
 });
 
-test("stage plan preserves prediction, observation and worked-to-independent fading", () => {
+test("concept-first-v1 remains the current optional authoring-plan convention", () => {
   assert.deepEqual(learningStagePlans["concept-first-v1"].steps, [
     { stageId: "context", repetitions: 1 },
     { stageId: "prediction", repetitions: 1 },
     { stageId: "observation", repetitions: 1 },
     { stageId: "causal-explanation", repetitions: 1 },
+    { stageId: "representation", repetitions: 1 },
     { stageId: "worked-example", repetitions: 2 },
     { stageId: "faded-example", repetitions: 2 },
     { stageId: "independent-practice", repetitions: 2 },
     { stageId: "transfer", repetitions: 1 },
+    { stageId: "summary", repetitions: 1 },
   ]);
 
-  for (const node of conceptNodes) {
-    assert.equal(
-      getStagePlanForConceptNode(node.id) !== null,
-      node.availability === "learnable",
-      `${node.id} stage plan must match availability`,
-    );
-  }
+  const learnableWithoutPlan = { ...conceptNodes[0], stagePlanId: null };
+  assert.equal(learnableWithoutPlan.availability, "learnable");
+  assert.equal(validateConceptGraph([learnableWithoutPlan, ...conceptNodes.slice(1)]).valid, true);
 });
 
 test("concept references use current help and formula ids with explicit reference-only support", () => {

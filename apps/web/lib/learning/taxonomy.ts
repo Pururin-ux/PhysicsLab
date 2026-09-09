@@ -14,6 +14,7 @@ export type TopicId =
   | "optics";
 
 export type SkillId =
+  | "contact-pressure"
   | "vt-slope"
   | "vt-area"
   | "relative-velocity-vectors"
@@ -60,6 +61,7 @@ export type SkillMetadata = {
 };
 
 export const skillMetadata: Record<SkillId, SkillMetadata> = {
+  "contact-pressure":{id:"contact-pressure",topicId:"dynamics",sectionId:"mechanics",title:"Давление на опору",shortTitle:"Давление на опору",description:"Связь перпендикулярной силы, общей площади контакта и давления; перевод см² в м² и Па в кПа."},
   "vt-slope": {
     id: "vt-slope",
     topicId: "kinematics",

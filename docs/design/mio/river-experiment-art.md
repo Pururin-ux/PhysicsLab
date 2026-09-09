@@ -1,0 +1,18 @@
+# Painted relative motion experiment — 2026-09-08
+
+Sasha rejected educational visuals constructed from geometric primitives. This supersedes the earlier acceptance of the SVG boat stage. The replacement uses two original built-in imagegen assets, not hand-painted Adobe work.
+
+## Assets and production prompts
+
+- `apps/web/public/images/experiments/river-stage-v1.png`: original `exec-a595105b-1af6-422b-9407-cf281d9a0ec0.png`, 1536×1024.
+- `apps/web/public/images/experiments/motorboat-top-v1.png`: original `exec-b0276160-a791-403d-a650-5d192862f2c7.png`, 1536×1024 RGBA. Outside pixels verified alpha 0, central hull alpha 253. The dark surrounding pixels in the image preview are transparent, not a black rectangular background.
+
+River prompt: Create a premium hand-painted editorial game environment asset for PhysicsLab, a sophisticated anime-inspired Belarusian school physics learning platform. A straight tranquil turquoise river seen STRICTLY ORTHOGRAPHIC TOP DOWN, landscape 3:2. The river runs horizontally left to right. Water occupies y=15% to y=90% of the canvas; very narrow continuous natural grassy riverbanks across the extreme top and bottom. Finely painted reeds, stones, tufts of grass at banks only, elegant blue-green nuanced water brushwork, spare long horizontal ripples, clean unobstructed central navigable water, tasteful light cel-painted shading and crisp illustrative edges, cohesive teal, muted sage and warm sand palette. One distinctive small wooden landing pier on the TOP bank at x=70%, extending down only to y=20%. One small warm gold mooring bollard on the lower bank at x=30%. No boats, no people, no text, no arrows, no diagrams, no numbers, no icons, no UI, no geometric placeholder forms, no isometric/perspective view, no horizon. The composition is a functional illustrated stage for a moving boat sprite, NOT concept art with a horizon. Precisely flat top-down naturalistic drawing. Attractive restrained craft, no glow, no blurry AI texture, no photorealism.
+
+Boat prompt (river as style reference): Create ONE isolated small motorboat sprite on a genuinely TRANSPARENT alpha background, to be composited into the referenced painted river. Match illustration style, do not reproduce river. STRICT ORTHOGRAPHIC TOP DOWN boat, bow points precisely RIGHT, stern LEFT. Charming detailed cream enamel hull, navy trim, teak seating, small cyan folded canvas at stern, believable compact outboard motor on LEFT stern, empty boat no person. Beautiful hand-painted cel illustration, readable crisp silhouette, restrained crafted details. Boat fills 85 percent of a landscape 3:2 canvas, centred. No perspective side view, no water, no wakes, no surrounding scene, no text, no arrows, no graphic shapes, no checkerboard painted into pixels, no ground shadow. All outside hull is transparent. Functional sprite for quantitative educational animation.
+
+## Integration and review
+
+HTML positions artwork; no SVG boat/river primitives remain in RelativeMotionModel. Horizontal/vertical scale is identical (500:290 stage). Background overscan covers both reference frames at maximum displacement. The bank's landmarks move left when the observer travels with water. Painted ripples are scenery, not tracked water particles. Interpolation shows the change between two snapshots four seconds apart; it is not a real-time four-second simulation. Reduced motion disables transitions.
+
+Live review: desktop light and dark; 390px light stationary-shore state and dark moving-water state at maximum current. Boat silhouette/alpha composite, bank edges and readout remain visible. Other pre-existing primitive-based educational models still require replacement; this record does not accept them as final art.

@@ -19,9 +19,11 @@ interface SessionSummaryProps {
   nextHref?: string;
   nextLabel?: string;
   variant?: "diagnostic" | "exam";
+  focus?: { focusLabel: string; shortHint: string } | null;
 }
 
 type ResultVariant =
+  | "general"
   | "kinematics"
   | "dynamics"
   | "electro"
@@ -37,10 +39,17 @@ function resultVariantFor(topic?: string, variant?: "diagnostic" | "exam"): Resu
   if (topic === "Термодинамика") return "thermo";
   if (topic === "Оптика") return "optics";
   if (topic === "Смешанная тренировка") return "exam";
-  return "kinematics";
+  if (topic === "Кинематика") return "kinematics";
+  return "general";
 }
 
 const resultBodies: Record<ResultVariant, [string, string, string, string]> = {
+  general: [
+    "В этом наборе все или почти все первые ответы верны. Проверь навык ещё раз после перерыва: одна тренировка не подтверждает освоение всей темы.",
+    "Посмотри отмеченные ошибки и выбери одну связь, которую стоит повторить.",
+    "Сравни своё решение с разбором: на каком шаге изменился результат?",
+    "Начни с одной задачи и восстанови решение по шагам. Затем попробуй новый пример.",
+  ],
   kinematics: [
     "В этом наборе сошлись ответы про скорость, ускорение и графики. Это результат одной попытки, а не статус освоения темы: дальше проверь перенос без подсказки и вернись к теме позже.",
     "Посмотри ошибки: чаще всего сбивает график, знак или выбор формулы.",
@@ -212,8 +221,14 @@ export function SessionSummary({
   nextHref,
   nextLabel,
   variant,
+  focus,
 }: SessionSummaryProps) {
   const copy = getResultCopy(score, total, topic, variant);
+  const focusedBody = focus && !variant
+    ? score === total
+      ? `В этом наборе все первые ответы верны. Навык: «${focus.focusLabel}». Это результат одной тренировки; проверь его ещё раз после перерыва.`
+      : `В этом наборе тренировали «${focus.focusLabel}». Разбери отмеченные ошибки и проверь эту связь: ${focus.shortHint}`
+    : null;
   const summaryWeaknesses = getUniqueSummaryWeaknesses(weakTraps);
   const ratio = total === 0 ? 0 : score / total;
   const showTopicMeme = hasTopicMeme(topic, variant);
@@ -253,7 +268,7 @@ export function SessionSummary({
             <div className="flex flex-col gap-2">
               <h2 className="text-xl font-bold text-white">{copy.title}</h2>
               <p className="text-[14px] font-normal leading-[1.7] text-white/70">
-                {copy.body}
+                <MathText text={focusedBody ?? copy.body} />
               </p>
             </div>
             <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-white/10">
