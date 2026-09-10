@@ -56,8 +56,35 @@ follow this hierarchy and may not independently redefine product direction.
   design-direction source.
 - Preserve visual baselines until a visible regression has been classified.
   Do not regenerate them solely to make a test pass.
-- Before changing the web product, inspect the affected rendered route and
-  state. Keep browser-observed facts separate from code inference.
+- Rendered inspection is evidence, not a mandatory ritual. Inspect the affected
+  rendered route when the task materially depends on visual appearance,
+  responsive layout, browser-only behaviour, or a critical interaction, or
+  when the user explicitly requests visual verification.
+- For routine copy, content, design-token, CSS, or localized code changes, do
+  not launch a browser merely to satisfy process. Use code-level verification
+  unless the result cannot be judged reliably without rendering.
+- Batch coherent UI changes and perform one targeted rendered review at the end
+  rather than repeating browser capture after every edit.
+- Keep browser-observed facts separate from code inference.
+
+## Verification budget
+
+Verification budget is part of task scope.
+
+- Prefer no browser run when code-level evidence is sufficient.
+- Prefer one targeted browser run when rendering is genuinely relevant.
+- Prefer a broad visual audit only when explicitly requested or when the task
+  itself is a substantial visual/interaction review.
+- Do not broaden verification merely to increase confidence. An additional
+  check should have an identified failure mode that it can realistically
+  detect.
+- Use the narrowest relevant automated check. Do not run a full test suite,
+  visual suite, E2E suite, screenshots, or production build by default after a
+  localized change.
+- When physics, mathematics, generated tasks, graphs, or diagrams change, use
+  the narrowest relevant correctness check and expand only if the change spans
+  multiple areas.
+- Do not repeat a successful check unless related code changed after it.
 
 ## Change discipline
 
