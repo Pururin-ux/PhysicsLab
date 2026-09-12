@@ -169,7 +169,7 @@ export function TaskCatalogBrowser({ entries }: TaskCatalogBrowserProps) {
         </div>
 
         <div className="flex flex-col items-start gap-2 border-t border-[var(--border-muted)] pt-3 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
-          <p aria-live="polite" className="text-[13px] font-semibold text-[var(--text-quiet)]">
+          <p aria-live="polite" className="text-[13px] font-semibold text-[var(--text-default)]">
             Найдено типов: <span className="physics-number text-[var(--text-strong)]">{filteredEntries.length}</span>
           </p>
           <Link

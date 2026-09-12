@@ -170,7 +170,7 @@ function EmptyProgress() {
         className="flex min-h-[190px] flex-col justify-between border-t border-[var(--border-muted)] bg-[var(--surface-panel-raised)] px-6 py-6 lg:min-h-full lg:border-l lg:border-t-0 lg:px-7"
         aria-label="Что сохраняется в прогрессе"
       >
-        <p className="text-[11px] font-bold uppercase tracking-[.18em] text-[var(--text-quiet)]">
+        <p className="text-[11px] font-bold uppercase tracking-[.18em] text-[var(--text-default)]">
           После первого шага
         </p>
         <ul className="grid gap-3 text-[12px] font-semibold leading-[1.5] text-[var(--text-default)]">
@@ -576,7 +576,7 @@ export function ProfileOverview() {
           backupFingerprint={`${totalSolved}:${totalSessions}:${examLog.length}:${practiceLog.length}`}
         />
         <div className="flex flex-col items-start gap-2 border-t border-[var(--border-muted)] pt-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
-          <p className="text-[11px] leading-[1.5] text-[var(--text-quiet)]">
+          <p className="text-[11px] leading-[1.5] text-[var(--text-default)]">
             Сброс удалит историю из этого браузера без возможности отмены.
             Если она нужна, сначала скачай копию.
           </p>

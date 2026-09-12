@@ -131,18 +131,18 @@ test("@a11y simplified navigation and practice disclosures", async ({
 
   if (testInfo.project.name === "desktop") {
     const navigation = page.getByTestId("desktop-sidebar-nav");
-    await expect(navigation.getByRole("link")).toHaveCount(5);
+    await expect(navigation.getByRole("link")).toHaveCount(4);
     await expect(
-      navigation.getByRole("link", { name: "Задачи", exact: true }),
+      navigation.getByRole("link", { name: "Учиться", exact: true }),
     ).toHaveAttribute("aria-current", "page");
   } else if (testInfo.project.name === "tablet") {
     await expect(page.getByTestId("tablet-quick-actions").getByRole("link")).toHaveCount(4);
   } else {
-    // На телефоне те же пять направлений находятся в нижней панели.
+    // На телефоне те же четыре направления находятся в нижней панели.
     const navigation = page.getByTestId("mobile-bottom-nav");
-    await expect(navigation.getByRole("link")).toHaveCount(5);
+    await expect(navigation.getByRole("link")).toHaveCount(4);
     await expect(
-      navigation.getByRole("link", { name: "Задачи", exact: true }),
+      navigation.getByRole("link", { name: "Учиться", exact: true }),
     ).toHaveAttribute("aria-current", "page");
   }
 
@@ -158,7 +158,8 @@ test("@a11y simplified navigation and practice disclosures", async ({
   const wrongIndex = payload.tasks[0].options.findIndex((option) => !option.correct);
   expect(wrongIndex).toBeGreaterThanOrEqual(0);
   await page.locator(".quiz-option").nth(wrongIndex).click();
-  await expect(page.getByTestId("next-task-button")).toBeVisible();
+  await expect(page.getByTestId("next-task-button")).toBeHidden();
+  await expect(page.getByTestId("retry-task-button")).toBeVisible();
   await expect(page.locator('[role="status"]')).toHaveCount(1);
   await expect(page.getByRole("img", { name: "Nova" })).toHaveCount(0);
   await expect(page.getByTestId("solution-toggle")).toHaveAttribute(
@@ -225,11 +226,9 @@ test("@a11y карточка разбора после ошибки — без s
   await page.waitForLoadState("networkidle");
   const options = page.getByRole("list", { name: "Варианты ответа" });
   await expect(options).toBeVisible();
-  const wrongAnswer = payload.tasks[0]?.options.find((option) => !option.correct);
-  expect(wrongAnswer, "generated kinematics task must expose a wrong option").toBeDefined();
-  const wrongOption = options
-    .getByRole("button")
-    .filter({ hasText: wrongAnswer!.text });
+  const wrongIndex = payload.tasks[0]?.options.findIndex((option) => !option.correct) ?? -1;
+  expect(wrongIndex, "generated dynamics task must expose a wrong option").toBeGreaterThanOrEqual(0);
+  const wrongOption = options.getByRole("button").nth(wrongIndex);
   await expect(async () => {
     await wrongOption.click();
     // Compact-first: на ошибке полное решение закрыто, пока ученик его не попросит.
