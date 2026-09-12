@@ -99,6 +99,11 @@ test("wrong answer feedback is compact until solution is requested", async ({
   await expect(page.getByTestId("solution-content")).toBeVisible();
   await expect(page.getByTestId("solution-formula")).toHaveCount(0);
 
+  await expect(page.getByRole("button", { name: "Следующая задача" })).toBeHidden();
+  await page.getByRole("button", { name: "Попробовать ещё раз", exact: true }).click();
+  const correctIndex = payload.tasks[0].options.findIndex((option) => option.correct);
+  expect(correctIndex).toBeGreaterThanOrEqual(0);
+  await options.getByRole("button").nth(correctIndex).click();
   await page.getByRole("button", { name: "Следующая задача" }).click();
   await expect(page.getByTestId("practice-progress")).toHaveText("Задание 2 из 10");
 });

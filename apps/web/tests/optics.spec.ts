@@ -76,7 +76,7 @@ test.describe("optics desktop flows", () => {
     await page.goto("/topics", { waitUntil: "domcontentloaded" });
     await page.waitForLoadState("networkidle");
 
-    await expect(page.getByRole("heading", { name: "Оптика", exact: true })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Отражение света", exact: true })).toBeVisible();
     // Названия тем живут на странице, а не в постоянной навигации шапки.
     const mainNavigation = page.getByRole("navigation", { name: "Основная навигация" });
     await expect(mainNavigation.getByRole("link")).toHaveCount(4);
@@ -294,7 +294,7 @@ test.describe("optics desktop flows", () => {
     await expect(page.getByText("Итог тренировки")).toBeVisible({ timeout: 15000 });
     await expect(
       page.getByText(
-        "Ты уверенно работаешь с отражением, преломлением и собирающей линзой.",
+        "В этом наборе сошлись ответы про отражение, преломление и собирающую линзу. Это результат одной попытки, а не статус освоения темы: дальше проверь перенос без подсказки и вернись к теме позже.",
         { exact: true },
       ),
     ).toBeVisible();
@@ -307,7 +307,8 @@ test.describe("optics desktop flows", () => {
       version: number;
       data: { version: number; topics: { optics: { completedSessions: number; solved: number } } };
     };
-    expect(parsed.version).toBe(3);
+    expect(parsed.version).toBe(6);
+    expect(parsed.data.version).toBe(6);
     expect(parsed.data.topics.optics.completedSessions).toBe(1);
     expect(parsed.data.topics.optics.solved).toBe(2);
 
@@ -322,7 +323,7 @@ test.describe("optics desktop flows", () => {
     expect(afterParsed.data.topics.optics.completedSessions).toBe(1);
   });
 
-  test("v2-хранилище мигрирует в v3, не теряя старые темы", async ({ page }) => {
+  test("v2-хранилище мигрирует в v6, не теряя старые темы", async ({ page }) => {
     await page.goto("/", { waitUntil: "domcontentloaded" });
     await page.evaluate(() => {
       const v2 = {
@@ -355,7 +356,7 @@ test.describe("optics desktop flows", () => {
         version: number;
         data: { topics: { kinematics: { solved: number }; optics: { solved: number } } };
       };
-      expect(parsed.version).toBe(3);
+      expect(parsed.version).toBe(6);
       expect(parsed.data.topics.kinematics.solved).toBe(12);
       expect(parsed.data.topics.optics.solved).toBe(0);
     }).toPass({ timeout: 10000 });
@@ -411,6 +412,18 @@ test.describe("optics mobile layout", () => {
     );
     await expect(page.getByTestId("optics-solution")).toBeVisible();
 
+    await expect(page.getByTestId("next-task-button")).toBeHidden();
+    const retry = page.getByTestId("retry-task-button");
+    await retry.scrollIntoViewIfNeeded();
+    const retryBox = await retry.boundingBox();
+    const retryHeaderBox = await page.locator("header").first().boundingBox();
+    expect(retryBox).not.toBeNull();
+    expect(retryHeaderBox).not.toBeNull();
+    expect(retryBox!.y).toBeGreaterThanOrEqual(retryHeaderBox!.y + retryHeaderBox!.height);
+    await retry.click();
+    await page.getByTestId("numeric-answer-input").fill(commaOf(answer.value));
+    await page.getByTestId("numeric-submit").click();
+    await expect(page.getByTestId("numeric-answer")).toHaveAttribute("data-state", "correct");
     const next = page.getByTestId("next-task-button");
     await next.evaluate((element) => element.scrollIntoView({ block: "end" }));
     const [nextBox, nextHeaderBox] = await Promise.all([

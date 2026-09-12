@@ -380,6 +380,7 @@ test.describe("quiz loading resilience", () => {
     await expect(page.getByTestId("quiz-loading-card")).toBeVisible();
 
     // Новый mount тех же параметров: свежий запрос отвечает мгновенно.
+    await expect.poll(() => call, { message: "the old mount must start its request before reload" }).toBe(1);
     await page.goto(KINEMATICS, { waitUntil: "domcontentloaded" });
     await expect.poll(() => call, { message: "new mount must issue its own request" }).toBeGreaterThanOrEqual(2);
     await expect(page.getByTestId("question-card")).toBeVisible({ timeout: 15000 });

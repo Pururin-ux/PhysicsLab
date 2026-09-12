@@ -1,4 +1,4 @@
-import {relativeMotionChapter} from "./relative-motion-chapter";
+import {relativeMotionChapter} from "./relative-motion-chapter.ts";
 export type TextbookSection = { title: string; paragraphs: string[] };
 export type TextbookBook = { title: string; authors: string; url: string };
 export type TextbookChapter = {

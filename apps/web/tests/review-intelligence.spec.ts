@@ -61,7 +61,7 @@ test("страница ошибок показывает review cockpit, кар�
   await page.goto("/mistakes", { waitUntil: "domcontentloaded" });
 
   await expect(
-    page.getByRole("heading", { name: "План восстановления" }),
+    page.getByRole("heading", { name: "Что повторить дальше" }),
   ).toBeVisible();
   await expect(page.getByText("План повторения").first()).toBeVisible();
   await expect(page.getByRole("heading", { name: "Карта тем" })).toBeVisible();

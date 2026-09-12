@@ -54,7 +54,7 @@ for (const route of productRoutes) {
   });
 }
 
-test("диагностика до старта показывает честную карту всей программы", async ({ page }) => {
+test("диагностика до старта обозначает границы и ведёт к карте программы", async ({ page }) => {
   await page.goto("/practice/exam-demo", { waitUntil: "domcontentloaded" });
 
   await expect(
@@ -63,23 +63,17 @@ test("диагностика до старта показывает честну
       exact: true,
     }),
   ).toBeVisible();
-  const coverage = page.getByTestId("exam-coverage-map");
-  await expect(coverage.getByRole("list", { name: "Покрытие разделов программы" }).getByRole("listitem")).toHaveCount(6);
-  await expect(coverage).toContainText("Полностью: 0 · Частично: 4 · Пока нет: 2");
-  await expect(coverage.getByText("Покрыто частично", { exact: true })).toHaveCount(4);
-  await expect(coverage.getByText("Пока нет задач", { exact: true })).toHaveCount(2);
   await expect(
-    coverage.getByText(/не полный вариант ЦТ\/ЦЭ/i),
+    page.getByText(/не полный вариант ЦТ\/ЦЭ/i),
   ).toBeVisible();
   const start = page.getByRole("button", { name: "Начать диагностику" });
   await expect(start).toBeVisible();
-  const [coverageBox, startBox] = await Promise.all([
-    coverage.boundingBox(),
-    start.boundingBox(),
-  ]);
-  expect(coverageBox).not.toBeNull();
-  expect(startBox).not.toBeNull();
-  expect(startBox!.y).toBeGreaterThanOrEqual(coverageBox!.y + coverageBox!.height);
+  await page.locator('a[href="/exam/program"]').click();
+  const sections = page.getByRole("list", { name: "Разделы программы по физике" }).locator(":scope > li");
+  await expect(sections).toHaveCount(6);
+  await expect(sections.filter({ has: page.getByRole("link") })).toHaveCount(4);
+  await expect(sections.filter({ hasText: "Задачи появятся позже." })).toHaveCount(2);
+  await expect(page.getByRole("complementary")).toContainText("Для полной подготовки занимайся также по школьному учебнику и программе экзамена.");
 });
 
 test(

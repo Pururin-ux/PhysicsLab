@@ -5,7 +5,7 @@ for(const theme of ["dark","light"]){
   test(`exam catalog coverage preserves its evidence boundary in ${theme} theme`,async({page})=>{
     await page.addInitScript(value=>localStorage.setItem("physicslab-theme",value),theme);
     await page.goto("/practice/exam-demo");
-    await page.getByRole("link",{name:"Открыть подробную карту программы",exact:true}).click();
+    await page.locator('a[href="/exam/program"]').click();
     const source=page.getByRole("complementary");
     await expect(source).toContainText("Здесь есть задачи по отдельным темам.");
     await expect(source).not.toContainText("Проверено для");

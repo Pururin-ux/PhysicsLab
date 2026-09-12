@@ -16,8 +16,8 @@ import { taskLearningMetadataByTemplateId } from "./task-metadata.ts";
 
 const catalog = getTaskCatalog();
 
-test("task catalog exactly covers the 35 generator templates", () => {
-  assert.equal(catalog.length, 35);
+test("task catalog exactly covers the 36 generator templates", () => {
+  assert.equal(catalog.length, 36);
   assert.deepEqual(
     new Set(catalog.map((entry) => entry.id)),
     new Set(templateRegistry.map((entry) => entry.id)),
@@ -26,9 +26,9 @@ test("task catalog exactly covers the 35 generator templates", () => {
   assert.equal(getTaskCatalogEntry("not-a-family"), undefined);
 });
 
-test("task catalog keeps the 8 numeric / 27 choice contract", () => {
+test("task catalog keeps the 8 numeric / 28 choice contract", () => {
   assert.equal(catalog.filter((entry) => entry.answerFormat === "numeric_input").length, 8);
-  assert.equal(catalog.filter((entry) => entry.answerFormat === "single_choice").length, 27);
+  assert.equal(catalog.filter((entry) => entry.answerFormat === "single_choice").length, 28);
 });
 
 test("task catalog entries have complete student-facing metadata and active topics", () => {
@@ -45,7 +45,7 @@ test("task catalog entries have complete student-facing metadata and active topi
   }
 });
 
-test("all 35 task families keep one semantic contract across generator, reference and catalog", () => {
+test("all 36 task families keep one semantic contract across generator, reference and catalog", () => {
   const formulaEntriesBySkill = new Map(
     catalog.map((entry) => [
       entry.id,
@@ -121,7 +121,7 @@ test("catalog topic counts match the active generator distribution", () => {
     ),
     {
       kinematics: 6,
-      dynamics: 10,
+      dynamics: 11,
       electrodynamics: 6,
       thermodynamics: 6,
       optics: 7,
@@ -145,7 +145,7 @@ test("catalog search handles names, formulas, graphs, aliases and ё/е", () => 
 });
 
 test("catalog filtering supports empty and combined topic queries", () => {
-  assert.equal(filterTaskCatalog(catalog, "").length, 35);
+  assert.equal(filterTaskCatalog(catalog, "").length, 36);
   const electrodynamicsLawResults = filterTaskCatalog(
     catalog,
     "закон",

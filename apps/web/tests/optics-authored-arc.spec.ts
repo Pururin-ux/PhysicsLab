@@ -2,6 +2,7 @@ import { expect, test } from "@playwright/test";
 
 test("the authored optics probe keeps conversion and reflection as one visual choice", async ({ page }) => {
   const consoleErrors: string[] = [];
+  page.on("pageerror", (error) => consoleErrors.push(error.message));
   page.on("console", (message) => {
     if (message.type() === "error") consoleErrors.push(message.text());
   });
@@ -64,8 +65,10 @@ test("the authored optics probe keeps conversion and reflection as one visual ch
 
   await page.getByRole("radio", { name: "Луч A" }).press("ArrowRight");
   await expect(page.getByRole("radio", { name: "Луч B" })).toHaveAttribute("aria-checked", "true");
+  await expect(page.getByRole("radio", { name: "Луч B" })).toBeFocused();
   await page.getByRole("radio", { name: "Луч B" }).press("ArrowLeft");
   await expect(page.getByRole("radio", { name: "Луч A" })).toHaveAttribute("aria-checked", "true");
+  await expect(page.getByRole("radio", { name: "Луч A" })).toBeFocused();
   await page.getByRole("radio", { name: "Луч A" }).press("Enter");
   await expect(page.getByRole("radio", { name: "Луч A" })).toHaveAttribute("aria-checked", "true");
   await page.getByRole("button", { name: "Проверить луч" }).click();

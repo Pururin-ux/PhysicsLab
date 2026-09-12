@@ -18,7 +18,7 @@ test("dynamics feedback and next action stay clear of mobile fixed UI", async ({
   await page.keyboard.press("Enter");
 
   const correctPrediction = page.getByRole("button", {
-    name: "Тележка 1 разгонится сильнее",
+    name: "Каретка 1 разгонится сильнее",
   });
   await correctPrediction.focus();
   await page.keyboard.press("Space");
@@ -34,7 +34,7 @@ test("dynamics feedback and next action stay clear of mobile fixed UI", async ({
   const feedback = page.getByRole("status");
   const footer = page.locator("footer");
   const mobileNav = page.getByTestId("mobile-bottom-nav");
-  await expect(feedback).toContainText("Тележка 1 получила вдвое большее ускорение");
+  await expect(feedback).toContainText("Каретка 1 получила вдвое большее ускорение");
   const replayExperiment = page.getByRole("button", { name: "Запустить ещё раз" });
   await expect(replayExperiment).toBeFocused();
 

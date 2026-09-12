@@ -201,9 +201,10 @@ function ReflectionRayProbe({
     if (nextIndex === null) return;
 
     event.preventDefault();
+    const svg = event.currentTarget.ownerSVGElement;
     onSelect(reflectionProbeCandidates[nextIndex].id);
     window.requestAnimationFrame(() => {
-      const nextChoice = event.currentTarget.ownerSVGElement?.querySelector<SVGGElement>(`[data-probe-choice-id="${reflectionProbeCandidates[nextIndex].id}"]`);
+      const nextChoice = svg?.querySelector<SVGGElement>(`[data-probe-choice-id="${reflectionProbeCandidates[nextIndex].id}"]`);
       nextChoice?.focus();
     });
   }
