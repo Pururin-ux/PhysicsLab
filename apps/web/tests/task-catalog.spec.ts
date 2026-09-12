@@ -138,7 +138,9 @@ test("поиск, topic filter и URL-state переживают reload и ис�
       .evaluateAll((items) => items.every((item) => item.getAttribute("data-topic") === "electrodynamics")),
   ).toBe(true);
 
-  await page.reload({ waitUntil: "domcontentloaded" });
+  // URL and server-rendered text can update before the client navigation settles.
+  await page.waitForLoadState("networkidle");
+  await page.reload({ waitUntil: "networkidle" });
   await expect(search).toHaveValue("закон Ома");
   await expect(page.getByRole("button", { name: "Электричество" })).toHaveAttribute(
     "aria-pressed",
@@ -147,8 +149,10 @@ test("поиск, topic filter и URL-state переживают reload и ис�
 
   await page.goBack();
   await expect(page).not.toHaveURL(/topic=electrodynamics/);
+  await expect(page.getByRole("button", { name: "Электричество" })).toHaveAttribute("aria-pressed", "false");
   await page.goForward();
   await expect(page).toHaveURL(/topic=electrodynamics/);
+  await expect(page.getByRole("button", { name: "Электричество" })).toHaveAttribute("aria-pressed", "true");
 });
 
 test("поиск поддерживает формулы, графики, синонимы и empty state", async ({ page }) => {
