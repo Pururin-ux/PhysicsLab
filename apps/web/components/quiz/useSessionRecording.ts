@@ -4,24 +4,26 @@ import { useCallback, useRef } from "react";
 import { recordExamAttempt } from "../../lib/stores/exam-log-store";
 import {
   recordCompletedSession,
-  recordExamSession,
+  recordCrossTopicSession,
   type TopicId,
 } from "../../lib/stores/progress-store";
+import type { QuizSessionKind } from "../../lib/quiz/active-session-snapshot";
 import type { QuizSessionState } from "./quiz-session-store";
 import { isSessionCompleted, markSessionCompleted } from "../../lib/quiz/session-completion";
 
 type UseSessionRecordingOptions = {
-  // "exam" пишет в журнал пробных вариантов и слабые места тем,
-  // не увеличивая счётчик тренировок темы.
-  sessionKind: "practice" | "exam";
+  // Cross-topic режимы пишут слабые места по затронутым темам, не увеличивая
+  // счётчик тренировок одной темы. Только exam попадает в журнал ЦТ/ЦЭ.
+  sessionKind: QuizSessionKind;
   topicId?: TopicId;
   sessionId: string | null;
+  evidenceMode: "guided" | "transfer";
 };
 
 // Единственное место, где завершённая сессия попадает в persistent-сторы.
 // Хук гарантирует идемпотентность: повторный вызов для той же сессии
 // (двойной клик по «Показать итог», ре-рендер) ничего не запишет дважды.
-export function useSessionRecording({ sessionKind, topicId, sessionId }: UseSessionRecordingOptions) {
+export function useSessionRecording({ sessionKind, topicId, sessionId, evidenceMode }: UseSessionRecordingOptions) {
   const recordedRef = useRef(false);
 
   const resetRecording = useCallback(() => {
@@ -34,10 +36,12 @@ export function useSessionRecording({ sessionKind, topicId, sessionId }: UseSess
         return;
       }
 
-      if (sessionKind === "exam") {
+      if (sessionKind === "exam" || sessionKind === "diagnostic") {
         recordedRef.current = true;
-        recordExamSession(session.answers);
-        recordExamAttempt(session.score, session.total);
+        recordCrossTopicSession(session.answers, sessionId);
+        if (sessionKind === "exam") {
+          recordExamAttempt(session.score, session.total);
+        }
         markSessionCompleted(sessionId);
         return;
       }
@@ -49,11 +53,13 @@ export function useSessionRecording({ sessionKind, topicId, sessionId }: UseSess
           score: session.score,
           total: session.total,
           answers: session.answers,
+          sessionId,
+          evidenceMode,
         });
         markSessionCompleted(sessionId);
       }
     },
-    [sessionId, sessionKind, topicId],
+    [evidenceMode, sessionId, sessionKind, topicId],
   );
 
   return { recordSessionResult, resetRecording };

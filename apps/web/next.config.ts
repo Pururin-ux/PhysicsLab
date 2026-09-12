@@ -12,14 +12,23 @@ const projectRoot = dirname(fileURLToPath(import.meta.url));
 const isProduction = process.env.NODE_ENV === "production";
 
 const nextConfig: NextConfig = {
+  // Performance checks build into an isolated directory so a running dev server
+  // can keep using .next without corrupting either process.
+  distDir: process.env.NEXT_DIST_DIR ?? ".next",
   devIndicators: false,
   poweredByHeader: false,
+  images: {
+    qualities: [75, 90, 92],
+  },
+  experimental: {
+    optimizePackageImports: ["@phosphor-icons/react"],
+  },
   pageExtensions: isProduction ? ["tsx", "ts"] : ["dev.tsx", "dev.ts", "tsx", "ts"],
   turbopack: {
     root: projectRoot,
   },
   // Базовые security headers. CSP сознательно НЕ добавлен: непроверенный CSP
-  // ломает KaTeX/inline-styles/Next-скрипты/Framer Motion — задокументирован
+  // ломает KaTeX/inline-styles/Next-скрипты/Motion — задокументирован
   // как follow-up в docs/quality/public-beta-hardening-v1.md.
   async headers() {
     return [

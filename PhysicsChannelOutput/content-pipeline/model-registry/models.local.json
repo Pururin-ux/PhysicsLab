@@ -1,0 +1,13 @@
+{
+  "updated_at": "2026-06-07T17:40:00+03:00",
+  "comfyui_base_url": "http://127.0.0.1:8001",
+  "model_root": "C:/game/models",
+  "checkpoints": [],
+  "loras": [],
+  "controlnets": [],
+  "ip_adapters": [],
+  "notes": [
+    "Local ComfyUI checkpoint experiments were removed after visual QC rejected SSD-1B and Animagine XL outputs as unsuitable/neuroslop for the channel.",
+    "Default visual generation route is now built-in imagegen / ChatGPT Image, with deterministic post-processing for exact educational text and formulas."
+  ]
+}

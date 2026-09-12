@@ -13,10 +13,12 @@ interface ButtonProps extends ComponentPropsWithoutRef<"button"> {
 }
 
 const variantClasses: Record<ButtonVariant, string> = {
+  // Основное действие выделяется цветом и контрастом, а не большой неоновой
+  // подушкой: тень маленькая и направленная.
   primary:
-    "border-nova-cyan bg-nova-cyan text-space-950 shadow-cyan-glow hover:brightness-110 disabled:hover:brightness-100",
+    "border-transparent bg-[var(--action-primary)] text-[var(--action-ink)] shadow-[0_6px_16px_rgba(6,186,213,.2)] hover:bg-[var(--action-hover)] hover:shadow-[0_8px_20px_rgba(6,186,213,.26)] disabled:hover:bg-[var(--action-primary)]",
   ghost:
-    "border-white/20 bg-transparent text-white/80 hover:border-white/40 hover:text-white",
+    "border-white/[.14] bg-white/[.03] text-white/82 hover:border-nova-blue/45 hover:bg-white/[.06] hover:text-white",
 };
 
 const sizeClasses: Record<ButtonSize, string> = {
@@ -38,9 +40,9 @@ export function Button({
   return (
     <Comp
       className={cn(
-        "inline-flex items-center justify-center rounded-option border font-semibold transition-colors",
+        "inline-flex items-center justify-center rounded-option border font-bold transition-colors",
         "transition-all duration-150 active:scale-[0.98]",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/50 focus-visible:ring-offset-2 focus-visible:ring-offset-space-950",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-blue/65 focus-visible:ring-offset-2 focus-visible:ring-offset-space-950",
         "disabled:pointer-events-none disabled:opacity-40",
         variantClasses[variant],
         sizeClasses[size],

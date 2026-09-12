@@ -1,0 +1,492 @@
+extends Node2D
+
+const Reflection := preload("res://src/physics/optics/reflection.gd")
+
+enum RoomState {
+	EXPLORE,
+	FORECAST,
+	CASCADE,
+	SETTLE,
+}
+
+const VIEW_SIZE := Vector2(390.0, 844.0)
+const MIRROR_CENTER := Vector2(195.0, 405.0)
+const MIRROR_HALF_LENGTH := 50.0
+const TARGET_X := 350.0
+const TARGET_Y_MIN := 185.0
+const TARGET_Y_MAX := 545.0
+const MIRROR_MIN_ANGLE := -5.0
+const MIRROR_MAX_ANGLE := 35.0
+const SUCCESS_TOLERANCE := 28.0
+const MAX_ECHO_ERROR := 112.0
+const CASCADE_DURATION := 4.35
+
+const PRIMARY_RECT := Rect2(20.0, 764.0, 171.0, 58.0)
+const FOX_RECT := Rect2(199.0, 764.0, 171.0, 58.0)
+
+var room_state := RoomState.EXPLORE
+var source := Vector2(70.0, 180.0)
+var mirror_angle := deg_to_rad(16.0)
+var forecast_y := 330.0
+var committed_y := 330.0
+var fox_holding := true
+var dragging_mirror := false
+var dragging_forecast := false
+var cascade_elapsed := 0.0
+var cascade_trace: Dictionary = {}
+var forecast_error := INF
+var echo_stability := 0.0
+var run_progress := 0.0
+var challenge_index := 0
+var ambient_time := 0.0
+var _settle_success := false
+var _button_style := StyleBoxFlat.new()
+var _button_style_active := StyleBoxFlat.new()
+
+
+func _ready() -> void:
+	_button_style.bg_color = Color("181311ee")
+	_button_style.border_color = Color("49413d")
+	_button_style.set_border_width_all(1)
+	_button_style.set_corner_radius_all(8)
+	_button_style_active.bg_color = Color("2a2025f2")
+	_button_style_active.border_color = Color("c9c2b3")
+	_button_style_active.set_border_width_all(2)
+	_button_style_active.set_corner_radius_all(8)
+	_recalculate_preview()
+	queue_redraw()
+
+
+func _process(delta: float) -> void:
+	ambient_time += delta
+	if room_state == RoomState.CASCADE:
+		cascade_elapsed += delta
+		if cascade_elapsed >= 1.55:
+			run_progress = clampf((cascade_elapsed - 1.75) / 1.75, 0.0, 1.0) if _settle_success else 0.0
+		if cascade_elapsed >= CASCADE_DURATION:
+			room_state = RoomState.SETTLE
+	queue_redraw()
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	if event is InputEventScreenTouch:
+		if event.pressed:
+			_pointer_pressed(event.position)
+		else:
+			_pointer_released()
+	elif event is InputEventScreenDrag:
+		_pointer_dragged(event.position)
+	elif event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+		if event.pressed:
+			_pointer_pressed(event.position)
+		else:
+			_pointer_released()
+	elif event is InputEventMouseMotion and Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
+		_pointer_dragged(event.position)
+
+
+func _pointer_pressed(position: Vector2) -> void:
+	if PRIMARY_RECT.has_point(position):
+		_primary_action()
+		return
+	if FOX_RECT.has_point(position):
+		_fox_action()
+		return
+
+	if room_state == RoomState.EXPLORE and position.distance_to(MIRROR_CENTER) <= 82.0:
+		dragging_mirror = true
+		_update_mirror_angle(position)
+	elif room_state == RoomState.FORECAST and absf(position.x - TARGET_X) <= 48.0 and position.y >= TARGET_Y_MIN - 24.0 and position.y <= TARGET_Y_MAX + 24.0:
+		dragging_forecast = true
+		forecast_y = clampf(position.y, TARGET_Y_MIN, TARGET_Y_MAX)
+		queue_redraw()
+
+
+func _pointer_dragged(position: Vector2) -> void:
+	if dragging_mirror and room_state == RoomState.EXPLORE:
+		_update_mirror_angle(position)
+	elif dragging_forecast and room_state == RoomState.FORECAST:
+		forecast_y = clampf(position.y, TARGET_Y_MIN, TARGET_Y_MAX)
+		queue_redraw()
+
+
+func _pointer_released() -> void:
+	dragging_mirror = false
+	dragging_forecast = false
+
+
+func _primary_action() -> void:
+	match room_state:
+		RoomState.EXPLORE:
+			room_state = RoomState.FORECAST
+			var preview := _trace_for_angle(mirror_angle)
+			if preview.get("target_hit", false):
+				forecast_y = clampf(preview["target_point"].y + 58.0, TARGET_Y_MIN, TARGET_Y_MAX)
+		RoomState.FORECAST:
+			_start_cascade()
+		RoomState.SETTLE:
+			if _settle_success:
+				challenge_index = (challenge_index + 1) % 3
+				_apply_challenge()
+			else:
+				_reset_attempt()
+	queue_redraw()
+
+
+func _fox_action() -> void:
+	if room_state == RoomState.EXPLORE or room_state == RoomState.FORECAST:
+		fox_holding = not fox_holding
+		queue_redraw()
+	elif room_state == RoomState.SETTLE:
+		_reset_attempt()
+
+
+func _update_mirror_angle(position: Vector2) -> void:
+	var requested := rad_to_deg((position - MIRROR_CENTER).angle())
+	while requested > 90.0:
+		requested -= 180.0
+	while requested < -90.0:
+		requested += 180.0
+	mirror_angle = deg_to_rad(clampf(requested, MIRROR_MIN_ANGLE, MIRROR_MAX_ANGLE))
+	_recalculate_preview()
+	queue_redraw()
+
+
+func _start_cascade() -> void:
+	committed_y = forecast_y
+	var released_angle := mirror_angle if fox_holding else mirror_angle + deg_to_rad(6.0)
+	cascade_trace = _trace_for_angle(released_angle)
+	cascade_elapsed = 0.0
+	run_progress = 0.0
+	forecast_error = INF
+	echo_stability = 0.0
+	_settle_success = false
+	if cascade_trace.get("target_hit", false):
+		var actual_y: float = cascade_trace["target_point"].y
+		forecast_error = absf(committed_y - actual_y)
+		echo_stability = clampf(1.0 - forecast_error / MAX_ECHO_ERROR, 0.0, 1.0)
+		_settle_success = forecast_error <= SUCCESS_TOLERANCE
+	room_state = RoomState.CASCADE
+
+
+func _reset_attempt() -> void:
+	room_state = RoomState.EXPLORE
+	cascade_elapsed = 0.0
+	run_progress = 0.0
+	forecast_error = INF
+	echo_stability = 0.0
+	_settle_success = false
+	_recalculate_preview()
+	queue_redraw()
+
+
+func _apply_challenge() -> void:
+	var sources := [
+		Vector2(70.0, 180.0),
+		Vector2(52.0, 235.0),
+		Vector2(92.0, 145.0),
+	]
+	var angles := [16.0, 23.0, 9.0]
+	source = sources[challenge_index]
+	mirror_angle = deg_to_rad(angles[challenge_index])
+	fox_holding = challenge_index != 2
+	forecast_y = 330.0
+	_reset_attempt()
+
+
+func _recalculate_preview() -> void:
+	cascade_trace = _trace_for_angle(mirror_angle)
+
+
+func _trace_for_angle(angle: float) -> Dictionary:
+	return Reflection.trace_plane_mirror_to_vertical_target(
+		source,
+		(MIRROR_CENTER - source).normalized(),
+		MIRROR_CENTER,
+		angle,
+		MIRROR_HALF_LENGTH,
+		TARGET_X,
+		TARGET_Y_MIN,
+		TARGET_Y_MAX
+	)
+
+
+func _draw() -> void:
+	_draw_world()
+	_draw_target_wall()
+	_draw_source()
+	_draw_mirror()
+	_draw_state_visuals()
+	_draw_characters()
+	_draw_hud()
+
+
+func _draw_world() -> void:
+	draw_rect(Rect2(Vector2.ZERO, VIEW_SIZE), Color("0b0a09"))
+	# Overcast sky and three restrained fog bands replace the old luminous cavern.
+	draw_rect(Rect2(0.0, 82.0, 390.0, 445.0), Color("151313"))
+	draw_rect(Rect2(0.0, 170.0, 390.0, 195.0), Color("201a1b99"))
+	draw_rect(Rect2(0.0, 315.0, 390.0, 160.0), Color("312b2870"))
+	draw_rect(Rect2(0.0, 448.0, 390.0, 105.0), Color("55504725"))
+
+	# Bare distant trees: deliberately low contrast so apparatus remains dominant.
+	for i in range(9):
+		var tree_x := 18.0 + i * 48.0
+		var tree_top := 95.0 + float((i * 37) % 74)
+		var tree_color := Color("26211f") if i % 2 == 0 else Color("201c1b")
+		draw_line(Vector2(tree_x, 560.0), Vector2(tree_x + 6.0, tree_top), tree_color, 7.0, true)
+		draw_line(Vector2(tree_x + 3.0, tree_top + 88.0), Vector2(tree_x - 30.0, tree_top + 42.0), tree_color, 4.0, true)
+		draw_line(Vector2(tree_x + 4.0, tree_top + 120.0), Vector2(tree_x + 34.0, tree_top + 65.0), tree_color, 3.5, true)
+		draw_line(Vector2(tree_x + 2.0, tree_top + 174.0), Vector2(tree_x - 25.0, tree_top + 136.0), tree_color, 3.0, true)
+
+	for layer in range(4):
+		var y := 560.0 + layer * 52.0
+		var color := Color(0.045 + layer * 0.012, 0.038 + layer * 0.009, 0.034 + layer * 0.006, 1.0)
+		var ridge := PackedVector2Array([
+			Vector2(0.0, y + 10.0 * sin(ambient_time * 0.08 + layer)),
+			Vector2(70.0, y - 18.0),
+			Vector2(145.0, y + 8.0),
+			Vector2(220.0, y - 24.0),
+			Vector2(305.0, y + 6.0),
+			Vector2(390.0, y - 16.0),
+			Vector2(390.0, 744.0),
+			Vector2(0.0, 744.0),
+		])
+		draw_colored_polygon(ridge, color)
+
+	for i in range(18):
+		var px := fmod(31.0 * i + 17.0, 390.0)
+		var py := fmod(67.0 * i + 83.0 + sin(ambient_time * 0.35 + i) * 5.0, 640.0)
+		var pulse := 0.35 + 0.25 * sin(ambient_time * 0.9 + i * 0.73)
+		var leaf_color := Color(0.43, 0.27, 0.18, 0.10 + pulse * 0.10) if i % 3 != 0 else Color(0.32, 0.34, 0.23, 0.08 + pulse * 0.08)
+		draw_circle(Vector2(px, py), 1.2 + pulse, leaf_color)
+
+	# Reachable ledges and the central gap.
+	draw_rect(Rect2(0.0, 646.0, 136.0, 98.0), Color("171310"))
+	draw_rect(Rect2(0.0, 638.0, 136.0, 10.0), Color("4c4d39"))
+	draw_rect(Rect2(326.0, 540.0, 64.0, 204.0), Color("171310"))
+	draw_rect(Rect2(326.0, 532.0, 64.0, 10.0), Color("6d4935"))
+
+	# Root-grown remains of the open observatory; visual only.
+	var root_color := Color("241a16")
+	draw_polyline(PackedVector2Array([Vector2(0, 70), Vector2(32, 118), Vector2(18, 270), Vector2(52, 425), Vector2(23, 610)]), root_color, 18.0, true)
+	draw_polyline(PackedVector2Array([Vector2(390, 64), Vector2(356, 142), Vector2(376, 280), Vector2(345, 432), Vector2(371, 610)]), root_color, 20.0, true)
+	var iron_color := Color("49413d")
+	draw_line(Vector2(24.0, 125.0), Vector2(24.0, 520.0), iron_color, 4.0, true)
+	draw_line(Vector2(366.0, 128.0), Vector2(366.0, 515.0), iron_color, 4.0, true)
+	draw_arc(Vector2(195.0, 127.0), 171.0, PI, TAU, 40, iron_color, 4.0, true)
+
+
+func _draw_target_wall() -> void:
+	draw_line(Vector2(TARGET_X, TARGET_Y_MIN), Vector2(TARGET_X, TARGET_Y_MAX), Color("49413d"), 8.0, true)
+	for y in range(int(TARGET_Y_MIN), int(TARGET_Y_MAX) + 1, 36):
+		draw_line(Vector2(TARGET_X - 7.0, y), Vector2(TARGET_X + 8.0, y), Color("82786b"), 1.2, true)
+
+	if room_state == RoomState.FORECAST:
+		draw_circle(Vector2(TARGET_X, forecast_y), 16.0, Color("241820"))
+		draw_arc(Vector2(TARGET_X, forecast_y), 12.0, 0.0, TAU, 24, Color("c9c2b3"), 2.5, true)
+		draw_circle(Vector2(TARGET_X, forecast_y), 3.5, Color("71383c"))
+
+
+func _draw_source() -> void:
+	var pulse := 1.0 + 0.08 * sin(ambient_time * 2.4)
+	draw_circle(source, 22.0 * pulse, Color("24201d"))
+	draw_arc(source, 18.0 * pulse, 0.0, TAU, 28, Color("82786b"), 2.0, true)
+	draw_circle(source, 7.0 * pulse, Color("d5cdbc"))
+
+
+func _draw_mirror() -> void:
+	var displayed_angle := mirror_angle
+	if room_state == RoomState.CASCADE and not fox_holding:
+		displayed_angle += deg_to_rad(6.0) * clampf(cascade_elapsed / 0.9, 0.0, 1.0)
+	elif room_state == RoomState.SETTLE and not fox_holding:
+		displayed_angle += deg_to_rad(6.0)
+
+	var tangent := Vector2.RIGHT.rotated(displayed_angle)
+	var normal := tangent.orthogonal()
+	var a := MIRROR_CENTER - tangent * MIRROR_HALF_LENGTH
+	var b := MIRROR_CENTER + tangent * MIRROR_HALF_LENGTH
+	draw_circle(MIRROR_CENTER, 20.0, Color("211b18"))
+	draw_circle(MIRROR_CENTER, 10.0, Color("6c4936"))
+	draw_line(a + normal * 5.0, b + normal * 5.0, Color("151311"), 10.0, true)
+	draw_line(a, b, Color("c9c2b3"), 7.0, true)
+	draw_line(a, b, Color("817a70"), 2.0, true)
+
+	if room_state == RoomState.EXPLORE:
+		draw_arc(MIRROR_CENTER, 69.0, deg_to_rad(MIRROR_MIN_ANGLE), deg_to_rad(MIRROR_MAX_ANGLE), 22, Color("68645499"), 2.0, true)
+		draw_circle(MIRROR_CENTER + tangent * 69.0, 10.0, Color("8a573a"))
+	elif room_state == RoomState.FORECAST or room_state == RoomState.SETTLE:
+		_draw_dashed_line(MIRROR_CENTER - normal * 42.0, MIRROR_CENTER + normal * 42.0, Color("8f887e99"), 6.0, 5.0, 1.5)
+
+
+func _draw_state_visuals() -> void:
+	var hit_point := MIRROR_CENTER
+	if room_state == RoomState.EXPLORE:
+		_draw_dashed_line(source, hit_point, Color("b8b09f66"), 7.0, 7.0, 1.4)
+		return
+
+	if room_state == RoomState.FORECAST:
+		_draw_dashed_line(source, hit_point, Color("c9c2b388"), 8.0, 6.0, 2.0)
+		_draw_dashed_line(hit_point, Vector2(TARGET_X, forecast_y), Color("a99e8dbb"), 10.0, 7.0, 2.2)
+		_draw_echo_steps(forecast_y, 0.52, 1.0)
+		return
+
+	if not cascade_trace.get("mirror_hit", false):
+		return
+
+	var actual_point: Vector2 = cascade_trace.get("target_point", MIRROR_CENTER)
+	if room_state == RoomState.CASCADE:
+		var incident_progress := clampf(cascade_elapsed / 0.75, 0.0, 1.0)
+		_draw_glow_line(source, source.lerp(hit_point, incident_progress), Color("d5cdbc"), 3.0)
+		if cascade_elapsed >= 0.72:
+			var reflected_progress := clampf((cascade_elapsed - 0.72) / 0.72, 0.0, 1.0)
+			_draw_glow_line(hit_point, hit_point.lerp(actual_point, reflected_progress), Color("d5cdbc"), 3.0)
+		if cascade_elapsed >= 1.4:
+			_draw_echo_steps(committed_y, echo_stability, clampf((cascade_elapsed - 1.4) / 0.45, 0.0, 1.0))
+	elif room_state == RoomState.SETTLE:
+		_draw_glow_line(source, hit_point, Color("d5cdbc"), 2.6)
+		_draw_glow_line(hit_point, actual_point, Color("d5cdbc"), 2.6)
+		_draw_dashed_line(hit_point, Vector2(TARGET_X, committed_y), Color("8a573acc"), 9.0, 6.0, 2.0)
+		_draw_echo_steps(committed_y, echo_stability, 1.0)
+		draw_line(Vector2(TARGET_X + 18.0, actual_point.y), Vector2(TARGET_X + 18.0, committed_y), Color("71383c"), 2.0, true)
+		draw_circle(actual_point, 7.0, Color("c9c2b3"))
+		draw_circle(Vector2(TARGET_X, committed_y), 7.0, Color("8a573a"))
+
+
+func _draw_echo_steps(target_y: float, stability: float, reveal: float) -> void:
+	var start := Vector2(112.0, 620.0)
+	var finish := Vector2(330.0, target_y + 18.0)
+	var visible_steps := int(floor(4.0 * reveal + 0.01))
+	var stable_steps := int(ceil(4.0 * stability))
+	for i in range(4):
+		if i >= visible_steps:
+			continue
+		var t := float(i + 1) / 4.5
+		var p := _echo_curve(start, finish, t)
+		var is_stable := i < stable_steps
+		var alpha := 0.72 if is_stable else 0.24
+		var color := Color(0.79, 0.76, 0.70, alpha) if is_stable else Color(0.44, 0.22, 0.24, alpha)
+		draw_arc(p, 19.0, PI, TAU, 14, color, 6.0, true)
+		draw_line(p + Vector2(-16.0, 0.0), p + Vector2(16.0, 0.0), color, 4.0, true)
+
+
+func _draw_characters() -> void:
+	var hero_start := Vector2(82.0, 613.0)
+	var fox_start := Vector2(119.0, 625.0)
+	var hero_position := hero_start
+	var fox_position := fox_start
+	if room_state == RoomState.CASCADE and _settle_success and run_progress > 0.0:
+		var finish := Vector2(330.0, committed_y + 4.0)
+		hero_position = _echo_curve(hero_start, finish, run_progress)
+		fox_position = _echo_curve(fox_start, finish + Vector2(-8.0, 8.0), clampf(run_progress - 0.08, 0.0, 1.0))
+	elif room_state == RoomState.SETTLE and _settle_success:
+		hero_position = Vector2(335.0, committed_y + 4.0)
+		fox_position = Vector2(319.0, committed_y + 13.0)
+
+	_draw_hero(hero_position)
+	_draw_fox(fox_position)
+
+
+func _draw_hero(position: Vector2) -> void:
+	draw_circle(position + Vector2(0.0, -25.0), 9.0, Color("b49a83"))
+	draw_polygon(
+		PackedVector2Array([
+			position + Vector2(-8.0, -18.0),
+			position + Vector2(9.0, -18.0),
+			position + Vector2(13.0, 7.0),
+			position + Vector2(-10.0, 7.0),
+		]),
+		PackedColorArray([Color("241820")])
+	)
+	draw_line(position + Vector2(-7.0, -16.0), position + Vector2(-22.0, -5.0), Color("8a573a"), 5.0, true)
+	draw_line(position + Vector2(8.0, -14.0), position + Vector2(18.0, -5.0), Color("aaa294"), 4.0, true)
+	draw_line(position + Vector2(-4.0, 6.0), position + Vector2(-7.0, 18.0), Color("151210"), 5.0, true)
+	draw_line(position + Vector2(6.0, 6.0), position + Vector2(10.0, 18.0), Color("151210"), 5.0, true)
+
+
+func _draw_fox(position: Vector2) -> void:
+	draw_ellipse(position, 15.0, 6.5, Color("161211"))
+	draw_circle(position + Vector2(14.0, -6.0), 6.0, Color("1c1715"))
+	draw_polygon(
+		PackedVector2Array([
+			position + Vector2(10.0, -12.0),
+			position + Vector2(13.0, -23.0),
+			position + Vector2(17.0, -11.0),
+		]),
+		PackedColorArray([Color("2c201b")])
+	)
+	draw_circle(position + Vector2(17.0, -7.0), 1.8, Color("c9c2b3"))
+	var tail_points := PackedVector2Array([
+		position + Vector2(-11.0, -1.0),
+		position + Vector2(-23.0, -11.0),
+		position + Vector2(-34.0, -4.0),
+		position + Vector2(-27.0, 7.0),
+	])
+	draw_polyline(tail_points, Color("3b2920"), 6.0, true)
+	if room_state == RoomState.FORECAST:
+		for offset in [-5.0, 5.0]:
+			var echo_tail := PackedVector2Array()
+			for point in tail_points:
+				echo_tail.append(point + Vector2(0.0, offset))
+			draw_polyline(echo_tail, Color("c9c2b344"), 2.0, true)
+func _draw_hud() -> void:
+	var font := ThemeDB.fallback_font
+	var state_label := "НАСТРОЙ МЕХАНИЗМ"
+	match room_state:
+		RoomState.FORECAST:
+			state_label = "ПОКАЖИ, КУДА УЙДЁТ ЛУЧ"
+		RoomState.CASCADE:
+			state_label = "ЭХО СТАНОВИТСЯ НАСТОЯЩИМ"
+		RoomState.SETTLE:
+			state_label = "ПУТЬ УСТОЯЛ" if _settle_success else "ЭХО РАЗОШЛОСЬ"
+	draw_string(font, Vector2(20.0, 48.0), state_label, HORIZONTAL_ALIGNMENT_CENTER, 350.0, 15, Color("d0c8b9"))
+
+	if room_state == RoomState.EXPLORE:
+		draw_string(font, Vector2(20.0, 72.0), "Поверни зеркало. Потом закрепи один исход.", HORIZONTAL_ALIGNMENT_CENTER, 350.0, 13, Color("8c857a"))
+	elif room_state == RoomState.FORECAST:
+		draw_string(font, Vector2(20.0, 72.0), "Передвинь метку на правой стене.", HORIZONTAL_ALIGNMENT_CENTER, 350.0, 13, Color("8c857a"))
+	elif room_state == RoomState.SETTLE and is_finite(forecast_error):
+		var detail := "Расхождение: %.0f" % forecast_error
+		draw_string(font, Vector2(20.0, 72.0), detail, HORIZONTAL_ALIGNMENT_CENTER, 350.0, 13, Color("8c857a"))
+
+	if room_state != RoomState.CASCADE:
+		draw_style_box(_button_style_active if room_state == RoomState.FORECAST else _button_style, PRIMARY_RECT)
+		draw_style_box(_button_style_active if fox_holding else _button_style, FOX_RECT)
+		var primary_text := "ВИДЕТЬ ЭХО"
+		if room_state == RoomState.FORECAST:
+			primary_text = "ЗАКРЕПИТЬ"
+		elif room_state == RoomState.SETTLE:
+			primary_text = "НОВЫЙ ЛУЧ" if _settle_success else "ЕЩЁ РАЗ"
+		draw_string(font, PRIMARY_RECT.position + Vector2(0.0, 36.0), primary_text, HORIZONTAL_ALIGNMENT_CENTER, PRIMARY_RECT.size.x, 15, Color("d8d0c1"))
+		var fox_text := "ШОРОХ ДЕРЖИТ" if fox_holding else "ШОРОХ СВОБОДЕН"
+		if room_state == RoomState.SETTLE:
+			fox_text = "ПОВТОРИТЬ"
+		draw_string(font, FOX_RECT.position + Vector2(0.0, 36.0), fox_text, HORIZONTAL_ALIGNMENT_CENTER, FOX_RECT.size.x, 13, Color("d8d0c1"))
+	else:
+		var progress := clampf(cascade_elapsed / CASCADE_DURATION, 0.0, 1.0)
+		draw_rect(Rect2(28.0, 791.0, 334.0, 8.0), Color("211b18"))
+		draw_rect(Rect2(28.0, 791.0, 334.0 * progress, 8.0), Color("c9c2b3"))
+
+
+func _draw_glow_line(a: Vector2, b: Vector2, color: Color, width: float) -> void:
+	draw_line(a, b, Color(color.r, color.g, color.b, 0.05), width * 4.0, true)
+	draw_line(a, b, Color(color.r, color.g, color.b, 0.14), width * 2.0, true)
+	draw_line(a, b, color, width, true)
+
+
+func _draw_dashed_line(a: Vector2, b: Vector2, color: Color, dash: float, gap: float, width: float) -> void:
+	var length := a.distance_to(b)
+	if length <= 0.001:
+		return
+	var direction := (b - a) / length
+	var cursor := 0.0
+	while cursor < length:
+		var end := minf(cursor + dash, length)
+		draw_line(a + direction * cursor, a + direction * end, color, width, true)
+		cursor += dash + gap
+
+
+func _echo_curve(start: Vector2, finish: Vector2, t: float) -> Vector2:
+	var control := Vector2((start.x + finish.x) * 0.5, minf(start.y, finish.y) - 96.0)
+	var one_minus := 1.0 - t
+	return one_minus * one_minus * start + 2.0 * one_minus * t * control + t * t * finish

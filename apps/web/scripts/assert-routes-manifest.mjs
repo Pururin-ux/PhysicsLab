@@ -8,7 +8,7 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 
-const manifestPath = resolve(".next", "app-path-routes-manifest.json");
+const manifestPath = resolve(process.env.NEXT_DIST_DIR ?? ".next", "app-path-routes-manifest.json");
 const routesPath = resolve("tests", "required-routes.json");
 
 let manifest;

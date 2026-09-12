@@ -20,7 +20,8 @@ export const reflectionAngleBlueprint: TaskBlueprint = {
     // отбрасывает кандидата из-за дубликата дистракторов.
     angle: { min: 10, max: 40, step: 2, unit: "°" },
   },
-  formula: "\\theta_r=\\theta_i",
+  // Обозначения белорусских учебников: α — угол падения, β — угол отражения.
+  formula: "\\beta=\\alpha",
   answerUnit: "°",
   answerKind: "positive",
   diagram: (p) => ({
@@ -36,7 +37,7 @@ export const reflectionAngleBlueprint: TaskBlueprint = {
   textTemplate: (p) =>
     `Луч света падает на ${surfaceFor(p)}. Угол падения, отсчитанный от нормали (перпендикуляра к зеркалу), равен ${p.angle}°. Найдите угол отражения, отсчитанный от той же нормали.`,
   explanationTemplate: (p, answer) =>
-    `По закону отражения угол отражения равен углу падения, оба отсчитываются от нормали: $\\theta_r=\\theta_i=${p.angle}^\\circ$. Ответ: ${formatAnswerValue(answer)}°.`,
+    `По закону отражения угол отражения равен углу падения, оба отсчитываются от нормали: $\\beta=\\alpha=${p.angle}^\\circ$. Ответ: ${formatAnswerValue(answer)}°.`,
   trap: "Оба угла отсчитываются от нормали, а не от поверхности зеркала.",
   coachLines: {
     correct: () => "Верно. Угол отражения равен углу падения — оба от нормали.",

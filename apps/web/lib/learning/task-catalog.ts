@@ -28,7 +28,10 @@ export type TaskTypeCatalogEntry = {
     max: Difficulty;
   };
   visualKinds: TaskVisualKind[];
-  trainingPoints: string[];
+  // Одна фраза о том, где обычно ошибаются. Раньше здесь лежал список из трёх
+  // разных по смыслу строк (навык, подсказка, ошибка), и на странице он читался
+  // как свалка обрывков.
+  commonMistake: string | null;
 };
 
 export type TaskCatalogTopicFilter = "all" | TopicId;

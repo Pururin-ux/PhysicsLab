@@ -27,22 +27,21 @@ export default async function FocusedPracticePage({ params }: FocusedPracticePag
 
   return (
     <div className="flex min-w-0 flex-col gap-7">
-      <section className="mx-auto flex w-full max-w-[580px] flex-col gap-2">
+      {/* Ширина как у карточки задачи (640), иначе заголовок и задача стоят по
+          разным левым краям. */}
+      <section className="mx-auto flex w-full max-w-[640px] flex-col gap-2">
         <Link
           href={`/tasks/${entry.slug}`}
-          className="mb-1 w-fit rounded-option text-[12px] font-semibold text-nova-cyan/80 hover:text-nova-cyan focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/55"
+          className="mb-1 w-fit rounded-option text-[12px] font-semibold text-nova-cyan/80 hover:text-nova-cyan focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-blue/55"
         >
           К типу задачи
         </Link>
-        <p className="text-[11px] font-bold uppercase tracking-[.14em] text-white/58">
-          Пять похожих задач
-        </p>
-        <h1 className="text-[32px] font-[800] leading-tight text-white sm:text-[40px]">
+        {/* Пока ученик решает, на экране нужны только название типа и сама
+            задача: описание типа он уже прочитал на предыдущей странице, а
+            «Задание 1 из 5» стоит прямо над карточкой. */}
+        <h1 className="text-[28px] font-[800] leading-tight text-white sm:text-[34px]">
           {entry.title}
         </h1>
-        <p className="text-[14px] leading-[1.65] text-white/62">
-          {entry.shortDescription}
-        </p>
       </section>
 
       <FocusedFamilyPractice entry={entry} />

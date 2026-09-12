@@ -27,4 +27,22 @@ test("coverage map remains explicit about partial and absent sections", () => {
   assert.equal(atomic?.status, "not-covered");
   assert.equal(atomic?.familyCount, 0);
   assert.ok(coverage.every((section) => section.knownGaps.length > 0));
+  assert.deepEqual(
+    mechanics?.catalogDestinations.map(({ topicId, familyCount }) => ({
+      topicId,
+      familyCount,
+    })).sort((a,b)=>a.topicId.localeCompare(b.topicId)),
+    [
+      { topicId: "dynamics", familyCount: 11 },
+      { topicId: "kinematics", familyCount: 6 },
+    ],
+  );
+  assert.deepEqual(quantum?.catalogDestinations, []);
+  assert.deepEqual(atomic?.catalogDestinations, []);
+});
+
+test("coverage status follows the actual available catalog",()=>{
+  assert.ok(buildCoverageSections([]).every(section=>section.status==="not-covered"&&section.familyCount===0));
+  const onlyPressure=buildCoverageSections(["contact-pressure"]);
+  assert.deepEqual(onlyPressure.filter(section=>section.status==="partial").map(section=>section.id),["mechanics"]);
 });

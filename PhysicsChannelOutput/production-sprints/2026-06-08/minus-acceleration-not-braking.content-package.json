@@ -1,0 +1,139 @@
+{
+  "schema_version": "1.0.0",
+  "id": "minus-acceleration-not-braking",
+  "created_at": "2026-06-08T00:30:00+03:00",
+  "status": "rendered",
+  "audience": {
+    "grade_range": "9-11",
+    "subject": "physics",
+    "curriculum_context": "school mechanics, kinematics, acceleration projection"
+  },
+  "objective": {
+    "topic": "minus sign in acceleration",
+    "learning_goal": "Explain that negative acceleration is a projection sign relative to the chosen axis, and braking happens when velocity and acceleration point in opposite directions.",
+    "main_misconception": "a < 0 always means the body is braking",
+    "difficulty": "medium"
+  },
+  "sources": [
+    {
+      "title": "Internal PhysicsLab mechanics notes",
+      "type": "internal",
+      "notes": "Final wording and diagrams must be checked against the local accelerated-motion chapter before publishing."
+    },
+    {
+      "title": "Growth / Monetization Research Brief - 2026-06-08",
+      "type": "internal",
+      "notes": "Use for channel format, caption, and growth strategy constraints."
+    }
+  ],
+  "format": {
+    "post_type": "mini_guide",
+    "surface": "telegram_portrait",
+    "width": 1080,
+    "height": 1350
+  },
+  "copy": {
+    "language": "ru",
+    "title": "Минус не виноват",
+    "subtitle": "сначала подпиши ось",
+    "blocks": [
+      {
+        "id": "axis-rule",
+        "kind": "body",
+        "text": "Если ось вправо, то вправо — плюс.",
+        "importance": "primary"
+      },
+      {
+        "id": "projection-rule",
+        "kind": "body",
+        "text": "a < 0 значит: ускорение направлено против выбранной оси.",
+        "importance": "primary"
+      },
+      {
+        "id": "same-direction",
+        "kind": "worked_step",
+        "text": "v и a в одну сторону — скорость растёт.",
+        "importance": "primary"
+      },
+      {
+        "id": "opposite-direction",
+        "kind": "worked_step",
+        "text": "v и a в разные стороны — скорость падает.",
+        "importance": "primary"
+      },
+      {
+        "id": "formula",
+        "kind": "formula",
+        "text": "по оси: v = v0 + a·t",
+        "importance": "secondary"
+      },
+      {
+        "id": "note",
+        "kind": "note",
+        "text": "Знак — это направление проекции, а не настроение задачи.",
+        "importance": "secondary"
+      },
+      {
+        "id": "caption",
+        "kind": "caption",
+        "text": "Коротко про знак ускорения в кинематике: сначала выбираем ось, потом сравниваем направления v и a.",
+        "importance": "secondary"
+      }
+    ]
+  },
+  "visual": {
+    "route": "generated_fusion",
+    "style_lane": "Manga Marker / Notebook Hybrid",
+    "art_direction": "Original rough manga-marker physics mini-guide on textured paper, black ink, blue/red marker accents, one consistent student character or small sticker on the side, clear protected zones for later deterministic Russian text, two simple motion-arrow diagrams, not a copied reference layout.",
+    "negative_prompt": "generated readable text, fake Russian letters, fake formulas, watermarks, logos, glossy photorealistic student, copied reference composition, crowded text zones, distorted hands, extra limbs",
+    "protected_zones": [
+      {
+        "id": "title-zone",
+        "x": 64,
+        "y": 64,
+        "width": 760,
+        "height": 190,
+        "purpose": "deterministic title and subtitle"
+      },
+      {
+        "id": "case-zone-1",
+        "x": 72,
+        "y": 300,
+        "width": 720,
+        "height": 330,
+        "purpose": "same-direction explanation and arrows"
+      },
+      {
+        "id": "case-zone-2",
+        "x": 72,
+        "y": 675,
+        "width": 720,
+        "height": 330,
+        "purpose": "opposite-direction explanation and arrows"
+      },
+      {
+        "id": "formula-note-zone",
+        "x": 88,
+        "y": 1060,
+        "width": 820,
+        "height": 190,
+        "purpose": "formula and note"
+      }
+    ]
+  },
+  "assets": {
+    "generated_layers": [
+      "C:/Users/lalad/OneDrive/Desktop/PhysicsChannelOutput/production-sprints/2026-06-08/minus-acceleration-visual-layer-v0.png"
+    ],
+    "overlay_source": "C:/Users/lalad/OneDrive/Desktop/PhysicsChannelOutput/production-sprints/2026-06-08/render_minus_acceleration_v0.py",
+    "final_png": "C:/Users/lalad/OneDrive/Desktop/PhysicsChannelOutput/production-sprints/2026-06-08/minus-acceleration-composite-v0.png",
+    "contact_sheet": ""
+  },
+  "checks": {
+    "physics_qc": "pending",
+    "copy_locked": false,
+    "visual_qc": "pending",
+    "human_review": "pending",
+    "notes": "Brief, copy draft, character draft, ImageGen visual layer, and deterministic composite v0 created from the 2026-06-08 research sprint. Final PNG is 1080x1350. Needs physics QC, visual QC, and human review."
+  }
+}

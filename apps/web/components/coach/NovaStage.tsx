@@ -1,6 +1,6 @@
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion } from "motion/react";
 import Image from "next/image";
 import type { CoachState } from "../../lib/coach-engine";
 import { cn } from "../../lib/utils";
@@ -18,11 +18,11 @@ interface NovaStageProps {
 }
 
 const mascotByState: Record<CoachState, string> = {
-  calm: "/mascot-anime/calm.png",
-  thinking: "/mascot-anime/thinking.png",
-  warning: "/mascot-anime/warning.png",
-  encouraging: "/mascot-anime/encouraging.png",
-  surprised: "/mascot-anime/surprised.png",
+  calm: "/art/production/tutor-calm.webp",
+  thinking: "/art/production/tutor-thinking.webp",
+  warning: "/art/production/tutor-warning.webp",
+  encouraging: "/art/production/tutor-encouraging.webp",
+  surprised: "/art/production/tutor-surprised.webp",
 };
 
 const auraByState: Record<CoachState, string> = {
@@ -72,9 +72,9 @@ export function NovaStage({
             className="absolute -bottom-2 left-12 h-4 w-4 rotate-45 bg-[#eaf6fb]"
           />
           <div className="mb-1 flex items-center gap-2">
-            <span className="text-[11px] font-[800] text-[#0089b3]">Nova</span>
+            <span className="text-[11px] font-[800] text-[#0089b3]">Подсказка</span>
             <span className="rounded-[5px] bg-[#0089b3]/10 px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-[.12em] text-space-950/45">
-              коуч по физике
+              по задаче
             </span>
           </div>
           <p className="min-h-[22px] text-[13px] font-semibold leading-[1.55] text-space-950 sm:text-[14px]">
@@ -86,7 +86,7 @@ export function NovaStage({
 
       <div
         className="nova-stage relative isolate max-w-full overflow-visible"
-        style={{ width: size, maxWidth: "100%", aspectRatio: "0.82 / 1" }}
+        style={{ width: size, maxWidth: "100%", aspectRatio: "1 / 1" }}
         aria-hidden="true"
       >
         {showOrbit ? (
@@ -147,7 +147,7 @@ export function NovaStage({
               alt=""
               fill
               sizes={`${size}px`}
-              className="object-contain object-bottom drop-shadow-[0_20px_32px_rgba(0,0,0,.55)]"
+              className="rounded-full object-cover drop-shadow-[0_20px_32px_rgba(0,0,0,.55)]"
               priority={priority}
             />
           </motion.div>

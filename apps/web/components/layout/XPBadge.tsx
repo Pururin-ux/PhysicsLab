@@ -1,7 +1,7 @@
 "use client";
 
 import { useStore } from "@nanostores/react";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { useEffect, useState } from "react";
 import { $xp, $xpAward, type XPAward } from "../../lib/stores/session-store";
 
@@ -38,7 +38,7 @@ export function XPBadge() {
         </motion.span>
       ) : null}
 
-      <div className="flex items-center gap-1.5 rounded-full border border-nova-gold/30 bg-nova-gold-10 px-3 py-1 text-[12px] font-semibold leading-none text-nova-gold">
+      <div className="flex items-center gap-1.5 rounded-full border border-mode-learn/30 bg-mode-learn/10 px-3 py-1 text-[12px] font-semibold leading-none text-mode-learn">
         <span className="text-[10px] font-bold uppercase text-white/55">XP</span>
         <span>{xp}</span>
       </div>

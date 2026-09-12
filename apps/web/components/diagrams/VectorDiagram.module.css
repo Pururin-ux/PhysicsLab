@@ -1,0 +1,2 @@
+.diagram {--vector-cyan:#28d4e8; --vector-blue:#75baff; --vector-gold:#e5c65a; --vector-ember:#ff9a70;}
+:global(html[data-theme="light"]) .diagram {--vector-cyan:#087e90; --vector-blue:#1769ad; --vector-gold:#856000; --vector-ember:#b64319;}

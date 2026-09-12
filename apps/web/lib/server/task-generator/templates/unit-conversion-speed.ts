@@ -3,10 +3,11 @@ import { distanceFromKmhAndMinutes, variantIndex } from "../solver.ts";
 import type { Params, TaskBlueprint } from "../types.ts";
 import { formatAnswerValue, formatMathValue } from "../validator.ts";
 
+// Подставляются в начало предложения — с заглавной буквы.
 const subjects = [
-  "автомобиль",
-  "электропоезд",
-  "велосипедист",
+  "Автомобиль",
+  "Электропоезд",
+  "Велосипедист",
 ];
 
 function subjectFor(p: Params): string {
@@ -23,7 +24,7 @@ export const unitConversionSpeedBlueprint: TaskBlueprint = {
     vKmh: { min: 18, max: 90, step: 6, unit: "км/ч" },
     tMin: { min: 1, max: 12, step: 1, unit: "мин" },
   },
-  formula: "s=vt,\\quad 1\\ \\mathrm{km/h}=\\frac{1}{3.6}\\ \\mathrm{m/s}",
+  formula: "s=vt,\\quad 1\\ \\text{км/ч}=\\frac{1}{3{,}6}\\ \\text{м/с}",
   answerUnit: "м",
   answerKind: "positive",
   solver: distanceFromKmhAndMinutes,

@@ -1,0 +1,48 @@
+.figure {
+  margin: 0;
+  padding: clamp(1rem, 2vw, 1.4rem);
+  border: 1px solid rgba(229, 223, 217, 0.14);
+  border-radius: 8px;
+  background: #11161a;
+}
+
+.figure figcaption {
+  display: grid;
+  gap: 0.35rem;
+  margin-bottom: 0.85rem;
+}
+
+.figure figcaption b {
+  color: #e5dfd9;
+  font-size: 0.96rem;
+}
+
+.figure figcaption span {
+  color: #aaa39d;
+  font-size: 0.76rem;
+  line-height: 1.5;
+}
+
+.chart {
+  width: 100%;
+  height: clamp(13rem, 28vw, 17rem);
+}
+
+.readout {
+  display: flex;
+  margin-top: 0.7rem;
+  padding-top: 0.7rem;
+  border-top: 1px solid rgba(229, 223, 217, 0.11);
+  flex-wrap: wrap;
+  gap: 0.45rem 1rem;
+  color: rgba(229, 223, 217, 0.7);
+  font-family: var(--font-physics-numeric);
+  font-size: 0.7rem;
+}
+
+@media (max-width: 760px) {
+  .figure { padding: 0.85rem 0.65rem; }
+  .figure figcaption { padding-inline: 0.35rem; }
+  .chart { height: 13rem; }
+  .readout { padding-inline: 0.35rem; }
+}

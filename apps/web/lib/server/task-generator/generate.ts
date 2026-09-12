@@ -1,4 +1,5 @@
 import { pathToFileURL } from "node:url";
+import { contactPressureBlueprint } from "./templates/contact-pressure.ts";
 import { averageSpeedSegmentsBlueprint } from "./templates/average-speed-segments.ts";
 import { capacitorEnergyBlueprint } from "./templates/capacitor-energy.ts";
 import { chargeSharingBlueprint } from "./templates/charge-sharing.ts";
@@ -58,6 +59,7 @@ const candidateCache = new Map<string, Params[]>();
 const difficultyCandidateCache = new Map<string, Params[]>();
 
 export const blueprints = {
+  "contact-pressure": contactPressureBlueprint,
   "free-fall": freeFallBlueprint,
   "vt-slope": vtSlopeBlueprint,
   "vt-area": vtAreaBlueprint,

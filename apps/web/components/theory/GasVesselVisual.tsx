@@ -20,7 +20,7 @@ interface GasVesselVisualProps {
 export function GasVesselVisual({ title, caption }: GasVesselVisualProps) {
   return (
     <Card className="flex flex-col gap-3 border-white/[.08] !p-5">
-      <p className="text-[11px] font-bold uppercase tracking-[.14em] text-white/50">
+      <p className="text-[11px] font-bold uppercase tracking-[.14em] text-white/60">
         Модель
       </p>
       <h3 className="text-lg font-bold leading-snug text-white">{title}</h3>

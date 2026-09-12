@@ -7,6 +7,7 @@ import {
   getOptionState,
   moveToNextTask,
   resetQuizSession,
+  retryCurrentTask,
   type NumericInputQuizTask,
   type SingleChoiceQuizTask,
 } from "./quiz-session-store.ts";
@@ -74,7 +75,7 @@ test("correct answer increments score and streak", () => {
   assert.equal(getOptionState(task, "a", state), "dimmed");
 });
 
-test("wrong answer resets streak and completes the task", () => {
+test("first wrong answer resets streak without revealing the correct option", () => {
   resetQuizSession(10);
   const result = answerCurrentTask(task, "a");
   const state = $quizSession.get();
@@ -91,8 +92,8 @@ test("wrong answer resets streak and completes the task", () => {
   assert.equal(state.answers[0].taskTrap, "Проверочная ловушка");
   assert.equal(state.answers[0].selectedMisconception, "сложил величины без модели");
   assert.equal(getOptionState(task, "a", state), "wrong");
-  assert.equal(getOptionState(task, "b", state), "correct");
-  assert.equal(getOptionState(task, "c", state), "dimmed");
+  assert.equal(getOptionState(task, "b", state), "idle");
+  assert.equal(getOptionState(task, "c", state), "idle");
 });
 
 test("second answer after a wrong answer is ignored", () => {
@@ -106,6 +107,27 @@ test("second answer after a wrong answer is ignored", () => {
   assert.equal(state.score, 0);
   assert.equal(state.answers.length, 1);
   assert.equal(state.answers[0].isCorrect, false);
+});
+
+test("wrong answer allows one corrective retry without erasing the misconception", () => {
+  resetQuizSession(10);
+  answerCurrentTask(task, "a");
+
+  assert.equal(getOptionState(task, "b", $quizSession.get()), "idle");
+  assert.equal(retryCurrentTask(), true);
+  assert.equal($quizSession.get().phase, "retrying");
+  assert.equal(getOptionState(task, "a", $quizSession.get()), "dimmed");
+
+  const result = answerCurrentTask(task, "b");
+  const state = $quizSession.get();
+
+  assert.deepEqual(result, { isCorrect: true, streak: 0, score: 0, attempt: 2 });
+  assert.equal(state.phase, "answered");
+  assert.equal(state.answers.length, 1);
+  assert.equal(state.answers[0].isCorrect, true);
+  assert.equal(state.answers[0].attempt, 2);
+  assert.equal(state.answers[0].selectedMisconception, "сложил величины без модели");
+  assert.equal(retryCurrentTask(), false);
 });
 
 test("moving after answer advances one task at a time", () => {
@@ -175,6 +197,20 @@ test("numeric: второй ответ после первого игнорир�
 
   assert.equal(result, null);
   assert.equal($quizSession.get().answers.length, 1);
+});
+
+test("numeric: corrective retry uses the same first-try scoring contract", () => {
+  resetQuizSession(10);
+  answerCurrentNumericTask(numericTask, "5");
+  assert.equal(retryCurrentTask(), true);
+
+  const result = answerCurrentNumericTask(numericTask, "3,2");
+  const answer = $quizSession.get().answers[0];
+
+  assert.deepEqual(result, { isCorrect: true, streak: 0, score: 0, attempt: 2 });
+  assert.equal(answer.isCorrect, true);
+  assert.equal(answer.attempt, 2);
+  assert.equal(answer.selectedMisconception, "усреднил скорости без учёта времени");
 });
 
 test("смешанная сессия: single_choice и numeric в одной сессии", () => {

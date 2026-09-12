@@ -137,14 +137,12 @@ function buildEntry(templateId: TemplateId): TaskTypeCatalogEntry {
     answerFormat: blueprint.answerFormat ?? "single_choice",
     difficultyRange: difficultyRange(templateId),
     visualKinds: visualKinds(templateId),
-    trainingPoints: [
-      blueprint.skill,
-      helpSection.shortHint,
-      helpSection.mistake,
-    ].filter(
-      (value, index, values): value is string =>
-        Boolean(value?.trim()) && values.indexOf(value) === index,
-    ).slice(0, 3),
+    // A task-family page must describe the failure mode of this exact
+    // generator template. Topic-level help is intentionally broader and can
+    // combine neighbouring concepts (for example slope and area on v(t)), so
+    // using it first can attach a physically valid but irrelevant warning to
+    // a specific task type.
+    commonMistake: blueprint.trap?.trim() || helpSection.mistake?.trim() || null,
   };
 }
 

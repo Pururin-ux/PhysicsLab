@@ -11,6 +11,7 @@ import {
   buildShadedPolygonPath,
   collectPointLabels,
 } from "./graph-paths";
+import { formatTickValue } from "../../lib/physics/graph-ticks.ts";
 import {
   DEFAULT_GRAPH_FRAME,
   createGraphScale,
@@ -54,6 +55,57 @@ function clamp(value: number, min: number, max: number) {
   return Math.min(Math.max(value, min), max);
 }
 
+function axisValue(label: string, unit: string | undefined, value: number) {
+  return `${label} = ${formatTickValue(value)}${unit ? ` ${unit}` : ""}`;
+}
+
+function pointDescription(spec: PhysicsGraphSpec, point: { x: number; y: number; label?: string }) {
+  const xLabel = getAccessibleMathLabel(spec.axes.x.label);
+  const yLabel = getAccessibleMathLabel(spec.axes.y.label);
+  const coordinates = `${axisValue(xLabel, spec.axes.x.unit, point.x)}, ${axisValue(yLabel, spec.axes.y.unit, point.y)}`;
+
+  return point.label ? `${point.label}: ${coordinates}` : coordinates;
+}
+
+function graphDescription(spec: PhysicsGraphSpec) {
+  const xLabel = getAccessibleMathLabel(spec.axes.x.label);
+  const yLabel = getAccessibleMathLabel(spec.axes.y.label);
+  const axes = `По горизонтали: ${getAccessibleMathLabel(spec.axes.x.label, spec.axes.x.unit)}. По вертикали: ${getAccessibleMathLabel(spec.axes.y.label, spec.axes.y.unit)}.`;
+  const series = spec.series.map((item, index) => {
+    const name = item.id && item.id !== "main" ? ` «${item.id}»` : "";
+    const direction = item.direction ? ` Направление: ${item.direction === "forward" ? "вперёд" : item.direction === "backward" ? "назад" : "по циклу"}.` : "";
+    return `Линия${name}${spec.series.length > 1 ? ` ${index + 1}` : ""}: ${item.points.map((point) => pointDescription(spec, point)).join("; ")}.${item.closed ? " Линия замкнута." : ""}${direction}`;
+  });
+  const annotations = (spec.annotations ?? []).map((annotation) => {
+    if (annotation.type === "point-label") {
+      return `Подпись точки: ${annotation.label}, ${axisValue(xLabel, spec.axes.x.unit, annotation.x)}, ${axisValue(yLabel, spec.axes.y.unit, annotation.y)}.`;
+    }
+    if (annotation.type === "shaded-area-under") {
+      return `Закрашена площадь под графиком от ${axisValue(xLabel, spec.axes.x.unit, annotation.fromX)} до ${axisValue(xLabel, spec.axes.x.unit, annotation.toX)}${annotation.label ? `: ${annotation.label}` : ""}.`;
+    }
+    if (annotation.type === "vertical-band") {
+      return `Выделен интервал от ${axisValue(xLabel, spec.axes.x.unit, annotation.fromX)} до ${axisValue(xLabel, spec.axes.x.unit, annotation.toX)}${annotation.label ? `: ${annotation.label}` : ""}.`;
+    }
+    if (annotation.type === "shaded-polygon") {
+      return `Закрашена область по точкам: ${annotation.points.map((point) => pointDescription(spec, point)).join("; ")}${annotation.label ? `; ${annotation.label}` : ""}.`;
+    }
+    if (annotation.type === "segment-arrow") {
+      return `На отрезке показано направление от ${pointDescription(spec, annotation.from)} до ${pointDescription(spec, annotation.to)}.`;
+    }
+    if (annotation.from && annotation.to) {
+      return `Пунктирная направляющая от ${pointDescription(spec, annotation.from)} до ${pointDescription(spec, annotation.to)}.`;
+    }
+
+    const guides = [
+      typeof annotation.x === "number" ? axisValue(xLabel, spec.axes.x.unit, annotation.x) : null,
+      typeof annotation.y === "number" ? axisValue(yLabel, spec.axes.y.unit, annotation.y) : null,
+    ].filter(Boolean);
+    return guides.length ? `Пунктирная направляющая: ${guides.join(", ")}.` : "";
+  });
+
+  return [axes, ...series, ...annotations].filter(Boolean).join(" ");
+}
+
 export function PhysicsGraph({ spec, className, compact = false, ariaLabel }: PhysicsGraphProps) {
   const reactId = sanitizeId(useId());
   const markerBaseId = sanitizeId(spec.id ?? reactId);
@@ -70,6 +122,7 @@ export function PhysicsGraph({ spec, className, compact = false, ariaLabel }: Ph
   const plotBottom = frame.height - frame.bottom;
   const hasSignedYAxis = spec.axes.y.range[0] < 0 && spec.axes.y.range[1] > 0;
   const yAxisLabelX = Math.max(24, scale.yAxisX - 12);
+  const descriptionId = `${reactId}-graph-description`;
 
   return (
     <div
@@ -87,6 +140,7 @@ export function PhysicsGraph({ spec, className, compact = false, ariaLabel }: Ph
             spec.axes.x.unit,
           )}`
         }
+        aria-describedby={descriptionId}
         className="h-auto w-full max-w-full"
         preserveAspectRatio="xMidYMid meet"
       >
@@ -164,7 +218,7 @@ export function PhysicsGraph({ spec, className, compact = false, ariaLabel }: Ph
                   strokeWidth="1"
                 />
                 <SvgMathLabel
-                  label={tick.label ?? String(Number.isInteger(tick.value) ? tick.value : tick.value.toFixed(1))}
+                  label={tick.label ?? formatTickValue(tick.value)}
                   x={frame.left - 10}
                   y={y + 3}
                   textAnchor="end"
@@ -189,7 +243,7 @@ export function PhysicsGraph({ spec, className, compact = false, ariaLabel }: Ph
                   strokeWidth="1"
                 />
                 <SvgMathLabel
-                  label={tick.label ?? String(Number.isInteger(tick.value) ? tick.value : tick.value.toFixed(1))}
+                  label={tick.label ?? formatTickValue(tick.value)}
                   x={x}
                   y={plotBottom + 20}
                   textAnchor="middle"
@@ -494,6 +548,9 @@ export function PhysicsGraph({ spec, className, compact = false, ariaLabel }: Ph
           })}
         </g>
       </svg>
+      <p id={descriptionId} className="sr-only" data-graph-description>
+        {graphDescription(spec)}
+      </p>
     </div>
   );
 }

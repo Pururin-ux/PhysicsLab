@@ -4,7 +4,7 @@ import { lensImageHeight, variantIndex } from "../solver.ts";
 import type { Params, TaskBlueprint } from "../types.ts";
 import { formatAnswerValue, formatMathValue } from "../validator.ts";
 
-const objects = ["предмета", "свечи", "стрелки-указателя"];
+const objects = ["предмет", "свеча", "стрелка-указатель"];
 
 function objectFor(p: Params): string {
   return objects[variantIndex(p, objects.length)];
@@ -28,7 +28,9 @@ export const lensImageHeightBlueprint: TaskBlueprint = {
     dObj: { min: 20, max: 40, step: 10, unit: "см" },
     di: { min: 10, max: 80, step: 10, unit: "см" },
   },
-  formula: "h_i=h_o\\frac{d_i}{d_o}",
+  // Явные индексы не дают спутать расстояние до предмета с расстоянием
+  // до изображения: |Γ| = d_i/d_o = H/h.
+  formula: "H=h\\,\\frac{d_i}{d_o}",
   answerUnit: "см",
   answerKind: "positive",
   diagram: (p) => ({
@@ -47,14 +49,14 @@ export const lensImageHeightBlueprint: TaskBlueprint = {
   solver: lensImageHeight,
   distractors: lensImageHeightDistractors,
   textTemplate: (p) =>
-    `Собирающая линза даёт действительное изображение ${objectFor(p)} высотой ${p.h} см. Расстояние от предмета до линзы ${p.dObj} см, от линзы до изображения ${p.di} см. Найдите модуль высоты изображения.`,
+    `Перед собирающей линзой находится ${objectFor(p)} высотой ${p.h} см. Расстояние от предмета до линзы ${p.dObj} см. Линза создаёт действительное изображение на расстоянии ${p.di} см от неё. Найдите модуль высоты изображения.`,
   explanationTemplate: (p, answer) =>
-    `Линейное увеличение линзы: $|\\Gamma|=\\frac{d_i}{d_o}=\\frac{${p.di}}{${p.dObj}}$. Высота изображения по модулю: $h_i=h_o|\\Gamma|=${p.h}\\cdot\\frac{${p.di}}{${p.dObj}}=${formatMathValue(answer)}$ см. Само изображение перевёрнуто, но спрашивается модуль высоты.`,
-  trap: "Увеличение — это d_i/d_o: расстояние до изображения дели на расстояние до предмета, а не наоборот.",
+    `Модуль линейного увеличения: $|\\Gamma|=\\frac{d_i}{d_o}=\\frac{${p.di}}{${p.dObj}}$. Поэтому $H=h|\\Gamma|=${p.h}\\cdot\\frac{${p.di}}{${p.dObj}}=${formatMathValue(answer)}$ см. Действительное изображение перевёрнуто, но требуется модуль его высоты.`,
+  trap: "В |Γ| = dᵢ/dₒ расстояние линза—изображение дели на расстояние предмет—линза, а не наоборот.",
   coachLines: {
-    correct: () => "Верно. Увеличение равно d_i/d_o, высота изображения — во столько же раз больше или меньше предмета.",
+    correct: () => "Верно. |Γ| = dᵢ/dₒ, а модуль высоты изображения равен h|Γ|.",
     wrong: (_p, selected, correct) =>
-      `Проверь порядок деления в увеличении: |Γ| = d_i/d_o, поэтому высота ${formatAnswerValue(correct)} см, а не ${formatAnswerValue(selected)} см.`,
+      `Проверь порядок расстояний: |Γ| = dᵢ/dₒ, поэтому модуль высоты ${formatAnswerValue(correct)} см, а не ${formatAnswerValue(selected)} см.`,
   },
   constraints: [
     // Изображение не совпадает с предметом (иначе «высота не меняется»

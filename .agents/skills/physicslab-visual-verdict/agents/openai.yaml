@@ -1,0 +1,4 @@
+interface:
+  display_name: "PhysicsLab Visual Verdict"
+  short_description: "Targeted visual and interaction review"
+  default_prompt: "Use $physicslab-visual-verdict for the requested visual question. Choose route, state, viewport and evidence for the identified risk; do not expand into a full audit by default."

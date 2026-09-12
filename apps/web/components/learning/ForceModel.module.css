@@ -1,0 +1,4 @@
+.instrument { display:block; width:100%; max-width:320px; height:auto; margin:16px auto; color:var(--text-primary); }
+.spring { transform-origin:135px 50px; }
+.moving,.spring { transition:transform 420ms cubic-bezier(.22,.7,.2,1); }
+@media(prefers-reduced-motion:reduce) { .moving,.spring { transition:none; } }

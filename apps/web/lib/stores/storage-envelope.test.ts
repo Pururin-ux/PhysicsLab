@@ -89,7 +89,7 @@ test("practice-log: legacy-массив дней сортируется и де�
   }
 });
 
-test("progress: inline v1/v2 и конверт v2 мигрируют, конверт v3 — без миграции", () => {
+test("progress: старые версии мигрируют, конверт v4 читается без миграции", () => {
   const topicsPayload = {
     kinematics: {
       solved: 5,
@@ -118,7 +118,7 @@ test("progress: inline v1/v2 и конверт v2 мигрируют, конве
   );
   assert.equal(inlineV2.ok && inlineV2.migrated, true, "inline v2 пересохраняется конвертом");
 
-  // Конверт v2 теперь мигрирует в v3 (появилась тема optics) с пустым
+  // Конверт v2 теперь мигрирует в v4 с пустым
   // прогрессом оптики и сохранением остальных тем.
   const envelopeV2 = decodeStoredValue(
     progressCodec,
@@ -127,19 +127,19 @@ test("progress: inline v1/v2 и конверт v2 мигрируют, конве
       data: { version: 2, topics: topicsPayload },
     }),
   );
-  assert.equal(envelopeV2.ok && envelopeV2.migrated, true, "конверт v2 пересохраняется как v3");
+  assert.equal(envelopeV2.ok && envelopeV2.migrated, true, "конверт v2 пересохраняется как v4");
   if (envelopeV2.ok) {
     assert.equal(envelopeV2.value.topics.kinematics.solved, 5);
     assert.equal(envelopeV2.value.topics.optics.solved, 0);
     assert.deepEqual(envelopeV2.value.topics.optics.weakTraps, {});
   }
 
-  const envelopeV3 = decodeStoredValue(
+  const envelopeV4 = decodeStoredValue(
     progressCodec,
     JSON.stringify({
       version: PROGRESS_VERSION,
-      data: { version: PROGRESS_VERSION, topics: topicsPayload },
+      data: { version: PROGRESS_VERSION, topics: topicsPayload, pendingMistakes: {} },
     }),
   );
-  assert.equal(envelopeV3.ok && !envelopeV3.migrated, true);
+  assert.equal(envelopeV4.ok && !envelopeV4.migrated, true);
 });

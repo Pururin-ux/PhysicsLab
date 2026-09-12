@@ -9,15 +9,24 @@ const STORE_KEYS = [
   "physicslab-v3-exam-log-v1",
   "physicslab-v3-practice-log-v1",
   "physicslab-v3-xp-v1",
+  "physicslab-lesson-draft-acceleration",
 ] as const;
 
 test("экспорт и восстановление прогресса из файла", async ({ page }) => {
   // Заработать прогресс: одна отвеченная задача в электро-тренировке.
+  const taskResponse = page.waitForResponse((response) => response.url().includes("/api/tasks?"));
   await page.goto("/practice/electro-demo", { waitUntil: "domcontentloaded" });
+  const { tasks } = await (await taskResponse).json() as { tasks: { options: { correct?: boolean }[] }[] };
+  const correctIndex = tasks[0].options.findIndex((option) => option.correct);
+  expect(correctIndex).toBeGreaterThanOrEqual(0);
   const options = page.getByRole("list", { name: "Варианты ответа" });
   await expect(options).toBeVisible();
-  await options.getByRole("button").first().click();
+  await options.getByRole("button").nth(correctIndex).click();
   await expect(page.getByRole("button", { name: "Следующая задача" })).toBeVisible();
+  await page.evaluate(() => localStorage.setItem("physicslab-lesson-draft-acceleration", JSON.stringify({
+    version: 1,
+    data: {screen: 9, summaryText: "Ускорение показывает изменение скорости за секунду", summarySaved: true},
+  })));
 
   // XP пишется сразу; прогресс тем — по завершении сессии, для теста
   // достаточно XP + журнала дней (пишется при завершении) — поэтому
@@ -26,7 +35,7 @@ test("экспорт и восстановление прогресса из ф�
   await expect(page.getByTestId("data-transfer")).toBeVisible();
 
   const downloadPromise = page.waitForEvent("download");
-  await page.getByRole("button", { name: "Скачать прогресс" }).click();
+  await page.getByRole("button", { name: /Скачать (?:прогресс|копию)/ }).click();
   const download = await downloadPromise;
   const filePath = await download.path();
   if (!filePath) {

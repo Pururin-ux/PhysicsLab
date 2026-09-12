@@ -1,4 +1,5 @@
 import type { GraphConfig, GraphPoint, GraphType } from "./graph-data";
+import { niceTicks } from "./graph-ticks.ts";
 import type { GraphAxisSpec, PhysicsGraphSpec } from "./physics-graph-spec";
 
 type AdapterOptions = {
@@ -22,12 +23,8 @@ function readGraphY(point: GraphPoint, type: GraphType) {
 }
 
 function makeTicks(range: [number, number], count = 5) {
-  const [min, max] = range;
-  const step = (max - min) / count;
-
-  return Array.from({ length: count + 1 }, (_, index) => ({
-    value: min + step * index,
-  }));
+  // «Учебные» деления: шаг 1–2–5·10ⁿ вместо дробных хвостов вида 6.4.
+  return niceTicks(range, count);
 }
 
 export function graphConfigToPhysicsGraphSpec(

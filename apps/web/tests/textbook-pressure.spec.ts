@@ -1,0 +1,20 @@
+import {test,expect} from "@playwright/test";
+test("pressure varies with force and contact area, and includes both supports",async({page})=>{
+  await page.goto("/learn/pressure");
+  const scene=page.getByRole("region",{name:"История и модель с Мио"});
+  await scene.getByRole("radio",{name:"Уменьшится вдвое",exact:true}).check();
+  await expect(scene.getByRole("img",{name:/20 клеток/})).toHaveAttribute("aria-label",/20 кПа/);
+  await scene.getByRole("button",{name:"Площадь 40 см²",exact:true}).click();
+  await expect(scene.getByRole("img",{name:/40 клеток/})).toHaveAttribute("aria-label",/10 кПа/);
+  await scene.getByRole("button",{name:"Сила 80 Н",exact:true}).click();
+  await expect(scene.getByRole("img",{name:/40 клеток/})).toHaveAttribute("aria-label",/20 кПа/);
+  await expect(scene.getByRole("status")).toContainText("давление теперь прежнее");
+  await page.getByRole("radio",{name:"40 кПа",exact:true}).check();
+  await page.getByRole("button",{name:"Проверить себя",exact:true}).click();
+  await expect(page.getByRole("status").filter({hasText:"площадь двух опор"})).toBeVisible();
+  await page.getByRole("radio",{name:"20 кПа",exact:true}).check();
+  await page.getByRole("button",{name:"Проверить себя",exact:true}).click();
+  await page.reload();
+  await expect(page.getByRole("radio",{name:"20 кПа",exact:true})).toBeChecked();
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth)).toBe(false);
+});

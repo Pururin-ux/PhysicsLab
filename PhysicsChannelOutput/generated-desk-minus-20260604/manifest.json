@@ -1,0 +1,14 @@
+{
+  "title": "Минус в ускорении не ошибка",
+  "format": "1080x1620",
+  "generatedBackground": "C:\\Users\\lalad\\OneDrive\\Desktop\\PhysicsChannelOutput\\generated-desk-minus-20260604\\generated-background.png",
+  "overlay": "C:\\Users\\lalad\\OneDrive\\Desktop\\PhysicsChannelOutput\\generated-desk-minus-20260604\\text-overlay.svg",
+  "final": "C:\\Users\\lalad\\OneDrive\\Desktop\\PhysicsChannelOutput\\generated-desk-minus-20260604\\minus-acceleration-desk.png",
+  "method": "ImageGen visual layer + deterministic SVG text/formula overlay",
+  "referenceUse": "User example used for quality bar only, not for layout; Pinterest audit used for vibe.",
+  "checks": [
+    "generated layer has no readable text, numbers, formulas, logos, or calculator buttons",
+    "formula and Russian text are deterministic overlay",
+    "physics meaning checked: negative acceleration is direction relative to chosen axis"
+  ]
+}

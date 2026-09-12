@@ -19,6 +19,15 @@ function task(overrides: Partial<HelpableQuizTask>): HelpableQuizTask {
   };
 }
 
+test("thermal mistake help preserves the known physical model despite shared vocabulary", () => {
+  for (const [blueprint, trap, section] of [
+    ["density-volume-ratio", "Ты сравнил рёбра вместо объёмов.", "density-volume"],
+    ["density-volume-ratio", "Масса зависит от объёма", "density-volume"],
+    ["heat-balance-simple", "Не учёл массу и температуру воды", "heat-balance"],
+    ["ideal-gas-state", "Неверное изменение температуры", "gas-equation"],
+  ]) assert.equal(getHelpTargetForMistake(task({blueprint}),trap).sectionId,section);
+});
+
 test("task learning metadata covers every generator template", () => {
   const templateIds = templateRegistry.map((entry) => entry.id).sort();
   const metadataIds = Object.keys(taskLearningMetadataByTemplateId).sort();

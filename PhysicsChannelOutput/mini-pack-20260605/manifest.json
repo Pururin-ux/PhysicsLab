@@ -1,0 +1,72 @@
+{
+  "date": "2026-06-05",
+  "format": "1080x1350",
+  "posts": [
+    {
+      "id": "01-fizmat-letom-da",
+      "title": "Физмат летом? Да",
+      "final": "C:\\Users\\lalad\\OneDrive\\Desktop\\PhysicsChannelOutput\\mini-pack-20260605\\finals\\01-fizmat-letom-da.png",
+      "background": "C:\\Users\\lalad\\OneDrive\\Desktop\\PhysicsChannelOutput\\mini-pack-20260605\\backgrounds\\01-fizmat-letom-da-background.png",
+      "overlay": "C:\\Users\\lalad\\OneDrive\\Desktop\\PhysicsChannelOutput\\mini-pack-20260605\\overlays\\01-fizmat-letom-da-overlay.svg",
+      "width": 1080,
+      "height": 1350,
+      "checks": [
+        "strategy, not curriculum claim",
+        "no formulas"
+      ]
+    },
+    {
+      "id": "02-letniy-checkpoint",
+      "title": "Летний чекпоинт физматника",
+      "final": "C:\\Users\\lalad\\OneDrive\\Desktop\\PhysicsChannelOutput\\mini-pack-20260605\\finals\\02-letniy-checkpoint.png",
+      "background": "C:\\Users\\lalad\\OneDrive\\Desktop\\PhysicsChannelOutput\\mini-pack-20260605\\backgrounds\\02-letniy-checkpoint-background.png",
+      "overlay": "C:\\Users\\lalad\\OneDrive\\Desktop\\PhysicsChannelOutput\\mini-pack-20260605\\overlays\\02-letniy-checkpoint-overlay.svg",
+      "width": 1080,
+      "height": 1350,
+      "checks": [
+        "D formula checked",
+        "v=v0+at checked",
+        "F=ma checked"
+      ]
+    },
+    {
+      "id": "03-minus-v-uskorenii",
+      "title": "Минус в ускорении",
+      "final": "C:\\Users\\lalad\\OneDrive\\Desktop\\PhysicsChannelOutput\\mini-pack-20260605\\finals\\03-minus-v-uskorenii.png",
+      "background": "C:\\Users\\lalad\\OneDrive\\Desktop\\PhysicsChannelOutput\\mini-pack-20260605\\backgrounds\\03-minus-v-uskorenii-background.png",
+      "overlay": "C:\\Users\\lalad\\OneDrive\\Desktop\\PhysicsChannelOutput\\mini-pack-20260605\\overlays\\03-minus-v-uskorenii-overlay.svg",
+      "width": 1080,
+      "height": 1350,
+      "checks": [
+        "negative acceleration meaning checked",
+        "example a=-5 m/s^2 checked"
+      ]
+    },
+    {
+      "id": "04-kinematika-5-formul",
+      "title": "5 формул кинематики",
+      "final": "C:\\Users\\lalad\\OneDrive\\Desktop\\PhysicsChannelOutput\\mini-pack-20260605\\finals\\04-kinematika-5-formul.png",
+      "background": "C:\\Users\\lalad\\OneDrive\\Desktop\\PhysicsChannelOutput\\mini-pack-20260605\\backgrounds\\04-kinematika-5-formul-background.png",
+      "overlay": "C:\\Users\\lalad\\OneDrive\\Desktop\\PhysicsChannelOutput\\mini-pack-20260605\\overlays\\04-kinematika-5-formul-overlay.svg",
+      "width": 1080,
+      "height": 1350,
+      "checks": [
+        "uniform acceleration formulas checked"
+      ]
+    },
+    {
+      "id": "05-edinitsy-kradut-bally",
+      "title": "Единицы крадут баллы",
+      "final": "C:\\Users\\lalad\\OneDrive\\Desktop\\PhysicsChannelOutput\\mini-pack-20260605\\finals\\05-edinitsy-kradut-bally.png",
+      "background": "C:\\Users\\lalad\\OneDrive\\Desktop\\PhysicsChannelOutput\\mini-pack-20260605\\backgrounds\\05-edinitsy-kradut-bally-background.png",
+      "overlay": "C:\\Users\\lalad\\OneDrive\\Desktop\\PhysicsChannelOutput\\mini-pack-20260605\\overlays\\05-edinitsy-kradut-bally-overlay.svg",
+      "width": 1080,
+      "height": 1350,
+      "checks": [
+        "72 km/h = 20 m/s",
+        "5 min = 300 s",
+        "40 cm = 0.40 m"
+      ]
+    }
+  ]
+}

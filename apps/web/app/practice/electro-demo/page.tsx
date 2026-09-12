@@ -7,7 +7,7 @@ import { TopicPageHeader } from "../../../components/layout/TopicPageHeader";
 import { topicHelpSections } from "../../../lib/learning/topic-help";
 
 export const metadata = {
-  title: "Электродинамика | PhysicsLab",
+  title: "Электричество | PhysicsLab",
 };
 
 export default function ElectroDemoPage() {
@@ -17,8 +17,9 @@ export default function ElectroDemoPage() {
 
       <TopicPageHeader
         eyebrow="Тренировка"
-        title="Электродинамика"
+        title="Электричество"
         description="10 задач: ток, напряжение, сопротивление и заряд. Справка не мешает решению."
+        learnHref="/practice/electro-lesson"
         accent="blue"
       />
 
@@ -26,11 +27,11 @@ export default function ElectroDemoPage() {
         <PracticeWithHelp
           topicId="electrodynamics"
           generatedTemplate="electro-mixed"
-          generatedTopic="Электродинамика"
-          generatedTitle="Задачи по электродинамике"
+          generatedTopic="Электричество"
+          generatedTitle="Задачи по электричеству"
+          preAnswerGuidance="unlabelled"
           accent="blue"
-          drawerTitle="Справка по задаче"
-          drawerDescription="Открыт раздел, который нужен для текущего вопроса."
+          drawerTitle="Справка"
           drawerLayout="stack"
           subtopics={topicHelpSections.electrodynamics}
         >
@@ -45,7 +46,7 @@ export default function ElectroDemoPage() {
               }
               meaningText="**Напряжение** — напор источника, **сопротивление** — помеха на пути зарядов. ==Больше напор — больше ток, больше помеха — меньше==."
               trap="Ошибка: делить данные наугад. Сначала запиши закон, потом вырази нужное."
-              formula="I=\\frac{U}{R}"
+              formula={"I=\\frac{U}{R}"}
               formulaCaption="закон Ома для участка цепи"
               symbols={[
                 { latex: "I", description: "сила тока в участке, А" },

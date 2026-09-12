@@ -21,7 +21,12 @@ export function OptionList({
   session,
   onSelect,
 }: OptionListProps) {
-  const disabled = session.phase !== "active";
+  const acceptsAnswer = session.phase === "active" || session.phase === "retrying";
+  const latestAnswer = session.answers.at(-1);
+  const firstWrongOption =
+    session.phase === "retrying" && latestAnswer?.format === "single_choice"
+      ? latestAnswer.selectedOptionId
+      : null;
 
   return (
     <div className="flex flex-col gap-3" role="list" aria-label="Варианты ответа">
@@ -31,7 +36,7 @@ export function OptionList({
             id={option.id}
             text={option.text}
             state={getOptionState(task, option.id, session)}
-            disabled={disabled}
+            disabled={!acceptsAnswer || option.id === firstWrongOption}
             onClick={() => onSelect(option.id)}
           />
         </div>

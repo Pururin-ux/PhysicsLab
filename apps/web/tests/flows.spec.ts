@@ -5,14 +5,21 @@ import { formulaReference } from "../lib/physics/formula-reference.ts";
 // и доступность всех продуктовых страниц, а не только главных трёх.
 
 test("ученик отвечает на задачу и переходит к следующей", async ({ page }) => {
+  const taskResponse = page.waitForResponse((response) => response.url().includes("/api/tasks?"));
   await page.goto("/practice/electro-demo", { waitUntil: "domcontentloaded" });
+  const { tasks } = await (await taskResponse).json() as { tasks: { options: { correct?: boolean }[] }[] };
+  const correctIndex = tasks[0].options.findIndex((option) => option.correct);
+  expect(correctIndex).toBeGreaterThanOrEqual(0);
 
   const options = page.getByRole("list", { name: "Варианты ответа" });
   await expect(options).toBeVisible();
 
-  // Любой вариант приводит в состояние «отвечено»: появляется реакция Nova
-  // и кнопка перехода. Правильность ответа для сценария не важна.
-  await options.getByRole("button").first().click();
+  // After a wrong answer the learner retries before moving on.
+  const wrongIndex = tasks[0].options.findIndex((option) => !option.correct);
+  await options.getByRole("button").nth(wrongIndex).click();
+  await expect(page.getByRole("button", { name: "Следующая задача" })).toBeHidden();
+  await page.getByRole("button", { name: "Попробовать ещё раз", exact: true }).click();
+  await options.getByRole("button").nth(correctIndex).click();
 
   const nextButton = page.getByRole("button", { name: "Следующая задача" });
   await expect(nextButton).toBeVisible();
@@ -47,52 +54,75 @@ for (const route of productRoutes) {
   });
 }
 
-test("смешанная тренировка честно обозначает открытый scope", async ({ page }) => {
+test("диагностика до старта обозначает границы и ведёт к карте программы", async ({ page }) => {
   await page.goto("/practice/exam-demo", { waitUntil: "domcontentloaded" });
 
   await expect(
-    page.getByRole("heading", { name: "Смешанная тренировка" }),
+    page.getByRole("heading", {
+      name: "Подготовка к ЦТ/ЦЭ",
+      exact: true,
+    }),
   ).toBeVisible();
   await expect(
-    page.getByText(
-      "Это тренировочный набор, а не полный вариант ЦТ/ЦЭ: квантовая и атомно-ядерная физика пока не включены.",
-    ),
+    page.getByText(/не полный вариант ЦТ\/ЦЭ/i),
   ).toBeVisible();
-  await expect(
-    page.getByRole("button", { name: "Начать тренировку" }),
-  ).toBeVisible();
+  const start = page.getByRole("button", { name: "Начать диагностику" });
+  await expect(start).toBeVisible();
+  await page.locator('a[href="/exam/program"]').click();
+  const sections = page.getByRole("list", { name: "Разделы программы по физике" }).locator(":scope > li");
+  await expect(sections).toHaveCount(6);
+  await expect(sections.filter({ has: page.getByRole("link") })).toHaveCount(4);
+  await expect(sections.filter({ hasText: "Задачи появятся позже." })).toHaveCount(2);
+  await expect(page.getByRole("complementary")).toContainText("Для полной подготовки занимайся также по школьному учебнику и программе экзамена.");
 });
 
 test(
   "справочник рендерит весь корпус формул и ищет по содержимому",
   async ({ page }) => {
     await page.goto("/formulas", { waitUntil: "domcontentloaded" });
-    await page.waitForLoadState("networkidle");
 
-    const formulaRows = page.locator(".formula-row");
+    const formulaEntries = page.locator("[data-formula-id]");
     const formulaCount = formulaReference.reduce(
       (count, group) => count + group.entries.length,
       0,
     );
-    await expect(formulaRows).toHaveCount(formulaCount);
+    await expect(formulaEntries).toHaveCount(formulaCount);
     await expect(page.locator(".katex-error")).toHaveCount(0);
     expect(await page.locator(".katex-mathml").count()).toBeGreaterThanOrEqual(
       formulaCount,
     );
 
-    const averageSpeedRow = formulaRows.filter({
-      hasText: "Средняя скорость на участках",
-    });
-    await averageSpeedRow.getByRole("button").click();
-    await expect(averageSpeedRow).toHaveAttribute("data-open", "true");
-    await expect(
-      averageSpeedRow.locator(".formula-cyan .katex-mathml"),
-    ).toHaveCount(3);
+    const averageSpeedEntry = page.locator('[data-formula-id="average-speed-segments"]');
+    await expect(averageSpeedEntry).toContainText("Средняя путевая скорость");
+    const symbols = averageSpeedEntry.locator("details");
+    await symbols.locator("summary").click();
+    await expect(symbols).toHaveAttribute("open", "");
+    await expect(symbols.locator("dl")).toBeVisible();
 
     await page
-      .getByRole("searchbox", { name: "Поиск по формулам" })
+      .getByRole("searchbox", { name: "Найти формулу" })
       .fill("внутреннее сопротивление");
-    await expect(formulaRows).toHaveCount(1);
-    await expect(formulaRows).toContainText("Закон Ома для полной цепи");
+    await expect(formulaEntries).toHaveCount(1);
+    await expect(formulaEntries).toContainText("Закон Ома для полной цепи");
   },
 );
+
+test("справочник объясняет способ чтения и связывает формулу с практикой", async ({ page }) => {
+  await page.goto("/formulas?formula=ohm-law", { waitUntil: "domcontentloaded" });
+
+  await expect(page.getByRole("heading", { name: "Найди нужную связь." })).toBeVisible();
+  const formula = page.locator('[data-formula-id="ohm-law"]');
+  await expect(formula).toContainText("ток растёт с напряжением и падает с сопротивлением");
+  await expect(formula).toContainText("сопротивление считаем постоянным");
+  await formula.getByText("Разобрать обозначения").click();
+  await expect(formula).toContainText("сила тока, А");
+  await expect(formula).toContainText("сопротивление участка, Ом");
+  await expect(formula.getByRole("link", { name: "Разобрать тип" })).toHaveAttribute(
+    "href",
+    "/tasks/ohm-law",
+  );
+  await expect(formula.getByRole("link", { name: "Потренироваться" })).toHaveAttribute(
+    "href",
+    "/practice/family/ohm-law",
+  );
+});

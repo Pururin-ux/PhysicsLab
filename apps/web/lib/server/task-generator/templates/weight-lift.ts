@@ -17,7 +17,7 @@ export const weightLiftBlueprint: TaskBlueprint = {
     m: { min: 2, max: 100, step: 2, unit: "кг" },
     a: { min: 0.5, max: 4, step: 0.5, unit: "м/с²" },
   },
-  formula: "N=m(g\\pm a)",
+  formula: "P=N=m(g\\pm a)",
   answerUnit: "Н",
   answerKind: "positive",
   solver: apparentWeight,
@@ -28,14 +28,14 @@ export const weightLiftBlueprint: TaskBlueprint = {
   },
   explanationTemplate: (p, answer) =>
     movesUpward(p)
-      ? `Ускорение направлено вверх, поэтому N = m(g + a) = ${p.m} · (${GRAVITY} + ${formatAnswerValue(p.a)}) = ${formatAnswerValue(answer)} Н. Знак выбирают по ускорению, а не по скорости лифта.`
-      : `Ускорение направлено вниз, поэтому N = m(g − a) = ${p.m} · (${GRAVITY} − ${formatAnswerValue(p.a)}) = ${formatAnswerValue(answer)} Н. Здесь знак выбирают по ускорению.`,
+      ? `Ускорение направлено вверх, поэтому реакция опоры $N=m(g+a)=${p.m}·(${GRAVITY}+${formatAnswerValue(p.a)})=${formatAnswerValue(answer)}$ Н. Вес P действует на опору, N — на тело; при контакте их модули равны. Знак выбирают по ускорению, а не по скорости лифта.`
+      : `Ускорение направлено вниз, поэтому реакция опоры $N=m(g-a)=${p.m}·(${GRAVITY}-${formatAnswerValue(p.a)})=${formatAnswerValue(answer)}$ Н. Вес P действует на опору, N — на тело; при контакте их модули равны. Здесь знак выбирают по ускорению.`,
   trap: "Выбирает знак по скорости лифта, а не по ускорению.",
   coachLines: {
     correct: (p) =>
       movesUpward(p)
-        ? "Да. При ускорении вверх вес увеличивается: N = m(g + a)."
-        : "Да. При ускорении вниз вес уменьшается: N = m(g − a).",
+        ? "Да. При ускорении вверх модули реакции N и веса P увеличиваются: P=N=m(g+a)."
+        : "Да. При ускорении вниз модули реакции N и веса P уменьшаются: P=N=m(g−a).",
     wrong: (p, selected, correct) => {
       const sign = movesUpward(p) ? "+" : "−";
       return `Направление ускорения задаёт знак: N = m(g ${sign} a). Получается ${formatAnswerValue(correct)} Н, а не ${formatAnswerValue(selected)} Н.`;

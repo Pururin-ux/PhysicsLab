@@ -47,16 +47,12 @@ export function ReferenceSolution({ solution }: { solution: ReferenceSolutionCon
       aria-labelledby="reference-solution-title"
       className="overflow-hidden rounded-card border border-white/[.10] bg-space-900/72"
     >
-      <div className="border-b border-white/[.08] px-4 py-5 sm:px-6">
-        <p className="text-[10px] font-bold uppercase tracking-[.16em] text-nova-cyan">
-          {solution.label}
-        </p>
-        <h2 id="reference-solution-title" className="mt-2 text-[22px] font-[800] text-white">
+      {/* Один заголовок вместо трёх подряд: раньше здесь стояли ярлык,
+          заголовок и пояснение, которые говорили одно и то же. */}
+      <div className="border-b border-white/[.08] px-4 py-4 sm:px-6">
+        <h2 id="reference-solution-title" className="text-[20px] font-[800] text-white">
           Пример с разбором
         </h2>
-        <p className="mt-2 text-[13px] leading-[1.65] text-white/58">
-          Посмотрите ход решения, затем закрепите тот же метод на новых числах.
-        </p>
       </div>
 
       <div className="px-4 py-5 sm:px-6">
@@ -97,7 +93,7 @@ export function ReferenceSolution({ solution }: { solution: ReferenceSolutionCon
       </div>
 
       <details className="group border-t border-white/[.08]">
-        <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-4 px-4 py-4 text-[14px] font-bold text-white marker:hidden hover:bg-white/[.025] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-nova-cyan/55 sm:px-6 [&::-webkit-details-marker]:hidden">
+        <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-4 px-4 py-4 text-[14px] font-bold text-white marker:hidden hover:bg-white/[.025] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-nova-blue/55 sm:px-6 [&::-webkit-details-marker]:hidden">
           <span>Показать решение</span>
           <span aria-hidden="true" className="text-xl font-normal leading-none text-nova-cyan transition-transform group-open:rotate-45">+</span>
         </summary>
@@ -143,7 +139,7 @@ export function ReferenceSolution({ solution }: { solution: ReferenceSolutionCon
 
           <div className="border-t border-white/[.07] py-5">
             <Button asChild size="lg">
-              <Link href={`/practice/family/${solution.familyId}`}>Решить 5 похожих</Link>
+              <Link href={`/practice/family/${solution.familyId}`}>Решить 5 задач</Link>
             </Button>
           </div>
         </div>

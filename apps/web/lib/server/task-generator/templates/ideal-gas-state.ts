@@ -32,7 +32,8 @@ export const idealGasStateBlueprint: TaskBlueprint = {
     tCelsius: { min: -73, max: 127, step: 50, unit: "°C" },
     V: { min: 5, max: 20, step: 5, unit: "л" },
   },
-  formula: "pV = nRT",
+  // Количество вещества в школьных учебниках обозначается ν, а не n.
+  formula: "pV = \\nu RT",
   answerUnit: "кПа",
   answerKind: "positive",
   solver: idealGasPressure,
@@ -40,13 +41,13 @@ export const idealGasStateBlueprint: TaskBlueprint = {
   textTemplate: (p) =>
     `${contextFor(p)} объёмом ${p.V} л количеством вещества ${formatAnswerValue(p.n)} моль при температуре ${p.tCelsius} °C. Найдите давление газа.`,
   explanationTemplate: (p, answer) =>
-    `Переводим температуру в кельвины: $T = ${p.tCelsius} + 273 = ${kelvinOf(p)}$ К. По уравнению состояния $p = \\frac{nRT}{V} = \\frac{${formatMathValue(p.n)} \\cdot ${formatMathValue(GAS_CONSTANT)} \\cdot ${kelvinOf(p)}}{${p.V}} = ${formatMathValue(answer)}$ кПа.`,
+    `Переводим температуру в кельвины: $T = ${p.tCelsius} + 273 = ${kelvinOf(p)}$ К. По уравнению состояния $p = \\frac{\\nu RT}{V} = \\frac{${formatMathValue(p.n)} \\cdot ${formatMathValue(GAS_CONSTANT)} \\cdot ${kelvinOf(p)}}{${p.V}} = ${formatMathValue(answer)}$ кПа.`,
   trap: "Температуру нужно перевести в кельвины: $T = t + 273$, иначе уравнение состояния не работает.",
   coachLines: {
     correct: (p) =>
-      `Да. Ты перевёл температуру в кельвины: $T = ${p.tCelsius} + 273 = ${kelvinOf(p)}$ К.`,
+      `Да. Температура переведена в кельвины: $T = ${p.tCelsius} + 273 = ${kelvinOf(p)}$ К.`,
     wrong: (_p, selected, correct) =>
-      `Уравнение $pV=nRT$ работает только с кельвинами. Получается ${formatAnswerValue(correct)} кПа, а не ${formatAnswerValue(selected)}.`,
+      `Уравнение $pV=\\nu RT$ работает только с кельвинами. Получается ${formatAnswerValue(correct)} кПа, а не ${formatAnswerValue(selected)}.`,
   },
   variantCount: vesselContexts.length,
 };

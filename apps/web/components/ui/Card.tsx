@@ -1,7 +1,7 @@
 import type { HTMLAttributes, ReactNode } from "react";
 import { cn } from "../../lib/utils";
 
-type CardVariant = "default" | "elevated" | "formula";
+type CardVariant = "default" | "elevated" | "formula" | "semantic" | "semanticElevated";
 type CardGlow = "cyan" | "gold" | null;
 
 interface CardProps extends HTMLAttributes<HTMLDivElement> {
@@ -11,14 +11,16 @@ interface CardProps extends HTMLAttributes<HTMLDivElement> {
 }
 
 const variantClasses: Record<CardVariant, string> = {
-  default: "bg-space-900 border-nova-cyan/[.13]",
-  elevated: "bg-space-800 border-nova-cyan/[.10]",
-  formula: "bg-nova-cyan-05 border-nova-cyan/[.14]",
+  default: "bg-space-900 border-white/[.11]",
+  elevated: "bg-space-850 border-white/[.14]",
+  formula: "bg-space-925 border-nova-cyan/[.18]",
+  semantic: "bg-[var(--surface-panel)] border-[var(--border-muted)]",
+  semanticElevated: "bg-[var(--surface-panel-raised)] border-[var(--border-muted)]",
 };
 
 const glowClasses: Record<Exclude<CardGlow, null>, string> = {
   cyan: "shadow-cyan-glow",
-  gold: "shadow-gold-glow",
+  gold: "shadow-warm-glow",
 };
 
 export function Card({
@@ -31,7 +33,7 @@ export function Card({
   return (
     <div
       className={cn(
-        "rounded-card border p-6 shadow-card backdrop-blur-sm",
+        "rounded-card border p-6 shadow-card",
         variantClasses[variant],
         glow ? glowClasses[glow] : null,
         className,

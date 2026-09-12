@@ -32,6 +32,7 @@ import {
   reportWriteResult,
 } from "./persistence-status.ts";
 import { topics } from "../topics.ts";
+import { getLessonDraftExportEntries, lessonDraftExportCodecs, replaceLiveLessonDraft, type LessonDraft } from "../learning/lesson-draft.ts";
 
 export const EXPORT_FORMAT = "physicslab-progress-export";
 export const EXPORT_FORMAT_VERSION = 1;
@@ -55,6 +56,7 @@ export function buildExportFile(): ProgressExportFile {
     [examLogCodec.key, { version: examLogCodec.currentVersion, data: $examLog.get() }],
     [practiceLogCodec.key, { version: practiceLogCodec.currentVersion, data: $practiceLog.get() }],
     [xpCodec.key, { version: xpCodec.currentVersion, data: $xp.get() }],
+    ...getLessonDraftExportEntries(),
   ];
 
   return {
@@ -99,6 +101,7 @@ type DecodedImport = {
   examLog: ExamAttempt[] | null;
   practiceLog: string[] | null;
   xp: number | null;
+  lessonDrafts: Record<string, LessonDraft>;
 };
 
 type DecodedStore<T> =
@@ -124,7 +127,8 @@ function decodeImport(file: ProgressExportFile): DecodedImport {
   const examLog = decodeStore(file, examLogCodec);
   const practiceLog = decodeStore(file, practiceLogCodec);
   const xp = decodeStore(file, xpCodec);
-  const valid = progress.ok && examLog.ok && practiceLog.ok && xp.ok;
+  const drafts = lessonDraftExportCodecs.map((codec) => ({ codec, decoded: decodeStore(file, codec) }));
+  const valid = progress.ok && examLog.ok && practiceLog.ok && xp.ok && drafts.every(({decoded}) => decoded.ok);
 
   return {
     valid,
@@ -132,6 +136,7 @@ function decodeImport(file: ProgressExportFile): DecodedImport {
     examLog: examLog.ok ? examLog.value : null,
     practiceLog: practiceLog.ok ? practiceLog.value : null,
     xp: xp.ok ? xp.value : null,
+    lessonDrafts: Object.fromEntries(drafts.flatMap(({codec, decoded}) => decoded.ok && decoded.value ? [[codec.key, decoded.value]] : [])),
   };
 }
 
@@ -173,12 +178,46 @@ export function applyImport(file: ProgressExportFile): boolean {
     [xpCodec, decoded.xp ?? 0],
   ] as const;
 
-  for (const [codec, value] of imports) {
-    // Import is an explicit replacement confirmed by the user, so it may
-    // supersede data written by a newer app version.
-    allowWriteForKey(codec.key);
-    reportWriteResult(writeStore(codec, value));
+  // Capture the previous values before changing any store. Failed writes must
+  // not be reported as a successful restore or silently mix two backups.
+  const codecs = [...imports.map(([codec]) => codec), ...lessonDraftExportCodecs];
+  let previous: [string, string | null][];
+  try {
+    previous = codecs.map((codec) => [codec.key, window.localStorage.getItem(codec.key)]);
+  } catch {
+    reportWriteResult("no-storage");
+    return false;
   }
+  let successful = true;
+  for (const [codec, value] of imports) {
+    const result = writeStore(codec, value);
+    reportWriteResult(result);
+    if (result !== "success") { successful = false; break; }
+  }
+  if (successful) {
+    for (const codec of lessonDraftExportCodecs) {
+      const value = decoded.lessonDrafts[codec.key] ?? null;
+      if (value) {
+        const result = writeStore(codec, value);
+        reportWriteResult(result);
+        if (result !== "success") { successful = false; break; }
+      } else {
+        try { window.localStorage.removeItem(codec.key); }
+        catch { reportWriteResult("error"); successful = false; break; }
+      }
+    }
+  }
+  if (!successful) {
+    for (const [key, raw] of previous) {
+      try {
+        if (raw === null) window.localStorage.removeItem(key);
+        else window.localStorage.setItem(key, raw);
+      } catch { reportWriteResult("error"); }
+    }
+    return false;
+  }
+  for (const codec of codecs) allowWriteForKey(codec.key);
+  for (const codec of lessonDraftExportCodecs) replaceLiveLessonDraft(codec.key, decoded.lessonDrafts[codec.key] ?? null);
 
   hydrateProgressFromStorage();
   hydrateExamLogFromStorage();

@@ -1,0 +1,575 @@
+.lesson {
+  --lesson-bg: #10141a;
+  --lesson-panel: #151b22;
+  --lesson-panel-deep: #0c1117;
+  --lesson-text: #eee9e2;
+  --lesson-muted: rgba(238, 233, 226, 0.66);
+  --lesson-cyan: #18c7de;
+  --lesson-warm: #e8ad67;
+  position: relative;
+  width: min(100%, var(--physics-content-max));
+  margin: 0 auto;
+  color: var(--lesson-text);
+}
+
+.lesson::before {
+  position: absolute;
+  z-index: -1;
+  inset: -24px;
+  content: "";
+  background:
+    radial-gradient(circle at 14% 6%, rgba(232, 173, 103, 0.08), transparent 30%),
+    radial-gradient(circle at 92% 28%, rgba(24, 199, 222, 0.06), transparent 28%);
+}
+
+.lessonHeader {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 20px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(238, 233, 226, 0.12);
+}
+
+.lessonStageShell {
+  min-width: 0;
+  scroll-margin-top: 150px;
+}
+
+.lessonStageFrame {
+  min-width: 0;
+}
+
+.topicBack {
+  display: inline-flex;
+  min-height: 32px;
+  align-items: center;
+  gap: 6px;
+  color: var(--lesson-warm);
+  font-size: 12px;
+  font-weight: 820;
+  text-decoration: none;
+}
+
+.lessonHeader p { margin: 7px 0 1px; font-size: 16px; font-weight: 850; }
+.lessonHeader > div:first-child > span { color: var(--lesson-muted); font-size: 12px; }
+.progressWrap { width: min(320px, 42%); }
+.progressWrap > span { display: block; margin-bottom: 7px; color: var(--lesson-muted); font-size: 11px; font-weight: 760; text-align: right; }
+.progress { height: 3px; overflow: hidden; background: rgba(238, 233, 226, 0.14); }
+.progress > span { display: block; height: 100%; background: var(--lesson-cyan); }
+
+.openingStage,
+.lessonStage,
+.modelStage,
+.brakingStage,
+.heroGrid {
+  min-height: clamp(440px, 54svh, 520px);
+  border: 1px solid rgba(238, 233, 226, 0.12);
+  border-radius: 8px;
+  background: linear-gradient(145deg, rgba(25, 32, 41, 0.98), rgba(14, 19, 25, 0.98));
+}
+
+.openingStage {
+  display: grid;
+  align-items: center;
+  padding: clamp(30px, 6vw, 64px);
+  grid-template-columns: minmax(0, 1.08fr) minmax(280px, 0.92fr);
+  gap: clamp(30px, 6vw, 72px);
+}
+
+.openingCopy h2,
+.heroQuestion h2,
+.stageIntro h2,
+.modelStage h2,
+.brakingCopy h2 {
+  max-width: 18ch;
+  margin: 8px 0 0;
+  color: var(--lesson-text);
+  font-size: var(--physics-type-display);
+  font-weight: 860;
+  line-height: 1;
+  letter-spacing: -0.05em;
+}
+
+.stageIntro h2 { max-width: 22ch; font-size: var(--physics-type-section); }
+.modelStage h2 { max-width: 23ch; font-size: var(--physics-type-section); }
+.brakingCopy h2 { font-size: var(--physics-type-section); }
+.openingCopy h2,
+.heroQuestion h2,
+.stageIntro h2,
+.modelStage h2,
+.brakingCopy h2 { scroll-margin-top: 150px; }
+.eyebrow { margin: 0; color: var(--lesson-cyan); font-size: 11px; font-weight: 900; letter-spacing: 0.13em; text-transform: uppercase; }
+.lead { max-width: 64ch; margin: 18px 0 0; color: var(--lesson-muted); font-size: var(--physics-type-body); line-height: 1.66; }
+
+.startNotes { display: grid; align-content: center; gap: 0; border-top: 1px solid rgba(238, 233, 226, 0.16); }
+.startNotes p { margin: 0; padding: 18px 0; border-bottom: 1px solid rgba(238, 233, 226, 0.14); color: var(--lesson-muted); font-size: 14px; line-height: 1.55; }
+.startNotes span { display: block; margin-bottom: 4px; color: var(--lesson-cyan); font-size: 12px; font-weight: 900; letter-spacing: 0.06em; text-transform: uppercase; }
+
+.heroGrid { display: grid; overflow: hidden; grid-template-columns: minmax(0, 1.08fr) minmax(340px, 0.92fr); }
+.predictionVisual { display: grid; align-items: center; min-width: 0; padding: clamp(24px, 4vw, 52px); border-right: 1px solid rgba(238, 233, 226, 0.12); }
+.heroQuestion { align-self: center; padding: clamp(32px, 5vw, 64px); }
+.heroQuestion h2 { font-size: var(--physics-type-section); }
+
+.lessonStage,
+.modelStage { padding: clamp(26px, 4vw, 48px); }
+.stageIntro { margin-bottom: 24px; }
+
+.summaryStage {
+  min-height: clamp(440px, 54svh, 520px);
+  padding: clamp(30px, 5vw, 64px);
+  border: 1px solid rgba(238, 233, 226, 0.12);
+  border-radius: 8px;
+  background: linear-gradient(145deg, rgba(25, 32, 41, 0.98), rgba(14, 19, 25, 0.98));
+}
+
+.summaryLabel {
+  display: block;
+  margin-top: 30px;
+  color: var(--lesson-muted);
+  font-size: 12px;
+  font-weight: 760;
+}
+
+.summaryInput {
+  display: block;
+  width: min(100%, 700px);
+  min-height: 132px;
+  margin-top: 9px;
+  padding: 13px 14px;
+  border: 1px solid rgba(238, 233, 226, 0.2);
+  border-radius: 6px;
+  background: var(--lesson-panel-deep);
+  color: var(--lesson-text);
+  font: inherit;
+  font-size: 14px;
+  line-height: 1.6;
+  resize: vertical;
+}
+
+.summaryInput::placeholder {
+  color: var(--lesson-muted);
+}
+
+.summaryHint {
+  max-width: 64ch;
+  margin: 9px 0 0;
+  color: var(--lesson-muted);
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.summaryButton {
+  display: inline-flex;
+  min-height: 48px;
+  margin-top: 17px;
+  padding: 0 18px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--lesson-cyan);
+  border-radius: 6px;
+  background: var(--lesson-cyan);
+  color: var(--lesson-bg);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 820;
+  cursor: pointer;
+}
+
+.summaryError {
+  max-width: 64ch;
+  margin: 14px 0 0;
+  color: var(--lesson-warm);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.experiment { margin: 0; padding: clamp(18px, 3vw, 30px); border: 1px solid rgba(24, 199, 222, 0.24); background: rgba(8, 22, 29, 0.72); }
+.experimentHead { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; margin-bottom: 26px; }
+.experimentHead h3 { margin: 6px 0 0; font-size: 23px; letter-spacing: -0.02em; }
+.timeChip { flex: none; padding: 6px 9px; border: 1px solid rgba(24, 199, 222, 0.35); border-radius: 999px; color: var(--lesson-cyan); font-size: 10px; font-weight: 820; }
+.traceStack { display: grid; gap: 28px; }
+.traceRow { display: grid; align-items: center; grid-template-columns: 130px minmax(0, 1fr) 132px; gap: 16px; }
+.traceMeta { display: grid; gap: 4px; color: var(--lesson-muted); font-size: 11px; }
+.traceName { color: var(--lesson-text); font-size: 14px; font-weight: 850; }
+.traceTrack { position: relative; height: 56px; border-bottom: 2px solid rgba(238, 233, 226, 0.42); background: repeating-linear-gradient(90deg, transparent 0 15%, rgba(238, 233, 226, 0.11) 15% calc(15% + 2px), transparent calc(15% + 2px) 16.66%); }
+.trackStart,
+.trackEnd { position: absolute; bottom: 8px; color: rgba(238, 233, 226, 0.44); font-size: 9px; }
+.trackStart { left: 0; }
+.trackEnd { right: 0; }
+.traceMarker { position: absolute; z-index: 2; bottom: -7px; width: 34px; height: 15px; transform: translateX(-50%); border: 2px solid var(--lesson-cyan); border-radius: 5px 5px 3px 3px; background: linear-gradient(180deg, color-mix(in srgb, var(--lesson-cyan) 44%, #26333c), #111820); box-shadow: 0 0 0 2px var(--lesson-panel-deep), 0 5px 12px rgba(0, 0, 0, 0.34); }
+.traceMarker::before { position: absolute; bottom: 100%; left: 50%; width: 14px; height: 7px; border: 2px solid currentColor; border-bottom: 0; border-radius: 3px 3px 0 0; content: ""; transform: translateX(-50%); }
+.traceMarker::after { position: absolute; top: calc(100% + 2px); left: 4px; width: 22px; height: 2px; border-radius: 999px; background: currentColor; box-shadow: 0 0 7px currentColor; content: ""; opacity: 0.55; }
+.traceRow:nth-child(2) .traceMarker { border-color: var(--lesson-warm); background: linear-gradient(180deg, color-mix(in srgb, var(--lesson-warm) 42%, #2b3034), #111820); color: var(--lesson-warm); }
+.traceRow:first-child .traceMarker { color: var(--lesson-cyan); }
+.traceTrail { position: absolute; bottom: -1px; left: 5%; width: 81%; height: 2px; transform-origin: left; background: linear-gradient(90deg, rgba(32, 197, 221, 0.08), var(--lesson-cyan)); }
+.traceRow:nth-child(2) .traceTrail { width: 43%; background: linear-gradient(90deg, rgba(232, 173, 103, 0.08), var(--lesson-warm)); }
+.traceResult { color: var(--lesson-text); font-size: 15px; text-align: right; }
+.experiment figcaption,
+.forceFigure figcaption,
+.brakingFigure figcaption { margin-top: 24px; color: var(--lesson-muted); font-size: 13px; line-height: 1.55; }
+
+.experimentCompact {
+  padding: clamp(14px, 2vw, 20px);
+}
+
+.experimentCompact .experimentHead {
+  margin-bottom: 16px;
+}
+
+.experimentCompact .experimentHead h3 {
+  font-size: var(--physics-type-title);
+}
+
+.experimentCompact .traceStack {
+  gap: 16px;
+}
+
+.experimentCompact .traceTrack {
+  height: 46px;
+}
+
+.experimentCompact figcaption {
+  margin-top: 14px;
+  font-size: 12px;
+}
+
+.choiceList { display: grid; max-width: 720px; margin: 24px 0 0; padding: 0; border: 0; }
+.choiceList legend { margin-bottom: 10px; color: var(--lesson-text); font-size: 14px; font-weight: 850; }
+.choice { display: grid; min-height: 52px; align-items: center; padding: 12px 4px; border: 0; border-bottom: 1px solid rgba(238, 233, 226, 0.13); background: transparent; color: rgba(238, 233, 226, 0.78); font: inherit; font-size: 14px; font-weight: 720; text-align: left; cursor: pointer; grid-template-columns: 28px 1fr; gap: 10px; transition: color 160ms ease, padding-left 160ms ease;
+}
+.choice:first-of-type { border-top: 1px solid rgba(238, 233, 226, 0.13); }
+.choice:hover { padding-left: 9px; color: var(--lesson-text); }
+.choiceSelected { color: var(--lesson-text); }
+.choiceMark { display: grid; width: 20px; height: 20px; place-items: center; border: 1px solid rgba(238, 233, 226, 0.3); border-radius: 50%; color: #10141a; }
+.choiceSelected .choiceMark { border-color: var(--lesson-cyan); background: var(--lesson-cyan); }
+
+.runButton,
+.checkButton { display: inline-flex; min-height: 48px; align-items: center; justify-content: center; gap: 9px; margin-top: 20px; padding: 0 19px; border: 1px solid var(--lesson-cyan); border-radius: 5px; background: transparent; color: var(--lesson-cyan); font: inherit; font-size: 14px; font-weight: 850; cursor: pointer; transition: transform 150ms ease, background 150ms ease, color 150ms ease; }
+.checkButton { border-color: var(--lesson-cyan); background: var(--lesson-cyan); color: #10141a; }
+.runButton:hover:not(:disabled),
+.checkButton:hover { transform: translateY(-2px); }
+.runButton:hover:not(:disabled) { background: var(--lesson-cyan); color: #10141a; }
+.runButton:disabled { cursor: wait; opacity: 0.58; }
+
+.feedback { display: grid; max-width: 72ch; margin-top: 18px; padding: 12px 0 12px 14px; border-left: 2px solid; color: rgba(238, 233, 226, 0.78); font-size: 14px; line-height: 1.58; grid-template-columns: 20px 1fr; gap: 8px; }
+.feedback_good { border-color: var(--lesson-cyan); }
+.feedback_try { border-color: var(--lesson-warm); }
+.feedback_note { border-color: var(--lesson-warm); }
+
+.forceFigure { max-width: 820px; margin: 0; padding: 10px 22px 18px; border-top: 1px solid rgba(238, 233, 226, 0.13); border-bottom: 1px solid rgba(238, 233, 226, 0.13); background: rgba(9, 13, 18, 0.34); }
+.forceFigure svg,
+.brakingFigure svg { display: block; width: 100%; height: auto; overflow: visible; }
+.forceFigureCompact { padding: 0 10px 14px; }
+.diagramGround { stroke: rgba(238, 233, 226, 0.38); stroke-width: 3; }
+.airTrackRail { stroke: rgba(238, 233, 226, 0.7); stroke-width: 5; }
+.airTrackEdge { stroke: rgba(24, 199, 222, 0.2); stroke-width: 3; }
+.gliderBody { fill: #17242d; stroke: rgba(238, 233, 226, 0.76); stroke-linejoin: round; stroke-width: 3; }
+.gliderMass { fill: color-mix(in srgb, var(--lesson-warm) 24%, #17242d); stroke: var(--lesson-warm); stroke-width: 2; }
+.gliderRunner { fill: rgba(24, 199, 222, 0.18); stroke: var(--lesson-cyan); stroke-width: 2; }
+.gliderVent { fill: var(--lesson-cyan); opacity: 0.72; }
+.diagramWheel { fill: #0a0e13; stroke: rgba(238, 233, 226, 0.64); stroke-width: 3; }
+.diagramBodyLabel,
+.diagramForceLabel { fill: var(--lesson-text); font-family: inherit; font-size: 24px; font-weight: 780; }
+.diagramForceLabel { font-size: 21px; }
+.diagramQuestion { fill: var(--lesson-cyan); font-family: var(--font-physics-math); font-size: 34px; font-weight: 700; }
+.diagramArrow { stroke: rgba(238, 233, 226, 0.85); stroke-width: 5; }
+.diagramArrowPink { stroke: var(--lesson-warm); }
+.diagramArrowCyan { stroke: var(--lesson-cyan); }
+.forceFigure marker path,
+.brakingFigure marker path { fill: context-stroke; }
+.cancellation {
+  display: grid;
+  max-width: 820px;
+  margin: 20px 0 0;
+  padding: 18px 0 20px;
+  border-bottom: 1px solid rgba(238, 233, 226, 0.13);
+  grid-template-columns: minmax(190px, 0.72fr) minmax(300px, 1.28fr);
+  gap: clamp(24px, 4vw, 46px);
+}
+.cancellationLead > span {
+  color: var(--lesson-warm);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.cancellationLead p {
+  margin: 8px 0 0;
+  color: var(--lesson-muted);
+  font-size: 13px;
+  line-height: 1.58;
+}
+.cancellationScene {
+  display: grid;
+  align-content: center;
+  gap: 14px;
+}
+.cancelPair {
+  display: grid;
+  align-items: center;
+  grid-template-columns: minmax(76px, 1fr) auto minmax(76px, 1fr);
+  gap: 12px;
+}
+.leftForce,
+.rightForce,
+.remainingForce strong {
+  display: inline-flex;
+  min-height: 38px;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border-radius: 4px;
+  font-family: var(--font-physics-numeric);
+  font-size: 14px;
+  font-weight: 850;
+}
+.leftForce {
+  border: 1px solid rgba(232, 173, 103, 0.38);
+  background: rgba(232, 173, 103, 0.08);
+  color: var(--lesson-warm);
+}
+.rightForce {
+  border: 1px solid rgba(24, 199, 222, 0.35);
+  background: rgba(24, 199, 222, 0.08);
+  color: var(--lesson-cyan);
+}
+.cancelWords {
+  position: relative;
+  color: rgba(238, 233, 226, 0.56);
+  font-size: 10px;
+  font-weight: 780;
+  text-align: center;
+}
+.cancelWords::after {
+  position: absolute;
+  top: 50%;
+  right: -5px;
+  left: -5px;
+  height: 1px;
+  background: rgba(238, 233, 226, 0.36);
+  content: "";
+  transform: rotate(-7deg);
+}
+.remainingForce {
+  display: grid;
+  align-items: center;
+  grid-template-columns: auto minmax(170px, 1fr);
+  gap: 14px;
+  transform-origin: left;
+}
+.remainingForce > span {
+  color: var(--lesson-muted);
+  font-size: 11px;
+}
+.remainingForce strong {
+  justify-content: flex-start;
+  padding: 0 14px;
+  border-left: 3px solid var(--lesson-cyan);
+  background: linear-gradient(90deg, rgba(24, 199, 222, 0.13), transparent);
+  color: var(--lesson-cyan);
+  font-size: 18px;
+}
+.cancellation figcaption {
+  margin: 0;
+  color: rgba(238, 233, 226, 0.5);
+  font-size: 11px;
+  line-height: 1.55;
+  grid-column: 1 / -1;
+}
+.termNote { display: grid; max-width: 820px; margin-top: 20px; padding: 18px 0; border-bottom: 1px solid rgba(238, 233, 226, 0.13); grid-template-columns: 126px 1fr; gap: 22px; }
+.termNote > span { color: var(--lesson-cyan); font-size: 11px; font-weight: 900; letter-spacing: 0.08em; text-transform: uppercase; }
+.termNote p { margin: 0; color: var(--lesson-muted); font-size: 14px; line-height: 1.6; }
+.termNote strong { color: var(--lesson-text); }
+
+.modelStage { display: grid; align-content: center; gap: 26px; }
+.formulaHero { padding: 12px 0 20px; border-bottom: 1px solid rgba(238, 233, 226, 0.14); color: var(--lesson-text); font-size: clamp(42px, 8vw, 82px); }
+.ruleReading { display: grid; align-items: center; max-width: 780px; grid-template-columns: minmax(220px, auto) 1fr; gap: 34px; }
+.ruleReading > span { color: var(--lesson-cyan); font-size: clamp(30px, 4.5vw, 48px); }
+.ruleReading p { margin: 0; color: var(--lesson-muted); font-size: 14px; line-height: 1.6; }
+.sigmaNote { display: grid; align-items: center; max-width: 820px; padding: 20px 0; border-top: 1px solid rgba(238, 233, 226, 0.14); grid-template-columns: 64px 1fr; gap: 22px; }
+.sigmaMark { color: var(--lesson-warm); font-family: serif; font-size: 58px; line-height: 1; }
+.sigmaNote p { margin: 0; color: var(--lesson-muted); font-size: 14px; line-height: 1.62; }
+.sigmaNote strong { color: var(--lesson-text); }
+
+.workedLayout { display: grid; align-items: start; grid-template-columns: minmax(280px, 0.82fr) minmax(390px, 1.18fr); gap: clamp(28px, 5vw, 60px); }
+.schoolSolution { display: grid; grid-template-columns: 150px 1fr; gap: 24px; }
+.givenBlock { padding-right: 20px; border-right: 1px solid rgba(238, 233, 226, 0.15); }
+.givenBlock p { margin: 0 0 9px; }
+.givenBlock > span { display: block; margin: 7px 0; font-size: 14px; }
+.findLine { margin-top: 18px !important; padding-top: 14px; border-top: 1px solid rgba(238, 233, 226, 0.14); color: var(--lesson-muted); }
+.workedSteps { margin: 0; padding: 0; list-style: none; }
+.workedSteps li { display: grid; padding: 0 0 20px; grid-template-columns: 26px 1fr; gap: 12px; }
+.workedSteps li > span { color: var(--lesson-cyan); font-size: 12px; font-weight: 900; }
+.workedSteps li div { display: grid; gap: 8px; }
+.workedSteps b { font-size: 14px; }
+.workedSteps li div > span { font-size: clamp(19px, 2.8vw, 28px); }
+.workedSteps p,
+.workedSteps small { margin: 0; color: var(--lesson-muted); font-size: 13px; line-height: 1.55; }
+
+.answerPair { display: grid; max-width: 820px; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
+.answerField label { display: block; margin-bottom: 8px; color: var(--lesson-text); font-size: 13px; font-weight: 780; }
+.answerField > div { display: grid; align-items: center; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; }
+.answerField input { width: 100%; height: 50px; padding: 0 14px; border: 1px solid rgba(238, 233, 226, 0.2); border-radius: 5px; background: #0b1015; color: var(--lesson-text); font: inherit; font-size: 18px; font-weight: 780; }
+.answerField > div > span { color: var(--lesson-muted); font-size: 12px; }
+
+.brakingStage { display: grid; overflow: hidden; grid-template-columns: minmax(360px, 0.95fr) minmax(420px, 1.05fr); }
+.brakingVisual { display: grid; align-items: center; min-width: 0; padding: clamp(20px, 4vw, 48px); border-right: 1px solid rgba(238, 233, 226, 0.12); background: rgba(7, 11, 16, 0.42); }
+.brakingFigure { margin: 0; }
+.bicycleWheel { fill: rgba(9, 13, 18, 0.46); stroke: rgba(238, 233, 226, 0.75); stroke-width: 5; }
+.bicycleHub { fill: var(--lesson-warm); }
+.bicycleFrame { fill: none; stroke: var(--lesson-cyan); stroke-linecap: round; stroke-linejoin: round; stroke-width: 7; }
+.bicycleDetail { fill: none; stroke: rgba(238, 233, 226, 0.72); stroke-linecap: round; stroke-linejoin: round; stroke-width: 5; }
+.bicycleCrank { fill: #10161d; stroke: var(--lesson-warm); stroke-width: 4; }
+.riderHead { fill: color-mix(in srgb, var(--lesson-warm) 34%, #d8c2aa); stroke: rgba(238, 233, 226, 0.7); stroke-width: 3; }
+.riderBody { fill: #1c2a34; stroke: rgba(238, 233, 226, 0.76); stroke-linejoin: round; stroke-width: 3; }
+.riderLimb { fill: none; stroke: rgba(238, 233, 226, 0.8); stroke-linecap: round; stroke-linejoin: round; stroke-width: 9; }
+.helmet { fill: var(--lesson-warm); stroke: rgba(238, 233, 226, 0.64); stroke-linejoin: round; stroke-width: 2; }
+.brakingCopy { align-self: center; padding: clamp(30px, 5vw, 60px); }
+.brakingCopy .answerField { max-width: 390px; margin-top: 28px; }
+.practiceLinks { display: grid; gap: 10px; margin-top: 22px; }
+.practiceLink,
+.practiceLinkSecondary { display: inline-flex; min-height: 50px; align-items: center; justify-content: center; gap: 10px; padding: 0 18px; border-radius: 5px; font-size: 14px; font-weight: 850; text-decoration: none; }
+.practiceLink { background: var(--lesson-cyan); color: #111216; }
+.practiceLinkSecondary { border: 1px solid rgba(238, 233, 226, 0.28); background: rgba(238, 233, 226, 0.05); color: var(--lesson-text); }
+
+.lessonFooter { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-top: 18px; padding-top: 14px; border-top: 1px solid rgba(238, 233, 226, 0.1); }
+.backButton,
+.nextButton { display: inline-flex; min-height: 48px; align-items: center; justify-content: center; gap: 8px; padding: 0 18px; border-radius: 5px; font: inherit; font-size: 14px; font-weight: 820; cursor: pointer; }
+.backButton { border: 0; background: transparent; color: rgba(238, 233, 226, 0.65); }
+.nextButton { border: 1px solid var(--lesson-cyan); background: var(--lesson-cyan); color: #111216; }
+.backButton:disabled,
+.nextButton:disabled { cursor: not-allowed; opacity: 0.32; }
+.choice:focus-visible,
+.runButton:focus-visible,
+.checkButton:focus-visible,
+.backButton:focus-visible,
+.nextButton:focus-visible,
+.practiceLink:focus-visible,
+.practiceLinkSecondary:focus-visible,
+.answerField input:focus-visible,
+.topicBack:focus-visible,
+.summaryInput:focus-visible,
+.summaryButton:focus-visible { outline: 2px solid var(--lesson-cyan); outline-offset: 3px; }
+
+@media (max-width: 900px) {
+  .workedLayout { grid-template-columns: 1fr; }
+  .forceFigureCompact { max-width: 620px; }
+  .brakingStage { grid-template-columns: 1fr; }
+  .brakingVisual { border-right: 0; border-bottom: 1px solid rgba(238, 233, 226, 0.12); }
+}
+
+@media (max-width: 760px) {
+  .lesson::before { inset: -12px; }
+  .lessonHeader { align-items: center; }
+  .lessonHeader > div:first-child p,
+  .lessonHeader > div:first-child > span { display: none; }
+  .progressWrap { width: 48%; }
+  .openingStage,
+  .heroGrid,
+  .brakingStage { min-height: 0; grid-template-columns: 1fr; }
+  .openingStage { padding: 26px 18px 22px; gap: 22px; }
+  .openingCopy h2,
+  .heroQuestion h2,
+  .stageIntro h2,
+  .modelStage h2,
+  .brakingCopy h2 { max-width: none; font-size: clamp(1.75rem, 7.9vw, 2.1rem); line-height: 1.05; }
+  .openingCopy h2,
+  .heroQuestion h2,
+  .stageIntro h2,
+  .modelStage h2,
+  .brakingCopy h2 { scroll-margin-top: 124px; }
+  .lead { margin-top: 14px; font-size: 0.94rem; }
+  .predictionVisual { padding: 18px 12px; border-right: 0; border-bottom: 1px solid rgba(238, 233, 226, 0.12); }
+  /* На узком экране сначала задаём прогноз, затем показываем макет опыта.
+     Так главный выбор не оказывается под нижней навигацией, а порядок
+     «предскажи → посмотри» становится виден даже без прокрутки. */
+  .heroQuestion { order: -1; }
+  .heroQuestion,
+  .lessonStage,
+  .modelStage,
+  .summaryStage,
+  .brakingCopy { padding: 22px 18px 26px; }
+  .stageIntro { margin-bottom: 22px; }
+  .experiment { padding: 11px 10px; }
+  .experimentHead { align-items: flex-start; margin-bottom: 12px; }
+  .experimentHead h3 { font-size: 16px; }
+  .timeChip { padding: 4px 6px; font-size: 9px; }
+  .traceStack { gap: 14px; }
+  .traceRow { grid-template-columns: 86px minmax(0, 1fr); gap: 8px; }
+  .traceMeta { font-size: 9px; }
+  .traceName { font-size: 11px; }
+  .traceTrack { height: 40px; }
+  .traceResult { grid-column: 2; margin-top: -6px; font-size: 12px; text-align: left; }
+  .experiment figcaption,
+  .forceFigure figcaption { margin-top: 11px; }
+  .experimentCompact { padding: 7px 8px; }
+  .experimentCompact .experimentHead { margin-bottom: 5px; }
+  .experimentCompact .experimentHead > div > .eyebrow { display: none; }
+  .experimentCompact .experimentHead h3 { font-size: 14px; }
+  .experimentCompact .traceStack { gap: 5px; }
+  .experimentCompact .traceRow { grid-template-columns: 76px minmax(0, 1fr); gap: 6px; }
+  .experimentCompact .traceMeta {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    column-gap: 5px;
+    row-gap: 0;
+  }
+  .experimentCompact .traceMeta .traceName { flex-basis: 100%; }
+  .experimentCompact .traceMeta > span:not(.traceName) { line-height: 1.15; }
+  .experimentCompact .traceTrack { height: 28px; }
+  .experimentCompact .traceResult { margin-top: -5px; font-size: 10px; }
+  .experimentCompact .trackStart,
+  .experimentCompact .trackEnd { display: none; }
+  .experimentCompact figcaption { margin-top: 4px; font-size: 9px; line-height: 1.35; }
+  .heroQuestion { padding-top: 16px; padding-bottom: 18px; }
+  .heroQuestion .lead { margin-top: 10px; font-size: 0.88rem; line-height: 1.48; }
+  .heroQuestion .choiceList { margin-top: 14px; }
+  .startNotes p { padding: 11px 0; font-size: 13px; line-height: 1.42; }
+  .startNotes span { display: inline; margin: 0 0.35rem 0 0; font-size: 11px; }
+  .forceFigure { padding: 0 6px 14px; }
+  .forceFigure svg { margin: -2px 0; }
+  .diagramForceLabel { font-size: 24px; }
+  .cancellation { grid-template-columns: 1fr; gap: 18px; }
+  .cancelPair { grid-template-columns: minmax(72px, 1fr) 86px minmax(72px, 1fr); gap: 7px; }
+  .leftForce,
+  .rightForce { font-size: 12px; }
+  .cancelWords { font-size: 9px; }
+  .remainingForce { grid-template-columns: 72px 1fr; }
+  .termNote { grid-template-columns: 1fr; gap: 8px; }
+  .formulaHero { font-size: clamp(38px, 12vw, 54px); }
+  .ruleReading { align-items: start; grid-template-columns: 1fr; gap: 10px; }
+  .sigmaNote { align-items: start; grid-template-columns: 48px 1fr; gap: 12px; }
+  .sigmaMark { font-size: 44px; }
+  .schoolSolution { grid-template-columns: 1fr; gap: 24px; }
+  .givenBlock { padding-right: 0; padding-bottom: 18px; border-right: 0; border-bottom: 1px solid rgba(238, 233, 226, 0.15); }
+  .answerPair { grid-template-columns: 1fr; gap: 18px; }
+  .brakingVisual { padding: 14px 8px; }
+  .brakingFigure svg { margin: -12px 0; }
+  .brakingFigure figcaption { margin-top: 10px; }
+  .brakingCopy .answerField { margin-top: 22px; }
+  /* На мобильном footer следует за учебным содержанием, как в TopicPrimer.
+     Фиксированную навигацию уже резервирует AppShell; дополнительный sticky
+     слой здесь перекрывал появляющуюся обратную связь и создавал второй
+     конкурирующий контракт шага. */
+  .lessonFooter {
+    position: static;
+    align-items: center;
+    margin-top: 12px;
+    padding: 12px 0 4px;
+    background: transparent;
+  }
+  .backButton { padding-inline: 8px; }
+  .nextButton { min-width: 0; max-width: 68%; padding-inline: 14px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .choice,
+  .runButton,
+  .checkButton { transition: none; }
+  .choice:hover { padding-left: 4px; }
+  .runButton:hover,
+  .checkButton:hover { transform: none; }
+}

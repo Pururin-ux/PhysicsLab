@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1080" viewBox="0 0 1080 1080">
+  <style>
+    text { dominant-baseline: alphabetic; letter-spacing: 0; }
+    .strokeText { paint-order: stroke; stroke: #1b1712; stroke-width: 8px; stroke-linejoin: round; }
+  </style>
+  <rect width="1080" height="1080" fill="#171917"/>
+    <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/></filter>
+    <rect width="1080" height="1080" filter="url(#grain)" opacity="0.08"/>
+  
+    <path d="M 82.24085459765047 53.041452303761616 L 999.9038414547686 53.15687735960819 Q 1029.4000040758401 51.916315166279674 1025.7194315462839 80.50307643297128 L 1028.3641868859995 997.60597366211 Q 1027.958819951862 1029.3808528017253 997.4614548468962 1028.0977067579515 L 83.44469659193419 1028.6365994142834 Q 53.75111934915185 1028.466088829562 53.16432478884235 997.4917964015622 L 53.19460841291584 81.60897447424941 Q 53.8688970785588 50.80750496964902 82.24085459765047 53.041452303761616 Z" fill="#211f1c" stroke="#e3dfd8" stroke-width="5" stroke-linejoin="round" opacity="1" />
+    <text x="96" y="154" fill="#fffaf0" font-size="70" font-weight="900" font-family="Rubik, Nunito, Arial, sans-serif" text-anchor="start"><tspan x="96" dy="0">Когда забыл знак</tspan><tspan x="96" dy="81.19999999999999">ускорения</tspan></text>
+    <g transform="translate(628 332) rotate(6)">
+      <path d="M 24.226270420709625 -2.4765901605132967 L 308.61992808640935 1.1676472530234605 Q 337.9159979335964 -0.5022936267778277 336.4398204572499 27.82024021516554 L 333.7296913252212 271.5227076455485 Q 336.58567082788795 301.6776888659224 310.2591375668999 298.84643620229326 L 23.512704168912023 297.58600147091784 Q -1.3187806783244014 298.62028314638883 2.333069498417899 274.4794531187508 L -0.725689505925402 27.776126043405384 Q 0.8758854614570737 1.1090281521901488 24.226270420709625 -2.4765901605132967 Z" fill="#fffaf0" stroke="#24211d" stroke-width="5" stroke-linejoin="round" opacity="1" />
+      <g transform="translate(80 72) scale(1.12)">
+    <path d="M 32 98 C 8 76 12 38 38 24 L 46 3 L 65 19 C 83 13 102 16 116 25 L 137 9 L 140 38 C 165 65 151 110 116 125 C 80 140 48 128 32 98 Z" fill="#f8f3e9" stroke="#24211d" stroke-width="7" stroke-linejoin="round"/>
+    <circle cx="61" cy="69" r="8" fill="#24211d"/>
+    <circle cx="111" cy="69" r="8" fill="#24211d"/>
+    <path d="M 72 99 Q 86 111 101 99" fill="none" stroke="#24211d" stroke-width="6" stroke-linecap="round"/>
+    <path d="M 83 80 L 91 80 L 87 88 Z" fill="#e65a3a"/>
+    <path d="M 22 70 C 2 62 -5 50 -18 39 M 23 83 C 0 82 -10 83 -27 91 M 128 83 C 154 83 165 88 180 99 M 126 69 C 150 58 163 48 176 34" fill="none" stroke="#24211d" stroke-width="4" stroke-linecap="round"/>
+  </g>
+      <text x="45" y="258" fill="#e65a3a" font-size="35" font-weight="900" font-family="Rubik, Nunito, Arial, sans-serif" text-anchor="start"><tspan x="45" dy="0">минус не декор</tspan></text>
+    </g>
+    <path d="M 113.72958465060219 351.6293494210113 L 568.8070486143697 351.0342183643952 Q 588.8236337024719 352.33051731437445 591.9492524326779 376.46373146539554 L 591.4310287276749 553.7907137440052 Q 591.2101316759363 575.988081201911 569.8833737121895 576.7788992254063 L 112.57978141587228 577.8199976347387 Q 91.7466150559485 577.3374301018193 88.0405451497063 554.3368297067937 L 87.6782646740321 375.58712196862325 Q 90.86996656283736 351.86168401222676 113.72958465060219 351.6293494210113 Z" fill="#fff7df" stroke="#24211d" stroke-width="5" stroke-linejoin="round" opacity="1" />
+    <text x="128" y="442" fill="#24211d" font-size="48" font-weight="900" font-family="JetBrains Mono, Consolas, monospace" text-anchor="start"><tspan x="128" dy="0">a = (v − v₀) / t</tspan></text>
+    <text x="128" y="502" fill="#6e625a" font-size="29" font-weight="800" font-family="Rubik, Nunito, Arial, sans-serif" text-anchor="start"><tspan x="128" dy="0">сначала направление оси,</tspan><tspan x="128" dy="33.64">потом подставляй</tspan></text>
+    <path d="M 548 466 Q 614.4621405275539 449.49868306703866 684 420" fill="none" stroke="#e8c14a" stroke-width="7" stroke-linecap="round"/>
+  <path d="M 684 420 L 670.181033395622 437.1182990389549 M 684 420 L 662.627070126377 414.7848424168395" fill="none" stroke="#e8c14a" stroke-width="7" stroke-linecap="round"/>
+    <path d="M 123.62800677865744 643.7110987890046 L 956.980033648666 645.9294911476318 Q 978.5211762422696 644.2993287993595 978.078813161701 671.6305409278721 L 981.915742487181 833.4199757541064 Q 979.6663353061303 856.0263480972499 953.7798310306389 854.4037344076205 L 126.04614616348408 856.4195918201003 Q 101.90619311574847 854.2300938572735 99.97956827864982 832.9468272503 L 99.61055416497402 667.7684457506984 Q 99.15299067925662 644.9978958508 123.62800677865744 643.7110987890046 Z" fill="#2f332d" stroke="#e3dfd8" stroke-width="4" stroke-linejoin="round" opacity="1" />
+    <text x="144" y="728" fill="#e8c14a" font-size="54" font-weight="900" font-family="Rubik, Nunito, Arial, sans-serif" text-anchor="start"><tspan x="144" dy="0">тормозит?</tspan></text>
+    <text x="144" y="794" fill="#fffaf0" font-size="42" font-weight="800" font-family="Rubik, Nunito, Arial, sans-serif" text-anchor="start"><tspan x="144" dy="0">значит ускорение направлено против</tspan><tspan x="144" dy="48.72">скорости</tspan></text>
+    <g transform="rotate(-2 458.23999999999995 936.6)">
+    <path d="M 146.82632008823566 901.6404861779884 L 772.8499274321551 903.659851747565 Q 780.6386536644026 903.4292674669996 781.4294409330654 917.3935065502301 L 782.3265626477263 955.5268184063491 Q 783.9511384177207 970.4516864826903 770.0086728185601 968.1338850078639 L 148.48407019651495 967.7875763045624 Q 133.86301390547305 967.3117450231687 133.93965901900083 955.0721859748476 L 134.23774314904585 917.5568913752213 Q 133.99418751709163 903.245636375621 146.82632008823566 901.6404861779884 Z" fill="#e65a3a" stroke="#24211d" stroke-width="3" stroke-linejoin="round" opacity="1" />
+    <text x="152" y="941" fill="#24211d" font-size="32" font-weight="800" font-family="Rubik, Nunito, Arial, sans-serif" text-anchor="start"><tspan x="152" dy="0">знак — это физика, а не украшение</tspan></text>
+  </g>
+  
+</svg>

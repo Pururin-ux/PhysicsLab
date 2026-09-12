@@ -115,7 +115,7 @@ export type NumericAnswerRecord = BaseAnswerRecord & {
 // хранилища не меняется и миграция не нужна.
 export type AnswerRecord = SingleChoiceAnswerRecord | NumericAnswerRecord;
 
-export type QuizPhase = "active" | "answered" | "completed";
+export type QuizPhase = "active" | "retrying" | "answered" | "completed";
 
 export type QuizSessionState = {
   phase: QuizPhase;
@@ -163,19 +163,36 @@ function commitAnswer(
   selectedOptionId: string | null,
 ): AnswerResult {
   const state = $quizSession.get();
-  const streak = isCorrect ? state.streak + 1 : 0;
-  const score = isCorrect ? state.score + 1 : state.score;
+  const previousAnswer = state.phase === "retrying" ? state.answers.at(-1) : undefined;
+  const attempt = previousAnswer ? previousAnswer.attempt + 1 : 1;
+  const firstTryCorrect = isCorrect && attempt === 1;
+  const streak = firstTryCorrect ? state.streak + 1 : 0;
+  // Итог сессии остаётся честным показателем самостоятельного первого
+  // ответа. Исправленная со второй попытки задача считается разобранной,
+  // но не превращается задним числом в first-try success.
+  const score = firstTryCorrect ? state.score + 1 : state.score;
+  const committedRecord: AnswerRecord = {
+    ...record,
+    attempt,
+    // Сохраняем причину первой ошибки даже после удачной коррекции: она
+    // нужна очереди повторения и не должна исчезать из learner model.
+    selectedMisconception:
+      previousAnswer?.selectedMisconception ?? record.selectedMisconception,
+  };
+  const answers = previousAnswer
+    ? [...state.answers.slice(0, -1), committedRecord]
+    : [...state.answers, committedRecord];
 
   $quizSession.set({
     ...state,
     phase: "answered",
     selectedOptionId,
-    answers: [...state.answers, record],
+    answers,
     score,
     streak,
   });
 
-  return { isCorrect, streak, score, attempt: record.attempt };
+  return { isCorrect, streak, score, attempt };
 }
 
 export function answerCurrentTask(
@@ -184,7 +201,7 @@ export function answerCurrentTask(
 ): AnswerResult | null {
   const state = $quizSession.get();
 
-  if (state.phase !== "active") return null;
+  if (state.phase !== "active" && state.phase !== "retrying") return null;
   if (!task.options.some((option) => option.id === selectedOptionId)) return null;
 
   const isCorrect = selectedOptionId === task.answer;
@@ -215,7 +232,7 @@ export function answerCurrentNumericTask(
 ): AnswerResult | null {
   const state = $quizSession.get();
 
-  if (state.phase !== "active") return null;
+  if (state.phase !== "active" && state.phase !== "retrying") return null;
 
   const parsed = parseNumericAnswer(raw);
   if (!parsed.ok) return null;
@@ -267,6 +284,29 @@ export function moveToNextTask() {
   return true;
 }
 
+export function retryCurrentTask() {
+  const state = $quizSession.get();
+  const latestAnswer = state.answers.at(-1);
+
+  // Одна адресная повторная попытка: сначала причина и подсказка, затем ещё
+  // один retrieval. После второй ошибки показываем полный разбор и идём дальше.
+  if (
+    state.phase !== "answered" ||
+    !latestAnswer ||
+    latestAnswer.isCorrect ||
+    latestAnswer.attempt !== 1
+  ) {
+    return false;
+  }
+
+  $quizSession.set({
+    ...state,
+    phase: "retrying",
+    selectedOptionId: null,
+  });
+  return true;
+}
+
 export function restartQuizSession() {
   resetQuizSession($quizSession.get().total);
 }
@@ -276,7 +316,18 @@ export function getOptionState(
   optionId: string,
   session: QuizSessionState,
 ): OptionState {
-  if (session.phase === "active" || !session.selectedOptionId) return "idle";
+  if (session.phase === "active") return "idle";
+  if (session.phase === "retrying") {
+    const firstAnswer = session.answers.at(-1);
+    return firstAnswer?.format === "single_choice" && firstAnswer.selectedOptionId === optionId
+      ? "dimmed"
+      : "idle";
+  }
+  if (!session.selectedOptionId) return "idle";
+  const latestAnswer = session.answers.at(-1);
+  if (latestAnswer && !latestAnswer.isCorrect && latestAnswer.attempt === 1) {
+    return optionId === session.selectedOptionId ? "wrong" : "idle";
+  }
   if (optionId === task.answer) return "correct";
   if (optionId === session.selectedOptionId) return "wrong";
   return "dimmed";

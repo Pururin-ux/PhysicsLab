@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>КИНЕМАТИКА // РАВНОМЕРНОЕ ДВИЖЕНИЕ</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.min.js"></script>
+
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,700;1,300;1,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/topic.css">
+</head>
+<body class="bg-bg text-gray-300 font-mono antialiased overflow-x-hidden selection:bg-accent selection:text-black">
+
+  <nav class="fixed top-0 w-full z-50 bg-bg/90 backdrop-blur-md border-b border-white/10">
+    <div class="max-w-7xl mx-auto px-6 h-16 flex justify-between items-center">
+      <a href="index.html" class="text-xs md:text-sm text-gray-500 hover:text-white transition-colors tracking-widest font-bold">
+        ← ГЛАВНАЯ СТРАНИЦА
+      </a>
+      <div class="text-lg font-bold tracking-tight">
+        PHYSICS<span class="text-accent">.LAB</span> // ТЕМА
+      </div>
+      <div class="text-xs text-gray-500 tracking-widest">БЛОК 1/6</div>
+    </div>
+  </nav>
+
+  <main class="max-w-6xl mx-auto px-6 pt-28 pb-20 space-y-14">
+
+    <!-- 1) Смысл -->
+    <section class="block">
+      <div class="label">СМЫСЛ ЗА 30 СЕКУНД</div>
+      <h1 class="title">
+        РАВНОМЕРНОЕ
+        <span class="grad">ДВИЖЕНИЕ</span>
+      </h1>
+      <ul class="key-points">
+        <li>Скорость постоянна: <span class="latex">v = const</span></li>
+        <li>График <span class="latex">x(t)</span> — прямая линия</li>
+        <li>Ускорение отсутствует: <span class="latex">a = 0</span></li>
+      </ul>
+    </section>
+
+    <!-- 2) Интерактив -->
+    <section class="block">
+      <div class="label">ВИЗУАЛИЗАЦИЯ</div>
+      <p class="desc">Посмотри, как координата меняется при постоянной скорости.</p>
+
+      <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        <div class="panel">
+          <div class="panel-title">Сценарий</div>
+          <button onclick="setScenario('forward')" id="btn-fwd" class="scenario-btn active">
+            1. ВПЕРЁД
+            <span>v = 5 м/с</span>
+          </button>
+          <button onclick="setScenario('still')" id="btn-still" class="scenario-btn">
+            2. ПОКОЙ
+            <span>v = 0 м/с</span>
+          </button>
+          <button onclick="setScenario('backward')" id="btn-back" class="scenario-btn">
+            3. НАЗАД
+            <span>v = -5 м/с</span>
+          </button>
+
+          <div class="data-box">
+            <div>x = <span id="live-x" class="accent">0.0</span> м</div>
+            <div>t = <span id="live-t">0.0</span> с</div>
+          </div>
+        </div>
+
+        <div id="canvas-wrapper" class="canvas-wrapper lg:col-span-3"></div>
+      </div>
+    </section>
+
+    <!-- 3) Формула -->
+    <section class="block formula-card">
+      <div class="label">КЛЮЧЕВАЯ ФОРМУЛА</div>
+      <div class="formula">x = x₀ + v·t</div>
+      <div class="formula-notes">
+        <span><b>x</b> — координата (м)</span>
+        <span><b>x₀</b> — начальная координата (м)</span>
+        <span><b>v</b> — скорость (м/с)</span>
+        <span><b>t</b> — время (с)</span>
+      </div>
+    </section>
+
+    <!-- 4) Почему так -->
+    <section class="block">
+      <div class="label">ПОЧЕМУ ЭТО ТАК?</div>
+      <p class="desc">
+        При постоянной скорости тело проходит равные расстояния за равные интервалы времени,
+        поэтому зависимость координаты от времени линейна.
+      </p>
+    </section>
+
+    <!-- 5) Типовой пример -->
+    <section class="block example-card">
+      <div class="label">ТИПОВОЙ ПРИМЕР</div>
+      <div class="example-task">
+        Тело стартует из <b>x₀ = 2 м</b> и движется со скоростью <b>v = 3 м/с</b>.  
+        Где оно будет через <b>4 с</b>?
+      </div>
+      <div class="example-solution">
+        <div>1) Формула: <span class="latex">x = x₀ + v·t</span></div>
+        <div>2) Подставляем: <span class="latex">x = 2 + 3·4</span></div>
+        <div>3) Ответ: <span class="accent">x = 14 м</span></div>
+      </div>
+    </section>
+
+    <!-- 6) Мини‑контроль -->
+    <section class="block quiz-card">
+      <div class="label">ПРОВЕРЬ СЕБЯ</div>
+      <div class="quiz">
+        <div class="q">
+          <p>Если v = 0, как выглядит график x(t)?</p>
+          <button onclick="toggleAnswer(this)">Проверить</button>
+          <div class="answer">Горизонтальная линия.</div>
+        </div>
+        <div class="q">
+          <p>Можно ли при v = const иметь ускорение?</p>
+          <button onclick="toggleAnswer(this)">Проверить</button>
+          <div class="answer">Нет, a = 0.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7) Практика -->
+    <section class="block practice-card">
+      <div class="label">ПРАКТИКА</div>
+
+      <div class="practice easy">
+        <h3>EASY</h3>
+        <p>Тело движется со скоростью 2 м/с. Найди путь за 5 с.</p>
+        <button onclick="toggleHint(this)">Подсказка</button>
+        <div class="hint">s = v·t</div>
+        <button onclick="toggleAnswer(this)">Ответ</button>
+        <div class="answer">s = 10 м</div>
+      </div>
+
+      <div class="practice normal">
+        <h3>NORMAL</h3>
+        <p>Тело в x₀ = -3 м, v = 4 м/с. Найди x через 6 с.</p>
+        <button onclick="toggleHint(this)">Подсказка</button>
+        <div class="hint">x = x₀ + v·t</div>
+        <button onclick="toggleAnswer(this)">Ответ</button>
+        <div class="answer">x = 21 м</div>
+      </div>
+
+      <div class="practice hard">
+        <h3>HARD</h3>
+        <p>По графику x(t): координата выросла от 0 до 20 м за 5 с. Найди v.</p>
+        <button onclick="toggleAnswer(this)">Ответ</button>
+        <div class="answer">v = 4 м/с</div>
+      </div>
+    </section>
+
+    <!-- 8) Граница -->
+    <section class="block">
+      <div class="label">ГРАНИЦА ПРИМЕНИМОСТИ</div>
+      <p class="desc">
+        Формула <span class="latex">x = x₀ + v·t</span> работает только при постоянной скорости.
+        Если скорость меняется — нужна модель с ускорением.
+      </p>
+    </section>
+
+    <!-- 9) Следующая тема -->
+    <section class="block next-card">
+      <h2>Следующая тема</h2>
+      <a href="next-topic.html" class="next-btn">Равноускоренное движение →</a>
+    </section>
+
+  </main>
+
+  <script src="js/topic.js"></script>
+</body>
+</html>

@@ -1,0 +1,281 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://local.physics-channel/contracts/comfy-worker.schema.json",
+  "title": "ComfyUI Worker Request",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract_version",
+    "job_id",
+    "content_package_id",
+    "asset_kind",
+    "target_surface",
+    "workflow",
+    "prompt",
+    "generation",
+    "output",
+    "qc_policy"
+  ],
+  "properties": {
+    "contract_version": {
+      "type": "string",
+      "const": "1.0.0"
+    },
+    "job_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]{2,100}$"
+    },
+    "content_package_id": {
+      "type": "string"
+    },
+    "safety_profile": {
+      "type": "string",
+      "enum": [
+        "laptop-8gb",
+        "off"
+      ],
+      "default": "laptop-8gb"
+    },
+    "asset_kind": {
+      "type": "string",
+      "enum": [
+        "background",
+        "character",
+        "sticker",
+        "texture",
+        "variant"
+      ]
+    },
+    "target_surface": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "width",
+        "height"
+      ],
+      "properties": {
+        "width": {
+          "type": "integer",
+          "minimum": 512
+        },
+        "height": {
+          "type": "integer",
+          "minimum": 512
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "workflow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "version"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "api_json_path": {
+          "type": "string"
+        },
+        "workflow_sha256": {
+          "type": "string"
+        }
+      }
+    },
+    "prompt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "positive",
+        "negative",
+        "language_policy"
+      ],
+      "properties": {
+        "positive": {
+          "type": "string"
+        },
+        "negative": {
+          "type": "string"
+        },
+        "language_policy": {
+          "type": "string",
+          "enum": [
+            "no_readable_text",
+            "generated_text_allowed_for_private_draft"
+          ]
+        }
+      }
+    },
+    "generation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "width",
+        "height",
+        "batch_size",
+        "seed_mode",
+        "steps",
+        "sampler",
+        "scheduler",
+        "guidance"
+      ],
+      "properties": {
+        "width": {
+          "type": "integer",
+          "minimum": 512,
+          "maximum": 1280,
+          "multipleOf": 64
+        },
+        "height": {
+          "type": "integer",
+          "minimum": 512,
+          "maximum": 1280,
+          "multipleOf": 64
+        },
+        "batch_size": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1
+        },
+        "seed": {
+          "type": "integer"
+        },
+        "seed_mode": {
+          "type": "string",
+          "enum": [
+            "fixed",
+            "random"
+          ]
+        },
+        "steps": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 24
+        },
+        "sampler": {
+          "type": "string"
+        },
+        "scheduler": {
+          "type": "string"
+        },
+        "guidance": {
+          "type": "number"
+        },
+        "denoise": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    },
+    "models": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "base": {
+          "type": "string"
+        },
+        "controlnet": {
+          "type": "string"
+        },
+        "ip_adapter": {
+          "type": "string"
+        },
+        "loras": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "inputs": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "control_images": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "reference_images": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "output": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "destination",
+        "format",
+        "color_space",
+        "write_sidecar_metadata",
+        "strip_public_metadata"
+      ],
+      "properties": {
+        "destination": {
+          "type": "string"
+        },
+        "format": {
+          "type": "string",
+          "enum": [
+            "png",
+            "jpg",
+            "webp"
+          ]
+        },
+        "color_space": {
+          "type": "string",
+          "enum": [
+            "srgb"
+          ]
+        },
+        "write_sidecar_metadata": {
+          "type": "boolean"
+        },
+        "strip_public_metadata": {
+          "type": "boolean"
+        }
+      }
+    },
+    "qc_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "require_no_readable_text",
+        "require_correct_dimensions",
+        "require_not_blank",
+        "human_review_required"
+      ],
+      "properties": {
+        "require_no_readable_text": {
+          "type": "boolean"
+        },
+        "require_correct_dimensions": {
+          "type": "boolean"
+        },
+        "require_not_blank": {
+          "type": "boolean"
+        },
+        "human_review_required": {
+          "type": "boolean"
+        },
+        "protected_zones_mask": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

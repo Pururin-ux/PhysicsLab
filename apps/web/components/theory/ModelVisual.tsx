@@ -32,14 +32,13 @@ export function ModelVisual({
       className={cn(
         "flex flex-col",
         compact ? "gap-2 p-3 md:p-4" : "gap-4 p-4 md:p-5",
-        framed ? null : "rounded-option border border-nova-cyan/[.10] bg-space-950/50",
+        // Без рамки: снаружи уже есть .physics-stage, вложенный бордер давал
+        // третий уровень контейнеров вокруг одного графика.
         framed ? null : className,
       )}
     >
         <figcaption className="flex flex-col gap-1">
-          <span className="text-[11px] font-bold uppercase tracking-[.14em] text-white/50">
-            График
-          </span>
+          {/* Кикер «График» убран: название уже говорит, что это график. */}
           <span className={compact ? "text-[15px] font-bold text-white" : "text-xl font-bold text-white"}>
             {title}
           </span>

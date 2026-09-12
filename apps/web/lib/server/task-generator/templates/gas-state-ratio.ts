@@ -39,7 +39,7 @@ export const gasStateRatioBlueprint: TaskBlueprint = {
     correct: () =>
       "Верно. Для одной и той же массы газа работает отношение pV/T.",
     wrong: (_p, selected, correct) =>
-      `Проверь перевод температуры в Кельвины и отношение объемов. Получается ${formatAnswerValue(correct)} кПа, а не ${formatAnswerValue(selected)}.`,
+      `Проверь перевод температуры в кельвины и отношение объёмов. Получается ${formatAnswerValue(correct)} кПа, а не ${formatAnswerValue(selected)}.`,
   },
   constraints: [
     answerIsClean,

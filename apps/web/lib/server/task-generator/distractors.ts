@@ -164,45 +164,45 @@ function weightDoublesAcceleration(p: Params): number {
 
 export const freeFallDistractors: DistractorRule[] = [
   {
-    label: "gt вместо gt²/2",
+    label: "посчитал gt вместо gt²/2",
     compute: freeFallGtInsteadOfHalfSquare,
   },
   {
-    label: "забыл /2",
+    label: "забыл деление на 2",
     compute: freeFallForgotHalf,
   },
   {
-    label: "gt/2",
+    label: "потерял квадрат времени: gt/2 вместо gt²/2",
     compute: freeFallGtOverTwo,
   },
 ];
 
 export const vtSlopeDistractors: DistractorRule[] = [
   {
-    label: "v2/t2",
+    label: "поделил скорость на время вместо Δv/Δt",
     compute: vtSlopeEndVelocityOverEndTime,
   },
   {
-    label: "v1/t1 или v2/t1",
+    label: "взял одну точку графика вместо изменения скорости",
     compute: vtSlopeVelocityOverStartTime,
   },
   {
-    label: "(v1+v2)/t2",
+    label: "сложил скорости вместо того, чтобы вычесть",
     compute: vtSlopeAverageVelocityOverEndTime,
   },
 ];
 
 export const vtAreaDistractors: DistractorRule[] = [
   {
-    label: "только прямоугольник",
+    label: "учёл только прямоугольник, без треугольника разгона",
     compute: vtAreaRectangleOnly,
   },
   {
-    label: "конечная скорость × t",
+    label: "умножил конечную скорость на всё время",
     compute: vtAreaFinalVelocityTimesTotalTime,
   },
   {
-    label: "только треугольник",
+    label: "учёл только треугольник разгона",
     compute: vtAreaTriangleOnly,
   },
 ];

@@ -23,12 +23,11 @@ export function FocusedFamilyPractice({ entry }: { entry: TaskTypeCatalogEntry }
       generatedTopic={entry.topicLabel}
       generatedTitle={entry.title}
       generatedCount={5}
-      restartLabel="Ещё 5 похожих"
-      nextHref={`/tasks/${entry.slug}`}
-      nextLabel="К типу задачи"
+      restartLabel="Ещё 5 задач"
+      nextHref={entry.id === "contact-pressure" ? "/learn/pressure" : entry.id === "density-volume-ratio" ? "/learn/density" : `/tasks/${entry.id}`}
+      nextLabel={entry.id === "contact-pressure" ? "Повторить силу и площадь опоры" : entry.id === "density-volume-ratio" ? "Повторить массу, объём и плотность" : "Вернуться к разбору этого типа"}
       accent={accentByTopic[entry.topicId]}
-      drawerTitle="Справка по задаче"
-      drawerDescription="Открыт раздел, который нужен для текущего вопроса."
+      drawerTitle="Справка"
       subtopics={sections}
     >
       {sections.map((section) => (

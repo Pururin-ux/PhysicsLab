@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import type { ReactNode } from "react";
 
 interface RevealProps {
@@ -9,15 +9,16 @@ interface RevealProps {
   className?: string;
 }
 
-// Плавное появление секции при прокрутке до неё.
+// Контент должен быть видим уже в SSR/первом кадре. Motion здесь остаётся
+// только как мягкое улучшение, а не как условие отображения секции.
 export function Reveal({ children, delay = 0, className }: RevealProps) {
   return (
     <motion.div
       className={className}
-      initial={{ opacity: 0, y: 26 }}
+      initial={false}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-60px" }}
-      transition={{ duration: 0.55, delay, ease: "easeOut" }}
+      viewport={{ once: true, margin: "-24px" }}
+      transition={{ duration: 0.4, delay, ease: "easeOut" }}
     >
       {children}
     </motion.div>

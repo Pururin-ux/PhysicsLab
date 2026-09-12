@@ -45,7 +45,7 @@ test("reference example is closed, keyboard-accessible and links to an exact foc
   expect(storageAfter).toEqual(storageBefore);
   expect(apiRequests).toEqual([]);
 
-  await reference.getByRole("link", { name: "Решить 5 похожих" }).click();
+  await reference.getByRole("link", { name: "Решить 5 задач" }).click();
   await expect(page).toHaveURL(/\/practice\/family\/ohm-law$/);
   await expect(page.getByTestId("question-card")).toBeVisible();
   const focusedRequest = apiRequests.find((url) => url.includes("template=ohm-law"));
@@ -62,16 +62,16 @@ test("all six pilot pages expose authored reference content", async ({ page }) =
   for (const family of pilots) {
     await page.goto(`/tasks/${family}`, { waitUntil: "domcontentloaded" });
     await expect(page.getByTestId("reference-solution")).toBeVisible();
-    await expect(page.getByRole("link", { name: "Посмотреть пример" })).toHaveAttribute("href", "#reference-example");
+    await expect(page.getByRole("link", { name: "Сначала разобрать пример" })).toHaveAttribute("href", "#reference-example");
   }
 });
 
 test("non-pilot task detail remains complete without an empty placeholder", async ({ page }) => {
   await page.goto("/tasks/free-fall", { waitUntil: "domcontentloaded" });
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
-  await expect(page.getByRole("link", { name: "Решить 5 похожих" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Начать: 5 задач" })).toBeVisible();
   await expect(page.getByTestId("reference-solution")).toHaveCount(0);
-  await expect(page.getByRole("link", { name: "Посмотреть пример" })).toHaveCount(0);
+  await expect(page.getByRole("link", { name: "Сначала разобрать пример" })).toHaveCount(0);
 });
 
 test("reference math and visuals expose semantic descriptions", async ({ page }) => {
@@ -103,14 +103,16 @@ test("reference pages do not overflow on narrow mobile viewports", async ({ page
     const viewport = page.viewportSize()!;
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(viewport.width + 1);
 
-    const cta = page.getByTestId("reference-solution").getByRole("link", { name: "Решить 5 похожих" });
+    const cta = page.getByTestId("reference-solution").getByRole("link", { name: "Решить 5 задач" });
     await cta.scrollIntoViewIfNeeded();
-    const [ctaBox, navBox] = await Promise.all([
+    const [ctaBox, headerBox] = await Promise.all([
       cta.boundingBox(),
-      page.getByRole("navigation", { name: "Мобильная навигация" }).boundingBox(),
+      page.locator("header").first().boundingBox(),
     ]);
     expect(ctaBox).not.toBeNull();
-    expect(navBox).not.toBeNull();
-    expect(navBox!.y - (ctaBox!.y + ctaBox!.height)).toBeGreaterThanOrEqual(8);
+    expect(headerBox).not.toBeNull();
+    // Навигация сверху: кнопка не должна оказаться под липкой шапкой.
+    expect(ctaBox!.y).toBeGreaterThanOrEqual(headerBox!.y + headerBox!.height);
+    expect(ctaBox!.y + ctaBox!.height).toBeLessThanOrEqual(viewport.height);
   }
 });

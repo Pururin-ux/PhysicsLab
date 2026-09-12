@@ -1,0 +1,58 @@
+{
+  "count": 1633,
+  "orientations": {
+    "square-ish": 698,
+    "landscape": 317,
+    "portrait": 618
+  },
+  "clusters": {
+    "0": 140,
+    "1": 184,
+    "2": 166,
+    "3": 118,
+    "4": 136,
+    "5": 113,
+    "6": 104,
+    "7": 122,
+    "8": 136,
+    "9": 203,
+    "10": 89,
+    "11": 122
+  },
+  "averages": {
+    "aspect": 0.9675,
+    "brightness": 0.4926,
+    "saturation": 0.2631,
+    "contrast": 0.2313,
+    "colorfulness": 31.7786,
+    "edge_density": 0.0954
+  },
+  "top_edge_density": [
+    "pin_0199_ad43822a40cd.jpg",
+    "pin_0774_c810e5adcfd2.jpg",
+    "pin_0582_9e7970aa4f98.jpg",
+    "pin_0057_18e8c70bb527.jpg",
+    "pin_0875_d52f6f187ff1.jpg",
+    "pin_0513_1e61f0caad3b.jpg",
+    "pin_0394_5700d8bbc847.jpg",
+    "pin_0594_71e6521b1b6b.jpg",
+    "pin_0533_f074aa2b768c.jpg",
+    "pin_0775_4ae1447bf50c.jpg",
+    "pin_0520_0273594543cc.jpg",
+    "pin_0623_19283044f88b.jpg"
+  ],
+  "lowest_brightness": [
+    "pin_1612_e9107d0efc33.png",
+    "pin_1330_82b3a9d2e0f8.jpg",
+    "pin_0918_2bbb6f6bd102.jpg",
+    "pin_1099_e05de661f537.jpg",
+    "pin_0785_59593af269fb.jpg",
+    "pin_0171_1d6a6158e068.jpg",
+    "pin_1003_63026f326545.jpg",
+    "pin_0437_b06e12b592ca.webp",
+    "pin_0940_26fd172330ac.jpg",
+    "pin_1424_572690596c09.png",
+    "pin_0028_a45744c80c64.jpg",
+    "pin_0992_9cb6fedc2c40.jpg"
+  ]
+}
