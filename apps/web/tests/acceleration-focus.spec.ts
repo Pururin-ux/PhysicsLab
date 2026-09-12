@@ -3,6 +3,8 @@ import { expect, test } from "@playwright/test";
 test("ускорение: наблюдение за маршрутом открывает связанный ответ", async ({ page }) => {
   await page.goto("/practice/acceleration-focus", { waitUntil: "domcontentloaded" });
   await expect(page.getByRole("heading", { name: "Разгон у остановки" })).toBeVisible();
+  // The responsive chart renders after client mount; the heading also exists in SSR.
+  await expect(page.getByRole("img", { name: /График скорости от времени/ }).locator("svg")).toBeVisible();
 
   const finalMoment = page.getByRole("button", { name: "3 с 8 м/с" });
   await expect(page.getByRole("button", { name: "на 2 м/с каждую секунду" })).toBeDisabled();
@@ -25,6 +27,7 @@ test("ускорение: наблюдение за маршрутом откр�
 
 test("моменты маршрута и график доступны не только ползунком", async ({ page }) => {
   await page.goto("/practice/acceleration-focus", { waitUntil: "domcontentloaded" });
+  await expect(page.getByRole("img", { name: /График скорости от времени/ }).locator("svg")).toBeVisible();
   await page.getByRole("button", { name: "2 с 6 м/с" }).click();
   await expect(page.getByRole("button", { name: "2 с 6 м/с" })).toHaveAttribute("aria-pressed", "true");
   await expect(page.getByText("От 1 до 2 с скорость выросла с 4 до 6 м/с.")).toBeVisible();
