@@ -7,9 +7,15 @@ Scope: `apps/web` only.
 ## Runtime and packages
 
 - Canonical runtime: Next.js, started and built through root npm scripts.
+- Reproducible development/CI environment: Node 22.23.2 (`.nvmrc`) and
+  npm 11.11.0 (root `package.json#packageManager`). CI installs that npm pin
+  after setting up Node; package engines document the compatible Node 22 line.
 - Install dependencies with `npm ci` at the repository root and with
   `npm ci --prefix apps/web` for the application.
 - CI is defined in `.github/workflows/ci.yml` and uses those two lockfiles.
+- Vite owns Rolldown in the optional adapter toolchain. Rolldown selects native
+  bindings through optional dependencies; no OS-specific binding is a direct
+  application dependency.
 - `apps/web/vite.config.ts`, Vinext, Cloudflare, and `.openai/hosting.json`
   are an optional secondary deployment or preview adapter. They do not define
   routes, product behaviour, or the canonical runtime.

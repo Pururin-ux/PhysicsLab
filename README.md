@@ -21,6 +21,19 @@
 
 ## Установка
 
+Воспроизводимое окружение: Node **22.23.2** из `.nvmrc` и npm **11.11.0**
+из `package.json#packageManager`. Сначала выбери эту версию Node в своём
+менеджере версий, затем установи закреплённый npm:
+
+```bash
+npm install --global npm@11.11.0
+node --version
+npm --version
+```
+
+CI читает `.nvmrc` и устанавливает npm из `packageManager`. Системная версия
+Node на компьютере может отличаться — перед установкой проверь вывод команд.
+
 Нужны две установки — корень содержит TypeScript для оркестрации,
 зависимости приложения и Playwright живут в `apps/web`:
 
@@ -28,6 +41,11 @@
 npm ci
 npm ci --prefix apps/web
 ```
+
+Платформенные bindings выбирает Rolldown через optional dependencies.
+Не добавляй binding конкретной ОС в прямые зависимости приложения и не обходи
+platform checks через `--force`. Результаты проверки установки и предлагаемый
+порядок GitHub-интеграции — в `docs/audits/2026-09-12-install-reproducibility.md`.
 
 ## Команды (из корня)
 

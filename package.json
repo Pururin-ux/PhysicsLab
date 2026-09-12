@@ -4,9 +4,10 @@
   "private": true,
   "type": "module",
   "engines": {
-    "node": ">=22.18.0",
-    "npm": ">=9.6.5"
+    "node": ">=22.23.2 <23",
+    "npm": "11.11.0"
   },
+  "packageManager": "npm@11.11.0",
   "scripts": {
     "audit:tasks": "npm --prefix apps/web run audit:tasks",
     "audit:art": "npm --prefix apps/web run audit:art",
