@@ -70,9 +70,11 @@ the profile.
   labels and redundant prose before the actual activity.
 - Instrument readings must have an unambiguous pointer or reference line and
   readable labels at mobile size. Visual magnification must preserve the value.
-- After every visible change, inspect the live rendered result, including the
-  affected interactions. Cover desktop/mobile and light/dark. Correct defects and
-  inspect again; passing tests alone never proves visual acceptance.
+- Choose verification using `QUALITY.md` (updated by Sasha, 2026-09-12).
+  Group related UI changes and inspect the affected render when the task or a
+  concrete risk requires it. Desktop/mobile, light/dark and interaction states
+  are selected for that risk, not repeated after every visible edit. Passing
+  tests alone never proves visual acceptance.
 
 - Sasha's art direction: do not construct educational visualizations from geometric
   placeholder primitives. Use authored painted assets, carefully reviewed generated

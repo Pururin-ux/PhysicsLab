@@ -1,5 +1,10 @@
 # design-sync NOTES — PhysicsLab
 
+Эти заметки описывают отдельный workflow превью и его историческое состояние.
+Команды resync/build и синхронизация копий нужны только при работе над этим
+workflow (решение 0003), а не после каждой правки сайта. Сверяй версии с
+текущими lockfile; заметки не задают продуктовый стиль или бюджет проверок.
+
 - Репо — Next.js-приложение (apps/web), НЕ пакет: нет dist/, нет node_modules/<pkg>. Вход бандла — генерируемый файл `apps/web/.ds-entry.ts`; наружу публикуется 31 компонент из `componentSrcMap`. Полный прогон: `node .ds-sync/resync.mjs --config .design-sync/config.json --node-modules apps/web/node_modules --entry apps/web/.ds-entry.ts --out ds-bundle --render-sample 0`. При изменении `componentSrcMap` перегенерировать `.ds-entry.ts`.
 - CSS: `apps/web/.ds-css/tailwind.css` — КОПИЯ скомпилированного Next-бандла (`apps/web/.next/static/css/<big-hash>.css`, содержит Tailwind v4 + KaTeX) с путями шрифтов, переписанными на ./media/. После изменения стилей сайта и `npm run build` копию нужно обновить (sed '/_next/static/media/ → ./media/' + docopy woff2). cssEntry ограничен корнем пакета — потому файл лежит в apps/web, а не в .design-sync.
 - Шрифты: `.design-sync/css/fonts.css` (Manrope/Unbounded из next/font — чистые @font-face из малого css Next-сборки; + JetBrains Mono variable woff2 с Google Fonts, OFL — пользователь одобрил вложение 17.07.2026). Медиа рядом в `.design-sync/css/media/`.

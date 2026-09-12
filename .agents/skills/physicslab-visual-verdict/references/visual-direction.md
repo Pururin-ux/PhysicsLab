@@ -1,6 +1,9 @@
 # PhysicsLab visual direction
 
-This file records the project's taste, not a menu of fashionable styles. New work should feel as if it belongs to the same illustrated learning world even when the page structure changes.
+This file supplies craft criteria for a selected visual review. Product identity
+comes from `docs/current/`, especially `DESIGN_DIRECTION.md` and
+`MIO_CHARACTER.md`. Use only criteria relevant to the review question; this
+reference does not require a new aesthetic or a broader verification packet.
 
 ## The real scene
 
@@ -10,9 +13,9 @@ PhysicsLab is not a space station, a mission control interface, a laboratory sim
 
 ## The recognizable world
 
-- A cozy, dark, illustrated educational world with moments of color and light.
-- Nova is an illustrated teenage guide, not a chatbot avatar, influencer, teacher, or decorative sticker.
-- Cats are recurring characters with distinct behavior. They demonstrate, observe, make a believable mistake, hold an object, or create a quiet comic beat. They must be large enough to read and composed with the content rather than dropped into empty corners.
+- Preserve the authored illustrated world; light and dark themes are both first-class surfaces.
+- Mio is the approved companion; her identity and role follow `docs/current/MIO_CHARACTER.md`.
+- Cats or other supporting characters are not required identity elements. Use them only when explicitly approved with a concrete role. Legacy Nova artwork does not establish current product direction.
 - Character and scene art is generated raster production art with transparent variants when a character must sit inside the interface. Do not replace it with handcrafted SVG scenes, CSS drawings, emoji, or generic stock illustrations.
 - Backgrounds may carry atmosphere, but they need a physical or narrative reason: a desk after school, a classroom object, a window, a notebook, a trolleybus, a light experiment. Generic cosmic fog and particles are not identity by themselves.
 
@@ -36,7 +39,7 @@ PhysicsLab is not a space station, a mission control interface, a laboratory sim
 
 The distinction must be felt before it is explained.
 
-**Learning** is slower and more spacious. It begins from an observable situation, lets the student inspect a diagram or graph, names each quantity where it first appears, and connects the formula to what changed in the scene. Nova and the cats may guide attention or embody a misconception.
+**Learning** can be slower and more spacious. An observable situation, diagram or graph can connect a formula to what changes in the scene. Name quantities where they first matter. Mio may guide attention or embody a misconception when that action serves the lesson; no single sequence is mandatory for every topic.
 
 **CT/CE preparation** is focused and compact. The task, given data, answer, and explanation have a stable rhythm. Navigation and progress help orientation without theatrical countdowns, fake statistics, stress language, or gamified pressure.
 
@@ -53,7 +56,7 @@ Do not separate the modes with paragraphs about the teaching method. The differe
 ## Material and detail
 
 - Surfaces share one material family. Borders, glow, blur, and shadows are not decoration to apply everywhere.
-- Small details should come from physics and school life: pencil marks, a folded page corner, a ruler, graph paper, a bus ticket, a prism reflection, a cat's paw near the apparatus. Use only when they belong to the scene.
+- Small details may come from physics and school life: pencil marks, a folded page corner, a ruler, graph paper, a bus ticket, a prism reflection. Use only when they belong to the scene.
 - Motion may reveal a physical relationship or acknowledge an action. Constant floating, pulsing, orbiting, and particle motion makes the site tiring and generic.
 
 ## Cultural credibility
@@ -67,7 +70,7 @@ Do not separate the modes with paragraphs about the teaching method. The differe
 - station, mission, forecast, cockpit, laboratory-dashboard, or quest framing;
 - equal card grids as the default page grammar;
 - white formula panels that break the palette without a physical-paper concept;
-- tiny cats or characters stranded in corners;
+- characters stranded in corners without a role;
 - inconsistent generated character styles and lighting;
 - generic purple space gradients, glass panels, glow, decorative particles, and over-rounding;
 - paragraphs that announce the vibe or methodology instead of letting the page demonstrate it;

@@ -2,6 +2,12 @@
 
 This review answers a human question: does the interface feel beautiful, coherent, authored, and believable for a Belarusian school student? It is intentionally separate from accessibility, performance, pixel diffs, and code quality.
 
+Use only the criteria relevant to a deliberately selected review. This rubric
+does not expand its verification budget or require every section in the report.
+Product identity comes from `docs/current/`; Mio is the approved companion.
+An AI reviewer imagining a student's reaction supplies a hypothesis, not
+participant evidence. Historical screenshots are not current-render evidence.
+
 ## Order of judgment
 
 ### 1. Look before explaining
@@ -40,7 +46,7 @@ This description must be factual rather than evaluative. It anchors the critique
 
 Ask whether all decisions belong to one recognizable world:
 
-- **Concept:** Is there a specific artistic premise beyond “dark educational website”?
+- **Concept:** Is there a specific artistic premise beyond “illustrated educational website”?
 - **Composition:** Do scale, overlap, alignment, cropping, and empty space create a deliberate scene?
 - **Typography:** Does the type have a voice, and do prose, headings, controls, and mathematics coexist naturally?
 - **Color and light:** Is the palette organized around a dominant atmosphere, or are accents distributed like UI tokens?
@@ -56,7 +62,7 @@ Imagine a student actually returning after school, finding a difficult topic, ma
 
 - Does the site respect a teenager, or speak like a teacher, mascot app, startup, or children’s game?
 - Does learning feel different from exam practice without a paragraph explaining the difference?
-- Do Nova and the cats behave like recurring characters with purpose, not stickers placed in leftover space?
+- Does Mio, or an explicitly approved supporting character, act with purpose rather than occupy leftover space?
 - Would the illustrations still make sense if printed in a Belarusian school workbook or shown to a local physics teacher?
 - Are school objects, terminology, examples, clothes, rooms, and public transport culturally believable rather than vaguely American or fantastical?
 - Can this art direction be maintained across dozens of topics, errors, diagrams, and states in real production?

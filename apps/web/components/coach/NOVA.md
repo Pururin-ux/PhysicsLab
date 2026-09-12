@@ -1,7 +1,9 @@
-> **Component-local guidance.** It does not define product direction; use
-> `docs/current/` and `docs/decisions/` for current web requirements.
+> **Legacy component-local notes.** The approved web companion is Mio; use
+> `docs/current/MIO_CHARACTER.md` and current decisions for new work. These
+> historical component names do not establish a second approved character.
+> Check consumers before proposing removal; this document authorizes no cleanup.
 
-# Nova mascot integration
+# Nova legacy component notes
 
 Nova is not a standalone product showcase. The Claude prototype is treated as a
 sandbox for assets and motion ideas only.
@@ -11,14 +13,15 @@ sandbox for assets and motion ideas only.
 | File | Role |
 | --- | --- |
 | `CoachBubble.tsx` | Optional coach surface outside the core practice hierarchy. Practice sessions do not render it before or after an answer. |
-| `CoachAvatar.tsx` | Compact emotional avatar for tight UI surfaces. Uses `public/mascot/nova-{state}.png`. |
+| `CoachAvatar.tsx` | Legacy compact emotional avatar; current paths are `/art/production/tutor-*.webp`. |
 | `NovaStage.tsx` | Lightweight presentation character for the landing hero or dev previews. It must not introduce its own product section. |
 | `useCoach.ts` | Keeps `session_start`, `correct_answer`, `wrong_answer`, `pause`, and `session_end` events available without making them a required visual surface. |
 | `useTypewriter.ts` | Optional typewriter effect that keeps inline formula fragments intact. |
 
 ## Pedagogical rule
 
-Nova should ask a useful learning question, not fill empty space. After a wrong
+In the historical coach design, the character asked a learning question rather
+than filling empty space. For current feedback, after a wrong
 answer, prefer the selected option's misconception label and a diagnostic prompt
 over generic encouragement or a duplicate solution.
 
@@ -29,8 +32,8 @@ events must not reintroduce an avatar, typewriter, or duplicate diagnostic there
 
 ## Asset rule
 
-- `public/mascot/nova-{state}.png`: compact bust avatars for coach bubbles and small UI.
-- `public/mascot-anime/{state}.png`: larger transparent character art for presentation-only surfaces.
+- `public/mascot/nova-{state}.png` and `public/mascot-anime/{state}.png` are historical asset locations, not current requirements.
+- `CoachAvatar`, `NovaReaction` and `NovaStage` currently name `/art/production/tutor-*.webp`; file names and mappings alone do not prove an active route consumer.
 
-Do not copy the whole Claude demo scene into the product. Use its states,
-poses, and lines where the student is already receiving feedback.
+Do not copy the old demo scene or introduce new Nova states, poses or copy.
+New companion work follows Mio's current contract.

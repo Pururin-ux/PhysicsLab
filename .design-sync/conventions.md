@@ -1,6 +1,12 @@
 # PhysicsLab design conventions
 
-PhysicsLab is a Russian-language companion for Belarusian secondary-school physics. Build calm, credible study screens; keep the dark space theme restrained. Prioritize the task, formula, diagram, units, and feedback. Keep Russian copy and standard SI notation; do not invent social features, fake metrics, or decorative scientific data.
+Scope: optional isolated component previews. `docs/current/` and decision 0003
+govern product direction. Bundled styles describe the preview's capabilities,
+not a mandate to restore an old dark-space skin or card layout in the product.
+
+PhysicsLab is a Russian-language learning platform for Belarusian school physics.
+Prioritize the task, formula, diagram, units and feedback. Keep Russian copy and
+standard SI notation; do not invent social features, metrics or scientific data.
 
 ## Runtime and theme setup
 
