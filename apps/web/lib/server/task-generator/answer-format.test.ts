@@ -52,9 +52,11 @@ test("ровно восемь семейств используют numeric_inpu
     (entry) => (blueprints[entry.id].answerFormat ?? "single_choice") === "single_choice",
   );
 
-  assert.equal(templateRegistry.length, 35);
+  // The snapshot adds contact-pressure as a single-choice family.
+  assert.equal(templateRegistry.length, 36);
   assert.equal(numeric.length, 8);
-  assert.equal(single.length, 27);
+  assert.equal(single.length, 28);
+  assert.ok(single.some(({ id }) => id === "contact-pressure"));
 });
 
 test("каждый шаблон имеет валидный answerFormat", () => {

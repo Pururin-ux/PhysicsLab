@@ -20,11 +20,11 @@ async function api(template: string, batch = 0, count = 10) {
   return (await response.json()).tasks as Array<{ id: string; blueprint: string; difficulty: 1 | 2 | 3 }>;
 }
 
-test("calibration preserves 35 templates, 8 numeric and 27 choice", () => {
-  assert.equal(templateRegistry.length, 35);
+test("calibration preserves 36 templates, 8 numeric and 28 choice", () => {
+  assert.equal(templateRegistry.length, 36);
   const numeric = templateRegistry.filter(({ id }) => generateTasks(id, 1)[0].answerFormat === "numeric_input");
   assert.equal(numeric.length, 8);
-  assert.equal(templateRegistry.length - numeric.length, 27);
+  assert.equal(templateRegistry.length - numeric.length, 28);
 });
 
 test("every active topic supports D1, D2 and D3", () => {

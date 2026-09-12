@@ -51,7 +51,7 @@ for(const chapter of textbookChapters){
     expect(response?.status()).toBe(200);
     await expect(page.getByRole("heading",{name:chapter.title,exact:true})).toBeVisible();
     await expect(page.getByRole("button",{name:"Проверить себя",exact:true})).toBeVisible();
-    const art=page.getByRole("region",{name:"История и модель с Мио"}).locator("img");
+    const art=page.getByRole("region",{name:"История и модель с Мио"}).getByRole("img",{name:/^Мио /});
     await expect(art).toBeVisible();
     await expect.poll(()=>art.evaluate(img=>(img as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
   });
