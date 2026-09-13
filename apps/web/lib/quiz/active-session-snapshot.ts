@@ -8,6 +8,7 @@
 import type {
   AnswerRecord,
   QuizSessionState,
+  QuizTask,
 } from "../../components/quiz/quiz-session-store";
 import { isValidAttemptId } from "./attempt-id.ts";
 
@@ -34,6 +35,8 @@ export type ActiveQuizSnapshot = {
   sessionKind: QuizSessionKind;
   batch: number;
   taskIds: string[];
+  taskFingerprint?: string;
+  numericDraft?: { taskId: string; raw: string };
   session: {
     phase: "active" | "retrying" | "answered";
     currentIndex: number;
@@ -122,6 +125,7 @@ function isValidSnapshotShape(value: unknown): value is ActiveQuizSnapshot {
   if (!Array.isArray(value.taskIds) || value.taskIds.length === 0) return false;
   if (!value.taskIds.every((id) => typeof id === "string" && id.length > 0)) return false;
   const taskIds = value.taskIds as string[];
+  if (value.taskFingerprint !== undefined && typeof value.taskFingerprint !== "string") return false;
 
   const session = value.session;
   if (!isRecord(session)) return false;
@@ -151,6 +155,9 @@ function isValidSnapshotShape(value: unknown): value is ActiveQuizSnapshot {
   if (session.answers.length !== expectedAnswers) return false;
   if (!session.answers.every((answer, index) => answer.taskId === taskIds[index])) return false;
   if (session.score > session.answers.length) return false;
+  if (value.numericDraft !== undefined && (!isRecord(value.numericDraft) ||
+    value.numericDraft.taskId !== taskIds[session.currentIndex] ||
+    typeof value.numericDraft.raw !== "string" || value.numericDraft.raw.length > 1000)) return false;
 
   return true;
 }
@@ -167,16 +174,20 @@ export function readActiveQuizSnapshot(now = Date.now()): SnapshotReadResult {
   }
   if (raw === null) return { ok: false, reason: "empty" };
 
+  const result = decodeQuizSnapshot(raw, now, ACTIVE_QUIZ_SNAPSHOT_MAX_AGE_MS);
+  if (!result.ok && (result.reason === "corrupt" || result.reason === "expired")) clearActiveQuizSnapshot();
+  return result;
+}
+
+export function decodeQuizSnapshot(raw: string, now = Date.now(), maxAge = Infinity): SnapshotReadResult {
   let parsed: unknown;
   try {
     parsed = JSON.parse(raw);
   } catch {
-    clearActiveQuizSnapshot();
     return { ok: false, reason: "corrupt" };
   }
 
   if (!isRecord(parsed) || typeof parsed.version !== "number") {
-    clearActiveQuizSnapshot();
     return { ok: false, reason: "corrupt" };
   }
 
@@ -187,12 +198,10 @@ export function readActiveQuizSnapshot(now = Date.now()): SnapshotReadResult {
   }
 
   if (!isValidSnapshotShape(parsed)) {
-    clearActiveQuizSnapshot();
     return { ok: false, reason: "corrupt" };
   }
 
-  if (now - parsed.savedAt > ACTIVE_QUIZ_SNAPSHOT_MAX_AGE_MS) {
-    clearActiveQuizSnapshot();
+  if (now - parsed.savedAt > maxAge) {
     return { ok: false, reason: "expired" };
   }
 
@@ -270,6 +279,7 @@ export function snapshotMatches(
     topicId?: string;
     sessionKind: QuizSessionKind;
     taskIds: string[];
+    taskFingerprint?: string;
   },
 ): boolean {
   return (
@@ -278,6 +288,7 @@ export function snapshotMatches(
     snapshot.topic === context.topic &&
     snapshot.topicId === context.topicId &&
     snapshot.sessionKind === context.sessionKind &&
+    (!snapshot.taskFingerprint || snapshot.taskFingerprint === context.taskFingerprint) &&
     snapshot.taskIds.length === context.taskIds.length &&
     snapshot.taskIds.every((id, index) => id === context.taskIds[index])
   );
@@ -292,6 +303,8 @@ export function buildSnapshot(input: {
   sessionKind: QuizSessionKind;
   batch: number;
   taskIds: string[];
+  numericDraft?: { taskId: string; raw: string };
+  taskFingerprint?: string;
   session: QuizSessionState;
   now?: number;
 }): ActiveQuizSnapshot | null {
@@ -315,6 +328,8 @@ export function buildSnapshot(input: {
     sessionKind: input.sessionKind,
     batch: input.batch,
     taskIds: input.taskIds,
+    ...(input.taskFingerprint ? { taskFingerprint: input.taskFingerprint } : {}),
+    ...(input.numericDraft ? { numericDraft: { ...input.numericDraft } } : {}),
     session: {
       phase: session.phase,
       currentIndex: session.currentIndex,
@@ -329,4 +344,12 @@ export function buildSnapshot(input: {
       total: session.total,
     },
   };
+}
+
+// Detect updated conditions/answers even when deterministic task IDs stay the same.
+export function fingerprintTasks(tasks: readonly QuizTask[]): string {
+  const content = JSON.stringify(tasks);
+  let hash = 2166136261;
+  for (let index = 0; index < content.length; index++) hash = Math.imul(hash ^ content.charCodeAt(index), 16777619);
+  return `v1:${(hash >>> 0).toString(16)}`;
 }

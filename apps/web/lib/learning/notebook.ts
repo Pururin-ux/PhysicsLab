@@ -9,7 +9,7 @@ export const notebookLessons = [
   { id: "optics", title: "Свет и отражение", href: "/practice/optics-lesson" },
 ] as const;
 
-export type NotebookNote = { id: string; title: string; href: string; text: string };
+export type NotebookNote = { id: string; title: string; href: string; text: string; kind: "explanation" | "personal" };
 
 export function readNotebook(): { notes: NotebookNote[]; unavailable: number } {
   const notes: NotebookNote[] = [];
@@ -18,9 +18,12 @@ export function readNotebook(): { notes: NotebookNote[]; unavailable: number } {
     const codec = lessonDraftExportCodecs.find((item) => item.key === `physicslab-lesson-draft-${lesson.id}`)!;
     const result = readLessonDraft(codec);
     if (!result.ok) { if (result.reason !== "empty") unavailable++; continue; }
-    const { summaryText, summarySaved } = result.value;
-    if (summarySaved === true && typeof summaryText === "string" && summaryText.trim()) {
-      notes.push({ ...lesson, text: summaryText });
+    const { summaryText, summarySaved, personalNote } = result.value;
+    if ((summarySaved === true || lesson.id === "average-speed") && typeof summaryText === "string" && summaryText.trim()) {
+      notes.push({ ...lesson, text: summaryText, kind: "explanation" });
+    }
+    if (lesson.id === "average-speed" && typeof personalNote === "string" && personalNote.trim()) {
+      notes.push({ ...lesson, id: `${lesson.id}-personal`, text: personalNote, kind: "personal" });
     }
   }
   return { notes, unavailable };

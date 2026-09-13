@@ -23,6 +23,8 @@ import {
 } from "../../lib/stores/progress-store";
 import { $xp, resetStoredXP } from "../../lib/stores/session-store";
 import { resetLessonDrafts } from "../../lib/learning/lesson-draft";
+import { resetSavedMotionPractice } from "../../lib/quiz/saved-motion-practice";
+import { clearActiveQuizSnapshot } from "../../lib/quiz/active-session-snapshot";
 import {
   $learnerGoal,
   hydrateLearnerGoal,
@@ -277,7 +279,7 @@ export function ProfileOverview() {
   const handleReset = () => {
     if (
       window.confirm(
-        "Сбросить весь прогресс, XP и черновики уроков? Это действие нельзя отменить.",
+        "Сбросить весь прогресс, XP, черновики уроков и тренировку? Это действие нельзя отменить.",
       )
     ) {
       resetProgress();
@@ -285,13 +287,15 @@ export function ProfileOverview() {
       resetPracticeLog();
       resetExamLog();
       resetLessonDrafts();
+      resetSavedMotionPractice();
+      clearActiveQuizSnapshot();
     }
   };
 
   return (
     <div className="flex flex-col gap-6">
       <Link href="/profile/notebook" className="flex min-h-14 items-center justify-between gap-4 rounded-xl border border-[var(--border-strong)] bg-[var(--surface-primary)] p-4 text-[var(--text-primary)] focus-visible:outline-2 focus-visible:outline-offset-4">
-        <span className="font-bold">Мой блокнот</span><span className="text-sm text-[var(--text-secondary)]">Объяснения из уроков</span>
+        <span className="font-bold">Мой блокнот</span><span className="text-sm text-[var(--text-secondary)]">Объяснения и личные заметки</span>
       </Link>
       {isFirstVisit ? (
         <>

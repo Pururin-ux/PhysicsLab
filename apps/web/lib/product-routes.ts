@@ -60,6 +60,13 @@ export const PRODUCT_DESTINATIONS = [
 
 export const CONTEXTUAL_TOOLS = [
   {
+    id: "notebook",
+    label: "Мой блокнот",
+    href: "/profile/notebook",
+    description: "Объяснения и личные заметки из уроков.",
+    owner: "progress",
+  },
+  {
     id: "formulas",
     label: "Формулы",
     href: "/formulas",

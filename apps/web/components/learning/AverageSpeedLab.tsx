@@ -4,11 +4,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { useLessonDraft } from "../../lib/learning/use-lesson-draft";
+import { averageSpeedInitial as initial, averageSpeedHeadings as headings } from "../../lib/learning/average-speed-draft";
 import { Button } from "../ui/Button";
 import styles from "./AverageSpeedLab.module.css";
-
-const initial = { stage: 0, prediction: "", slowTime: 5, observed: false, reason: "", answer: "", checked: false, attempts: 0, hideMio: false, summaryText: "", summarySaved: false };
-const headings = ["Две скорости. Как найти среднюю?", "Измени время — проверь гипотезу", "Что убедило Мио?", "Теперь — другая поездка", "Забери мысль с собой"];
 
 export function AverageSpeedLab() {
   const [state, setState] = useState(initial);
@@ -43,7 +41,7 @@ export function AverageSpeedLab() {
   if (!draft.ready) return <p role="status">Открываю лабораторию…</p>;
   return <article className={styles.lab}>
     <div className={styles.topline}>
-      <Link href="/tasks/average-speed-segments">К тренировке средней скорости</Link>
+      <Link href="/learn/average-speed">К объяснению средней скорости</Link>
       <span>Шаг {state.stage + 1} из 5</span>
     </div>
     <h1 ref={title} tabIndex={-1}>{headings[state.stage]}</h1>
@@ -98,13 +96,21 @@ export function AverageSpeedLab() {
         {state.stage === 4 && <>
           <p className={styles.claim}>Средняя путевая скорость = весь путь : всё время.</p>
           <p>Для двух участков с постоянными скоростями полусумма скоростей подходит при равных временах. При неравных временах используй общее правило.</p>
-          <label htmlFor="speed-summary">Почему две скорости нельзя всегда просто усреднить? Запиши для себя.</label>
-          <textarea id="speed-summary" rows={3} maxLength={10000} value={state.summaryText} onChange={(event) => patch({ summaryText: event.target.value, summarySaved: false })} />
-          <Button size="lg" variant="ghost" disabled={!state.summaryText.trim()} onClick={() => { const saved = { ...state, summarySaved: true }; if (draft.save(saved)) setState(saved); }}>Сохранить моё объяснение</Button>
-          {state.summarySaved && !draft.error && <p role="status">Объяснение сохранено в этом браузере.</p>}
-          {state.summarySaved && !draft.error && <Link className="text-[var(--action-primary)] underline underline-offset-4" href="/profile/notebook">Открыть мой блокнот</Link>}
+          <details className={styles.writing}>
+            <summary>{state.summaryText.trim() ? "Открыть моё объяснение" : "Объяснить своими словами"}</summary>
+            <label htmlFor="speed-summary">Скорости остались 2 и 8 м/с. Почему средняя скорость изменилась, когда медленный участок стал длиться дольше?</label>
+            <textarea id="speed-summary" rows={3} maxLength={10000} value={state.summaryText} onChange={(event) => patch({ summaryText: event.target.value, summarySaved: true })} />
+            <p className={styles.note}>Можно набросать мысль и дополнить позже. Текст сохраняется автоматически в этом браузере; сайт не оценивает его.</p>
+          </details>
           <Button asChild size="lg"><Link href="/practice/family/average-speed-segments">Закрепить на новых задачах</Link></Button>
         </>}
+        <details className={styles.writing}>
+          <summary>{state.personalNote.trim() ? "Открыть личную заметку" : "Личная заметка · необязательно"}</summary>
+          <label htmlFor="speed-personal-note">Что хочешь оставить себе на потом?</label>
+          <textarea id="speed-personal-note" rows={3} maxLength={10000} placeholder="Например, вопрос учителю или место, к которому хочется вернуться." value={state.personalNote} onChange={(event) => patch({ personalNote: event.target.value })} />
+          <p className={styles.note}>Это не ответ на задание. Заметка сохраняется автоматически в этом браузере.</p>
+        </details>
+        {(state.summaryText.trim() || state.personalNote.trim()) && <Link className="text-[var(--action-primary)] underline underline-offset-4" href="/profile/notebook">Открыть мой блокнот</Link>}
       </section>
     </div>
     {draft.error && <p role="alert">{draft.error}</p>}

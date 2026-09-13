@@ -14,12 +14,13 @@ interface NumericAnswerInputProps {
   // с явным статусом (не только цветом).
   submitted?: { raw: string; isCorrect: boolean };
   onSubmit: (raw: string) => void;
+  initialRaw?: string;
+  onRawChange?: (raw: string) => void;
 }
 
 function roundingHint(decimals: number): string | null {
   if (decimals <= 0) {
-    // Формат ЦТ/ЦЭ: в бланк записывается целое число.
-    return "Ответ — целое число, как в бланке ЦТ/ЦЭ.";
+    return "В этой задаче ответ — целое число.";
   }
 
   if (decimals === 1) {
@@ -36,8 +37,10 @@ export function NumericAnswerInput({
   disabled,
   submitted,
   onSubmit,
+  initialRaw = "",
+  onRawChange,
 }: NumericAnswerInputProps) {
-  const [raw, setRaw] = useState("");
+  const [raw, setRaw] = useState(initialRaw);
   const [showInvalid, setShowInvalid] = useState(false);
   const hintId = useId();
   const errorId = useId();
@@ -126,6 +129,7 @@ export function NumericAnswerInput({
             type="text"
             inputMode="decimal"
             autoComplete="off"
+            maxLength={1000}
             enterKeyHint="send"
             data-testid="numeric-answer-input"
             // Безразмерный ответ (unit === "") не анонсирует пустую единицу.
@@ -136,6 +140,7 @@ export function NumericAnswerInput({
             onKeyDown={handleKeyDown}
             onChange={(event) => {
               setRaw(event.target.value);
+              onRawChange?.(event.target.value);
               setShowInvalid(false);
             }}
             placeholder={sign === "signed" ? "например, -120" : "например, 24"}

@@ -87,7 +87,7 @@ function UtilityMenu() {
         <nav
           id="shell-tools-panel"
           className={styles.toolsPanel}
-          aria-label="Формулы, задачи и ошибки"
+          aria-label="Блокнот, формулы, задачи и ошибки"
         >
           {CONTEXTUAL_TOOLS.map((tool) => (
             <Link key={tool.id} href={tool.href} onClick={() => setOpen(false)}>
@@ -198,7 +198,7 @@ function ContextBack() {
   const pathname = usePathname();
   const show =
     pathname.startsWith("/tasks/") ||
-    (pathname.startsWith("/practice/") && !isExamDestination(pathname));
+    (pathname.startsWith("/practice/") && !isExamDestination(pathname) && pathname !== "/practice/average-speed-lesson");
   if (!show) return null;
   const href = pathname.startsWith("/tasks/")
     ? "/tasks"

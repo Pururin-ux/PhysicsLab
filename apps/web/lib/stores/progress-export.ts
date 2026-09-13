@@ -32,6 +32,8 @@ import {
   reportWriteResult,
 } from "./persistence-status.ts";
 import { topics } from "../topics.ts";
+import { readSavedMotionPractice, savedMotionPracticeCodec, isMotionPractice } from "../quiz/saved-motion-practice.ts";
+import { readActiveQuizSnapshot, clearActiveQuizSnapshot, type ActiveQuizSnapshot } from "../quiz/active-session-snapshot.ts";
 import { getLessonDraftExportEntries, lessonDraftExportCodecs, replaceLiveLessonDraft, type LessonDraft } from "../learning/lesson-draft.ts";
 
 export const EXPORT_FORMAT = "physicslab-progress-export";
@@ -58,6 +60,8 @@ export function buildExportFile(): ProgressExportFile {
     [xpCodec.key, { version: xpCodec.currentVersion, data: $xp.get() }],
     ...getLessonDraftExportEntries(),
   ];
+  const savedPractice = readSavedMotionPractice().result;
+  if (savedPractice.ok) entries.push([savedMotionPracticeCodec.key, { version: savedMotionPracticeCodec.currentVersion, data: savedPractice.snapshot }]);
 
   return {
     format: EXPORT_FORMAT,
@@ -102,6 +106,7 @@ type DecodedImport = {
   practiceLog: string[] | null;
   xp: number | null;
   lessonDrafts: Record<string, LessonDraft>;
+  savedPractice: ActiveQuizSnapshot | null;
 };
 
 type DecodedStore<T> =
@@ -127,8 +132,9 @@ function decodeImport(file: ProgressExportFile): DecodedImport {
   const examLog = decodeStore(file, examLogCodec);
   const practiceLog = decodeStore(file, practiceLogCodec);
   const xp = decodeStore(file, xpCodec);
+  const savedPractice = decodeStore(file, savedMotionPracticeCodec);
   const drafts = lessonDraftExportCodecs.map((codec) => ({ codec, decoded: decodeStore(file, codec) }));
-  const valid = progress.ok && examLog.ok && practiceLog.ok && xp.ok && drafts.every(({decoded}) => decoded.ok);
+  const valid = progress.ok && examLog.ok && practiceLog.ok && xp.ok && savedPractice.ok && drafts.every(({decoded}) => decoded.ok);
 
   return {
     valid,
@@ -136,6 +142,7 @@ function decodeImport(file: ProgressExportFile): DecodedImport {
     examLog: examLog.ok ? examLog.value : null,
     practiceLog: practiceLog.ok ? practiceLog.value : null,
     xp: xp.ok ? xp.value : null,
+    savedPractice: savedPractice.ok ? savedPractice.value : null,
     lessonDrafts: Object.fromEntries(drafts.flatMap(({codec, decoded}) => decoded.ok && decoded.value ? [[codec.key, decoded.value]] : [])),
   };
 }
@@ -180,7 +187,7 @@ export function applyImport(file: ProgressExportFile): boolean {
 
   // Capture the previous values before changing any store. Failed writes must
   // not be reported as a successful restore or silently mix two backups.
-  const codecs = [...imports.map(([codec]) => codec), ...lessonDraftExportCodecs];
+  const codecs = [...imports.map(([codec]) => codec), ...lessonDraftExportCodecs, savedMotionPracticeCodec];
   let previous: [string, string | null][];
   try {
     previous = codecs.map((codec) => [codec.key, window.localStorage.getItem(codec.key)]);
@@ -207,6 +214,16 @@ export function applyImport(file: ProgressExportFile): boolean {
       }
     }
   }
+  if (successful) {
+    if (decoded.savedPractice) {
+      const result = writeStore(savedMotionPracticeCodec, decoded.savedPractice);
+      reportWriteResult(result);
+      successful = result === "success";
+    } else {
+      try { window.localStorage.removeItem(savedMotionPracticeCodec.key); }
+      catch { reportWriteResult("error"); successful = false; }
+    }
+  }
   if (!successful) {
     for (const [key, raw] of previous) {
       try {
@@ -223,6 +240,8 @@ export function applyImport(file: ProgressExportFile): boolean {
   hydrateExamLogFromStorage();
   hydratePracticeLogFromStorage();
   hydrateXPFromStorage();
+  const tabPractice = readActiveQuizSnapshot();
+  if (tabPractice.ok && isMotionPractice(tabPractice.snapshot.template, tabPractice.snapshot.sessionKind)) clearActiveQuizSnapshot();
 
   return true;
 }

@@ -29,6 +29,7 @@ import {
 } from "../../lib/answer/numeric-answer";
 import {
   buildSnapshot,
+  fingerprintTasks,
   clearActiveQuizSnapshot,
   readActiveQuizSnapshot,
   snapshotMatches,
@@ -37,6 +38,7 @@ import {
   type QuizSessionKind,
 } from "../../lib/quiz/active-session-snapshot";
 import { newAttemptId } from "../../lib/quiz/attempt-id";
+import { isMotionPractice, readSavedMotionPractice, writeSavedMotionPractice } from "../../lib/quiz/saved-motion-practice";
 import { integrityError } from "../../lib/quiz/quiz-load-error";
 import { Button } from "../ui/Button";
 import { getTaskFocus } from "../../lib/learning/task-focus";
@@ -109,17 +111,28 @@ export function QuizSession({
   const pathname = usePathname();
   const session = useStore($quizSession);
   const snapshotWriteBlockedRef = useRef(false);
+  const durablePractice = isMotionPractice(generatedTemplate, sessionKind);
+  const savedTokenRef = useRef<string | null>(null);
+  const savedBlockedRef = useRef(false);
   // Кандидат на восстановление читается один раз при монтировании и до
   // первого fetch: если снапшот указывает другой batch, лишний запрос
   // batch=0 не выполняется (I4). Разметка первого рендера от этого не
   // зависит (всегда loading-карточка), поэтому hydration mismatch нет.
   const pendingRestoreRef = useRef<ActiveQuizSnapshot | null | undefined>(undefined);
+  const initializedSessionRef = useRef<string | null>(null);
   if (pendingRestoreRef.current === undefined) {
     if (typeof window === "undefined") {
       pendingRestoreRef.current = null;
     } else {
-      const result = readActiveQuizSnapshot();
-      snapshotWriteBlockedRef.current = !result.ok && result.reason === "future-version";
+      let result = readActiveQuizSnapshot();
+      const tabHasFutureSnapshot = !result.ok && result.reason === "future-version";
+      if (durablePractice) {
+        const saved = readSavedMotionPractice();
+        savedTokenRef.current = saved.token;
+        savedBlockedRef.current = !saved.result.ok && saved.result.reason !== "empty";
+        if (saved.result.ok) result = saved.result;
+      }
+      snapshotWriteBlockedRef.current = tabHasFutureSnapshot || (!result.ok && result.reason === "future-version");
       if (recoveryMode === "fresh") {
         const isDiscardedAttempt =
           result.ok &&
@@ -155,6 +168,28 @@ export function QuizSession({
     () => pendingRestoreRef.current?.attemptId ?? newAttemptId(),
   );
   const [restoredNotice, setRestoredNotice] = useState<string | null>(null);
+  const [snapshotNotice, setSnapshotNotice] = useState<string | null>(() => savedBlockedRef.current
+    ? "Сохранённую тренировку не удалось открыть. Она оставлена без изменений; новые ответы пока сохраняются только в этой вкладке."
+    : null);
+  const [numericDraft, setNumericDraft] = useState<ActiveQuizSnapshot["numericDraft"]>(() => pendingRestoreRef.current?.numericDraft);
+
+  function persistSavedSnapshot(snapshot: ActiveQuizSnapshot | null) {
+    if (!durablePractice || savedBlockedRef.current) return;
+    const result = writeSavedMotionPractice(snapshot, savedTokenRef.current);
+    if (result.ok) {
+      savedTokenRef.current = result.token;
+      setSnapshotNotice(null);
+    } else {
+      setSnapshotNotice(result.reason === "conflict"
+        ? "Сохранение изменилось в другой вкладке или версии сайта. Новые ответы здесь не перезаписывают его. Не закрывай эту вкладку, пока работа не закончена."
+        : "Не удалось сохранить тренировку для следующего посещения. Не закрывай эту вкладку, пока работа не закончена.");
+    }
+  }
+
+  function clearCurrentSnapshot() {
+    if (!snapshotWriteBlockedRef.current) clearActiveQuizSnapshot();
+    persistSavedSnapshot(null);
+  }
   const {
     data: generatedData,
     error: generatedError,
@@ -210,6 +245,9 @@ export function QuizSession({
     if (tasks.length === 0) {
       return;
     }
+    const identity = `${sessionId}:${fingerprintTasks(tasks)}`;
+    if (initializedSessionRef.current === identity) return;
+    initializedSessionRef.current = identity;
 
     resetSessionProgress();
     resetRecording();
@@ -230,6 +268,7 @@ export function QuizSession({
         topicId,
         sessionKind,
         taskIds,
+        taskFingerprint: durablePractice ? fingerprintTasks(tasks) : undefined,
       })
     ) {
       // Восстанавливаем состояние сессии без повторного начисления XP.
@@ -255,8 +294,12 @@ export function QuizSession({
       return;
     }
 
-    if (pendingRestore && !snapshotWriteBlockedRef.current) {
-      clearActiveQuizSnapshot();
+    if (pendingRestore) {
+      if (!snapshotWriteBlockedRef.current) clearActiveQuizSnapshot();
+      if (durablePractice) {
+        savedBlockedRef.current = true;
+        setSnapshotNotice("Набор задач изменился. Прежний черновик сохранён без изменений; новая тренировка пока остаётся только в этой вкладке.");
+      }
     }
 
     // Fresh-старт: если attemptId был позаимствован у не совпавшего снапшота,
@@ -274,10 +317,12 @@ export function QuizSession({
   // render). Completed не сохраняется — к этому моменту результат записан
   // в прогресс и снапшот очищен.
   useEffect(() => {
-    if (!activeData || tasks.length === 0 || !sessionId || snapshotWriteBlockedRef.current) return;
+    if (!activeData || tasks.length === 0 || !sessionId) return;
+    // Initialization above may have replaced the atom after this render.
+    if (session !== $quizSession.get()) return;
 
     if (session.phase === "completed") {
-      clearActiveQuizSnapshot();
+      clearCurrentSnapshot();
       return;
     }
 
@@ -290,12 +335,15 @@ export function QuizSession({
       sessionKind,
       batch: generatedBatch,
       taskIds: tasks.map((task) => task.id),
+      taskFingerprint: durablePractice ? fingerprintTasks(tasks) : undefined,
       session,
+      numericDraft: durablePractice && numericDraft?.taskId === tasks[session.currentIndex]?.id && session.phase !== "answered" ? numericDraft : undefined,
     });
     if (snapshot) {
-      writeActiveQuizSnapshot(snapshot);
+      if (!snapshotWriteBlockedRef.current) writeActiveQuizSnapshot(snapshot);
+      persistSavedSnapshot(snapshot);
     }
-  }, [activeData, attemptId, generatedBatch, generatedTemplate, generatedTitle, generatedTopic, session, sessionId, sessionKind, tasks, topicId]);
+  }, [activeData, attemptId, generatedBatch, generatedTemplate, generatedTitle, generatedTopic, session, sessionId, sessionKind, tasks, topicId, numericDraft, durablePractice]);
 
   useEffect(() => {
     if (currentHelpTarget) {
@@ -401,13 +449,14 @@ export function QuizSession({
     if (!currentTask || session.phase !== "answered") return;
 
     setRestoredNotice(null);
+    setNumericDraft(undefined);
 
     if (isLastTask) {
       // Запись результата идемпотентна (useSessionRecording); снапшот
       // очищается сразу, чтобы reload после записи не восстановил сессию
       // и не привёл к повторной записи.
       recordSessionResult(session);
-      if (!snapshotWriteBlockedRef.current) clearActiveQuizSnapshot();
+      if (!snapshotWriteBlockedRef.current) clearCurrentSnapshot();
     }
 
     const moved = moveToNextTask();
@@ -421,6 +470,7 @@ export function QuizSession({
     if (!retryCurrentTask()) return;
 
     setRestoredNotice(null);
+    setNumericDraft(undefined);
     requestAnimationFrame(() => {
       document
         .querySelector<HTMLElement>(
@@ -434,7 +484,8 @@ export function QuizSession({
     resetRecording();
     resetSessionProgress();
     setRestoredNotice(null);
-    clearActiveQuizSnapshot();
+    clearCurrentSnapshot();
+    setNumericDraft(undefined);
     snapshotWriteBlockedRef.current = false;
     // Новая попытка получает новый идентификатор, даже если template/batch/
     // набор задач совпадут с предыдущими.
@@ -533,6 +584,7 @@ export function QuizSession({
           {restoredNotice}
         </p>
       ) : null}
+      {snapshotNotice && <p role="alert" className="rounded-option border border-[var(--border-strong)] p-3 text-sm leading-relaxed text-[var(--text-primary)]">{snapshotNotice}</p>}
 
       <PracticeToolbar
         progressLabel={progressLabel}
@@ -568,6 +620,8 @@ export function QuizSession({
       ) : (
         <NumericAnswerInput
           key={`${currentTask.id}:${session.phase}`}
+          initialRaw={durablePractice && numericDraft?.taskId === currentTask.id ? numericDraft.raw : ""}
+          onRawChange={durablePractice ? raw => setNumericDraft({ taskId: currentTask.id, raw }) : undefined}
           unit={currentTask.answer.unit}
           decimals={currentTask.answer.decimals}
           sign={currentTask.answer.sign}

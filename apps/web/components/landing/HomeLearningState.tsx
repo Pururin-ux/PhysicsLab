@@ -5,6 +5,8 @@ import { ArrowRight, CheckCircle, ChartLineUp } from "@phosphor-icons/react";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { getLearningNextStep } from "../../lib/learning/next-step";
+import { readAverageSpeedResume } from "../../lib/learning/average-speed-draft";
+import { readSavedMotionPractice } from "../../lib/quiz/saved-motion-practice";
 import { mixedPracticeHrefByTopic } from "../../lib/learning/topic-practice-routes";
 import { getLearningDestinationForFamily } from "../../lib/learning/learning-links";
 import {
@@ -36,7 +38,7 @@ function getResumeHref(snapshot: ActiveQuizSnapshot) {
     : null;
 }
 
-function getResumeStep(snapshot: ActiveQuizSnapshot) {
+function getResumeStep(snapshot: ActiveQuizSnapshot, durable = false) {
   const href = getResumeHref(snapshot);
   if (!href) return null;
 
@@ -50,7 +52,7 @@ function getResumeStep(snapshot: ActiveQuizSnapshot) {
     body:
       snapshot.session.phase === "answered"
         ? "Ответ уже сохранён — можно вернуться прямо к разбору."
-        : "Незавершённая попытка сохранена в этой вкладке.",
+        : durable ? "Задание и введённый ответ сохранены в этом браузере." : "Незавершённая попытка сохранена в этой вкладке.",
     reason: "Сначала возвращаем точное место остановки, чтобы не терять уже сделанную работу.",
     href,
     cta: isExam || isDiagnostic ? "Продолжить диагностику" : "Продолжить тренировку",
@@ -72,10 +74,11 @@ export function useHomeLearningState() {
     );
     const bestExam = mounted ? getBestAttempt(examLog) : null;
     const snapshotResult = mounted ? readActiveQuizSnapshot() : null;
-    const resumeStep = snapshotResult?.ok ? getResumeStep(snapshotResult.snapshot) : null;
-    // Активная попытка и результат диагностики тоже делают человека
-    // возвращающимся пользователем, даже если он ещё не закрыл тему в
-    // общем прогрессе. Главная не должна показывать ему экран новичка.
+    const savedPractice = mounted ? readSavedMotionPractice().result : null;
+    const preferSaved = savedPractice?.ok && (!snapshotResult?.ok || snapshotResult.snapshot.template === savedPractice.snapshot.template);
+    const quizResume = preferSaved ? getResumeStep(savedPractice.snapshot, true) : snapshotResult?.ok ? getResumeStep(snapshotResult.snapshot) : null;
+    const lessonResume = mounted ? readAverageSpeedResume() : null;
+    const resumeStep = quizResume ?? lessonResume;
     const hasActivity = hasProgress || Boolean(bestExam) || Boolean(resumeStep);
     const nextStep = resumeStep ?? getLearningNextStep(progress, Boolean(bestExam));
     const targetTopic = topics.find((topic) => topic.href === nextStep.href);
@@ -92,6 +95,8 @@ export function useHomeLearningState() {
       hasProgress,
       hasActivity,
       nextStep,
+      lessonResume,
+      quizResume,
       solved,
       started,
       // Новичку следующий шаг подбирает next-step (диагностика из 10 задач);

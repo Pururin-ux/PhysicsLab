@@ -17,11 +17,12 @@ test("notebook reads saved explanations, searches and links back to lesson", asy
   await page.getByRole("searchbox").fill("");
   await page.getByRole("link", { name: "Вернуться в урок и дополнить" }).click();
   await expect(page.getByRole("heading", { name: "Забери мысль с собой" })).toBeVisible();
+  await page.getByText("Открыть моё объяснение", { exact: true }).click();
   await expect(page.getByRole("textbox")).toHaveValue("Объём и время — мои слова. <script>не исполнять</script>");
 });
 
 test("empty notebook offers a real first experiment", async ({ page }) => {
   await page.goto("/profile/notebook");
-  await expect(page.getByRole("heading", { name: "Первая запись — после открытия" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Здесь появятся твои записи" })).toBeVisible();
   await expect(page.getByRole("link", { name: "Провести опыт с Мио" })).toHaveAttribute("href", "/practice/average-speed-lesson");
 });

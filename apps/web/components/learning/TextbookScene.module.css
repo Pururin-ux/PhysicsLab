@@ -46,6 +46,10 @@
 .readout strong { display: block; font-size: 24px; margin-top: 4px; }
 .explanation { margin-top: 18px; line-height: 1.7; }
 .aside { margin-top: 16px; color: var(--text-secondary); font-size: 13px; line-height: 1.7; }
+.bridge { border-top:1px solid var(--border-strong); margin-top:26px; padding-top:20px; line-height:1.7; }
+.bridge h3 { font-size:21px; font-weight:750; margin-bottom:8px; }
+.bridge a { display:inline-flex; align-items:center; min-height:44px; margin-top:10px; color:var(--action-primary); font-weight:700; }
+.bridge a:focus-visible { outline:3px solid var(--action-primary); outline-offset:4px; }
 @media (max-width:640px) { .illustration { grid-template-columns:1fr; gap:0; margin:0 -10px; } .art { max-height:240px; object-fit:cover; object-position:center 42%; } .caption { padding:0 10px 16px; margin-top:-12px; position:relative; } .caption h2 { font-size:21px; } .caption p { display:none; } .experiment { padding:16px 0; } .readout { gap:8px; } .readout p { padding:10px; font-size:14px; } }
 @media(prefers-reduced-motion:no-preference) { .scene { animation: enter-scene 300ms ease-out; } @keyframes enter-scene { from { opacity:0; transform:translateY(5px); } to { opacity:1; transform:translateY(0); } } }
 @media(prefers-reduced-motion:reduce) { .walker, .distanceBars span { transition:none; } .routeTrace { animation:none; } }

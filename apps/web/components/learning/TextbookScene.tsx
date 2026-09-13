@@ -1,6 +1,9 @@
 "use client";
 import Image from "next/image";
+import Link from "next/link";
 import { useState } from "react";
+import { useLessonDraft } from "../../lib/learning/use-lesson-draft";
+import { roundTripInitial, roundTripReading, walkInitial } from "../../lib/learning/round-trip";
 import { MeasurementModel } from "./MeasurementModel";
 import { DensityModel } from "./DensityModel";
 import { InertiaModel } from "./InertiaModel";
@@ -17,13 +20,17 @@ const stories = {
   density: { asset: "density", title: "Больше — значит тяжелее? Проверим", caption: "Мио сравнивает два образца. Одного взгляда на размер мало: нужно сопоставить массу и объём, а затем проверить своё объяснение.", alt: "Мио внимательно взвешивает небольшой металлический образец; рядом лежит более крупный образец" },
   "reading-scales": { asset: "measurement", title: "Шкала мельче. А воды больше?", caption: "Мио смотрит на уровень воды сбоку. Проверим один и тот же объём по двум шкалам: что изменится в записи измерения?", alt: "Мио наклонилась к мензурке и смотрит на мениск на уровне глаз" },
   "path-and-displacement": { asset: "path", title: "Забыла блокнот. Вернулась. Никуда не ходила?", caption: "Мио дошла от кабинета до скамейки и вернулась за блокнотом. Конечная точка та же — но прогулка всё-таки была.", alt: "Мио возвращается к двери лаборатории за забытым блокнотом" },
-  "average-speed": { asset: "average", title: "Две скорости — ещё не весь ответ", caption: "Мио остановилась и проверяет секундомер. Две скорости записаны, но важно ещё время каждого участка — и границы всей поездки.", alt: "Мио стоит рядом с припаркованным велосипедом и проверяет секундомер" },
+  "average-speed": { asset: "path", title: "Вернулась к двери. Средняя скорость — ноль?", caption: "От двери до скамейки 20 м. Мио прошла туда и обратно: путь 40 м, перемещение ноль. Теперь добавим время этой прогулки.", alt: "Мио вернулась в кабинет за блокнотом; в коридоре видна скамейка" },
   acceleration: { asset: "acceleration", title: "Троллейбус тронулся. Что изменилось?", caption: "Мио держится за поручень и наблюдает начало движения. Разберём модель разгона, а затем сравним её с торможением.", alt: "Мио в троллейбусе держится за поручень и смотрит на улицу" },
 } as const;
 
 function WalkModel() {
-  const [step, setStep] = useState(0);
+  const [state, setState] = useState(walkInitial);
+  const draft = useLessonDraft("textbook-walk", state, setState, 3);
+  const step = state.stage;
+  const setStep = (stage: number) => setState(current => ({ ...current, stage }));
   const x = step === 1 ? 430 : 70;
+  if (!draft.ready) return <p role="status">Открываю прогулку…</p>;
   return <div className={styles.experiment}>
     <p>В нашей модели от двери до скамейки 20 м. Выбери момент прогулки.</p>
     <div className={styles.controls}>{["У двери", "У скамейки", "Снова у двери"].map((label,index)=><button key={label} aria-pressed={step===index} onClick={()=>setStep(index)}>{label}</button>)}</div>
@@ -33,34 +40,35 @@ function WalkModel() {
       <text x="70" y="164" textAnchor="middle" fill="currentColor" fontSize="16">Дверь</text><text x="430" y="164" textAnchor="middle" fill="currentColor" fontSize="16">Скамейка</text>
       {step > 0 && <g className={styles.routeTrace}><path d="M70 64 H430 l-12 -7 m12 7 l-12 7" fill="none" stroke="var(--action-primary)" strokeWidth="3" /><text x="250" y="55" textAnchor="middle" fill="currentColor" fontSize="15">Туда · 20 м</text></g>}
       {step === 2 && <g className={styles.routeTrace}><path d="M430 99 H70 l12 -7 m-12 7 l12 7" fill="none" stroke="#dca638" strokeWidth="3" /><text x="250" y="91" textAnchor="middle" fill="currentColor" fontSize="15">Обратно · 20 м</text></g>}
-      <g className={styles.walker} style={{transform:`translateX(${x}px)`}}><circle cy="18" r="8" fill="var(--action-primary)" /><text y="39" textAnchor="middle" fill="currentColor" fontSize="14">Мио</text></g>
+      <g className={styles.walker} style={{transform:`translateX(${x}px)`}}><text y="25" textAnchor="middle" fill="currentColor" fontSize="15">Сейчас ↓</text></g>
     </svg>
     <div className={styles.readout} aria-live="polite"><p>Пройденный путь<strong>{step * 20} м</strong></p><p>Модуль перемещения<strong>{step === 1 ? 20 : 0} м</strong></p></div>
     <p className={styles.explanation}>{step === 2 ? "Вернулась в начальную точку: перемещение равно нулю. Но путь — 20 м туда и 20 м обратно, всего 40 м." : step === 1 ? "Пока Мио шла прямо к скамейке, путь и модуль перемещения совпали." : "Это начало отсчёта: Мио ещё не прошла ни одного участка."}</p>
     {step === 2 && <p className={styles.aside}>Мио: «Перемещение ноль. Шагомер с таким отчётом не согласен». Оба правы: они описывают разные величины.</p>}
+    {step === 2 && <div className={styles.bridge}><p>Маршрут тот же, но пройти его можно за разное время. Как это изменит среднюю скорость?</p><Link href="/learn/average-speed">Добавить время к прогулке →</Link></div>}
+    {draft.error && <p role="alert" className={styles.aside}>{draft.error}</p>}
   </div>;
 }
 
 function SpeedModel() {
-  const [equal,setEqual] = useState(true);
-  const [stop,setStop] = useState(false);
-  const firstTime=equal?5:8, secondTime=10-firstTime;
-  const distance=2*firstTime+8*secondTime;
-  const totalTime = 10 + (stop ? 10 : 0);
+  const [state, setState] = useState(roundTripInitial);
+  const draft = useLessonDraft("textbook-round-trip-speed", state, setState, 1);
+  const reading = roundTripReading(state.seconds, state.stop);
+  const speed = reading.pathSpeed.toLocaleString("ru-RU", { maximumFractionDigits: 2 });
+  const approximate = !Number.isInteger(reading.pathSpeed * 100);
+  if (!draft.ready) return <p role="status">Открываю опыт…</p>;
   return <div className={styles.experiment}>
-    <p>Сначала 2 м/с, затем 8 м/с. Движение занимает 10 с. Сравни, какой путь добавляет каждый участок.</p>
-    <div className={styles.controls}><button aria-pressed={equal} onClick={()=>setEqual(true)}>По 5 с на участок</button><button aria-pressed={!equal} onClick={()=>setEqual(false)}>8 с медленно, 2 с быстро</button></div>
-    <div className={styles.distanceBars} aria-label="Пути участков в одном масштабе">
-      <p>Медленный участок: 2 · {firstTime} = <strong>{2 * firstTime} м</strong></p>
-      <div aria-hidden="true"><span style={{width:`${2 * firstTime / 40 * 100}%`}} /></div>
-      <p>Быстрый участок: 8 · {secondTime} = <strong>{8 * secondTime} м</strong></p>
-      <div aria-hidden="true"><span style={{width:`${8 * secondTime / 40 * 100}%`}} /></div>
-      <small>Длина полосы показывает путь. Масштаб обеих полос одинаковый.</small>
+    <p>Дверь → скамейка → дверь: 20 м туда и 20 м обратно. Выбери время движения за всю прогулку.</p>
+    <div className={styles.controls} aria-label="Время движения">{[10, 20, 40].map(seconds => <button key={seconds} aria-pressed={reading.movingTime === seconds} onClick={() => setState(current => ({ ...current, seconds }))}>{seconds} с</button>)}</div>
+    <label className={styles.stopControl}><input type="checkbox" checked={state.stop} onChange={event => setState(current => ({ ...current, stop: event.target.checked }))} />Добавить 10 с остановки у скамейки</label>
+    <div className={styles.readout} aria-live="polite">
+      <p>Средняя скорость пути<strong>{approximate ? "≈ " : ""}{speed} м/с</strong><small>40 м ÷ {reading.elapsed} с</small></p>
+      <p>Модуль средней скорости перемещения<strong>0 м/с</strong><small>0 м ÷ {reading.elapsed} с</small></p>
     </div>
-    <label className={styles.stopControl}><input type="checkbox" checked={stop} onChange={event=>setStop(event.target.checked)} />Включить ещё 10 с остановки в эту поездку</label>
-    <div className={styles.readout} aria-live="polite"><p>Весь путь<strong>{distance} м</strong></p><p>Средняя скорость пути<strong>{(distance/totalTime).toLocaleString("ru-RU")} м/с</strong></p></div>
-    <p className={styles.explanation}>Сумма путей: {2*firstTime} + {8*secondTime} = {distance} м. Всё время: {firstTime} + {secondTime}{stop ? " + 10" : ""} = {totalTime} с. Делим {distance} м на {totalTime} с.</p>
-    <p className={styles.aside}>{stop ? "Мио: «Я стояла, а время — нет». Остановка не добавила пути, но вошла в выбранное время поездки." : equal ? "При равных временах полусумма скоростей сработала. А теперь поменяй время." : "Мио: «Скорости те же. А моя красивая полусумма уже не работает». Условия важнее удобного приёма."}</p>
+    <p className={styles.explanation}>{state.stop ? `Весь промежуток: ${reading.movingTime} с движения + 10 с остановки = ${reading.elapsed} с. Остановка не добавила пути, но вошла во время прогулки.` : "Путь один и тот же: чем меньше времени заняла прогулка, тем больше средняя скорость пути."} Начало и конец совпадают при любом выбранном времени.</p>
+    <p className={styles.aside}>Мио: «Ноль — правильный ответ. Только нужно уточнить, о какой скорости речь».</p>
+    <div className={styles.bridge}><h3>А если известны две скорости?</h3><p>На новой поездке Мио записала 2 и 8 м/с. Она предлагает взять их полусумму — 5 м/с. Достаточно ли этих двух чисел?</p><Link href="/practice/average-speed-lesson">Проверить догадку Мио →</Link></div>
+    {draft.error && <p role="alert" className={styles.aside}>{draft.error}</p>}
   </div>;
 }
 

@@ -16,7 +16,6 @@ import {
 import { useHomeLearningState } from "../landing/HomeLearningState";
 import styles from "./HomeEditorial.module.css";
 
-const learnDestination = getProductDestination("learn");
 const examDestination = getProductDestination("exam");
 const taskTool = CONTEXTUAL_TOOLS.find((tool) => tool.id === "tasks")!;
 const heroArt = "/images/mio/mio-thinking-v1.png";
@@ -24,9 +23,9 @@ const heroArt = "/images/mio/mio-thinking-v1.png";
 const homeActions = [
   {
     id: "learn",
-    href: learnDestination.href,
-    label: "Выбрать тему",
-    description: "Разобраться в теме",
+    href: "/learn/path-and-displacement",
+    label: "Начать с движения",
+    description: "Путь, перемещение и средняя скорость",
     icon: Books,
   },
   {
@@ -66,7 +65,6 @@ export function HomeEditorial() {
             alt=""
             fill
             priority
-            unoptimized
             quality={92}
             sizes="(max-width:700px) 110px, 440px"
             className={styles.heroArt}
@@ -78,36 +76,34 @@ export function HomeEditorial() {
             <p className={styles.eyebrow}>
               {learningState.hasActivity ? "С возвращением" : "PhysicsLab"}
             </p>
-            {learningState.hasActivity ? (
-              <>
-                <h1 id="home-title">Продолжим?</h1>
-                <p className={styles.heroLead}>
-                  Выбери урок или продолжи с прошлого раза.
-                </p>
+            <h1 id="home-title">Физика с Мио</h1>
+            <p className={styles.heroLead}>
+              Уроки, опыты и задачи — в одном месте.
+            </p>
+            {learningState.hasActivity && (
                 <aside
                   className={styles.todayStep}
                   data-tone={learningState.nextStep.tone}
-                  aria-label="Следующее действие"
+                  aria-label="Твоя работа"
                 >
                   <div className={styles.todayCopy}>
                     <p>{learningState.nextStep.label}</p>
                     <h2>{learningState.nextStep.title}</h2>
+                    {learningState.quizResume || learningState.lessonResume ? (
+                      <p className={styles.resumeDetail}>{learningState.nextStep.body}</p>
+                    ) : null}
                   </div>
                   <Link href={learningState.nextStep.href}>
                     {learningState.nextStep.cta}
                     <ArrowRight size={18} weight="bold" aria-hidden="true" />
                   </Link>
+                  {learningState.quizResume && learningState.lessonResume ? (
+                    <Link className={styles.secondaryResume} href={learningState.lessonResume.href}>
+                      {learningState.lessonResume.title}
+                      <ArrowRight size={16} aria-hidden="true" />
+                    </Link>
+                  ) : null}
                 </aside>
-              </>
-            ) : (
-              <>
-                <h1 id="home-title">
-                  Физика с Мио
-                </h1>
-                <p className={styles.heroLead}>
-                  Уроки, опыты и задачи — в одном месте.
-                </p>
-              </>
             )}
 
             <nav className={styles.quickActions} aria-label="С чего начать">
@@ -123,12 +119,10 @@ export function HomeEditorial() {
               ))}
             </nav>
 
-            {!learningState.hasActivity ? (
-              <Link className={styles.diagnosticLink} href="/practice/diagnostic">
-                Проверить себя: 10 задач
+              <Link className={styles.diagnosticLink} href="/learn">
+                Выбрать другую тему
                 <ArrowRight size={16} weight="bold" aria-hidden="true" />
               </Link>
-            ) : null}
           </div>
         </div>
       </section>
