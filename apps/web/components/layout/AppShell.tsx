@@ -264,7 +264,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         pathname === "/" ? "app-shell--home" : "app-shell--inner",
       )}
     >
-      {theme === "dark" ? <StarField /> : null}
+      {theme === "dark" && !["/practice/average-speed-lesson", "/learn/path-and-displacement", "/learn/average-speed"].includes(pathname) ? <StarField /> : null}
       <SmoothAnchorScroll />
       <a href="#main-content" className="skip-link">Перейти к содержимому</a>
       <Header theme={theme} onToggleTheme={toggleTheme} />

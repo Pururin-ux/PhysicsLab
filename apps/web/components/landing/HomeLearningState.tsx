@@ -5,7 +5,7 @@ import { ArrowRight, CheckCircle, ChartLineUp } from "@phosphor-icons/react";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { getLearningNextStep } from "../../lib/learning/next-step";
-import { readAverageSpeedResume } from "../../lib/learning/average-speed-draft";
+import { readMotionLessonResumes } from "../../lib/learning/motion-lesson-resume";
 import { readSavedMotionPractice } from "../../lib/quiz/saved-motion-practice";
 import { mixedPracticeHrefByTopic } from "../../lib/learning/topic-practice-routes";
 import { getLearningDestinationForFamily } from "../../lib/learning/learning-links";
@@ -77,7 +77,8 @@ export function useHomeLearningState() {
     const savedPractice = mounted ? readSavedMotionPractice().result : null;
     const preferSaved = savedPractice?.ok && (!snapshotResult?.ok || snapshotResult.snapshot.template === savedPractice.snapshot.template);
     const quizResume = preferSaved ? getResumeStep(savedPractice.snapshot, true) : snapshotResult?.ok ? getResumeStep(snapshotResult.snapshot) : null;
-    const lessonResume = mounted ? readAverageSpeedResume() : null;
+    const lessonResumes = mounted ? readMotionLessonResumes() : [];
+    const lessonResume = lessonResumes[0] ?? null;
     const resumeStep = quizResume ?? lessonResume;
     const hasActivity = hasProgress || Boolean(bestExam) || Boolean(resumeStep);
     const nextStep = resumeStep ?? getLearningNextStep(progress, Boolean(bestExam));
@@ -96,6 +97,7 @@ export function useHomeLearningState() {
       hasActivity,
       nextStep,
       lessonResume,
+      lessonResumes,
       quizResume,
       solved,
       started,

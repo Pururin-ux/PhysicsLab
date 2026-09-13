@@ -5,7 +5,9 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { useLessonDraft } from "../../lib/learning/use-lesson-draft";
 import { averageSpeedInitial as initial, averageSpeedHeadings as headings } from "../../lib/learning/average-speed-draft";
+import { speedTapes } from "../../lib/learning/average-speed-view";
 import { Button } from "../ui/Button";
+import { MathText } from "../ui/MathText";
 import styles from "./AverageSpeedLab.module.css";
 
 export function AverageSpeedLab() {
@@ -18,11 +20,12 @@ export function AverageSpeedLab() {
   const fastTime = 10 - slowTime;
   const distance = 2 * slowTime + 8 * fastTime;
   const average = (distance / 10).toLocaleString("ru-RU");
+  const tapes = speedTapes(slowTime);
   const normalizedAnswer = state.answer.trim().replace(",", ".");
   const correct = /^\+?\d+(?:\.\d+)?$/.test(normalizedAnswer) && Number(normalizedAnswer) === 4;
   const mood = state.stage === 4 || (state.stage === 3 && state.checked && correct)
     ? "celebrate"
-    : state.stage === 1 && state.observed && slowTime !== 5 ? "surprised"
+    : state.stage === 1 && state.observed && slowTime !== 5 ? "attentive"
     : state.stage === 2 || state.stage === 3 ? "attentive" : "skeptical";
   const mioAlt = { skeptical: "Мио сомневается в своей гипотезе", attentive: "Мио внимательно сверяет условия", surprised: "Мио удивлена результатом опыта", celebrate: "Мио радуется результату" }[mood];
   useEffect(() => {
@@ -45,11 +48,11 @@ export function AverageSpeedLab() {
       <span>Шаг {state.stage + 1} из 5</span>
     </div>
     <h1 ref={title} tabIndex={-1}>{headings[state.stage]}</h1>
-    <div className={styles.layout}>
-      <aside className={styles.companion} aria-label="Напарница Мио">
+    <div className={styles.layout} data-experiment={state.stage === 1 || undefined}>
+      {state.stage !== 1 && <aside className={styles.companion} aria-label="Напарница Мио">
         <button className={styles.toggle} onClick={() => patch({ hideMio: !state.hideMio })}>{state.hideMio ? "Показать Мио" : "Скрыть Мио"}</button>
         {!state.hideMio && <><Image key={mood} data-mood={mood} className={styles.portrait} src={`/images/mio/mio-${mood}-${mood === "skeptical" ? "v2" : "v1"}.png`} alt={mioAlt} width={1254} height={1254} sizes="(max-width: 700px) 96px, 260px" priority /><div className={styles.speech}><strong>Мио · напарница по опытам</strong><p>{replies[state.stage]}</p>{state.stage===1&&state.observed&&slowTime!==5&&<div className={styles.revision} aria-label="Исправление гипотезы Мио"><span className={styles.crossed}>Всегда 5 м/с<svg viewBox="0 0 160 24" preserveAspectRatio="none" aria-hidden="true"><path d="M3 17 Q70 6 157 8" pathLength="1"/></svg></span><p>В этом опыте: <strong>{average} м/с</strong></p><small>Исправляю свою догадку.</small></div>}</div></>}
-      </aside>
+      </aside>}
       <section className={styles.workspace} aria-label="Опыт со средней скоростью">
         {state.stage === 0 && <>
           <p className={styles.eyebrow}>Гипотеза, которую предстоит проверить</p>
@@ -60,21 +63,46 @@ export function AverageSpeedLab() {
           </fieldset>
           <Button size="lg" disabled={!state.prediction} onClick={next}>Проверить в опыте</Button>
         </>}
-        {state.stage === 1 && <>
-          <p>Поездка длится ровно 10 с. Меняй время медленного участка: остальное время велосипедист едет быстро.</p>
-          <label htmlFor="slow-time">Со скоростью 2 м/с: <strong>{slowTime} с</strong></label>
-          <input id="slow-time" type="range" min={1} max={9} step={1} value={slowTime} onChange={(event) => patch({ slowTime: Number(event.target.value), observed: false })} />
-          <p>Со скоростью 8 м/с: <strong>{fastTime} с</strong></p>
-          <div className={styles.timeline} aria-label={`Время при 2 м/с: ${slowTime} с; при 8 м/с: ${fastTime} с`}><span style={{ flex: slowTime }}>{slowTime > 1 ? "2 м/с" : ""}</span><span style={{ flex: fastTime }}>{fastTime > 1 ? "8 м/с" : ""}</span></div>
-          <p className={styles.note}>Длина полосы показывает время, а не путь.</p>
-          <Button size="lg" onClick={() => patch({ observed: true })}>Посчитать пройденный путь</Button>
-          {state.observed && <div className={styles.result} role="status">
-            <p>Первый участок: 2 · {slowTime} = <strong>{2 * slowTime} м</strong>.</p><p>Второй участок: 8 · {fastTime} = <strong>{8 * fastTime} м</strong>.</p>
-            <p>Всего {distance} м за 10 с. Средняя путевая скорость: <strong>{average} м/с</strong>.</p>
-            <p>{slowTime === 5 ? "При равных временах получилось 5 м/с. А если ехать медленно дольше? Измени ползунок." : "Получилось не 5 м/с. Одного такого примера достаточно, чтобы опровергнуть слово «всегда»."}</p>
-          </div>}
-          <Button size="lg" variant="ghost" disabled={!state.observed || slowTime === 5} onClick={next}>Объяснить результат</Button>
-        </>}
+        {state.stage === 1 && <div className={styles.experiment}>
+          <div className={styles.observation}>
+            <p className={styles.tripHeading}>Одна поездка · <strong>10 секунд</strong></p>
+            <div className={styles.timeControl}>
+              <label htmlFor="slow-time">При 2 м/с: <strong>{slowTime} с</strong></label>
+              <span>При 8 м/с: <strong>{fastTime} с</strong></span>
+              <input id="slow-time" aria-label="Время движения со скоростью 2 м/с" type="range" min={1} max={9} step={1} value={slowTime} onChange={(event) => patch({ slowTime: Number(event.target.value), observed: false })} />
+            </div>
+            <figure className={styles.distanceModel} aria-label="Путь на двух участках в одном масштабе">
+              <figcaption><strong>Сколько проехали</strong><span>Один отрезок — путь за 1 секунду.</span></figcaption>
+              {tapes.map((tape, index) => <div className={styles.tapeRow} data-speed={tape.speed} key={tape.speed}>
+                <div className={styles.tapeCaption}><strong>{tape.speed} м/с</strong><span>{tape.seconds} с · по {tape.speed} м за секунду</span></div>
+                <div className={styles.tapeReading}>
+                  <div className={styles.tapeTrack} aria-label={`Скорость ${tape.speed} м/с, время ${tape.seconds} с, путь ${tape.distance} м`}>
+                    <div className={styles.tape} data-distance={tape.distance} style={{ width: `${tape.widthPercent}%` }}>
+                      {Array.from({ length: tape.seconds }, (_, second) => <span key={second} aria-hidden="true" />)}
+                    </div>
+                  </div>
+                  <strong>{tape.distance} м</strong>
+                </div>
+                {index === 1 && <div className={styles.ruler} aria-hidden="true"><span>0</span><span>40</span><span>80 м</span></div>}
+              </div>)}
+            </figure>
+          </div>
+          <div className={styles.interpretation}>
+            <Button size="lg" variant={state.observed ? "ghost" : "primary"} disabled={state.observed} onClick={() => patch({ observed: true })}>{state.observed ? "Средняя скорость рассчитана" : "Найти среднюю скорость"}</Button>
+            <div className={styles.reading} role="status">
+              {state.observed ? <><span>Весь путь ÷ всё время</span><strong>{average} <small>м/с</small></strong>
+                <p>Путь: <MathText text={`$${2 * slowTime}\\,\\text{м} + ${8 * fastTime}\\,\\text{м} = ${distance}\\,\\text{м}$`} /></p>
+                <p>Скорость: <MathText text={`$\\dfrac{${distance}\\,\\text{м}}{10\\,\\text{с}} = ${average.replace(",", "{,}")}\\,\\text{м/с}$`} /></p>
+              </> : <p>Средняя скорость за всю поездку?<br />Сравни её с догадкой Мио: 5 м/с.</p>}
+            </div>
+            <aside className={styles.labPartner} aria-label="Мио сверяет результат">
+              {!state.hideMio && <><Image src={`/images/mio/mio-${state.observed ? "attentive-v1" : "skeptical-v2"}.png`} alt={state.observed ? "Мио внимательно сверяет результат с блокнотом" : "Мио сомневается в своей гипотезе"} width={1254} height={1254} sizes="(max-width:700px) 76px, 112px" />
+                <div><strong>Мио</strong>{state.observed ? slowTime === 5 ? <p>Пока 5 м/с. А если ехать медленно дольше?</p> : <p><s>Всегда 5 м/с</s><br />{slowTime === 8 ? "Одинаковый путь — за разное время. Моя догадка не выдержала проверки." : "Скорости те же. Средняя — другая."}</p> : <p>Скорости не меняем. Проверим разное время.</p>}</div></>}
+              <button className={styles.toggle} onClick={() => patch({ hideMio: !state.hideMio })}>{state.hideMio ? "Показать Мио" : "Скрыть Мио"}</button>
+            </aside>
+            <Button size="lg" variant={state.observed && slowTime !== 5 ? "primary" : "ghost"} disabled={!state.observed || slowTime === 5} onClick={next}>Объяснить результат</Button>
+          </div>
+        </div>}
         {state.stage === 2 && <>
           <p>При тех же скоростях 2 и 8 м/с мы изменили время движения — и средняя скорость изменилась.</p>
           <fieldset><legend>Как теперь найти среднюю путевую скорость?</legend>

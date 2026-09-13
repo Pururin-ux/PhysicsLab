@@ -25,7 +25,7 @@ const homeActions = [
     id: "learn",
     href: "/learn/path-and-displacement",
     label: "Начать с движения",
-    description: "Путь, перемещение и средняя скорость",
+    description: "9 класс · Путь, перемещение и средняя скорость",
     icon: Books,
   },
   {
@@ -97,12 +97,12 @@ export function HomeEditorial() {
                     {learningState.nextStep.cta}
                     <ArrowRight size={18} weight="bold" aria-hidden="true" />
                   </Link>
-                  {learningState.quizResume && learningState.lessonResume ? (
-                    <Link className={styles.secondaryResume} href={learningState.lessonResume.href}>
-                      {learningState.lessonResume.title}
+                  {learningState.lessonResumes.filter(lesson => lesson.href !== learningState.nextStep.href).map(lesson => (
+                    <Link key={lesson.href} className={styles.secondaryResume} href={lesson.href}>
+                      {lesson.title}
                       <ArrowRight size={16} aria-hidden="true" />
                     </Link>
-                  ) : null}
+                  ))}
                 </aside>
             )}
 

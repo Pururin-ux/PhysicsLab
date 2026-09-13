@@ -28,9 +28,40 @@
 .choice:has(input:checked) { border-color: var(--action-primary); }
 .choice input { margin-top: 7px; flex-shrink: 0; accent-color: var(--action-primary); }
 .workspace input[type=range] { width: 100%; min-height: 44px; accent-color: var(--action-primary); }
-.timeline { display: flex; gap: 3px; min-height: 48px; color: #06232b; font-size: 12px; font-weight: 800; }
-.timeline span { display: flex; align-items: center; justify-content: center; background: #78e2e8; min-width: 0; white-space: nowrap; }
-.timeline span + span { background: #f2cd79; }
+.layout[data-experiment] { display:block; }
+.layout[data-experiment] .workspace { padding:0; border:0; border-radius:0; }
+.experiment { display:grid; grid-template-columns:minmax(0, 1.45fr) minmax(280px, 1fr); gap:32px; align-items:start; }
+.observation { padding:24px; border:1px solid var(--border-strong); border-radius:16px; background:var(--surface-primary); }
+.workspace .tripHeading { margin-bottom:16px; font-size:18px; }
+.timeControl { display:grid; grid-template-columns:1fr 1fr; gap:4px 12px; align-items:center; font-size:16px; }
+.timeControl > span { text-align:right; line-height:1.65; }
+.timeControl input { grid-column:1 / -1; margin:0; }
+.distanceModel { margin-top:20px; }
+.distanceModel figcaption { display:grid; gap:4px; margin-bottom:16px; font-size:16px; line-height:1.5; }
+.distanceModel figcaption span { color:var(--text-secondary); }
+.tapeRow + .tapeRow { margin-top:18px; }
+.tapeCaption { display:flex; justify-content:space-between; flex-wrap:wrap; gap:4px 12px; font-size:16px; line-height:1.5; margin-bottom:8px; }
+.tapeCaption span { color:var(--text-secondary); }
+.tapeReading { display:grid; grid-template-columns:minmax(0, 1fr) 52px; gap:12px; align-items:center; }
+.tapeReading > strong { text-align:right; font-size:18px; font-variant-numeric:tabular-nums; }
+.tapeTrack { height:32px; border-bottom:1px solid var(--border-strong); background:repeating-linear-gradient(to right, var(--border-muted) 0 1px, transparent 1px 25%); }
+.tape { display:flex; height:32px; background:#78e2e8; }
+.tapeRow[data-speed="8"] .tape { background:#f2cd79; }
+.tape > span { flex:1; border-right:1px solid #163943; min-width:0; }
+.tape > span:first-child { border-left:1px solid #163943; }
+.ruler { display:flex; justify-content:space-between; margin:6px 64px 0 0; color:var(--text-secondary); font-size:14px; }
+.interpretation { display:flex; flex-direction:column; gap:16px; }
+.reading { padding:16px 0; border-bottom:1px solid var(--border-strong); min-height:132px; }
+.reading > span { display:block; font-size:16px; color:var(--text-secondary); }
+.reading > strong { display:block; font-size:38px; line-height:1.2; font-variant-numeric:tabular-nums; margin:6px 0; }
+.reading small { font-size:20px; font-weight:600; }
+.workspace .reading p { font-size:16px; line-height:1.5; }
+.labPartner { display:grid; grid-template-columns:112px minmax(0, 1fr); align-items:center; column-gap:12px; }
+.labPartner img { width:112px; height:auto; }
+.labPartner strong { font-size:14px; color:var(--action-primary); }
+.workspace .labPartner p { font-size:16px; line-height:1.5; margin-top:4px; }
+.labPartner s { text-decoration-color:var(--action-primary); text-decoration-thickness:2px; color:var(--text-secondary); }
+.labPartner .toggle { grid-column:1 / -1; justify-self:end; }
 .workspace .note { font-size: 12px; color: var(--text-secondary); }
 .result { border-left: 3px solid var(--action-primary); padding: 12px 16px; background: var(--surface-primary); line-height: 1.7; }
 .result p + p { margin-top: 8px; }
@@ -51,6 +82,14 @@
   .speech p { font-size: 14px; }
   .workspace { padding: 18px; }
   .lab h1 { margin-bottom: 16px; }
+  .experiment { grid-template-columns:minmax(0, 1fr); gap:16px; }
+  .observation { padding:16px; }
+  .timeControl { gap:0 8px; }
+  .distanceModel { margin-top:12px; }
+  .distanceModel figcaption { margin-bottom:12px; }
+  .reading { min-height:0; padding:0 0 16px; }
+  .labPartner { grid-template-columns:76px minmax(0, 1fr); }
+  .labPartner img { width:76px; }
 }
 @media (prefers-reduced-motion: reduce) { .lab * { transition: none !important; animation: none !important; } }
 

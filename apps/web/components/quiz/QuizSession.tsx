@@ -253,8 +253,7 @@ export function QuizSession({
     resetRecording();
 
     // Попытка восстановления: снапшот должен точно совпасть с загруженным
-    // набором задач. При mismatch — молча начинаем новую сессию (снапшот
-    // очищается: он относится к другому набору).
+    // набором задач. Несовместимый постоянный черновик остаётся нетронутым.
     const pendingRestore = pendingRestoreRef.current;
     pendingRestoreRef.current = null;
     const taskIds = tasks.map((task) => task.id);
@@ -295,6 +294,7 @@ export function QuizSession({
     }
 
     if (pendingRestore) {
+      setNumericDraft(undefined);
       if (!snapshotWriteBlockedRef.current) clearActiveQuizSnapshot();
       if (durablePractice) {
         savedBlockedRef.current = true;
@@ -493,6 +493,9 @@ export function QuizSession({
     setGeneratedBatch((current) => current + 1);
   }
 
+  // Do not mount the input with an unvalidated draft, even for one render.
+  if (tasks.length > 0 && pendingRestoreRef.current) return <QuizLoadingCard title={generatedTitle} />;
+
   if (session.phase === "completed") {
     const nextStep =
       nextHref
@@ -619,7 +622,7 @@ export function QuizSession({
         />
       ) : (
         <NumericAnswerInput
-          key={`${currentTask.id}:${session.phase}`}
+          key={`${attemptId}:${currentTask.id}:${session.phase}`}
           initialRaw={durablePractice && numericDraft?.taskId === currentTask.id ? numericDraft.raw : ""}
           onRawChange={durablePractice ? raw => setNumericDraft({ taskId: currentTask.id, raw }) : undefined}
           unit={currentTask.answer.unit}
