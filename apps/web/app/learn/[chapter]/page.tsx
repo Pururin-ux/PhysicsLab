@@ -22,7 +22,7 @@ export default async function TextbookChapterPage({ params, searchParams }: Prop
   const hasChapterHandoff = chapter.practice.href.startsWith("/learn/");
   const explanation = <>
     {chapter.sections.map((section, i) => <section key={section.title} id={`idea-${i}`} className="scroll-mt-24"><h2 className="type-h2">{section.title}</h2><div className="mt-4 space-y-4 text-[17px] leading-[1.8]">{section.paragraphs.map(text => <p key={text}><MathText text={text} /></p>)}</div></section>)}
-    <section className="rounded-2xl border border-[var(--border-strong)] bg-[var(--surface-primary)] p-5 sm:p-7" aria-labelledby="worked-example"><h2 id="worked-example" className="type-h2">Разберём пример</h2><p className="my-5 text-[17px] leading-relaxed">{chapter.example.question}</p><ol className="list-decimal space-y-4 pl-5 leading-[1.8]">{chapter.example.steps.map(step => <li key={step}><MathText text={step} /></li>)}</ol><p className="mt-5 border-l-2 border-[var(--action-primary)] pl-4 leading-relaxed">{chapter.example.conclusion}</p></section>
+    <section className="rounded-2xl border border-[var(--border-strong)] bg-[var(--surface-primary)] p-5 sm:p-7" aria-labelledby="worked-example"><h2 id="worked-example" className="type-h2">Разберём пример</h2><p className="my-5 text-[17px] leading-relaxed"><MathText text={chapter.example.question} /></p><ol className="list-decimal space-y-4 pl-5 leading-[1.8]">{chapter.example.steps.map(step => <li key={step}><MathText text={step} /></li>)}</ol><p className="mt-5 border-l-2 border-[var(--action-primary)] pl-4 leading-relaxed">{chapter.example.conclusion}</p></section>
   </>;
   return <article className="mx-auto flex w-full max-w-[800px] flex-col gap-8 text-[var(--text-primary)]">
     <header>

@@ -166,6 +166,10 @@ export const weaknessCopyBySkill: Partial<Record<SkillId, {
     title: "Тепловой баланс",
     hint: "Температура смеси зависит от масс: приравняй отданную и полученную теплоту.",
   },
+  "fuel-combustion-heat": {
+    title: "Сгорание топлива",
+    hint: "Для полного сгорания умножь удельную теплоту сгорания на массу: $Q=qm$.",
+  },
   "phase-change-heat": {
     title: "Нагревание и плавление",
     hint: "Сложи две стадии: нагрев до 0 °C и плавление $\\lambda m$.",

@@ -34,6 +34,7 @@ import { MechanicalEnergyModel } from "./MechanicalEnergyModel";
 import { ReflectionTextbookExperiment } from "./ReflectionContentLesson";
 import { NewtonSecondLawTextbookExperiment } from "./DynamicsLesson";
 import { HeatAmountModel } from "./HeatAmountModel";
+import { FuelCombustionLab } from "./FuelCombustionLab";
 import { HeatTransferExplorer } from "./HeatTransferExplorer";
 import { IceMeltingModel } from "./IceMeltingModel";
 import { EvaporationBoilingLab } from "./EvaporationBoilingLab";
@@ -175,6 +176,9 @@ export function TextbookScene({chapterId}:{chapterId:string}) {
   }
   if (chapterId === "heat-amount-and-balance") {
     return <section className={styles.scene} aria-label="Графический опыт о количестве теплоты"><HeatAmountModel /></section>;
+  }
+  if (chapterId === "fuel-combustion") {
+    return <section className={styles.scene} aria-label="Сравнение энергии полного сгорания топлива"><FuelCombustionLab /></section>;
   }
   if (chapterId === "internal-energy-and-heat-transfer") {
     return <section className={styles.scene} aria-label="Сравнение способов теплопередачи"><HeatTransferExplorer /></section>;

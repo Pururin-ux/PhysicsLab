@@ -29,8 +29,8 @@ export const schoolChecks = [
     grade: 8,
     template: "school-check-8",
     href: "/practice/class-check/8",
-    familyIds: ["heat-amount", "phase-change-heat", "vaporization-heat", "ohm-law", "reflection-angle"],
-    skills: ["количество теплоты", "плавление", "парообразование", "закон Ома", "отражение света"],
+    familyIds: ["heat-amount", "fuel-combustion-heat", "phase-change-heat", "vaporization-heat", "ohm-law", "reflection-angle"],
+    skills: ["количество теплоты", "сгорание топлива", "плавление", "парообразование", "закон Ома", "отражение света"],
   },
   {
     grade: 9,

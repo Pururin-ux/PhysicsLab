@@ -24,9 +24,9 @@ The personal notebook at `/profile/notebook` collects explicitly saved lesson
 explanations, supports text search, and links back to their lessons. It reads the
 same browser drafts included in progress backups; it does not grade personal text.
 
-The textbook at `/learn` currently connects thirty-seven chapters for
+The textbook at `/learn` currently connects thirty-eight chapters for
 selected grade 7, grade 8 and grade 9 topics. Grade 8 now connects internal
-energy and the three heat-transfer mechanisms to heat amount, melting,
+energy and the three heat-transfer mechanisms to heat amount, fuel combustion, melting,
 evaporation and boiling, then electric current and reflection of light; grade 9
 includes the second law of Newton. Chapters
 include interactive models, worked examples and persistent self-checks; existing

@@ -89,6 +89,7 @@ const thermodynamicsTemplateIds = [
   "density-volume-ratio",
   "ideal-gas-state",
   "heat-amount",
+  "fuel-combustion-heat",
   "phase-change-heat",
   "vaporization-heat",
   "gas-state-ratio",

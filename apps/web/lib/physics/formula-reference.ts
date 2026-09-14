@@ -584,6 +584,20 @@ export const formulaReference: FormulaReferenceGroup[] = [
           "Нагревание и плавление считают отдельно; во время плавления температура не меняется.",
       },
       {
+        id: "fuel-combustion-heat",
+        relatedSkillIds: ["fuel-combustion-heat"],
+        title: "Теплота сгорания топлива",
+        formula: "Q=qm",
+        caption: "энергия, выделившаяся при полном сгорании топлива",
+        symbols: [
+          { latex: "Q", description: "количество теплоты, Дж" },
+          { latex: "q", description: "удельная теплота сгорания, Дж/кг" },
+          { latex: "m", description: "масса топлива, кг" },
+        ],
+        limitation:
+          "Формула относится к полному сгоранию. Нагреваемое тело обычно получает только часть выделившейся энергии.",
+      },
+      {
         id: "vaporization-heat",
         relatedSkillIds: ["vaporization-heat"],
         title: "Нагревание и парообразование",

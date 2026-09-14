@@ -14,6 +14,7 @@ import { gravitationalPotentialEnergyBlueprint } from "./templates/gravitational
 import { gasStateRatioBlueprint } from "./templates/gas-state-ratio.ts";
 import { heatBalanceSimpleBlueprint } from "./templates/heat-balance-simple.ts";
 import { heatAmountBlueprint } from "./templates/heat-amount.ts";
+import { fuelCombustionHeatBlueprint } from "./templates/fuel-combustion-heat.ts";
 import { hydrostaticPressureBlueprint } from "./templates/hydrostatic-pressure.ts";
 import { mechanicalPowerBlueprint } from "./templates/mechanical-power.ts";
 import { mechanicalEfficiencyBlueprint } from "./templates/mechanical-efficiency.ts";
@@ -106,6 +107,7 @@ export const blueprints = {
   "electric-power": electricPowerBlueprint,
   "ideal-gas-state": idealGasStateBlueprint,
   "heat-amount": heatAmountBlueprint,
+  "fuel-combustion-heat": fuelCombustionHeatBlueprint,
   "phase-change-heat": phaseChangeHeatBlueprint,
   "vaporization-heat": vaporizationHeatBlueprint,
   "gas-state-ratio": gasStateRatioBlueprint,

@@ -52,6 +52,7 @@ export type SkillId =
   | "gas-state-ratio"
   | "heat-amount"
   | "heat-balance-simple"
+  | "fuel-combustion-heat"
   | "phase-change-heat"
   | "vaporization-heat"
   | "reflection-angle"
@@ -363,6 +364,14 @@ export const skillMetadata: Record<SkillId, SkillMetadata> = {
     title: "Тепловой баланс при смешивании",
     shortTitle: "Тепловой баланс",
     description: "Температура смеси из равенства отданной и полученной теплоты.",
+  },
+  "fuel-combustion-heat": {
+    id: "fuel-combustion-heat",
+    topicId: "thermodynamics",
+    sectionId: "molecular",
+    title: "Теплота полного сгорания топлива",
+    shortTitle: "Сгорание топлива",
+    description: "Энергия полного сгорания определяется удельной теплотой сгорания и массой топлива.",
   },
   "phase-change-heat": {
     id: "phase-change-heat",

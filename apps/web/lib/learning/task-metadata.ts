@@ -151,6 +151,12 @@ export const misconceptionMetadataById: Record<string, MisconceptionMetadata> = 
     helpSectionId: "heat-balance",
     shortHint: "В тепловом балансе массы задают вклад горячей и холодной воды.",
   },
+  "fuel-specific-heat-missed": {
+    id: "fuel-specific-heat-missed",
+    label: "не учитывает массу топлива",
+    helpSectionId: "fuel-combustion",
+    shortHint: "Значение q относится к одному килограмму топлива; для массы m используй Q=qm.",
+  },
   "melting-plateau-misread": {
     id: "melting-plateau-misread",
     label: "смешивает нагрев и плавление",
@@ -523,6 +529,15 @@ export const taskLearningMetadataByTemplateId: Record<string, TaskLearningMetada
     focusLabel: "Тепловой баланс",
     shortHint: "При смешивании отданная горячей водой теплота равна полученной холодной.",
     misconceptionIds: ["heat-balance-arithmetic-mean"],
+  },
+  "fuel-combustion-heat": {
+    templateId: "fuel-combustion-heat",
+    topicId: "thermodynamics",
+    helpSectionId: "fuel-combustion",
+    skillId: "fuel-combustion-heat",
+    focusLabel: "Теплота сгорания топлива",
+    shortHint: "При полном сгорании умножь удельную теплоту сгорания на массу топлива.",
+    misconceptionIds: ["fuel-specific-heat-missed"],
   },
   "phase-change-heat": {
     templateId: "phase-change-heat",

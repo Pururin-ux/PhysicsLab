@@ -39,6 +39,7 @@ const searchAliases: Partial<Record<TemplateId, string[]>> = {
   "source-internal-resistance": ["эдс", "внутреннее сопротивление", "полная цепь"],
   "gas-state-ratio": ["объединенный газовый закон", "pV/T"],
   "heat-balance-simple": ["тепловой баланс", "смешивание воды"],
+  "fuel-combustion-heat": ["горение топлива", "удельная теплота сгорания", "Q=qm"],
   "phase-change-heat": ["плавление", "удельная теплота плавления"],
   "snell-index-ratio": ["закон Снеллиуса", "синусы углов"],
   "thin-lens-image-distance": ["формула линзы", "расстояние до изображения"],

@@ -126,6 +126,11 @@ export function heatAmount(p: Params): number {
   return WATER_SPECIFIC_HEAT_KJ * p.m * p.dT;
 }
 
+// q задаётся в МДж/кг, поэтому результат получается в МДж.
+export function fuelCombustionHeat(p: Params): number {
+  return p.q * p.m;
+}
+
 // Полностью неупругое столкновение тележек, движущихся в одном направлении:
 // m1v1 + m2v2 = (m1 + m2)v.
 export function inelasticCollisionSpeed(p: Params): number {

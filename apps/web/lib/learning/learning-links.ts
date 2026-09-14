@@ -36,6 +36,7 @@ const explanationByFamily: Partial<Record<TemplateId, ExactExplanation>> = {
   "reflection-angle": { href: "/learn/reflection-of-light?practice=reflection-angle", chapterId: "reflection-of-light", label: "Откуда считать углы падения и отражения" },
   "heat-amount": { href: "/learn/heat-amount-and-balance?practice=heat-amount", chapterId: "heat-amount-and-balance", label: "От чего зависит количество теплоты" },
   "heat-balance-simple": { href: "/learn/heat-amount-and-balance?practice=heat-balance-simple", chapterId: "heat-amount-and-balance", label: "Как составить тепловой баланс" },
+  "fuel-combustion-heat": { href: "/learn/fuel-combustion?practice=fuel-combustion-heat", chapterId: "fuel-combustion", label: "Как масса и вид топлива определяют выделившуюся теплоту" },
   "phase-change-heat": { href: "/learn/melting-and-crystallization?practice=phase-change-heat", chapterId: "melting-and-crystallization", label: "Как разделить нагревание и плавление" },
   "vaporization-heat": { href: "/learn/evaporation-and-boiling?practice=vaporization-heat", chapterId: "evaporation-and-boiling", label: "Как разделить нагревание и парообразование" },
 };

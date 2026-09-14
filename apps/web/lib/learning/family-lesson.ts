@@ -24,6 +24,7 @@ const lessons:Partial<Record<TemplateId,{href:string;label:string}>>={
   "ohm-law":{href:"/learn/electric-current-and-ohms-law",label:"Учебник: ток, напряжение и сопротивление"},
   "heat-amount":{href:"/learn/heat-amount-and-balance",label:"Учебник: количество теплоты"},
   "heat-balance-simple":{href:"/learn/heat-amount-and-balance",label:"Учебник: тепловой баланс"},
+  "fuel-combustion-heat":{href:"/learn/fuel-combustion",label:"Учебник: горение и энергия топлива"},
   "phase-change-heat":{href:"/learn/melting-and-crystallization",label:"Учебник: нагревание и плавление"},
   "vaporization-heat":{href:"/learn/evaporation-and-boiling",label:"Учебник: испарение и кипение"},
 };

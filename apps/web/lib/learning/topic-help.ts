@@ -39,6 +39,7 @@ export type HelpSectionId =
   | "gas-equation"
   | "heat-amount"
   | "heat-balance"
+  | "fuel-combustion"
   | "heating-melting"
   | "vaporization"
   | "reflection"
@@ -302,6 +303,13 @@ export const topicHelpSections: Record<TopicId, TopicHelpSection[]> = {
       mistake: "Не усредняй температуры без учета масс.",
     },
     {
+      id: "fuel-combustion",
+      label: "Горение топлива",
+      shortHint: "Удельная теплота сгорания относится к одному килограмму; при полном сгорании Q=qm.",
+      formula: "Q=qm",
+      mistake: "Не приравнивай всю энергию топлива к теплоте нагреваемого тела, если передаётся только её часть.",
+    },
+    {
       id: "heating-melting",
       label: "Плавление / нагревание",
       shortHint: "Нагрев и плавление считаются отдельными стадиями: посчитай каждую и сложи.",
@@ -412,6 +420,7 @@ const blueprintTargets: Partial<
   "gas-state-ratio": { topicId: "thermodynamics", sectionId: "gas-equation" },
   "heat-amount": { topicId: "thermodynamics", sectionId: "heat-amount" },
   "heat-balance-simple": { topicId: "thermodynamics", sectionId: "heat-balance" },
+  "fuel-combustion-heat": { topicId: "thermodynamics", sectionId: "fuel-combustion" },
   "phase-change-heat": { topicId: "thermodynamics", sectionId: "heating-melting" },
   "vaporization-heat": { topicId: "thermodynamics", sectionId: "vaporization" },
   "reflection-angle": { topicId: "optics", sectionId: "reflection" },
@@ -556,6 +565,7 @@ function inferSection(task: HelpableQuizTask, topicId: TopicId): HelpSectionId {
     return "ohms-law";
   }
 
+  if (/сгоран|топлив|\bqm\b/.test(text)) return "fuel-combustion";
   if (/испар|кипен|парообраз|\blm\b/.test(text)) return "vaporization";
   if (/плавл|лед|λ|lambda/.test(text)) return "heating-melting";
   if (/теплот|cm|дельта|\\delta|нагрев/.test(text)) return "heat-amount";
