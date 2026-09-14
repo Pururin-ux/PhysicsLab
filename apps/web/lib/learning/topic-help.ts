@@ -40,6 +40,7 @@ export type HelpSectionId =
   | "heat-amount"
   | "heat-balance"
   | "heating-melting"
+  | "vaporization"
   | "reflection"
   | "plane-mirror"
   | "refraction"
@@ -307,6 +308,13 @@ export const topicHelpSections: Record<TopicId, TopicHelpSection[]> = {
       formula: "Q=cm\\Delta T+\\lambda m",
       mistake: "Во время плавления температура не растёт: теплота идёт на изменение состояния.",
     },
+    {
+      id: "vaporization",
+      label: "Испарение и кипение",
+      shortHint: "Испарение идёт с поверхности при любой температуре; кипение — во всём объёме при температуре кипения.",
+      formula: "Q=cm\\Delta T+Lm",
+      mistake: "Если вода начинает ниже температуры кипения, не пропускай стадию нагревания.",
+    },
   ],
   optics: [
     {
@@ -405,6 +413,7 @@ const blueprintTargets: Partial<
   "heat-amount": { topicId: "thermodynamics", sectionId: "heat-amount" },
   "heat-balance-simple": { topicId: "thermodynamics", sectionId: "heat-balance" },
   "phase-change-heat": { topicId: "thermodynamics", sectionId: "heating-melting" },
+  "vaporization-heat": { topicId: "thermodynamics", sectionId: "vaporization" },
   "reflection-angle": { topicId: "optics", sectionId: "reflection" },
   "plane-mirror-separation": { topicId: "optics", sectionId: "plane-mirror" },
   "refractive-index-speed": { topicId: "optics", sectionId: "refractive-index" },
@@ -547,6 +556,7 @@ function inferSection(task: HelpableQuizTask, topicId: TopicId): HelpSectionId {
     return "ohms-law";
   }
 
+  if (/испар|кипен|парообраз|\blm\b/.test(text)) return "vaporization";
   if (/плавл|лед|λ|lambda/.test(text)) return "heating-melting";
   if (/теплот|cm|дельта|\\delta|нагрев/.test(text)) return "heat-amount";
   if (/pv|nrt|кельвин|уравнен/.test(text)) return "gas-equation";

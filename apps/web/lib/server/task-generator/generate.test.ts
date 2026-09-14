@@ -90,6 +90,7 @@ const thermodynamicsTemplateIds = [
   "ideal-gas-state",
   "heat-amount",
   "phase-change-heat",
+  "vaporization-heat",
   "gas-state-ratio",
   "heat-balance-simple",
 ] as const;

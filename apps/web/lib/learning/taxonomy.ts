@@ -53,6 +53,7 @@ export type SkillId =
   | "heat-amount"
   | "heat-balance-simple"
   | "phase-change-heat"
+  | "vaporization-heat"
   | "reflection-angle"
   | "plane-mirror-separation"
   | "refractive-index-speed"
@@ -370,6 +371,14 @@ export const skillMetadata: Record<SkillId, SkillMetadata> = {
     title: "Нагревание и плавление",
     shortTitle: "Плавление",
     description: "Полная теплота при переходе через 0 °C складывается из нагрева и плавления.",
+  },
+  "vaporization-heat": {
+    id: "vaporization-heat",
+    topicId: "thermodynamics",
+    sectionId: "molecular",
+    title: "Нагревание и парообразование",
+    shortTitle: "Парообразование",
+    description: "Полная теплота складывается из нагревания воды и превращения её в пар.",
   },
   "reflection-angle": {
     id: "reflection-angle",

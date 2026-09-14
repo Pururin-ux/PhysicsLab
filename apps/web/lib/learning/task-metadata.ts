@@ -157,6 +157,12 @@ export const misconceptionMetadataById: Record<string, MisconceptionMetadata> = 
     helpSectionId: "heating-melting",
     shortHint: "Нагрев и плавление считаются разными стадиями и складываются.",
   },
+  "vaporization-stage-omission": {
+    id: "vaporization-stage-omission",
+    label: "пропускает нагревание или парообразование",
+    helpSectionId: "vaporization",
+    shortHint: "Если вода начинает ниже 100 °C, отдельно посчитай нагревание и парообразование.",
+  },
   "angle-from-surface": {
     id: "angle-from-surface",
     label: "отсчитывает углы от поверхности",
@@ -526,6 +532,15 @@ export const taskLearningMetadataByTemplateId: Record<string, TaskLearningMetada
     focusLabel: "Нагревание и плавление",
     shortHint: "Нагрев и плавление считаются отдельными стадиями и складываются.",
     misconceptionIds: ["melting-plateau-misread", "heat-delta-temperature"],
+  },
+  "vaporization-heat": {
+    templateId: "vaporization-heat",
+    topicId: "thermodynamics",
+    helpSectionId: "vaporization",
+    skillId: "vaporization-heat",
+    focusLabel: "Нагревание и парообразование",
+    shortHint: "Сначала нагрей воду до температуры кипения, затем прибавь теплоту парообразования.",
+    misconceptionIds: ["vaporization-stage-omission", "heat-delta-temperature"],
   },
   "reflection-angle": {
     templateId: "reflection-angle",

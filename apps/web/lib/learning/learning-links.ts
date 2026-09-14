@@ -37,6 +37,7 @@ const explanationByFamily: Partial<Record<TemplateId, ExactExplanation>> = {
   "heat-amount": { href: "/learn/heat-amount-and-balance?practice=heat-amount", chapterId: "heat-amount-and-balance", label: "От чего зависит количество теплоты" },
   "heat-balance-simple": { href: "/learn/heat-amount-and-balance?practice=heat-balance-simple", chapterId: "heat-amount-and-balance", label: "Как составить тепловой баланс" },
   "phase-change-heat": { href: "/learn/melting-and-crystallization?practice=phase-change-heat", chapterId: "melting-and-crystallization", label: "Как разделить нагревание и плавление" },
+  "vaporization-heat": { href: "/learn/evaporation-and-boiling?practice=vaporization-heat", chapterId: "evaporation-and-boiling", label: "Как разделить нагревание и парообразование" },
 };
 
 export type LearningDestination = {

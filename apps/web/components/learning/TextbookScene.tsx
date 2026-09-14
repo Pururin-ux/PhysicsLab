@@ -36,6 +36,7 @@ import { NewtonSecondLawTextbookExperiment } from "./DynamicsLesson";
 import { HeatAmountModel } from "./HeatAmountModel";
 import { HeatTransferExplorer } from "./HeatTransferExplorer";
 import { IceMeltingModel } from "./IceMeltingModel";
+import { EvaporationBoilingLab } from "./EvaporationBoilingLab";
 import styles from "./TextbookScene.module.css";
 
 const stories = {
@@ -180,6 +181,10 @@ export function TextbookScene({chapterId}:{chapterId:string}) {
   }
   if (chapterId === "melting-and-crystallization") {
     return <section className={styles.scene} aria-label="Графический опыт с нагреванием и плавлением льда"><IceMeltingModel /></section>;
+  }
+
+  if (chapterId === "evaporation-and-boiling") {
+    return <section className={styles.scene} aria-label="Исследование испарения и кипения воды"><EvaporationBoilingLab /></section>;
   }
   if (!(chapterId in stories)) return null;
   if (chapterId === "force-and-dynamometer") {

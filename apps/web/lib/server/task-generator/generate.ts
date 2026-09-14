@@ -28,6 +28,7 @@ import { lensOpticalPowerBlueprint } from "./templates/lens-optical-power.ts";
 import { newtonSecondBlueprint } from "./templates/newton-second.ts";
 import { ohmLawBlueprint } from "./templates/ohm-law.ts";
 import { phaseChangeHeatBlueprint } from "./templates/phase-change-heat.ts";
+import { vaporizationHeatBlueprint } from "./templates/vaporization-heat.ts";
 import { planeMirrorSeparationBlueprint } from "./templates/plane-mirror-separation.ts";
 import { reflectionAngleBlueprint } from "./templates/reflection-angle.ts";
 import { refractiveIndexSpeedBlueprint } from "./templates/refractive-index-speed.ts";
@@ -106,6 +107,7 @@ export const blueprints = {
   "ideal-gas-state": idealGasStateBlueprint,
   "heat-amount": heatAmountBlueprint,
   "phase-change-heat": phaseChangeHeatBlueprint,
+  "vaporization-heat": vaporizationHeatBlueprint,
   "gas-state-ratio": gasStateRatioBlueprint,
   "heat-balance-simple": heatBalanceSimpleBlueprint,
   "reflection-angle": reflectionAngleBlueprint,

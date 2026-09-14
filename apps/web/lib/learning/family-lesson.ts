@@ -25,6 +25,7 @@ const lessons:Partial<Record<TemplateId,{href:string;label:string}>>={
   "heat-amount":{href:"/learn/heat-amount-and-balance",label:"Учебник: количество теплоты"},
   "heat-balance-simple":{href:"/learn/heat-amount-and-balance",label:"Учебник: тепловой баланс"},
   "phase-change-heat":{href:"/learn/melting-and-crystallization",label:"Учебник: нагревание и плавление"},
+  "vaporization-heat":{href:"/learn/evaporation-and-boiling",label:"Учебник: испарение и кипение"},
 };
 export function getFamilyLesson(family:TemplateId){return lessons[family]??null;}
 

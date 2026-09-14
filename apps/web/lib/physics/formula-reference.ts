@@ -584,6 +584,22 @@ export const formulaReference: FormulaReferenceGroup[] = [
           "Нагревание и плавление считают отдельно; во время плавления температура не меняется.",
       },
       {
+        id: "vaporization-heat",
+        relatedSkillIds: ["vaporization-heat"],
+        title: "Нагревание и парообразование",
+        formula: "Q=cm\\Delta T+Lm",
+        caption: "полная теплота складывается из нагревания и превращения жидкости в пар",
+        symbols: [
+          { latex: "Q", description: "полное количество теплоты, Дж" },
+          { latex: "c", description: "удельная теплоёмкость жидкости, Дж/(кг·К)" },
+          { latex: "L", description: "удельная теплота парообразования, Дж/кг" },
+          { latex: "m", description: "масса жидкости, кг" },
+          { latex: "\\Delta T", description: "изменение температуры до кипения, К" },
+        ],
+        limitation:
+          "Формула относится к нагреванию до температуры кипения и полному парообразованию; температуру кипения задают для указанного внешнего давления.",
+      },
+      {
         id: "heat-engine-efficiency",
         relatedSkillIds: [],
         title: "КПД теплового двигателя",

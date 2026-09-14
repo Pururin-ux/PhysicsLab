@@ -180,6 +180,17 @@ export function phaseChangeHeat(p: Params): number {
   return p.m * (ICE_SPECIFIC_HEAT_KJ * Math.abs(p.temp0) + ICE_FUSION_HEAT_KJ);
 }
 
+export const WATER_VAPORIZATION_HEAT_KJ = 2260;
+export const WATER_BOILING_TEMPERATURE_C = 100;
+
+// Нагреть воду до 100 °C и полностью превратить в пар при нормальном давлении.
+export function vaporizationHeat(p: Params): number {
+  return p.m * (
+    WATER_SPECIFIC_HEAT_KJ * (WATER_BOILING_TEMPERATURE_C - p.temp0)
+    + WATER_VAPORIZATION_HEAT_KJ
+  );
+}
+
 // ===== Оптика =====
 
 // Скорость света в единицах 10^8 м/с — скорости сред задаются в тех же
