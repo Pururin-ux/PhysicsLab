@@ -14,6 +14,10 @@ import {
   toleranceFor,
 } from "../../../lib/answer/numeric-answer.ts";
 import { orderTaskFamiliesByConceptGraph } from "../../../lib/learning/concept-graph.ts";
+import {
+  getSchoolCheckByTemplate,
+  schoolChecks,
+} from "../../../lib/learning/school-checks.ts";
 
 export const dynamic = "force-dynamic";
 
@@ -122,6 +126,17 @@ function buildTopicMix(
     const occurrence = occurrences[difficulty]++;
     return templateForDifficulty(learningOrder, difficulty, batch + occurrence);
   });
+}
+
+function buildSchoolCheckMix(
+  templates: readonly TemplateId[],
+  count: number,
+  batch: number,
+): TemplateId[] {
+  return Array.from(
+    { length: count },
+    (_, slot) => templates[(batch * count + slot) % templates.length],
+  );
 }
 const supportedTemplates = templateRegistry.map((entry) => entry.id);
 
@@ -327,8 +342,16 @@ export async function GET(req: Request) {
   }
 
   try {
+    const schoolCheck = getSchoolCheckByTemplate(template);
     const generatedTasks =
-      template === "mixed"
+      schoolCheck
+        ? generateMixedTasks(
+            buildSchoolCheckMix(schoolCheck.familyIds, count, batch),
+            schoolCheck.template,
+            count,
+            batch,
+          )
+      : template === "mixed"
         ? generateMixedTasks(buildTopicMix(kinematicsTemplates, count, batch), "mixed", count, batch, count === 10)
         : template === "dynamics-mixed"
           ? generateMixedTasks(buildTopicMix(dynamicsTemplates, count, batch), "dynamics-mixed", count, batch, count === 10)
@@ -356,6 +379,7 @@ export async function GET(req: Request) {
           "thermo-mixed",
           "optics-mixed",
           "exam",
+          ...schoolChecks.map((check) => check.template),
         ].join(", ")}.`,
         false,
       );

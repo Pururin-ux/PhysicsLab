@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+import { getLearningDestinationForFamily } from "../../lib/learning/learning-links";
 import type { TaskTypeCatalogEntry } from "../../lib/learning/task-catalog";
 import { topicHelpSections } from "../../lib/learning/topic-help";
 import { CompactHelpCard } from "../theory/CompactHelpCard";
@@ -15,8 +17,11 @@ const accentByTopic = {
 
 export function FocusedFamilyPractice({ entry }: { entry: TaskTypeCatalogEntry }) {
   const sections = topicHelpSections[entry.topicId];
+  const explanation = getLearningDestinationForFamily(entry.id)?.explanation;
 
   return (
+    <div className="flex flex-col gap-4">
+    {explanation && <Link href={explanation.href} className="inline-flex min-h-11 w-fit items-center text-sm text-[var(--action-primary)] underline underline-offset-4">{explanation.label} →</Link>}
     <PracticeWithHelp
       topicId={entry.topicId}
       generatedTemplate={entry.id}
@@ -24,8 +29,8 @@ export function FocusedFamilyPractice({ entry }: { entry: TaskTypeCatalogEntry }
       generatedTitle={entry.title}
       generatedCount={5}
       restartLabel="Ещё 5 задач"
-      nextHref={entry.id === "contact-pressure" ? "/learn/pressure" : entry.id === "density-volume-ratio" ? "/learn/density" : `/tasks/${entry.id}`}
-      nextLabel={entry.id === "contact-pressure" ? "Повторить силу и площадь опоры" : entry.id === "density-volume-ratio" ? "Повторить массу, объём и плотность" : "Вернуться к разбору этого типа"}
+      nextHref={explanation?.href ?? `/tasks/${entry.id}`}
+      nextLabel={explanation?.label ?? "Вернуться к разбору этого типа"}
       accent={accentByTopic[entry.topicId]}
       drawerTitle="Справка"
       subtopics={sections}
@@ -42,5 +47,6 @@ export function FocusedFamilyPractice({ entry }: { entry: TaskTypeCatalogEntry }
         </div>
       ))}
     </PracticeWithHelp>
+    </div>
   );
 }

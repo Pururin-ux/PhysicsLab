@@ -1,6 +1,6 @@
 import { lessonDraftCodec, readLessonDraft } from "./lesson-draft.ts";
 
-export const averageSpeedInitial = { stage: 0, prediction: "", slowTime: 5, observed: false, reason: "", answer: "", checked: false, attempts: 0, hideMio: false, summaryText: "", summarySaved: false, personalNote: "" };
+export const averageSpeedInitial = { stage: 0, prediction: "", slowTime: 5, observed: false, reason: "", answer: "", checked: false, attempts: 0, hideMio: false, summaryText: "", summarySaved: false, investigationCompleted: false, personalNote: "" };
 export const averageSpeedHeadings = ["Две скорости. Как найти среднюю?", "Измени время — проверь гипотезу", "Что убедило Мио?", "Теперь — другая поездка", "Забери мысль с собой"];
 
 export const averageSpeedDraftCodec = lessonDraftCodec("average-speed", averageSpeedInitial, averageSpeedHeadings.length);

@@ -27,6 +27,13 @@ test("notebook distinguishes both texts, preserves old lesson rules and never wr
     ["physicslab-lesson-draft-dynamics", JSON.stringify({ version: 1, data: {
       step: 2, summaryText: "Моё сохранённое объяснение силы", summarySaved: true,
     } })],
+    ["physicslab-lesson-draft-electro", JSON.stringify({ version: 1, data: {
+      stage: 9, summaryText: "Сила тока зависит от напряжения и сопротивления цепи", summarySaved: true,
+    } })],
+    ["physicslab-lesson-draft-density", JSON.stringify({ version: 1, data: {
+      stage: 2, summaryText: "При том же объёме большая плотность означает большую массу", summarySaved: true,
+      investigationCompleted: true,
+    } })],
     ["physicslab-lesson-draft-optics", "{broken personal draft"],
   ]);
   const original = Array.from(stored);
@@ -36,13 +43,15 @@ test("notebook distinguishes both texts, preserves old lesson rules and never wr
     removeItem: () => { throw new Error("Read must not delete"); },
   } } });
   try {
-    const { notes, unavailable } = readNotebook();
-    assert.equal(notes.length, 3);
-    assert.deepEqual(notes.map(note => note.kind), ["explanation", "personal", "explanation"]);
-    assert.equal(new Set(notes.map(note => note.id)).size, 3);
+    const { notes, investigations, unavailable } = readNotebook();
+    assert.equal(notes.length, 5);
+    assert.deepEqual(notes.map(note => note.kind), ["explanation", "personal", "explanation", "explanation", "explanation"]);
+    assert.equal(new Set(notes.map(note => note.id)).size, 5);
     assert.equal(notes[0].text, "Объём и время — мои слова <script>text</script>");
     assert.equal(filterNotebook(notes, "объем время").length, 1);
     assert.equal(filterNotebook(notes, "спросить")[0].kind, "personal");
+    assert.deepEqual(investigations.map(investigation => investigation.id), ["electro", "density"]);
+    assert.equal(investigations[1].text, "При том же объёме большая плотность означает большую массу");
     assert.equal(unavailable, 1);
     assert.deepEqual(Array.from(stored), original);
     const codec = lessonDraftExportCodecs.find(item => item.key === averageSpeedDraftCodec.key)!;

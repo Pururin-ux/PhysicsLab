@@ -2,7 +2,7 @@ import { ProfileOverview } from "../../components/profile/ProfileOverview";
 
 export const metadata = {
   title: "Прогресс | PhysicsLab",
-  description: "Продолжить, проверить открытые темы и вернуться к ошибкам.",
+  description: "Продолжить занятие, посмотреть сделанное и вернуться к трудному.",
 };
 
 export default function ProfilePage() {
@@ -13,13 +13,11 @@ export default function ProfilePage() {
           Прогресс
         </h1>
         <p className="max-w-[58ch] text-[15px] leading-[1.7] text-[var(--text-default)]">
-          Здесь можно продолжить, проверить открытые темы и вернуться к ошибкам.
+          Продолжи занятие, посмотри, что уже сделано, или вернись к трудному месту.
         </p>
       </header>
 
-      <div className="[&_[aria-label='Цель_занятий']>span:first-child]:hidden">
-        <ProfileOverview />
-      </div>
+      <ProfileOverview />
     </div>
   );
 }

@@ -19,6 +19,12 @@ export type MisconceptionMetadata = {
 };
 
 export const misconceptionMetadataById: Record<string, MisconceptionMetadata> = {
+  "uniform-motion-graph-reading": {
+    id: "uniform-motion-graph-reading",
+    label: "читает график без проверки осей",
+    helpSectionId: "uniform-motion-graphs",
+    shortHint: "На s(t) наклон показывает скорость; на v(t) высота линии показывает скорость.",
+  },
   "vt-area-not-final-speed": {
     id: "vt-area-not-final-speed",
     label: "читает скорость как путь",
@@ -42,6 +48,12 @@ export const misconceptionMetadataById: Record<string, MisconceptionMetadata> = 
     label: "усредняет скорости без учета времени",
     helpSectionId: "average-speed",
     shortHint: "Средняя путевая скорость равна всему пути, делённому на всё время.",
+  },
+  "average-speed-omits-stop": {
+    id: "average-speed-omits-stop",
+    label: "не включает остановку во всё время",
+    helpSectionId: "average-speed",
+    shortHint: "Пока тело стоит, путь не растёт, но общее время движения продолжается.",
   },
   "speed-unit-conversion": {
     id: "speed-unit-conversion",
@@ -190,6 +202,14 @@ export const misconceptionMetadataById: Record<string, MisconceptionMetadata> = 
 };
 
 export const taskLearningMetadataByTemplateId: Record<string, TaskLearningMetadata> = {
+  "archimedes-force": {
+    templateId: "archimedes-force",
+    topicId: "dynamics",
+    helpSectionId: "archimedes-force",
+    skillId: "archimedes-force",
+    focusLabel: "Сила Архимеда",
+    shortHint: "Переведи погружённый объём в м³, затем умножь плотность среды, g и этот объём.",
+  },
   "contact-pressure":{templateId:"contact-pressure",topicId:"dynamics",helpSectionId:"contact-pressure",skillId:"contact-pressure",focusLabel:"Давление на опору",shortHint:"Вырази искомую величину из p=F/S: F — полная сила, S — общая площадь контакта. Согласуй Па, Н и м²."},
   "free-fall": {
     templateId: "free-fall",
@@ -235,6 +255,32 @@ export const taskLearningMetadataByTemplateId: Record<string, TaskLearningMetada
     shortHint: "Считай среднюю путевую скорость через весь путь и всё время движения.",
     misconceptionIds: ["average-speed-arithmetic-mean"],
   },
+  "average-speed-with-stop": {
+    templateId: "average-speed-with-stop",
+    topicId: "kinematics",
+    helpSectionId: "average-speed",
+    skillId: "average-speed-with-stop",
+    focusLabel: "Средняя скорость с остановкой",
+    shortHint: "Сложи весь путь и всё время, включая остановку.",
+    misconceptionIds: ["average-speed-omits-stop", "average-speed-arithmetic-mean"],
+  },
+  "uniform-motion-basic": {
+    templateId: "uniform-motion-basic",
+    topicId: "kinematics",
+    helpSectionId: "uniform-motion",
+    skillId: "uniform-motion-basic",
+    focusLabel: "Путь, скорость и время",
+    shortHint: "Назови неизвестную величину и вырази её из связи s = vt.",
+  },
+  "uniform-motion-graphs": {
+    templateId: "uniform-motion-graphs",
+    topicId: "kinematics",
+    helpSectionId: "uniform-motion-graphs",
+    skillId: "uniform-motion-graphs",
+    focusLabel: "Графики s(t) и v(t)",
+    shortHint: "Прочитай подписи осей, затем определи, что показывает наклон или высота линии.",
+    misconceptionIds: ["uniform-motion-graph-reading"],
+  },
   "unit-conversion-speed": {
     templateId: "unit-conversion-speed",
     topicId: "kinematics",
@@ -244,6 +290,15 @@ export const taskLearningMetadataByTemplateId: Record<string, TaskLearningMetada
     shortHint: "Перед расчетом пути переведи км/ч в м/с, а минуты в секунды.",
     misconceptionIds: ["speed-unit-conversion"],
   },
+  "gravity-force": {
+    templateId: "gravity-force",
+    topicId: "dynamics",
+    helpSectionId: "gravity-force",
+    skillId: "gravity-force",
+    focusLabel: "Сила тяжести и масса",
+    shortHint: "Сила тяжести равна массе, умноженной на g; ответ записывают в ньютонах.",
+  },
+  "hydrostatic-pressure": {templateId:"hydrostatic-pressure",topicId:"dynamics",helpSectionId:"hydrostatic-pressure",skillId:"hydrostatic-pressure",focusLabel:"Давление жидкости на глубине",shortHint:"Умножь плотность на g и глубину, затем переведи паскали в килопаскали."},
   "newton-second": {
     templateId: "newton-second",
     topicId: "dynamics",
@@ -315,6 +370,22 @@ export const taskLearningMetadataByTemplateId: Record<string, TaskLearningMetada
     focusLabel: "Кинетическая энергия",
     shortHint: "Кинетическая энергия зависит от квадрата скорости.",
   },
+  "gravitational-potential-energy": {
+    templateId: "gravitational-potential-energy",
+    topicId: "dynamics",
+    helpSectionId: "potential-energy",
+    skillId: "gravitational-potential-energy",
+    focusLabel: "Потенциальная энергия",
+    shortHint: "Высоту отсчитывай от указанного нулевого уровня: Eₚ = mgh.",
+  },
+  "mechanical-energy-conservation": {
+    templateId: "mechanical-energy-conservation",
+    topicId: "dynamics",
+    helpSectionId: "energy-conservation",
+    skillId: "mechanical-energy-conservation",
+    focusLabel: "Сохранение механической энергии",
+    shortHint: "Без сопротивления сумма Eₖ + Eₚ остаётся постоянной.",
+  },
   "density-volume-ratio": {
     templateId: "density-volume-ratio",
     topicId: "thermodynamics",
@@ -340,6 +411,22 @@ export const taskLearningMetadataByTemplateId: Record<string, TaskLearningMetada
     focusLabel: "Работа силы",
     shortHint: "Смотри на направление силы относительно перемещения: знак работы меняется.",
     misconceptionIds: ["work-sign-error"],
+  },
+  "mechanical-power": {
+    templateId: "mechanical-power",
+    topicId: "dynamics",
+    helpSectionId: "work-energy",
+    skillId: "mechanical-power",
+    focusLabel: "Механическая мощность",
+    shortHint: "Мощность показывает работу за единицу времени: P = A/t.",
+  },
+  "mechanical-efficiency": {
+    templateId: "mechanical-efficiency",
+    topicId: "dynamics",
+    helpSectionId: "work-energy",
+    skillId: "mechanical-efficiency",
+    focusLabel: "КПД механизма",
+    shortHint: "КПД — доля полезной работы во всей совершённой работе.",
   },
   "ohm-law": {
     templateId: "ohm-law",

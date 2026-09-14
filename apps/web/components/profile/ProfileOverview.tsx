@@ -23,14 +23,9 @@ import {
 } from "../../lib/stores/progress-store";
 import { $xp, resetStoredXP } from "../../lib/stores/session-store";
 import { resetLessonDrafts } from "../../lib/learning/lesson-draft";
+import { readNotebook, type InvestigationRecord } from "../../lib/learning/notebook";
 import { resetSavedMotionPractice } from "../../lib/quiz/saved-motion-practice";
 import { clearActiveQuizSnapshot } from "../../lib/quiz/active-session-snapshot";
-import {
-  $learnerGoal,
-  hydrateLearnerGoal,
-  learnerGoalOptions,
-  setLearnerGoal,
-} from "../../lib/stores/learner-goal-store";
 import { topics } from "../../lib/topics";
 import { Badge } from "../ui/Badge";
 import { Button } from "../ui/Button";
@@ -52,6 +47,20 @@ function formatLastPracticed(iso: string | null) {
     day: "numeric",
     month: "long",
   });
+}
+
+function formatNotebookCount(count: number) {
+  const lastTwo = count % 100;
+  const last = count % 10;
+  const noun = lastTwo >= 11 && lastTwo <= 14
+    ? "записей"
+    : last === 1
+      ? "запись"
+      : last >= 2 && last <= 4
+        ? "записи"
+        : "записей";
+
+  return `${count} ${noun}`;
 }
 
 function StatCard({
@@ -133,8 +142,8 @@ function ProfileLoadingState() {
         </div>
       </Card>
 
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-5" aria-hidden="true">
-        {[0, 1, 2, 3, 4].map((item) => (
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4" aria-hidden="true">
+        {[0, 1, 2, 3].map((item) => (
           <Card key={item} variant="semantic" className="flex min-h-[92px] flex-col gap-3 !p-4">
             <span className="h-2 w-2/3 rounded-badge bg-[var(--border-emphasis)]" />
             <span className="h-6 w-1/3 rounded-badge bg-[var(--border-muted)]" />
@@ -185,48 +194,37 @@ function EmptyProgress() {
   );
 }
 
-// Выбор цели вынесен в отдельную тонкую строку. Раньше он жил внутри «плана на
-// сегодня» вместе с пояснением и добавлял ещё один ярус мелкого текста.
-function GoalRow({ goal }: { goal: string | null }) {
-  return (
-    <section
-      aria-label="Цель занятий"
-      className="flex flex-wrap items-center gap-2 rounded-card border border-[var(--border-muted)] bg-[var(--surface-panel)] px-4 py-3"
-    >
-      <span className="text-[12px] font-semibold text-[var(--text-default)]">Готовлюсь к</span>
-      {learnerGoalOptions.map((option) => {
-        const active = goal === option.id;
-        return (
-          <button
-            key={option.id}
-            type="button"
-            aria-pressed={active}
-            onClick={() => setLearnerGoal(active ? null : option.id)}
-            className={`min-h-8 rounded-option border px-3 text-[12px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)] ${
-              active
-                ? "border-[var(--mode-learn-accent)] bg-[var(--mode-learn-soft)] text-[var(--mode-learn-accent)]"
-                : "border-[var(--border-muted)] bg-transparent text-[var(--text-default)] hover:border-[var(--border-emphasis)] hover:bg-[var(--surface-hover)] hover:text-[var(--text-strong)]"
-            }`}
-          >
-            {option.label}
-          </button>
-        );
-      })}
-    </section>
-  );
-}
-
 export function ProfileOverview() {
   const progress = useStore($appProgress);
   const xp = useStore($xp);
   const practiceLog = useStore($practiceLog);
   const examLog = useStore($examLog);
-  const learnerGoal = useStore($learnerGoal);
   const [mounted, setMounted] = useState(false);
+  const [notebookInfo, setNotebookInfo] = useState({
+    notes: 0,
+    investigations: [] as InvestigationRecord[],
+    unavailable: 0,
+  });
 
   useEffect(() => {
-    hydrateLearnerGoal();
+    const refreshNotebook = () => {
+      const notebook = readNotebook();
+      setNotebookInfo({
+        notes: notebook.notes.length,
+        investigations: notebook.investigations,
+        unavailable: notebook.unavailable,
+      });
+    };
+
+    refreshNotebook();
     setMounted(true);
+    window.addEventListener("storage", refreshNotebook);
+    window.addEventListener("focus", refreshNotebook);
+
+    return () => {
+      window.removeEventListener("storage", refreshNotebook);
+      window.removeEventListener("focus", refreshNotebook);
+    };
   }, []);
 
   if (!mounted) {
@@ -250,7 +248,7 @@ export function ProfileOverview() {
     (sum, { progress: p }) => sum + (p?.completedSessions ?? 0),
     0,
   );
-  const topicsStarted = perTopic.filter(
+  const sectionsStarted = perTopic.filter(
     ({ progress: p }) => (p?.completedSessions ?? 0) > 0 || (p?.solved ?? 0) > 0,
   ).length;
   const evidenceEntries = perTopic.flatMap(({ progress: topicProgress }) =>
@@ -266,14 +264,32 @@ export function ProfileOverview() {
   ).size;
   const streak = calcStreak(practiceLog, toDayKey(new Date()));
   const bestExam = getBestAttempt(examLog);
-  const nextStep = getLearningNextStep(progress, Boolean(bestExam));
   const reviewPlan = buildReviewPlan(progress, 3);
   const dueReviews = countDueReviews(progress);
   const hasPendingMistakes = Object.keys(progress.pendingMistakes).length > 0;
+  const hasOnlyNotebookEvidence =
+    notebookInfo.notes > 0 &&
+    totalSolved === 0 &&
+    totalSessions === 0 &&
+    examLog.length === 0 &&
+    !hasPendingMistakes;
+  const nextStep = hasOnlyNotebookEvidence
+    ? {
+        label: "Блокнот",
+        title: "Вернуться к своей записи",
+        body: `В блокноте сохранено: ${formatNotebookCount(notebookInfo.notes)}.`,
+        reason: "Это твой текст, а не оценка. Из записи можно вернуться в исходный урок.",
+        href: "/profile/notebook",
+        cta: "Открыть блокнот",
+        tone: "cyan" as const,
+        mode: "learn" as const,
+      }
+    : getLearningNextStep(progress, Boolean(bestExam));
   const isFirstVisit =
     totalSolved === 0 &&
     totalSessions === 0 &&
     examLog.length === 0 &&
+    notebookInfo.notes === 0 &&
     !hasPendingMistakes;
 
   const handleReset = () => {
@@ -294,16 +310,8 @@ export function ProfileOverview() {
 
   return (
     <div className="flex flex-col gap-6">
-      <Link href="/profile/notebook" className="flex min-h-14 items-center justify-between gap-4 rounded-xl border border-[var(--border-strong)] bg-[var(--surface-primary)] p-4 text-[var(--text-primary)] focus-visible:outline-2 focus-visible:outline-offset-4">
-        <span className="font-bold">Мой блокнот</span><span className="text-sm text-[var(--text-secondary)]">Объяснения и личные заметки</span>
-      </Link>
       {isFirstVisit ? (
-        <>
-          {/* Первый визит: одна ясная карточка «с чего начать» вместо двух
-              соперничающих призывов. Дальше — только выбор цели. */}
-          <EmptyProgress />
-          <GoalRow goal={learnerGoal} />
-        </>
+        <EmptyProgress />
       ) : (
       <>
       {/* План на сегодня: заголовок и одна кнопка ведут, остальное — тонким
@@ -333,7 +341,7 @@ export function ProfileOverview() {
                 <MathText text={nextStep.body} />
               </p>
               <p className="mt-2 max-w-[560px] text-[12px] leading-[1.55] text-[var(--text-quiet)]">
-                Почему сейчас: {nextStep.reason}
+                {nextStep.reason}
               </p>
             </div>
             <div className="flex shrink-0 items-baseline gap-1.5" title="Опыт за верные ответы">
@@ -371,6 +379,8 @@ export function ProfileOverview() {
               <p className="min-w-0 text-[12px] leading-[1.5] text-[var(--text-default)]">
                 {hasPendingMistakes
                   ? "Ошибка уже сохранена — можно продолжить с места, где ответ сбился."
+                  : notebookInfo.notes > 0 && totalSolved === 0
+                  ? "Твоя запись сохранена. Её можно перечитать в блокноте и проверить на задачах."
                   : totalSolved === 0
                   ? "Один короткий подход — и будет от чего оттолкнуться."
                   : `${totalCorrect} из ${totalSolved} решений сошлись с ответом.`}
@@ -383,131 +393,123 @@ export function ProfileOverview() {
         </Card>
       </section>
 
-      <GoalRow goal={learnerGoal} />
-
       {transferEvidenceCount > 0 ? (
         <section className="flex flex-col gap-3" aria-label="Проверки понимания">
           <div>
             <h2 className="type-h2 text-[var(--text-strong)]">Что уже проверено</h2>
             <p className="mt-1 max-w-[680px] text-[12px] leading-[1.55] text-[var(--text-default)]">
-              Здесь считаются отдельные навыки, а не вся тема: сначала задача без подсказки,
-              затем повторное решение после перерыва не меньше суток.
+              Отмечаем типы задач, которые получилось решить без подсказки, и
+              отдельно проверяем, получилось ли повторить решение после перерыва.
             </p>
           </div>
           <Card variant="semantic" className="grid gap-3 !p-4 sm:grid-cols-2">
             <div className="rounded-option bg-[var(--surface-panel)] p-4">
-              <p className="type-meta">Перенос без подсказки</p>
+              <p className="type-meta">Получилось без подсказки</p>
               <p className="mt-1 text-[26px] font-[800] tabular-nums text-[var(--text-strong)]">
                 {transferEvidenceCount}
               </p>
               <p className="mt-1 text-[11px] leading-[1.45] text-[var(--text-default)]">
-                навыков получилось распознать в смешанном наборе
+                типов задач в смешанной тренировке
               </p>
             </div>
             <div className="rounded-option bg-[var(--surface-panel)] p-4">
-              <p className="type-meta">Воспроизведено позже</p>
+              <p className="type-meta">Получилось снова</p>
               <p className="mt-1 text-[26px] font-[800] tabular-nums text-[var(--text-strong)]">
                 {delayedRecallCount}
               </p>
               <p className="mt-1 text-[11px] leading-[1.45] text-[var(--text-default)]">
-                навыков повторно решены с первой попытки спустя минимум сутки
+                типов задач решены снова после перерыва
               </p>
             </div>
           </Card>
         </section>
       ) : null}
 
-      {/* Плитки статистики: 2 в ряд уже на телефоне, а не цепочкой в столбик. */}
       <section
-        className="grid grid-cols-2 gap-3 lg:grid-cols-5"
+        className="grid grid-cols-2 gap-3 lg:grid-cols-4"
         aria-label="Как идут занятия"
       >
         <StatCard
-          label="Решено"
+          label="Решено задач"
           value={String(totalSolved)}
           hint={totalSolved > 0 ? `${totalCorrect} ответов сошлись` : undefined}
         />
         <StatCard
-          label="Подходов"
+          label="Тренировок"
           value={String(totalSessions)}
-          hint={`${topicsStarted} из ${topics.length} тем попробовано`}
+          hint={`Разделов с практикой: ${sectionsStarted} из ${topics.length}`}
         />
         <StatCard
-          label="Вернуться сегодня"
-          value={String(dueReviews)}
-          hint={dueReviews > 0 ? "коротких повторений" : "можно двигаться дальше"}
-        />
-        <StatCard
-          label="Смешанных заходов"
+          label="Пробных работ"
           value={String(examLog.length)}
-          hint={bestExam ? `в одном сошлось ${bestExam.score} из ${bestExam.total}` : "10 задач · 5 тем"}
+          hint={bestExam ? `Лучший результат: ${bestExam.score} из ${bestExam.total}` : "Пока не было"}
         />
         <StatCard
           label="Дней подряд"
           value={String(streak)}
           hint="день = завершённая тренировка"
-          className="col-span-2 lg:col-span-1"
         >
           <WeekDots log={practiceLog} />
         </StatCard>
       </section>
 
-      {reviewPlan.length > 0 ? (
-        <section className="flex flex-col gap-3" aria-label="План повторения">
-          <h2 className="type-h2 text-[var(--text-strong)]">
-            Что повторить
-          </h2>
-          <div className="grid gap-3 md:grid-cols-3">
-            {reviewPlan.map((item) => (
-              <Card
-                key={item.key}
-                variant="semantic"
-                className="flex flex-col gap-3 !p-4"
+      {notebookInfo.investigations.length > 0 ? (
+        <section className="flex flex-col gap-3" aria-labelledby="investigations-title">
+          <div>
+            <h2 id="investigations-title" className="type-h2 text-[var(--text-strong)]">
+              Завершённые исследования
+            </h2>
+            <p className="mt-1 max-w-[680px] text-[12px] leading-[1.55] text-[var(--text-default)]">
+              Здесь только опыты, где ты дошёл до финального шага и сохранил
+              собственный итог. Это история работы, а не оценка объяснения.
+            </p>
+          </div>
+          <div className="divide-y divide-[var(--border-muted)] overflow-hidden rounded-card border border-[var(--border-strong)] bg-[var(--surface-primary)]">
+            {notebookInfo.investigations.map((investigation) => (
+              <Link
+                key={investigation.id}
+                href={investigation.href}
+                className="group flex min-h-20 flex-col justify-between gap-3 px-4 py-4 text-[var(--text-primary)] transition-colors hover:bg-[var(--surface-hover)] focus-visible:outline-2 focus-visible:outline-offset-[-2px] sm:flex-row sm:items-center sm:px-5"
               >
-                <div className="flex flex-wrap items-center gap-2">
-                  <Badge tone={item.urgency === "today" ? "gold" : "cyan"}>
-                    {item.dueLabel}
-                  </Badge>
-                  {item.topicTitle ? (
-                    <span className="text-[11px] font-bold uppercase tracking-[.1em] text-[var(--text-quiet)]">
-                      {item.topicTitle}
-                    </span>
-                  ) : null}
-                </div>
-                <div className="flex flex-1 flex-col gap-1.5">
-                  <h3 className="text-[15px] font-[800] leading-snug text-[var(--text-strong)]">
-                    {item.skillTitle}
-                  </h3>
-                  <p className="text-[12px] leading-[1.55] text-[var(--text-default)]">
-                    <MathText text={item.hint} />
-                  </p>
-                  <p className="text-[11px] font-semibold leading-[1.45] text-[var(--text-quiet)]">
-                    {item.reason}
-                  </p>
-                </div>
-                <div className="mt-auto flex flex-col items-start gap-2">
-                  <Button asChild size="sm" variant="ghost">
-                    <Link href={item.practiceHref ?? item.fallbackHref}>
-                      {item.isPending
-                        ? "Продолжить задачу"
-                        : item.practiceHref
-                          ? "Решить 5 похожих"
-                          : "Открыть каталог"}
-                    </Link>
-                  </Button>
-                  {item.taskHref ? (
-                    <Link
-                      href={item.taskHref}
-                      className="rounded-option px-1 text-[12px] font-semibold text-[var(--mode-learn-accent)] transition-colors hover:text-[var(--text-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
-                    >
-                      {item.hasReferenceSolution ? "Открыть решение" : "Открыть тип"}
-                    </Link>
-                  ) : null}
-                </div>
-              </Card>
+                <span className="min-w-0">
+                  <span className="block text-[15px] font-[800] text-[var(--text-strong)]">
+                    {investigation.title}
+                  </span>
+                  <span className="mt-1 line-clamp-2 block text-[12px] leading-[1.55] text-[var(--text-default)]">
+                    «{investigation.text}»
+                  </span>
+                </span>
+                <span className="shrink-0 text-sm font-bold text-[var(--mode-learn-accent)]">
+                  Открыть итог →
+                </span>
+              </Link>
             ))}
           </div>
         </section>
+      ) : null}
+
+      {reviewPlan.length > 0 ? (
+        <Link
+          href="/mistakes"
+          className="group flex min-h-24 flex-col justify-between gap-4 rounded-card border border-[var(--border-strong)] bg-[var(--surface-primary)] p-5 text-[var(--text-primary)] transition-colors hover:bg-[var(--surface-hover)] focus-visible:outline-2 focus-visible:outline-offset-4 sm:flex-row sm:items-center"
+        >
+          <div>
+            <p className="type-meta">К трудному</p>
+            <h2 className="mt-1 text-[18px] font-[800] text-[var(--text-strong)]">
+              {hasPendingMistakes ? "Продолжить незаконченный ответ" : reviewPlan[0].skillTitle}
+            </h2>
+            <p className="mt-1 text-[12px] leading-[1.55] text-[var(--text-default)]">
+              {hasPendingMistakes
+                ? "Условие и ответ сохранены. Можно вернуться с того же места."
+                : dueReviews > 0
+                  ? "Сегодня есть короткое повторение."
+                  : "Можно вспомнить объяснение или решить похожие задачи."}
+            </p>
+          </div>
+          <span className="shrink-0 text-sm font-bold text-[var(--mode-learn-accent)]">
+            Открыть →
+          </span>
+        </Link>
       ) : null}
 
       <section className="flex flex-col gap-3" aria-label="Прогресс по темам">
@@ -563,6 +565,17 @@ export function ProfileOverview() {
         </div>
       </section>
 
+      <Link href="/profile/notebook" className="flex min-h-14 items-center justify-between gap-4 rounded-xl border border-[var(--border-strong)] bg-[var(--surface-primary)] p-4 text-[var(--text-primary)] focus-visible:outline-2 focus-visible:outline-offset-4">
+        <span className="font-bold">Мой блокнот</span>
+        <span className="text-right text-sm text-[var(--text-secondary)]">
+          {notebookInfo.notes > 0
+            ? formatNotebookCount(notebookInfo.notes)
+            : notebookInfo.unavailable > 0
+              ? "Есть нечитаемые записи"
+              : "Объяснения и личные заметки"}
+        </span>
+      </Link>
+
       </>
       )}
 
@@ -577,7 +590,7 @@ export function ProfileOverview() {
         </p>
         <DataTransfer
           suggestBackup={!isFirstVisit}
-          backupFingerprint={`${totalSolved}:${totalSessions}:${examLog.length}:${practiceLog.length}`}
+          backupFingerprint={`${totalSolved}:${totalSessions}:${examLog.length}:${practiceLog.length}:${notebookInfo.notes}:${notebookInfo.unavailable}`}
         />
         <div className="flex flex-col items-start gap-2 border-t border-[var(--border-muted)] pt-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
           <p className="text-[11px] leading-[1.5] text-[var(--text-default)]">

@@ -9,7 +9,9 @@ import {
   getFormulaReferenceView,
   getLearningDestination,
   getLearningDestinationForFamily,
+  getChapterPracticeReturn,
 } from "./learning-links.ts";
+import { getTextbookChapter } from "./textbook.ts";
 import { taskLearningMetadataByTemplateId } from "./task-metadata.ts";
 import { skillMetadata } from "./taxonomy.ts";
 
@@ -63,4 +65,43 @@ test("reference solution pilots remain an explicit subset of task families", () 
   }
 
   assert.equal(getReferenceSolution("unit-conversion-speed"), undefined);
+});
+
+test("textbook explanations point to existing chapters and return to the same task family", () => {
+  for (const template of templateRegistry) {
+    const destination = getLearningDestinationForFamily(template.id);
+    if (!destination?.explanation) continue;
+    const url = new URL(destination.explanation.href, "https://physicslab.test");
+    if (!url.pathname.startsWith("/learn/")) continue;
+    const chapterId = url.pathname.split("/").pop()!;
+    assert.ok(getTextbookChapter(chapterId), `Missing chapter for ${template.id}`);
+    assert.equal(url.searchParams.get("practice"), template.id);
+    assert.equal(getChapterPracticeReturn(chapterId, template.id)?.href, destination.practiceHref);
+  }
+});
+
+test("families keep their current exact explanation routes", () => {
+  assert.deepEqual(getLearningDestinationForFamily("newton-second")?.explanation, {
+    href: "/learn/newton-second-law?practice=newton-second",
+    label: "Как сила и масса определяют ускорение",
+  });
+  assert.deepEqual(getLearningDestinationForFamily("ohm-law")?.explanation, {
+    href: "/learn/electric-current-and-ohms-law?practice=ohm-law",
+    label: "Как связаны ток, напряжение и сопротивление",
+  });
+  assert.deepEqual(getLearningDestinationForFamily("reflection-angle")?.explanation, {
+    href: "/learn/reflection-of-light?practice=reflection-angle",
+    label: "Откуда считать углы падения и отражения",
+  });
+  assert.equal(getChapterPracticeReturn("newton-second-law", "newton-second")?.href, "/practice/family/newton-second");
+  assert.equal(getChapterPracticeReturn("electric-current-and-ohms-law", "ohm-law")?.href, "/practice/family/ohm-law");
+  assert.equal(getChapterPracticeReturn("reflection-of-light", "reflection-angle")?.href, "/practice/family/reflection-angle");
+});
+
+test("chapter return ignores foreign, unrelated and missing task origins", () => {
+  assert.equal(getChapterPracticeReturn("density", "contact-pressure"), null);
+  assert.equal(getChapterPracticeReturn("density", "https://example.com"), null);
+  assert.equal(getChapterPracticeReturn("density", ""), null);
+  assert.equal(getChapterPracticeReturn("unknown", "density-volume-ratio"), null);
+  assert.equal(getChapterPracticeReturn("density", "density-volume-ratio")?.href, "/practice/family/density-volume-ratio");
 });

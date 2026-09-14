@@ -73,9 +73,36 @@
 .openingStage {
   display: grid;
   align-items: center;
-  padding: clamp(30px, 6vw, 64px);
+  overflow: hidden;
   grid-template-columns: minmax(0, 1.08fr) minmax(280px, 0.92fr);
-  gap: clamp(30px, 6vw, 72px);
+  gap: 0;
+}
+
+.openingArt {
+  align-self: stretch;
+  margin: 0;
+  background: var(--lesson-panel-deep);
+}
+
+.openingArt img {
+  display: block;
+  width: 100%;
+  height: calc(100% - 62px);
+  min-height: 380px;
+  object-fit: cover;
+  object-position: center;
+}
+
+.openingArt figcaption {
+  min-height: 62px;
+  padding: 12px 16px;
+  color: var(--lesson-muted);
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.openingCopy {
+  padding: clamp(30px, 5vw, 58px);
 }
 
 .openingCopy h2,
@@ -189,23 +216,30 @@
 .experimentHead { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; margin-bottom: 26px; }
 .experimentHead h3 { margin: 6px 0 0; font-size: 23px; letter-spacing: -0.02em; }
 .timeChip { flex: none; padding: 6px 9px; border: 1px solid rgba(24, 199, 222, 0.35); border-radius: 999px; color: var(--lesson-cyan); font-size: 10px; font-weight: 820; }
-.traceStack { display: grid; gap: 28px; }
-.traceRow { display: grid; align-items: center; grid-template-columns: 130px minmax(0, 1fr) 132px; gap: 16px; }
-.traceMeta { display: grid; gap: 4px; color: var(--lesson-muted); font-size: 11px; }
-.traceName { color: var(--lesson-text); font-size: 14px; font-weight: 850; }
-.traceTrack { position: relative; height: 56px; border-bottom: 2px solid rgba(238, 233, 226, 0.42); background: repeating-linear-gradient(90deg, transparent 0 15%, rgba(238, 233, 226, 0.11) 15% calc(15% + 2px), transparent calc(15% + 2px) 16.66%); }
-.trackStart,
-.trackEnd { position: absolute; bottom: 8px; color: rgba(238, 233, 226, 0.44); font-size: 9px; }
-.trackStart { left: 0; }
-.trackEnd { right: 0; }
-.traceMarker { position: absolute; z-index: 2; bottom: -7px; width: 34px; height: 15px; transform: translateX(-50%); border: 2px solid var(--lesson-cyan); border-radius: 5px 5px 3px 3px; background: linear-gradient(180deg, color-mix(in srgb, var(--lesson-cyan) 44%, #26333c), #111820); box-shadow: 0 0 0 2px var(--lesson-panel-deep), 0 5px 12px rgba(0, 0, 0, 0.34); }
-.traceMarker::before { position: absolute; bottom: 100%; left: 50%; width: 14px; height: 7px; border: 2px solid currentColor; border-bottom: 0; border-radius: 3px 3px 0 0; content: ""; transform: translateX(-50%); }
-.traceMarker::after { position: absolute; top: calc(100% + 2px); left: 4px; width: 22px; height: 2px; border-radius: 999px; background: currentColor; box-shadow: 0 0 7px currentColor; content: ""; opacity: 0.55; }
-.traceRow:nth-child(2) .traceMarker { border-color: var(--lesson-warm); background: linear-gradient(180deg, color-mix(in srgb, var(--lesson-warm) 42%, #2b3034), #111820); color: var(--lesson-warm); }
-.traceRow:first-child .traceMarker { color: var(--lesson-cyan); }
-.traceTrail { position: absolute; bottom: -1px; left: 5%; width: 81%; height: 2px; transform-origin: left; background: linear-gradient(90deg, rgba(32, 197, 221, 0.08), var(--lesson-cyan)); }
-.traceRow:nth-child(2) .traceTrail { width: 43%; background: linear-gradient(90deg, rgba(232, 173, 103, 0.08), var(--lesson-warm)); }
-.traceResult { color: var(--lesson-text); font-size: 15px; text-align: right; }
+.experimentRows { display: grid; border-top: 1px solid rgba(238, 233, 226, 0.14); }
+.experimentRow { display: grid; align-items: center; min-height: 76px; padding-block: 12px; border-bottom: 1px solid rgba(238, 233, 226, 0.14); grid-template-columns: minmax(126px, 0.8fr) minmax(64px, 0.42fr) minmax(64px, 0.42fr) minmax(190px, 1.25fr); gap: 14px; }
+.caseName { font-size: 14px; }
+.experimentRow > span { display: grid; gap: 4px; }
+.experimentRow small { color: var(--lesson-muted); font-size: 9px; font-weight: 750; letter-spacing: 0.06em; text-transform: uppercase; }
+.experimentRow b { font-size: 13px; line-height: 1.45; }
+.caseResult b { color: var(--lesson-cyan); }
+.casePending b { color: var(--lesson-muted); }
+.caseMeasures { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.caseMeasures span { display: grid; gap: 2px; }
+.caseMeasures em { color: var(--lesson-muted); font-size: 8px; font-style: normal; font-weight: 750; letter-spacing: 0.05em; text-transform: uppercase; }
+.textbookExperiment {
+  --lesson-bg: #10141a;
+  --lesson-panel: #151b22;
+  --lesson-panel-deep: #0c1117;
+  --lesson-text: #eee9e2;
+  --lesson-muted: rgba(238, 233, 226, 0.66);
+  --lesson-cyan: #18c7de;
+  --lesson-warm: #e8ad67;
+  display: grid;
+  gap: 14px;
+  color: var(--lesson-text);
+}
+.textbookExperiment .runButton { justify-self: start; margin: 0; }
 .experiment figcaption,
 .forceFigure figcaption,
 .brakingFigure figcaption { margin-top: 24px; color: var(--lesson-muted); font-size: 13px; line-height: 1.55; }
@@ -220,14 +254,6 @@
 
 .experimentCompact .experimentHead h3 {
   font-size: var(--physics-type-title);
-}
-
-.experimentCompact .traceStack {
-  gap: 16px;
-}
-
-.experimentCompact .traceTrack {
-  height: 46px;
 }
 
 .experimentCompact figcaption {
@@ -258,27 +284,17 @@
 .feedback_try { border-color: var(--lesson-warm); }
 .feedback_note { border-color: var(--lesson-warm); }
 
-.forceFigure { max-width: 820px; margin: 0; padding: 10px 22px 18px; border-top: 1px solid rgba(238, 233, 226, 0.13); border-bottom: 1px solid rgba(238, 233, 226, 0.13); background: rgba(9, 13, 18, 0.34); }
-.forceFigure svg,
-.brakingFigure svg { display: block; width: 100%; height: auto; overflow: visible; }
-.forceFigureCompact { padding: 0 10px 14px; }
-.diagramGround { stroke: rgba(238, 233, 226, 0.38); stroke-width: 3; }
-.airTrackRail { stroke: rgba(238, 233, 226, 0.7); stroke-width: 5; }
-.airTrackEdge { stroke: rgba(24, 199, 222, 0.2); stroke-width: 3; }
-.gliderBody { fill: #17242d; stroke: rgba(238, 233, 226, 0.76); stroke-linejoin: round; stroke-width: 3; }
-.gliderMass { fill: color-mix(in srgb, var(--lesson-warm) 24%, #17242d); stroke: var(--lesson-warm); stroke-width: 2; }
-.gliderRunner { fill: rgba(24, 199, 222, 0.18); stroke: var(--lesson-cyan); stroke-width: 2; }
-.gliderVent { fill: var(--lesson-cyan); opacity: 0.72; }
-.diagramWheel { fill: #0a0e13; stroke: rgba(238, 233, 226, 0.64); stroke-width: 3; }
-.diagramBodyLabel,
-.diagramForceLabel { fill: var(--lesson-text); font-family: inherit; font-size: 24px; font-weight: 780; }
-.diagramForceLabel { font-size: 21px; }
-.diagramQuestion { fill: var(--lesson-cyan); font-family: var(--font-physics-math); font-size: 34px; font-weight: 700; }
-.diagramArrow { stroke: rgba(238, 233, 226, 0.85); stroke-width: 5; }
-.diagramArrowPink { stroke: var(--lesson-warm); }
-.diagramArrowCyan { stroke: var(--lesson-cyan); }
-.forceFigure marker path,
-.brakingFigure marker path { fill: context-stroke; }
+.forceFigure { max-width: 820px; margin: 0; padding: 18px 22px; border-top: 1px solid rgba(238, 233, 226, 0.13); border-bottom: 1px solid rgba(238, 233, 226, 0.13); background: rgba(9, 13, 18, 0.34); }
+.forceFigureCompact { padding: 16px 18px; }
+.forceRecord { display: grid; gap: 10px; }
+.forceRecord > div { display: grid; align-items: center; min-height: 46px; padding: 8px 0; border-bottom: 1px solid rgba(238, 233, 226, 0.1); grid-template-columns: minmax(130px, 1fr) minmax(160px, 1fr); gap: 18px; }
+.forceRecord span { color: var(--lesson-muted); font-size: 12px; }
+.forceRecord strong { display: inline-flex; align-items: center; justify-content: flex-end; gap: 8px; font-family: var(--font-physics-numeric); font-size: 19px; }
+.forceRecord > div:first-child strong { color: var(--lesson-cyan); }
+.forceRecord > div:nth-child(2) strong { color: var(--lesson-warm); }
+.forceRecord .forceResult { margin-top: 3px; padding: 12px 14px; border-bottom: 0; background: rgba(24, 199, 222, 0.08); }
+.forceRecord .forceResult strong { color: var(--lesson-cyan); font-size: 23px; }
+.forceRecord > p { margin: 4px 0 0; color: var(--lesson-muted); font-size: 12px; }
 .cancellation {
   display: grid;
   max-width: 820px;
@@ -417,17 +433,17 @@
 .brakingStage { display: grid; overflow: hidden; grid-template-columns: minmax(360px, 0.95fr) minmax(420px, 1.05fr); }
 .brakingVisual { display: grid; align-items: center; min-width: 0; padding: clamp(20px, 4vw, 48px); border-right: 1px solid rgba(238, 233, 226, 0.12); background: rgba(7, 11, 16, 0.42); }
 .brakingFigure { margin: 0; }
-.bicycleWheel { fill: rgba(9, 13, 18, 0.46); stroke: rgba(238, 233, 226, 0.75); stroke-width: 5; }
-.bicycleHub { fill: var(--lesson-warm); }
-.bicycleFrame { fill: none; stroke: var(--lesson-cyan); stroke-linecap: round; stroke-linejoin: round; stroke-width: 7; }
-.bicycleDetail { fill: none; stroke: rgba(238, 233, 226, 0.72); stroke-linecap: round; stroke-linejoin: round; stroke-width: 5; }
-.bicycleCrank { fill: #10161d; stroke: var(--lesson-warm); stroke-width: 4; }
-.riderHead { fill: color-mix(in srgb, var(--lesson-warm) 34%, #d8c2aa); stroke: rgba(238, 233, 226, 0.7); stroke-width: 3; }
-.riderBody { fill: #1c2a34; stroke: rgba(238, 233, 226, 0.76); stroke-linejoin: round; stroke-width: 3; }
-.riderLimb { fill: none; stroke: rgba(238, 233, 226, 0.8); stroke-linecap: round; stroke-linejoin: round; stroke-width: 9; }
-.helmet { fill: var(--lesson-warm); stroke: rgba(238, 233, 226, 0.64); stroke-linejoin: round; stroke-width: 2; }
+.brakingArtWrap { overflow: hidden; aspect-ratio: 3 / 2; }
+.brakingArt { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 42% center; }
+.brakingDirections { display: grid; margin-top: 14px; border-top: 1px solid rgba(238, 233, 226, 0.13); }
+.brakingDirections p { display: grid; align-items: center; margin: 0; padding: 9px 0; border-bottom: 1px solid rgba(238, 233, 226, 0.1); grid-template-columns: 1fr 1fr; gap: 12px; }
+.brakingDirections span { color: var(--lesson-muted); font-size: 10px; text-transform: uppercase; }
+.brakingDirections strong { display: inline-flex; align-items: center; justify-content: flex-end; gap: 7px; font-size: 13px; }
+.brakingDirections p:first-child strong { color: var(--lesson-cyan); }
+.brakingDirections p:not(:first-child) strong { color: var(--lesson-warm); }
 .brakingCopy { align-self: center; padding: clamp(30px, 5vw, 60px); }
 .brakingCopy .answerField { max-width: 390px; margin-top: 28px; }
+.transferConversion { display: flex; flex-wrap: wrap; gap: 6px; margin: 16px 0 0; color: var(--lesson-muted); font-size: 13px; }
 .practiceLinks { display: grid; gap: 10px; margin-top: 22px; }
 .practiceLink,
 .practiceLinkSecondary { display: inline-flex; min-height: 50px; align-items: center; justify-content: center; gap: 10px; padding: 0 18px; border-radius: 5px; font-size: 14px; font-weight: 850; text-decoration: none; }
@@ -469,7 +485,10 @@
   .openingStage,
   .heroGrid,
   .brakingStage { min-height: 0; grid-template-columns: 1fr; }
-  .openingStage { padding: 26px 18px 22px; gap: 22px; }
+  .openingStage { padding: 0; gap: 0; }
+  .openingArt img { height: 220px; min-height: 0; object-position: center 56%; }
+  .openingArt figcaption { min-height: 0; padding: 10px 14px; font-size: 11px; }
+  .openingCopy { padding: 22px 18px 26px; }
   .openingCopy h2,
   .heroQuestion h2,
   .stageIntro h2,
@@ -496,33 +515,17 @@
   .experimentHead { align-items: flex-start; margin-bottom: 12px; }
   .experimentHead h3 { font-size: 16px; }
   .timeChip { padding: 4px 6px; font-size: 9px; }
-  .traceStack { gap: 14px; }
-  .traceRow { grid-template-columns: 86px minmax(0, 1fr); gap: 8px; }
-  .traceMeta { font-size: 9px; }
-  .traceName { font-size: 11px; }
-  .traceTrack { height: 40px; }
-  .traceResult { grid-column: 2; margin-top: -6px; font-size: 12px; text-align: left; }
+  .experimentRow { min-height: 0; padding: 10px 2px; grid-template-columns: 1fr 1fr; gap: 9px 12px; }
+  .caseName { grid-column: 1 / -1; font-size: 13px; }
+  .caseResult,
+  .casePending { grid-column: 1 / -1; padding-top: 3px; }
+  .experimentRow b { font-size: 12px; }
   .experiment figcaption,
   .forceFigure figcaption { margin-top: 11px; }
   .experimentCompact { padding: 7px 8px; }
   .experimentCompact .experimentHead { margin-bottom: 5px; }
   .experimentCompact .experimentHead > div > .eyebrow { display: none; }
   .experimentCompact .experimentHead h3 { font-size: 14px; }
-  .experimentCompact .traceStack { gap: 5px; }
-  .experimentCompact .traceRow { grid-template-columns: 76px minmax(0, 1fr); gap: 6px; }
-  .experimentCompact .traceMeta {
-    display: flex;
-    align-items: baseline;
-    flex-wrap: wrap;
-    column-gap: 5px;
-    row-gap: 0;
-  }
-  .experimentCompact .traceMeta .traceName { flex-basis: 100%; }
-  .experimentCompact .traceMeta > span:not(.traceName) { line-height: 1.15; }
-  .experimentCompact .traceTrack { height: 28px; }
-  .experimentCompact .traceResult { margin-top: -5px; font-size: 10px; }
-  .experimentCompact .trackStart,
-  .experimentCompact .trackEnd { display: none; }
   .experimentCompact figcaption { margin-top: 4px; font-size: 9px; line-height: 1.35; }
   .heroQuestion { padding-top: 16px; padding-bottom: 18px; }
   .heroQuestion .lead { margin-top: 10px; font-size: 0.88rem; line-height: 1.48; }
@@ -530,8 +533,10 @@
   .startNotes p { padding: 11px 0; font-size: 13px; line-height: 1.42; }
   .startNotes span { display: inline; margin: 0 0.35rem 0 0; font-size: 11px; }
   .forceFigure { padding: 0 6px 14px; }
-  .forceFigure svg { margin: -2px 0; }
-  .diagramForceLabel { font-size: 24px; }
+  .forceRecord > div { grid-template-columns: 1fr auto; gap: 10px; }
+  .forceRecord strong { font-size: 16px; }
+  .forceRecord .forceResult { padding: 10px; }
+  .forceRecord .forceResult strong { font-size: 19px; }
   .cancellation { grid-template-columns: 1fr; gap: 18px; }
   .cancelPair { grid-template-columns: minmax(72px, 1fr) 86px minmax(72px, 1fr); gap: 7px; }
   .leftForce,
@@ -546,8 +551,10 @@
   .schoolSolution { grid-template-columns: 1fr; gap: 24px; }
   .givenBlock { padding-right: 0; padding-bottom: 18px; border-right: 0; border-bottom: 1px solid rgba(238, 233, 226, 0.15); }
   .answerPair { grid-template-columns: 1fr; gap: 18px; }
-  .brakingVisual { padding: 14px 8px; }
-  .brakingFigure svg { margin: -12px 0; }
+  .brakingVisual { padding: 0 0 16px; }
+  .brakingArtWrap { aspect-ratio: 16 / 9; }
+  .brakingDirections,
+  .brakingFigure figcaption { margin-inline: 14px; }
   .brakingFigure figcaption { margin-top: 10px; }
   .brakingCopy .answerField { margin-top: 22px; }
   /* На мобильном footer следует за учебным содержанием, как в TopicPrimer.

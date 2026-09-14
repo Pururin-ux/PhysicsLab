@@ -1,15 +1,23 @@
 import { pathToFileURL } from "node:url";
 import { contactPressureBlueprint } from "./templates/contact-pressure.ts";
+import { archimedesForceBlueprint } from "./templates/archimedes-force.ts";
 import { averageSpeedSegmentsBlueprint } from "./templates/average-speed-segments.ts";
+import { averageSpeedWithStopBlueprint } from "./templates/average-speed-with-stop.ts";
 import { capacitorEnergyBlueprint } from "./templates/capacitor-energy.ts";
 import { chargeSharingBlueprint } from "./templates/charge-sharing.ts";
 import { densityVolumeRatioBlueprint } from "./templates/density-volume-ratio.ts";
 import { electricPowerBlueprint } from "./templates/electric-power.ts";
 import { frictionForceBlueprint } from "./templates/friction-force.ts";
 import { freeFallBlueprint } from "./templates/free-fall.ts";
+import { gravityForceBlueprint } from "./templates/gravity-force.ts";
+import { gravitationalPotentialEnergyBlueprint } from "./templates/gravitational-potential-energy.ts";
 import { gasStateRatioBlueprint } from "./templates/gas-state-ratio.ts";
 import { heatBalanceSimpleBlueprint } from "./templates/heat-balance-simple.ts";
 import { heatAmountBlueprint } from "./templates/heat-amount.ts";
+import { hydrostaticPressureBlueprint } from "./templates/hydrostatic-pressure.ts";
+import { mechanicalPowerBlueprint } from "./templates/mechanical-power.ts";
+import { mechanicalEfficiencyBlueprint } from "./templates/mechanical-efficiency.ts";
+import { mechanicalEnergyConservationBlueprint } from "./templates/mechanical-energy-conservation.ts";
 import { idealGasStateBlueprint } from "./templates/ideal-gas-state.ts";
 import { impulseMomentumBlueprint } from "./templates/impulse-momentum.ts";
 import { inclineForceBlueprint } from "./templates/incline-force.ts";
@@ -30,6 +38,8 @@ import { resistorNetworkBlueprint } from "./templates/resistor-network.ts";
 import { resultantForceBlueprint } from "./templates/resultant-force.ts";
 import { resultantForce2dBlueprint } from "./templates/resultant-force-2d.ts";
 import { sourceInternalResistanceBlueprint } from "./templates/source-internal-resistance.ts";
+import { uniformMotionBasicBlueprint } from "./templates/uniform-motion-basic.ts";
+import { uniformMotionGraphsBlueprint } from "./templates/uniform-motion-graphs.ts";
 import { unitConversionSpeedBlueprint } from "./templates/unit-conversion-speed.ts";
 import { vtAreaBlueprint } from "./templates/vt-area.ts";
 import { vtSlopeBlueprint } from "./templates/vt-slope.ts";
@@ -59,13 +69,23 @@ const candidateCache = new Map<string, Params[]>();
 const difficultyCandidateCache = new Map<string, Params[]>();
 
 export const blueprints = {
+  "archimedes-force": archimedesForceBlueprint,
   "contact-pressure": contactPressureBlueprint,
   "free-fall": freeFallBlueprint,
   "vt-slope": vtSlopeBlueprint,
   "vt-area": vtAreaBlueprint,
   "relative-velocity-vectors": relativeVelocityVectorsBlueprint,
   "average-speed-segments": averageSpeedSegmentsBlueprint,
+  "average-speed-with-stop": averageSpeedWithStopBlueprint,
+  "uniform-motion-basic": uniformMotionBasicBlueprint,
+  "uniform-motion-graphs": uniformMotionGraphsBlueprint,
   "unit-conversion-speed": unitConversionSpeedBlueprint,
+  "gravity-force": gravityForceBlueprint,
+  "gravitational-potential-energy": gravitationalPotentialEnergyBlueprint,
+  "hydrostatic-pressure": hydrostaticPressureBlueprint,
+  "mechanical-power": mechanicalPowerBlueprint,
+  "mechanical-efficiency": mechanicalEfficiencyBlueprint,
+  "mechanical-energy-conservation": mechanicalEnergyConservationBlueprint,
   "newton-second": newtonSecondBlueprint,
   "friction-force": frictionForceBlueprint,
   "incline-force": inclineForceBlueprint,
@@ -159,11 +179,20 @@ export function enumerateBlueprintParams(blueprint: TaskBlueprint): Params[] {
   }
 
   if (variants > 1) {
-    combinations = combinations.flatMap((combination) =>
-      Array.from({ length: variants }, (_, variant) => ({
-        ...combination,
-        __variant: variant,
-      })),
+    const parameterCombinations = combinations;
+    // Идём по пулу диагонально: рядом меняются и числа, и контекст. Раньше
+    // каждый набор параметров повторялся `variants` раз подряд, менялась лишь
+    // вводная фраза — ученик мог повторить предыдущее вычисление.
+    combinations = Array.from(
+      { length: parameterCombinations.length * variants },
+      (_, index) => {
+        const parameterIndex = index % parameterCombinations.length;
+        const cycle = Math.floor(index / parameterCombinations.length);
+        return {
+          ...parameterCombinations[parameterIndex],
+          __variant: (parameterIndex + cycle) % variants,
+        };
+      },
     );
   }
 

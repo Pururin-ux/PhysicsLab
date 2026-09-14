@@ -3,26 +3,68 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { useLessonDraft } from "../../lib/learning/use-lesson-draft";
+import { MIO_SCENES, type MioScene } from "../../lib/learning/mio-assets";
 import { roundTripInitial, roundTripReading, walkInitial } from "../../lib/learning/round-trip";
 import { MeasurementModel } from "./MeasurementModel";
+import { PhysicsLanguageModel } from "./PhysicsLanguageModel";
+import { ScientificMethodModel } from "./ScientificMethodModel";
+import { SIUnitsModel } from "./SIUnitsModel";
+import { ParticleEvidenceModel } from "./ParticleEvidenceModel";
+import { MatterStatesModel } from "./MatterStatesModel";
+import { GasPressurePascalModel } from "./GasPressurePascalModel";
+import { AtmosphericPressureModel } from "./AtmosphericPressureModel";
+import { ArchimedesForceModel } from "./ArchimedesForceModel";
+import { ElectroPredictionScene, ElectroResistanceExperiment } from "./ElectroResistanceExperiment";
 import { DensityModel } from "./DensityModel";
 import { InertiaModel } from "./InertiaModel";
 import { PressureModel } from "./PressureModel";
 import { ForceModel } from "./ForceModel";
 import {RelativeMotionModel} from "./RelativeMotionModel";
+import { UniformMotionGraphModel } from "./UniformMotionGraphModel";
+import { UnevenMotionModel } from "./UnevenMotionModel";
+import { GravityWeightModel } from "./GravityWeightModel";
+import { ResultantFrictionModel } from "./ResultantFrictionModel";
+import { HydrostaticPressureModel } from "./HydrostaticPressureModel";
+import { MechanicalWorkModel } from "./MechanicalWorkModel";
+import { MechanicalEfficiencyModel } from "./MechanicalEfficiencyModel";
+import { MechanicalPowerModel } from "./MechanicalPowerModel";
+import { KineticEnergyModel } from "./KineticEnergyModel";
+import { PotentialEnergyModel } from "./PotentialEnergyModel";
+import { MechanicalEnergyModel } from "./MechanicalEnergyModel";
+import { ReflectionTextbookExperiment } from "./ReflectionContentLesson";
+import { NewtonSecondLawTextbookExperiment } from "./DynamicsLesson";
+import { HeatAmountModel } from "./HeatAmountModel";
+import { HeatTransferExplorer } from "./HeatTransferExplorer";
+import { IceMeltingModel } from "./IceMeltingModel";
 import styles from "./TextbookScene.module.css";
 
 const stories = {
+  "physical-body-phenomenon-quantity": { asset: "inertia", title: "Тележка, движение или скорость?", caption: "Мио разделяет предмет, происходящее с ним изменение и величину, которой это изменение описывают.", alt: "Мио наблюдает лабораторную тележку и записывает её скорость" },
+  "scientific-method": { asset: "measurement", title: "Два отсчёта. Какой проверять?", caption: "Мио фиксирует расхождение, выдвигает гипотезу и меняет только положение глаз.", alt: "Мио проверяет уровень воды в мензурке на уровне глаз" },
+  "si-units-and-operations": { asset: "measurement", title: "Величина та же. Почему число другое?", caption: "Мио переводит один результат в разные единицы и проверяет физический смысл равенства.", alt: "Мио записывает результат измерения в разных единицах" },
+  "measuring-volume": { asset: "measurement", title: "Вода или линейка — что измеряем прямо?", caption: "Мио снимает объём воды по мензурке. Для бруска она сначала измерит три ребра, а затем вычислит объём — сравним эти два действия.", alt: "Мио смотрит на уровень воды в мензурке на уровне глаз и готовится записать измерение" },
   "relative-motion":{asset:"relative",title:"Лодка идёт. А берег приближается?",caption:"Мио наблюдает за лодкой с берега. Сменим точку отсчёта и сравним два описания одного движения.",alt:"Мио с блокнотом наблюдает за моторной лодкой с берега реки"},
   "force-and-dynamometer":{asset:"force",title:"Пружина говорит на языке ньютонов",caption:"Мио записывает показание динамометра. Груз неподвижен, но пружина растянута. Проверим, что показывает прибор и как изменится показание со второй нагрузкой.",alt:"Мио с карандашом наблюдает динамометр на штативе; груз свободно висит на нижнем крючке"},
+  "gravity-elasticity-weight":{asset:"force",title:"Один груз. А силы — разные",caption:"Мио не меняет установку, а меняет вопрос: Земля действует на груз, пружина — на груз, груз — на подвес.",alt:"Мио наблюдает за грузом, подвешенным к пружинному динамометру"},
+  "resultant-force-and-friction":{asset:"inertia",title:"Тяга вправо. Что остаётся?",caption:"Мио сравнивает тягу и сопротивление одной тележки. Направление равнодействующей подскажет, как меняется скорость.",alt:"Мио наблюдает лабораторную тележку на столе"},
+  "hydrostatic-pressure":{asset:"measurement",title:"Ниже — значит сильнее?",caption:"Мио выбирает точки на разной глубине в одной воде и сравнивает давление столба жидкости.",alt:"Мио наблюдает воду в высокой прозрачной мензурке"},
+  "mechanical-work":{asset:"inertia",title:"Сила есть. А работа?",caption:"Мио сравнивает силу и перемещение лабораторной тележки, чтобы определить знак работы.",alt:"Мио наблюдает движение лабораторной тележки на столе"},
+  "mechanical-efficiency":{asset:"inertia",title:"Работа затрачена. Какая часть полезна?",caption:"Мио сравнивает тягу и сопротивление тележки, чтобы отделить полезную работу от потерь.",alt:"Мио наблюдает лабораторную тележку на дорожке"},
+  "mechanical-power":{asset:"average",title:"Работа та же. Время другое",caption:"Мио использует секундомер, чтобы сравнить быстроту совершения одинаковой работы.",alt:"Мио с секундомером стоит рядом с велосипедом"},
+  "kinetic-energy":{asset:"acceleration",title:"Скорость вдвое. Энергия тоже?",caption:"Мио сравнивает один и тот же транспорт при разных скоростях и проверяет квадратную зависимость.",alt:"Мио едет в городском транспорте и наблюдает движение"},
+  "potential-energy":{asset:"force",title:"Груз не двигается. Энергия есть?",caption:"Мио оставляет груз на месте и меняет только нулевой уровень, от которого измеряется высота.",alt:"Мио записывает положение подвешенного груза относительно выбранного уровня"},
+  "mechanical-energy-conservation":{asset:"inertia",title:"Шайба замедляется. Куда уходит энергия?",caption:"Мио отмечает три положения подброшенной шайбы и сравнивает энергию движения с энергией высоты.",alt:"Мио записывает положения металлической шайбы во время вертикального подъёма"},
   pressure:{asset:"pressure",title:"Тот же брусок. Другая вмятина",caption:"Мио поставила одинаковые бруски на разные грани. Сила не выросла, но площадь контакта изменилась. Отделим эти два условия друг от друга.",alt:"Мио сравнивает вмятины от одинаковых брусков на широком и узком основании"},
   inertia: {asset:"inertia",title:"Тележку остановили. А шайбу?",caption:"Мио придержала тележку и заметила, что незакреплённый предмет продолжает движение. Разберём, какое тело тормозят и относительно чего оно движется.",alt:"Мио останавливает лабораторную тележку и наблюдает за свободной шайбой на платформе"},
   density: { asset: "density", title: "Больше — значит тяжелее? Проверим", caption: "Мио сравнивает два образца. Одного взгляда на размер мало: нужно сопоставить массу и объём, а затем проверить своё объяснение.", alt: "Мио внимательно взвешивает небольшой металлический образец; рядом лежит более крупный образец" },
   "reading-scales": { asset: "measurement", title: "Шкала мельче. А воды больше?", caption: "Мио смотрит на уровень воды сбоку. Проверим один и тот же объём по двум шкалам: что изменится в записи измерения?", alt: "Мио наклонилась к мензурке и смотрит на мениск на уровне глаз" },
+  "uniform-motion": { asset: "inertia", title: "Тележка проходит равные участки?", caption: "Мио запускает тележку. Будем отмечать её положение через равные промежутки времени, сравним расстояния и опишем движение числом.", alt: "Мио запускает лабораторную тележку для наблюдения за её движением" },
+  "uniform-motion-graphs": { asset: "average", title: "Секундомер готов. Что записывать?", caption: "Мио измеряет время движения велосипеда. Одни и те же наблюдения запишем двумя графиками: пройденного пути и постоянной скорости.", alt: "Мио держит секундомер и блокнот рядом с велосипедом перед измерением движения" },
+  "uneven-motion": { asset: "acceleration", title: "Автобус стоит. Время идёт?", caption: "Мио засекла путь до остановки, ожидание и путь после неё. Остановка не добавляет пути, но часы продолжают идти.", alt: "Мио в автобусе держится за поручень и наблюдает поездку с остановкой" },
   "path-and-displacement": { asset: "path", title: "Забыла блокнот. Вернулась. Никуда не ходила?", caption: "Мио дошла от кабинета до скамейки и вернулась за блокнотом. Конечная точка та же — но прогулка всё-таки была.", alt: "Мио возвращается к двери лаборатории за забытым блокнотом" },
   "average-speed": { asset: "path", title: "Вернулась к двери. Средняя скорость — ноль?", caption: "От двери до скамейки 20 м. Мио прошла туда и обратно: путь 40 м, перемещение ноль. Теперь добавим время этой прогулки.", alt: "Мио вернулась в кабинет за блокнотом; в коридоре видна скамейка" },
   acceleration: { asset: "acceleration", title: "Троллейбус тронулся. Что изменилось?", caption: "Мио держится за поручень и наблюдает начало движения. Разберём модель разгона, а затем сравним её с торможением.", alt: "Мио в троллейбусе держится за поручень и смотрит на улицу" },
-} as const;
+} as const satisfies Record<string, { asset: MioScene; title: string; caption: string; alt: string }>;
 
 function WalkModel() {
   const [state, setState] = useState(walkInitial);
@@ -97,11 +139,95 @@ function DirectionArrow({left,label,gold=false}:{left:boolean;label:string;gold?
 }
 
 export function TextbookScene({chapterId}:{chapterId:string}) {
+  if (chapterId === "physical-body-phenomenon-quantity") {
+    return <section className={styles.scene} aria-label="Наблюдение с Мио о языке физики"><PhysicsLanguageModel /></section>;
+  }
+  if (chapterId === "scientific-method") {
+    return <section className={styles.scene} aria-label="Исследование Мио о проверке гипотезы"><ScientificMethodModel /></section>;
+  }
+  if (chapterId === "si-units-and-operations") {
+    return <section className={styles.scene} aria-label="Наблюдение с Мио об основных единицах СИ"><SIUnitsModel /></section>;
+  }
+  if (chapterId === "particle-model-and-diffusion") {
+    return <section className={styles.scene} aria-label="Разбор наблюдений, подтверждающих частичное строение вещества"><ParticleEvidenceModel /></section>;
+  }
+  if (chapterId === "states-temperature-expansion") {
+    return <section className={styles.scene} aria-label="Исследование состояний вещества, теплового расширения и температуры"><MatterStatesModel /></section>;
+  }
+  if (chapterId === "gas-pressure-and-pascal") {
+    return <section className={styles.scene} aria-label="Опыт о давлении газа и передаче давления жидкостью"><GasPressurePascalModel /></section>;
+  }
+  if (chapterId === "atmospheric-pressure") {
+    return <section className={styles.scene} aria-label="Опыт с изменением атмосферного давления при подъёме"><AtmosphericPressureModel /></section>;
+  }
+  if (chapterId === "archimedes-force") {
+    return <section className={styles.scene} aria-label="Опыт с выталкивающей силой"><ArchimedesForceModel /></section>;
+  }
+  if (chapterId === "electric-current-and-ohms-law") {
+    return <section className={styles.scene} aria-label="Опыт Мио с напряжением, сопротивлением и силой тока"><ElectroPredictionScene caption="Мио оставляет напряжение неизменным. Меняй сопротивление и сравнивай показание амперметра." /><ElectroResistanceExperiment /></section>;
+  }
+  if (chapterId === "reflection-of-light") {
+    return <section className={styles.scene} aria-label="Опыт с законом отражения света"><ReflectionTextbookExperiment /></section>;
+  }
+  if (chapterId === "newton-second-law") {
+    return <section className={styles.scene} aria-label="Опыт о связи силы, массы и ускорения"><NewtonSecondLawTextbookExperiment /></section>;
+  }
+  if (chapterId === "heat-amount-and-balance") {
+    return <section className={styles.scene} aria-label="Графический опыт о количестве теплоты"><HeatAmountModel /></section>;
+  }
+  if (chapterId === "internal-energy-and-heat-transfer") {
+    return <section className={styles.scene} aria-label="Сравнение способов теплопередачи"><HeatTransferExplorer /></section>;
+  }
+  if (chapterId === "melting-and-crystallization") {
+    return <section className={styles.scene} aria-label="Графический опыт с нагреванием и плавлением льда"><IceMeltingModel /></section>;
+  }
   if (!(chapterId in stories)) return null;
+  if (chapterId === "force-and-dynamometer") {
+    return <section className={styles.scene} aria-label="Наблюдение с Мио и динамометром"><ForceModel /></section>;
+  }
+  if (chapterId === "gravity-elasticity-weight") {
+    return <section className={styles.scene} aria-label="Наблюдение с Мио о силе тяжести, упругости и весе"><GravityWeightModel /></section>;
+  }
+  if (chapterId === "resultant-force-and-friction") {
+    return <section className={styles.scene} aria-label="Наблюдение с Мио о равнодействующей и сопротивлении движению"><ResultantFrictionModel /></section>;
+  }
+  if (chapterId === "hydrostatic-pressure") {
+    return <section className={styles.scene} aria-label="Наблюдение с Мио о гидростатическом давлении"><HydrostaticPressureModel /></section>;
+  }
+  if (chapterId === "mechanical-work") {
+    return <section className={styles.scene} aria-label="Наблюдение с Мио о механической работе"><MechanicalWorkModel /></section>;
+  }
+  if (chapterId === "mechanical-efficiency") {
+    return <section className={styles.scene} aria-label="Наблюдение с Мио о коэффициенте полезного действия"><MechanicalEfficiencyModel /></section>;
+  }
+  if (chapterId === "mechanical-power") {
+    return <section className={styles.scene} aria-label="Наблюдение с Мио о механической мощности"><MechanicalPowerModel /></section>;
+  }
+  if (chapterId === "kinetic-energy") {
+    return <section className={styles.scene} aria-label="Наблюдение с Мио о кинетической энергии"><KineticEnergyModel /></section>;
+  }
+  if (chapterId === "potential-energy") {
+    return <section className={styles.scene} aria-label="Наблюдение с Мио о потенциальной энергии"><PotentialEnergyModel /></section>;
+  }
+  if (chapterId === "mechanical-energy-conservation") {
+    return <section className={styles.scene} aria-label="Наблюдение с Мио о сохранении механической энергии"><MechanicalEnergyModel /></section>;
+  }
+  if (chapterId === "reading-scales") {
+    return <section className={styles.scene} aria-label="Наблюдение с Мио и мензуркой"><MeasurementModel /></section>;
+  }
+  if (chapterId === "pressure") {
+    return <section className={styles.scene} aria-label="Наблюдение с Мио и опытом о давлении"><PressureModel /></section>;
+  }
+  if (chapterId === "inertia") {
+    return <section className={styles.scene} aria-label="Наблюдение с Мио и опытом об инерции"><InertiaModel /></section>;
+  }
+  if (chapterId === "density") {
+    return <section className={styles.scene} aria-label="Наблюдение с Мио и опытом о плотности"><DensityModel /></section>;
+  }
   const story=stories[chapterId as keyof typeof stories];
   return <section className={styles.scene} aria-label="История и модель с Мио">
-    <figure className={styles.illustration}><Image className={styles.art} src={`/images/mio/textbook-${story.asset}-v1.png`} alt={story.alt} width={1536} height={1024} sizes="(max-width:640px) 100vw, 450px" priority /><figcaption className={styles.caption}><h2>{story.title}</h2><p>{story.caption}</p></figcaption></figure>
-    {chapterId==="relative-motion"?<RelativeMotionModel/>:chapterId==="force-and-dynamometer"?<ForceModel/>:chapterId==="pressure"?<PressureModel/>:chapterId==="inertia"?<InertiaModel/>:chapterId==="density"?<DensityModel/>:chapterId==="reading-scales"?<MeasurementModel/>:chapterId==="path-and-displacement"?<WalkModel/>:chapterId==="average-speed"?<SpeedModel/>:<AccelerationModel/>}
+    <figure className={styles.illustration}><Image className={styles.art} src={MIO_SCENES[story.asset]} alt={story.alt} width={1536} height={1024} sizes="(max-width:640px) 100vw, 450px" priority /><figcaption className={styles.caption}><h2>{story.title}</h2><p>{story.caption}</p></figcaption></figure>
+    {chapterId==="relative-motion"?<RelativeMotionModel/>:chapterId==="path-and-displacement"?<WalkModel/>:chapterId==="average-speed"?<SpeedModel/>:chapterId==="acceleration"?<AccelerationModel/>:chapterId==="uniform-motion-graphs"?<UniformMotionGraphModel/>:chapterId==="uneven-motion"?<UnevenMotionModel/>:null}
   </section>;
 }
 

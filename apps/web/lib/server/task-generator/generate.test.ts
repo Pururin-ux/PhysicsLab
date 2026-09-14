@@ -17,10 +17,20 @@ const kinematicsTemplateIds = [
   "vt-area",
   "relative-velocity-vectors",
   "average-speed-segments",
+  "average-speed-with-stop",
+  "uniform-motion-basic",
+  "uniform-motion-graphs",
   "unit-conversion-speed",
 ] as const;
 const dynamicsTemplateIds = [
+  "archimedes-force",
   "contact-pressure",
+  "gravity-force",
+  "gravitational-potential-energy",
+  "hydrostatic-pressure",
+  "mechanical-power",
+  "mechanical-efficiency",
+  "mechanical-energy-conservation",
   "newton-second",
   "friction-force",
   "incline-force",
@@ -32,6 +42,25 @@ const dynamicsTemplateIds = [
   "kinetic-energy",
   "work-force-distance",
 ] as const;
+
+test("archimedes-force uses the immersed volume in cubic metres", () => {
+  const tasks = generateTasks("archimedes-force", 50);
+
+  for (const task of tasks) {
+    const expected = Number((task.params.rho * 10 * (task.params.volume / 1_000_000)).toFixed(3));
+    assert.equal(task.answerValue, expected);
+    assert.equal(task.answerUnit, "Н");
+    assert.equal(task.answerFormat, "numeric_input");
+    assert.ok(task.text.includes("полностью погружено"));
+    const volumeM3 = (task.params.volume / 1_000_000)
+      .toFixed(6)
+      .replace(/0+$/, "")
+      .replace(/\.$/, "")
+      .replace(".", "{,}");
+    assert.ok(task.explanation?.includes(`=${volumeM3}$ м³`));
+    assert.ok(!task.explanation?.includes("=0$ м³"));
+  }
+});
 const electrodynamicsTemplateIds = [
   "ohm-law",
   "resistor-network",
@@ -150,6 +179,79 @@ for (const templateId of kinematicsTemplateIds) {
   });
 }
 
+test("uniform-motion-basic asks for path, speed and time without changing the physical relation", () => {
+  const tasks = generateTasks("uniform-motion-basic", 3);
+
+  assert.deepEqual(tasks.map((task) => task.answerUnit), ["м", "м/с", "с"]);
+  assert.deepEqual(tasks.map((task) => task.answerValue), [9, 3, 5]);
+  assert.ok(tasks[0].text.includes("3 м/с") && tasks[0].text.includes("3 с"));
+  assert.ok(tasks[1].text.includes("12 м") && tasks[1].text.includes("4 с"));
+  assert.ok(tasks[2].text.includes("3 м/с") && tasks[2].text.includes("15 м"));
+});
+
+test("mechanical-power asks for power, work and time through one relation", () => {
+  const tasks = generateTasks("mechanical-power", 3);
+
+  assert.deepEqual(tasks.map((task) => task.answerUnit), ["Вт", "Дж", "с"]);
+  assert.deepEqual(tasks.map((task) => task.answerValue), [50, 200, 6]);
+  assert.ok(tasks[0].text.includes("100 Дж") && tasks[0].text.includes("2 с"));
+  assert.ok(tasks[1].text.includes("50 Вт") && tasks[1].text.includes("4 с"));
+  assert.ok(tasks[2].text.includes("300 Дж") && tasks[2].text.includes("50 Вт"));
+});
+
+test("mechanical-efficiency asks for efficiency, useful work and total work", () => {
+  const tasks = generateTasks("mechanical-efficiency", 3);
+
+  assert.deepEqual(tasks.map((task) => task.answerUnit), ["%", "Дж", "Дж"]);
+  assert.ok(tasks[0].text.includes("полной работы") && tasks[0].text.includes("полезная работа"));
+  assert.ok(tasks[1].text.includes("КПД") && tasks[1].text.includes("полезную работу"));
+  assert.ok(tasks[2].text.includes("полная совершённая работа"));
+});
+
+test("gravitational-potential-energy asks for energy, mass and height from one chosen level", () => {
+  const tasks = generateTasks("gravitational-potential-energy", 3);
+
+  assert.deepEqual(tasks.map((task) => task.answerUnit), ["Дж", "кг", "м"]);
+  assert.deepEqual(tasks.map((task) => task.answerValue), [10, 1, 3]);
+  assert.ok(tasks[0].text.includes("1 кг") && tasks[0].text.includes("1 м"));
+  assert.ok(tasks[1].text.includes("20 Дж") && tasks[1].text.includes("2 м"));
+  assert.ok(tasks[2].text.includes("30 Дж") && tasks[2].text.includes("1 кг"));
+});
+
+test("mechanical-energy-conservation turns launch speed into maximum height", () => {
+  const tasks = generateTasks("mechanical-energy-conservation", 20);
+
+  for (const task of tasks) {
+    assert.equal(task.answerUnit, "м");
+    assert.equal(task.answerValue, task.params.v ** 2 / 20);
+    assert.ok(task.text.includes("Сопротивлением воздуха пренебречь"));
+    assert.ok(task.explanation?.includes("Масса сокращается"));
+  }
+});
+
+test("average-speed-with-stop includes stationary time in the denominator", () => {
+  const tasks = generateTasks("average-speed-with-stop", 20);
+
+  for (const task of tasks) {
+    const params = task.params;
+    const expected = (params.v1 * params.t1 + params.v2 * params.t2) / (params.t1 + params.stop + params.t2);
+    assert.equal(task.answerValue, expected);
+    assert.ok(task.text.includes(`остановился на ${params.stop} с`));
+    assert.ok(task.explanation?.includes(`${params.t1}+${params.stop}+${params.t2}`));
+  }
+});
+
+test("uniform-motion-graphs keeps path and speed graphs semantically distinct", () => {
+  const tasks = generateTasks("uniform-motion-graphs", 3);
+
+  assert.deepEqual(tasks.map((task) => task.graph?.type), ["xt", "xt", "vt"]);
+  assert.deepEqual(tasks.map((task) => task.answerUnit), ["м", "м/с", "м"]);
+  assert.equal(tasks[0].graph?.yLabel, "s, м");
+  assert.equal(tasks[1].answerValue, 2);
+  assert.equal(tasks[2].graph?.showArea, true);
+  assert.equal(tasks[2].answerValue, 10);
+});
+
 test("vt-slope answers use whole or half-step acceleration values", () => {
   const tasks = generateTasks("vt-slope", 200);
 
@@ -193,6 +295,19 @@ test("expanded task families encode the intended physical rule", () => {
 
   const heatBalance = getBlueprint("heat-balance-simple");
   assert.equal(heatBalance.solver({ mHot: 2, tempHot: 80, mCold: 3, tempCold: 30 }), 50);
+});
+
+test("practice changes the numerical problem between adjacent tasks", () => {
+  for (const { id } of templateRegistry) {
+    const tasks = generateTasks(id, 12);
+    tasks.slice(1).forEach((task, index) => {
+      assert.notDeepEqual(
+        task.params,
+        tasks[index].params,
+        `${id} repeated a numerical condition at ${index + 1}`,
+      );
+    });
+  }
 });
 
 test("production templates keep enough variants and explanations", () => {
@@ -491,16 +606,38 @@ test("API route делает batch детерминированным и мен�
 
 test("API route dynamics-mixed покрывает все навыки динамики", async () => {
   const response = await GET(
-    new Request("http://localhost/api/tasks?template=dynamics-mixed&count=14&batch=7"),
+    new Request(`http://localhost/api/tasks?template=dynamics-mixed&count=${dynamicsTemplateIds.length}&batch=7`),
   );
   const data = (await response.json()) as ApiTaskResponse;
 
   assert.equal(response.status, 200);
-  assert.equal(data.tasks.length, 14);
+  assert.equal(data.tasks.length, dynamicsTemplateIds.length);
   assert.deepEqual(
     new Set(data.tasks.map((task) => task.blueprint)),
     new Set(dynamicsTemplateIds),
   );
+});
+
+test("school checks rotate through available families between batches", async () => {
+  const [firstResponse, nextResponse, gradeNineResponse] = await Promise.all([
+    GET(new Request("http://localhost/api/tasks?template=school-check-7&count=5&batch=0")),
+    GET(new Request("http://localhost/api/tasks?template=school-check-7&count=5&batch=1")),
+    GET(new Request("http://localhost/api/tasks?template=school-check-9&count=5&batch=0")),
+  ]);
+  const first = (await firstResponse.json()) as ApiTaskResponse;
+  const next = (await nextResponse.json()) as ApiTaskResponse;
+  const gradeNine = (await gradeNineResponse.json()) as ApiTaskResponse;
+
+  assert.equal(firstResponse.status, 200);
+  assert.equal(nextResponse.status, 200);
+  assert.equal(gradeNineResponse.status, 200);
+  assert.equal(first.tasks.length, 5);
+  assert.equal(next.tasks.length, 5);
+  assert.notDeepEqual(
+    first.tasks.map((task) => task.blueprint),
+    next.tasks.map((task) => task.blueprint),
+  );
+  assert.ok(gradeNine.tasks.some((task) => task.blueprint === "archimedes-force"));
 });
 
 test("API route mixed покрывает все навыки кинематики", async () => {

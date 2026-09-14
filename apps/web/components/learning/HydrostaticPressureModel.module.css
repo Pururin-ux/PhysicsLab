@@ -1,0 +1,37 @@
+.heading {
+  display: grid;
+  grid-template-columns: minmax(260px, .8fr) minmax(300px, 1fr);
+  gap: clamp(22px, 4vw, 48px);
+  align-items: end;
+  padding-bottom: 24px;
+}
+.heading > div > p { color: var(--action-primary); font-size: 12px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+.heading h2 { margin-top: 7px; font-size: clamp(26px, 4vw, 37px); line-height: 1.12; letter-spacing: -.03em; }
+.heading > p { color: var(--text-secondary); font-size: 16px; line-height: 1.7; }
+.workspace { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(260px, .65fr); gap: clamp(18px, 3vw, 34px); align-items: start; }
+.scene { position: relative; aspect-ratio: 3 / 2; overflow: hidden; border-radius: 34px 8px 34px 8px; background: var(--surface-secondary); }
+.scene img { object-fit: cover; }
+.overlay { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.overlay path { fill: none; stroke-linecap: round; stroke-linejoin: round; filter: drop-shadow(0 2px 0 rgb(255 255 255 / .95)); }
+.depth { stroke: #d49a2b; stroke-width: 10; }
+.pressure { stroke: #07879d; stroke-width: 13; }
+.pressurePoint { fill: #07879d; stroke: #fff; stroke-width: 8; }
+.overlay text { fill: #063b48; stroke: rgb(255 255 255 / .96); stroke-width: 10; paint-order: stroke fill; font-size: 42px; font-weight: 850; }
+.scene figcaption { position: absolute; inset: auto 14px 14px; z-index: 1; max-width: 390px; padding: 9px 12px; border-radius: 10px; background: color-mix(in srgb, var(--surface-canvas) 88%, transparent); font-size: 13px; line-height: 1.5; backdrop-filter: blur(10px); }
+.panel { display: flex; min-width: 0; flex-direction: column; gap: 20px; }
+.switcher { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.switcher button { min-height: 52px; padding: 10px; border-block: 1px solid var(--border-strong); font-weight: 720; }
+.switcher button[aria-pressed="true"] { border-color: var(--action-primary); background: color-mix(in srgb, var(--action-primary) 9%, transparent); color: var(--action-primary); }
+.switcher button:focus-visible { outline: 3px solid var(--action-primary); outline-offset: 3px; }
+.result { padding: 20px; border-left: 3px solid var(--action-primary); background: color-mix(in srgb, var(--action-primary) 7%, var(--surface-primary)); }
+.result > p:first-child { color: var(--text-secondary); font-size: 13px; }
+.result strong { display: block; margin-top: 5px; font-size: 28px; }
+.result span { display: block; margin-block: 14px; padding-block: 10px; border-block: 1px solid var(--border-strong); font-size: 14px; }
+.result > p:last-child { color: var(--text-secondary); line-height: 1.65; }
+@media (max-width: 700px) {
+  .heading, .workspace { grid-template-columns: 1fr; }
+  .heading { gap: 12px; }
+  .heading h2 { font-size: 28px; }
+  .scene { margin-inline: -16px; border-radius: 0 0 28px 0; }
+  .switcher button { min-height: 54px; }
+}

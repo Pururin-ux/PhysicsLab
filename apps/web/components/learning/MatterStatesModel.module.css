@@ -1,0 +1,360 @@
+.model {
+  overflow: hidden;
+  border-block: 1px solid var(--border-strong);
+  background: var(--surface-primary);
+}
+
+.loading,
+.storageError {
+  margin: 0;
+  padding: 24px 30px;
+  color: var(--text-secondary);
+  line-height: 1.55;
+}
+
+.storageError {
+  border-top: 1px solid var(--border-strong);
+}
+
+.intro {
+  padding: 30px;
+}
+
+.kicker,
+.stepLabel {
+  margin: 0 0 8px;
+  color: var(--action-primary);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.intro h2 {
+  max-width: 720px;
+  margin: 0;
+  font-size: clamp(1.8rem, 4vw, 2.75rem);
+  line-height: 1.02;
+  letter-spacing: -0.04em;
+}
+
+.intro > p:last-child {
+  max-width: 670px;
+  margin: 16px 0 0;
+  color: var(--text-secondary);
+  line-height: 1.65;
+}
+
+.stageTabs {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border-block: 1px solid var(--border-strong);
+}
+
+.stageTabs button {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  min-height: 56px;
+  padding: 10px 14px;
+  border: 0;
+  border-right: 1px solid var(--border-strong);
+  background: transparent;
+  color: var(--text-secondary);
+  font: inherit;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.stageTabs button:last-child { border-right: 0; }
+.stageTabs button[aria-pressed="true"] { background: var(--action-primary); color: var(--action-ink); }
+
+.stageTabs span,
+.sequenceControls span {
+  display: grid;
+  place-items: center;
+  width: 25px;
+  height: 25px;
+  flex: 0 0 auto;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  font-size: 0.72rem;
+}
+
+.stageTabs button:focus-visible,
+.options button:focus-visible,
+.answerRow button:focus-visible,
+.sequenceControls button:focus-visible,
+.credit:focus-visible,
+.model a:focus-visible {
+  outline: 3px solid var(--action-primary);
+  outline-offset: 3px;
+}
+
+.statesStage,
+.expansionStage,
+.temperatureStage {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(300px, 0.85fr);
+  min-height: 500px;
+}
+
+.statesStage {
+  grid-template-columns: 1fr;
+}
+
+.photoStrip {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  min-width: 0;
+  min-height: 320px;
+  border-bottom: 1px solid var(--border-strong);
+}
+
+.statePhoto {
+  position: relative;
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  border-right: 1px solid rgb(255 255 255 / 42%);
+  background: #182838;
+}
+
+.statePhoto:last-child { border-right: 0; }
+.statePhoto img { object-fit: cover; object-position: center; }
+
+.statePhoto::after {
+  content: "";
+  position: absolute;
+  inset: 45% 0 0;
+  background: linear-gradient(transparent, rgb(7 13 20 / 88%));
+}
+
+.statePhoto figcaption {
+  position: absolute;
+  z-index: 1;
+  inset: auto 16px 18px;
+  color: #fff;
+}
+
+.statePhoto strong,
+.statePhoto span { display: block; }
+.statePhoto strong { margin-bottom: 5px; font-size: 1.05rem; }
+.statePhoto span { font-size: 0.74rem; line-height: 1.45; }
+
+.questionPanel,
+.expansionPanel {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+  padding: 30px;
+}
+
+.statesStage .questionPanel {
+  display: grid;
+  grid-template-columns: minmax(230px, 0.72fr) minmax(0, 1.28fr);
+  column-gap: 28px;
+  align-items: start;
+}
+
+.statesStage .questionPanel .stepLabel,
+.statesStage .questionPanel h3 {
+  grid-column: 1;
+}
+
+.statesStage .questionPanel .options {
+  grid-column: 2;
+  grid-row: 1 / span 3;
+  margin-top: 0;
+}
+
+.statesStage .questionPanel .correct,
+.statesStage .questionPanel .correction,
+.statesStage .questionPanel .credit {
+  grid-column: 1 / -1;
+}
+
+.questionPanel h3,
+.expansionPanel h3 {
+  margin: 0;
+  font-size: clamp(1.4rem, 3vw, 2rem);
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+}
+
+.options {
+  display: grid;
+  gap: 9px;
+  margin-top: 22px;
+}
+
+.options button,
+.answerRow button,
+.sequenceControls button {
+  min-height: 48px;
+  border: 1px solid var(--border-strong);
+  background: transparent;
+  color: var(--text-primary);
+  font: inherit;
+  cursor: pointer;
+}
+
+.options button {
+  padding: 12px 14px;
+  text-align: left;
+  line-height: 1.4;
+}
+
+.options button[aria-pressed="true"],
+.answerRow button[aria-pressed="true"],
+.sequenceControls button[aria-pressed="true"] {
+  border-color: var(--action-primary);
+  background: var(--surface-secondary);
+}
+
+.correct,
+.correction {
+  margin: 16px 0 0;
+  padding-left: 13px;
+  border-left: 3px solid var(--feedback-success);
+  line-height: 1.55;
+}
+
+.correction { border-left-color: var(--feedback-warning); }
+.credit { align-self: flex-start; margin-top: 20px; color: var(--text-secondary); font-size: 0.72rem; line-height: 1.45; text-underline-offset: 3px; }
+
+.apparatusFigure {
+  display: grid;
+  grid-template-rows: 1fr auto;
+  margin: 0;
+  padding: 28px;
+  border-right: 1px solid var(--border-strong);
+  background: #eee9df;
+}
+
+.engraving {
+  display: grid;
+  place-items: center;
+  min-height: 360px;
+}
+
+.engraving img {
+  width: min(76%, 300px);
+  height: auto;
+  filter: contrast(1.08);
+  mix-blend-mode: multiply;
+}
+
+.apparatusFigure figcaption,
+.thermometerFigure figcaption {
+  color: #48525a;
+  font-size: 0.76rem;
+  line-height: 1.5;
+}
+
+.apparatusFigure a,
+.thermometerFigure a { display: block; margin-top: 5px; color: inherit; }
+.expansionPrompt,
+.thermometerHint { margin: 15px 0 0; color: var(--text-secondary); line-height: 1.6; }
+
+.sequenceControls {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  margin-top: 22px;
+}
+
+.sequenceControls button {
+  display: flex;
+  gap: 7px;
+  align-items: center;
+  justify-content: center;
+  padding: 9px;
+  border-right: 0;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.sequenceControls button:last-child { border-right: 1px solid var(--border-strong); }
+
+.expansionResult {
+  margin-top: 18px;
+  padding: 20px;
+  border-block: 1px solid var(--border-strong);
+}
+
+.expansionResult > span { color: var(--action-primary); font-size: 0.74rem; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; }
+.expansionResult strong { display: block; margin-top: 7px; font-size: 1.35rem; line-height: 1.18; }
+.expansionResult p { margin: 9px 0 0; color: var(--text-secondary); line-height: 1.55; }
+.expansionResult[data-state="hot"] { border-color: var(--feedback-warning); }
+.expansionResult[data-state="cooled"] { border-color: var(--feedback-success); }
+.boundary { margin: 18px 0 0; padding-left: 14px; border-left: 3px solid var(--feedback-warning); color: var(--text-secondary); line-height: 1.55; }
+
+.thermometerFigure {
+  position: relative;
+  min-height: 500px;
+  margin: 0;
+  overflow: hidden;
+  border-right: 1px solid var(--border-strong);
+  background: #c9c8c4;
+}
+
+.thermometerFigure img { object-fit: cover; object-position: 50% 49%; }
+.thermometerFigure::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0;
+  height: 36%;
+  background: linear-gradient(transparent, rgb(12 17 20 / 90%));
+}
+
+.thermometerFigure figcaption {
+  position: absolute;
+  z-index: 1;
+  inset: auto 22px 20px;
+  max-width: 470px;
+  color: #fff;
+}
+
+.answerRow {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 20px;
+}
+
+.answerRow button { padding: 10px; font-weight: 750; }
+.causeChain { display: grid; grid-template-columns: repeat(3, 1fr); margin-top: 24px; border-block: 1px solid var(--border-strong); }
+.causeChain span { position: relative; padding: 16px 18px 16px 0; color: var(--text-secondary); font-size: 0.78rem; line-height: 1.4; }
+.causeChain span:not(:last-child)::after { content: "→"; position: absolute; right: 6px; color: var(--action-primary); font-weight: 800; }
+
+@media (max-width: 700px) {
+  .intro { padding: 24px 18px 18px; }
+  .stageTabs button { flex-direction: column; gap: 4px; min-height: 68px; padding-inline: 5px; font-size: 0.75rem; }
+  .statesStage,
+  .expansionStage,
+  .temperatureStage { grid-template-columns: 1fr; min-height: 0; }
+  .photoStrip { grid-template-columns: repeat(2, minmax(0, 1fr)); min-height: 0; border-right: 0; border-bottom: 1px solid var(--border-strong); }
+  .statePhoto { min-height: 220px; }
+  .statePhoto:last-child { grid-column: 1 / -1; min-height: 190px; border-top: 1px solid rgb(255 255 255 / 42%); }
+  .statePhoto figcaption { inset: auto 12px 14px; }
+  .statePhoto span { font-size: 0.76rem; }
+  .questionPanel,
+  .expansionPanel { padding: 26px 18px; }
+  .statesStage .questionPanel { display: flex; }
+  .statesStage .questionPanel .options { margin-top: 22px; }
+  .apparatusFigure { grid-template-columns: minmax(0, 0.7fr) minmax(125px, 1fr); grid-template-rows: 1fr; gap: 16px; align-items: end; padding: 20px 18px; border-right: 0; border-bottom: 1px solid var(--border-strong); }
+  .engraving { min-height: 230px; }
+  .engraving img { width: min(100%, 180px); }
+  .sequenceControls { grid-template-columns: 1fr; }
+  .sequenceControls button { justify-content: flex-start; border-right: 1px solid var(--border-strong); border-bottom: 0; }
+  .sequenceControls button:last-child { border-bottom: 1px solid var(--border-strong); }
+  .thermometerFigure { min-height: 390px; border-right: 0; border-bottom: 1px solid var(--border-strong); }
+  .thermometerFigure img { object-position: 50% 42%; }
+  .answerRow button { min-height: 46px; padding-inline: 5px; }
+  .causeChain { grid-template-columns: 1fr; }
+  .causeChain span { padding-block: 12px; border-bottom: 1px solid var(--border-strong); }
+  .causeChain span:not(:last-child)::after { right: 0; transform: rotate(90deg); }
+  .causeChain span:last-child { border-bottom: 0; }
+}

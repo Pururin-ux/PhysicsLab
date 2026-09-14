@@ -5,7 +5,7 @@ export type DraftValue = string | number | boolean | null | { [key: string]: Dra
 export type LessonDraft = Record<string, DraftValue>;
 
 const liveDrafts = new Map<string, LessonDraft>();
-const draftIds = ["acceleration", "dynamics", "electro", "density", "optics", "average-speed", "textbook-walk", "textbook-round-trip-speed", ...textbookChapters.map(chapter=>`textbook-check-${chapter.id}`)];
+const draftIds = ["acceleration", "dynamics", "electro", "density", "optics", "average-speed", "textbook-walk", "textbook-round-trip-speed", "textbook-matter-states", "textbook-gas-pressure-pascal", "textbook-atmospheric-pressure", "textbook-archimedes-force", ...textbookChapters.map(chapter=>`textbook-check-${chapter.id}`)];
 
 function isDraftValue(value: unknown, depth = 0): value is DraftValue {
   if (value === null || typeof value === "boolean") return true;

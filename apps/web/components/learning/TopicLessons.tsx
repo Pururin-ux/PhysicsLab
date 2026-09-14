@@ -1,27 +1,22 @@
 "use client";
 
 import { MathText } from "../ui/MathText";
-import { CircuitDiagram } from "../diagrams/CircuitDiagram";
 import { OpticsDiagram } from "../diagrams/OpticsDiagram";
-import { DensityObservationPlot, DensityPredictionPlot, OhmObservationPlot } from "./PrimerObservationPlots";
+import { DensityObservationPlot, DensityPredictionPlot } from "./PrimerObservationPlots";
+import { ElectroPredictionScene, ElectroResistanceExperiment } from "./ElectroResistanceExperiment";
 import { ReflectionAngleLab } from "./ReflectionAngleLab";
 import { TopicPrimer, type TopicPrimerConfig } from "./TopicPrimer";
 
 const electroConfig: TopicPrimerConfig = {
   draftId: "electro",
-  topic: "Электричество",
+  topic: "8 класс · Электромагнитные явления",
   title: "От чего зависит ток в цепи",
   meta: "закон Ома",
   prediction: {
     title: "Сопротивление выросло вдвое. Что станет с током?",
     body: "Напряжение источника не меняется: 12 В. Сопротивление участка увеличили с 3 до 6 Ом.",
     question: "Выбери прогноз до расчёта",
-    visual: (
-      <CircuitDiagram
-        spec={{ topology: "single", sourceLabel: "12 В", resistorLabels: ["R"], meter: { kind: "ammeter" }, tone: "cyan" }}
-        ariaLabel="Участок цепи с источником 12 вольт, сопротивлением R и амперметром"
-      />
-    ),
+    visual: <ElectroPredictionScene />,
     choices: [
       { id: "half", label: "Ток станет вдвое меньше", reflection: "Прогноз совпал: при неизменном напряжении ток обратно пропорционален сопротивлению." },
       { id: "same", label: "Ток не изменится", reflection: "На графике ток уменьшился: одного постоянного напряжения недостаточно, сопротивление тоже влияет." },
@@ -31,7 +26,7 @@ const electroConfig: TopicPrimerConfig = {
   observation: {
     title: "Три сопротивления — одно напряжение",
     body: "В каждом опыте U = 12 В. Меняется только сопротивление участка.",
-    visual: <OhmObservationPlot />,
+    visual: <ElectroResistanceExperiment />,
     insight: "При 3 Ом ток равен 4 А, при 6 Ом — 2 А. Удвоили сопротивление, поэтому ток уменьшился вдвое.",
   },
   model: {
@@ -190,7 +185,7 @@ const densityConfig: TopicPrimerConfig = {
 
 const opticsConfig: TopicPrimerConfig = {
   draftId: "optics",
-  topic: "Оптика",
+  topic: "8 класс · Световые явления",
   title: "Откуда считать угол луча",
   meta: "отражение света",
   prediction: {

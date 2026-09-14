@@ -172,10 +172,8 @@ export function heatBalanceFinalTemperature(p: Params): number {
 }
 
 export const ICE_SPECIFIC_HEAT_KJ = 2.1;
-// Табличное значение белорусских учебников (Исаченкова, 8 класс):
-// λ льда = 3,4·10⁵ Дж/кг. Научное 334 не совпадает ни с одним школьным
-// справочником и разъезжается с ответами задачников.
-export const ICE_FUSION_HEAT_KJ = 340;
+// Исаченкова и др., «Физика, 8 класс», 2024, § 8, таблица 3: 3,33·10⁵ Дж/кг.
+export const ICE_FUSION_HEAT_KJ = 333;
 
 // Нагреть лёд до 0 °C и полностью расплавить: Q = cmΔT + λm.
 export function phaseChangeHeat(p: Params): number {

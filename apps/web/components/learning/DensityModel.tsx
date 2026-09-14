@@ -1,32 +1,146 @@
 "use client";
+
+import Image from "next/image";
 import { useState } from "react";
-import styles from "./TextbookScene.module.css";
+import { MathText } from "../ui/MathText";
+import { MIO_SCENES } from "../../lib/learning/mio-assets";
+import shared from "./TextbookScene.module.css";
+import styles from "./DensityModel.module.css";
+
+const predictions = [
+  { id: "a", label: "A — он занимает больше места" },
+  { id: "same", label: "Плотность одинаковая" },
+  { id: "b", label: "B — в каждом см³ больше массы" },
+] as const;
+
+type PredictionId = (typeof predictions)[number]["id"];
 
 export function DensityModel() {
-  const [split, setSplit] = useState(false);
-  const [si, setSi] = useState(false);
-  const [prediction, setPrediction] = useState("");
-  return <div className={styles.experiment}>
-    <fieldset className={styles.prediction}><legend>Разделим однородный образец A пополам. Что станет с плотностью каждой части?</legend>
-      {["Уменьшится вдвое", "Останется прежней", "Увеличится вдвое"].map(value=><label key={value}><input type="radio" name="density-prediction" checked={prediction===value} onChange={()=>setPrediction(value)}/>{value}</label>)}
-    </fieldset>
-    <p className={styles.explanation}>Два сплошных однородных образца без пустот, при неизменной температуре. Числа заданы моделью; состав по ним не определяем.</p>
-    <div className={styles.controls}><button aria-pressed={split} onClick={()=>setSplit(!split)}>{split ? "Собрать A обратно" : "Разделить A пополам"}</button><button aria-pressed={si} onClick={()=>setSi(!si)}>{si ? "Показать г и см³" : "Показать единицы СИ"}</button></div>
-    <svg className={styles.densityBlocks} viewBox="0 0 360 150" role="img" aria-label={split ? "Образец A разделён на две равные части. Образец B не изменился." : "Объём образца A вдвое больше объёма B. Показаны бруски с одинаковым поперечным сечением."}>
-      <g fill="var(--action-primary)" stroke="currentColor" strokeWidth="2">
-        <rect x="30" y="25" width="60" height="55" rx="2"/>
-        <rect className={styles.sampleHalf} x="90" y="25" width="60" height="55" rx="2" style={{transform:`translateX(${split?18:0}px)`}}/>
-      </g>
-      <rect x="255" y="25" width="60" height="55" rx="2" fill="#dca638" stroke="currentColor" strokeWidth="2"/>
-      <text x="95" y="119" textAnchor="middle" fill="currentColor" fontSize="19">{split ? "A: две половины" : "A: целый"}</text>
-      <text x="285" y="119" textAnchor="middle" fill="currentColor" fontSize="19">B</text>
-    </svg>
-    <div className={styles.readout} aria-live="polite">
-      <p><b>{split ? "Каждая половина A" : "Образец A"}</b><br/>Масса: {si ? (split?"0,027":"0,054")+" кг" : (split?27:54)+" г"}<br/>Объём: {si ? (split?"0,00001":"0,00002")+" м³" : (split?10:20)+" см³"}<strong>{si ? "2700 кг/м³" : "2,7 г/см³"}</strong></p>
-      <p><b>Образец B</b><br/>Масса: {si?"0,078 кг":"78 г"}<br/>Объём: {si?"0,00001 м³":"10 см³"}<strong>{si?"7800 кг/м³":"7,8 г/см³"}</strong></p>
+  const [prediction, setPrediction] = useState<PredictionId | null>(null);
+  const [compared, setCompared] = useState(false);
+
+  const choosePrediction = (value: PredictionId) => {
+    setPrediction(value);
+    setCompared(false);
+  };
+
+  return (
+    <div className={shared.experiment}>
+      <div className={styles.study}>
+        <figure className={styles.observation}>
+          <Image
+            className={styles.observationImage}
+            src={MIO_SCENES.density}
+            alt="Мио взвешивает небольшой тёмный образец; рядом лежит более крупный светлый образец и стоит мензурка"
+            fill
+            sizes="(max-width: 640px) 100vw, 440px"
+            priority
+          />
+          <figcaption>
+            Мио записывает массу и объём каждого образца. Размер на глаз не отвечает,
+            сколько массы приходится на 1 см³.
+          </figcaption>
+        </figure>
+
+        <div className={styles.question}>
+          <p className={styles.kicker}>Два образца · одно сравнение</p>
+          <h2>Какой образец плотнее?</h2>
+          <p>
+            Образец A: 54 г и 20 см³. Образец B: 78 г и 10 см³. Оба сплошные,
+            однородные и находятся при одной температуре.
+          </p>
+          <div className={styles.predictions} role="group" aria-label="Прогноз о плотности образцов">
+            {predictions.map((option) => (
+              <button
+                key={option.id}
+                type="button"
+                aria-pressed={prediction === option.id}
+                onClick={() => choosePrediction(option.id)}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+          <button
+            className={styles.compare}
+            type="button"
+            disabled={!prediction}
+            onClick={() => setCompared(true)}
+          >
+            Сравнить 1 см³
+          </button>
+        </div>
+      </div>
+
+      {compared ? (
+        <section className={styles.result} aria-labelledby="density-result-title">
+          <div className={styles.resultHeading}>
+            <p>Плотность показывает массу единицы объёма</p>
+            <MathText text={String.raw`$\rho=\frac{m}{V}$`} />
+          </div>
+
+          <div className={styles.comparison} aria-label="Расчёт плотности двух образцов">
+            <article>
+              <p>Образец A · крупнее</p>
+              <dl>
+                <div><dt>Масса</dt><dd>54 г</dd></div>
+                <div><dt>Объём</dt><dd>20 см³</dd></div>
+                <div><dt>Плотность</dt><dd>2,7 г/см³</dd></div>
+              </dl>
+              <MathText text={String.raw`$\rho_A=\frac{54\ \text{г}}{20\ \text{см}^3}=2{,}7\ \text{г/см}^3$`} />
+            </article>
+            <article className={styles.denserSample}>
+              <p>Образец B · меньше</p>
+              <dl>
+                <div><dt>Масса</dt><dd>78 г</dd></div>
+                <div><dt>Объём</dt><dd>10 см³</dd></div>
+                <div><dt>Плотность</dt><dd>7,8 г/см³</dd></div>
+              </dl>
+              <MathText text={String.raw`$\rho_B=\frac{78\ \text{г}}{10\ \text{см}^3}=7{,}8\ \text{г/см}^3$`} />
+            </article>
+          </div>
+
+          <div className={styles.conclusion} role="status">
+            <strong id="density-result-title">
+              {prediction === "b"
+                ? "Верно: меньший образец B плотнее."
+                : "Плотнее образец B, хотя он занимает меньше места."}
+            </strong>
+            <p>
+              Каждый кубический сантиметр B имеет массу 7,8 г, а каждый кубический
+              сантиметр A — 2,7 г. Размер тела и плотность вещества отвечают на разные
+              вопросы.
+            </p>
+          </div>
+        </section>
+      ) : null}
+
+      <details className={styles.followUp}>
+        <summary>Если разделить образец A пополам?</summary>
+        <div className={styles.followUpBody}>
+          <div>
+            <p>Целый A</p>
+            <strong>54 г ÷ 20 см³ = 2,7 г/см³</strong>
+          </div>
+          <div>
+            <p>Каждая половина</p>
+            <strong>27 г ÷ 10 см³ = 2,7 г/см³</strong>
+          </div>
+          <p>
+            Масса и объём уменьшились вдвое, а их отношение сохранилось. Это верно
+            для однородного образца без потери вещества при тех же условиях.
+          </p>
+        </div>
+      </details>
+
+      <details className={styles.followUp}>
+        <summary>Почему 2,7 г/см³ = 2700 кг/м³?</summary>
+        <p className={styles.conversion}>
+          1 г = 0,001 кг, а 1 см³ = 0,000001 м³. Поэтому численное значение в кг/м³
+          в 1000 раз больше: 2,7 г/см³ = 2700 кг/м³. Сам образец при смене единиц не
+          меняется.
+        </p>
+      </details>
     </div>
-    <p className={styles.explanation}>{split ? "У каждой половины A масса и объём уменьшились вдвое: 27 / 10 = 2,7 г/см³. Вместе части по-прежнему имеют массу 54 г и объём 20 см³." : "У A объём больше, но масса меньше. Сравним массу единицы объёма: 54 / 20 = 2,7; 78 / 10 = 7,8 г/см³. Плотность B больше."}</p>
-    {split && prediction && <p role="status" className={styles.aside}>{prediction==="Останется прежней" ? "Верно: изменился размер части, а отношение массы к объёму сохранилось." : "Посмотри на обе величины: уменьшилась не только масса, но и объём. Их отношение осталось прежним."} Мио: «Кусок стал меньше. А вот отношение — нет».</p>}
-    {si && <p className={styles.aside}>1 г = 0,001 кг; 1 см³ = 0,000001 м³. Поэтому 1 г/см³ = 1000 кг/м³. Число изменилось из-за единиц, сам образец не изменился.</p>}
-  </div>;
+  );
 }

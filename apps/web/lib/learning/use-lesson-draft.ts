@@ -3,7 +3,14 @@
 import { useEffect, useRef, useState } from "react";
 import { lessonDraftCodec, readLessonDraft, writeLessonDraft, type LessonDraft } from "./lesson-draft";
 
-export function useLessonDraft<T extends LessonDraft>(id: string, state: T, restore: (draft: T) => void, stageCount: number, kind: "lesson" | "check" = "lesson") {
+export function useLessonDraft<T extends LessonDraft>(
+  id: string,
+  state: T,
+  restore: (draft: T) => void,
+  stageCount: number,
+  kind: "lesson" | "check" = "lesson",
+  options: { saveInitial?: boolean } = {},
+) {
   const codec = useRef(lessonDraftCodec(id, state, stageCount)).current;
   const restoreRef = useRef(restore);
   restoreRef.current = restore;
@@ -11,12 +18,17 @@ export function useLessonDraft<T extends LessonDraft>(id: string, state: T, rest
   const [error, setError] = useState<string | null>(null);
   const blocked = useRef(false);
   const previous = useRef("");
+  const saveInitial = options.saveInitial ?? true;
 
   useEffect(() => {
     const result = readLessonDraft(codec);
     if (result.ok) {
       previous.current = JSON.stringify(result.value);
       restoreRef.current(result.value);
+    } else if (result.reason === "empty" && !saveInitial) {
+      // An untouched interactive scene is not learning work. Keep its initial
+      // state out of storage until the learner actually changes something.
+      previous.current = JSON.stringify(state);
     } else if (result.reason !== "empty") {
       blocked.current = result.reason === "future-version" || result.reason === "corrupt";
       setError(blocked.current
@@ -24,7 +36,7 @@ export function useLessonDraft<T extends LessonDraft>(id: string, state: T, rest
         : kind === "check" ? "Браузер не разрешает сохранить самопроверку. После закрытия страницы ответ может потеряться." : "Браузер не разрешает сохранить урок. Не закрывай страницу, пока не скопируешь своё объяснение.");
     }
     setReady(true);
-  }, [codec, kind]);
+  }, [codec, kind, saveInitial]);
 
   function save(next: T) {
     if (!ready || blocked.current) return false;

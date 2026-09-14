@@ -38,11 +38,12 @@ export type TaskDiagram =
 
 export interface GraphSpec {
   type: "vt" | "xt" | "at";
-  series: { t: number; v?: number; x?: number }[];
+  series: { t: number; v?: number; x?: number; label?: string }[];
   xLabel: string;
   yLabel: string;
   xRange: [number, number];
   yRange: [number, number];
+  showArea?: boolean;
 }
 
 export interface TaskBlueprint {

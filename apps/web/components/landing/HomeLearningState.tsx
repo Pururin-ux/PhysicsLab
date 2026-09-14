@@ -5,61 +5,15 @@ import { ArrowRight, CheckCircle, ChartLineUp } from "@phosphor-icons/react";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { getLearningNextStep } from "../../lib/learning/next-step";
+import { getQuizResumeStep } from "../../lib/learning/home-quiz-resume";
 import { readMotionLessonResumes } from "../../lib/learning/motion-lesson-resume";
 import { readSavedMotionPractice } from "../../lib/quiz/saved-motion-practice";
-import { mixedPracticeHrefByTopic } from "../../lib/learning/topic-practice-routes";
-import { getLearningDestinationForFamily } from "../../lib/learning/learning-links";
-import {
-  readActiveQuizSnapshot,
-  type ActiveQuizSnapshot,
-} from "../../lib/quiz/active-session-snapshot";
+import { readActiveQuizSnapshot } from "../../lib/quiz/active-session-snapshot";
 import { topics } from "../../lib/topics";
 import { $examLog, getBestAttempt } from "../../lib/stores/exam-log-store";
 import { $appProgress } from "../../lib/stores/progress-store";
 import { Button } from "../ui/Button";
 import { MathText } from "../ui/MathText";
-
-function getResumeHref(snapshot: ActiveQuizSnapshot) {
-  if (snapshot.sessionKind === "diagnostic" && snapshot.template === "exam") {
-    return "/practice/diagnostic";
-  }
-
-  if (snapshot.sessionKind === "exam" && snapshot.template === "exam") {
-    return "/practice/exam-demo";
-  }
-
-  const focusedDestination = getLearningDestinationForFamily(snapshot.template);
-  if (focusedDestination) {
-    return focusedDestination.practiceHref;
-  }
-
-  return snapshot.topicId && snapshot.topicId in mixedPracticeHrefByTopic
-    ? mixedPracticeHrefByTopic[snapshot.topicId as keyof typeof mixedPracticeHrefByTopic]
-    : null;
-}
-
-function getResumeStep(snapshot: ActiveQuizSnapshot, durable = false) {
-  const href = getResumeHref(snapshot);
-  if (!href) return null;
-
-  const currentTaskNumber = snapshot.session.currentIndex + 1;
-  const isExam = snapshot.sessionKind === "exam";
-  const isDiagnostic = snapshot.sessionKind === "diagnostic";
-
-  return {
-    label: "Продолжить",
-    title: `${isExam || isDiagnostic ? "Диагностика" : snapshot.title}: задание\u00a0${currentTaskNumber}\u00a0из\u00a0${snapshot.session.total}`,
-    body:
-      snapshot.session.phase === "answered"
-        ? "Ответ уже сохранён — можно вернуться прямо к разбору."
-        : durable ? "Задание и введённый ответ сохранены в этом браузере." : "Незавершённая попытка сохранена в этой вкладке.",
-    reason: "Сначала возвращаем точное место остановки, чтобы не терять уже сделанную работу.",
-    href,
-    cta: isExam || isDiagnostic ? "Продолжить диагностику" : "Продолжить тренировку",
-    tone: (isExam ? "gold" : "cyan") as "gold" | "cyan",
-    mode: (isExam ? "exam" : "learn") as "exam" | "learn",
-  };
-}
 
 export function useHomeLearningState() {
   const progress = useStore($appProgress);
@@ -76,7 +30,7 @@ export function useHomeLearningState() {
     const snapshotResult = mounted ? readActiveQuizSnapshot() : null;
     const savedPractice = mounted ? readSavedMotionPractice().result : null;
     const preferSaved = savedPractice?.ok && (!snapshotResult?.ok || snapshotResult.snapshot.template === savedPractice.snapshot.template);
-    const quizResume = preferSaved ? getResumeStep(savedPractice.snapshot, true) : snapshotResult?.ok ? getResumeStep(snapshotResult.snapshot) : null;
+    const quizResume = preferSaved ? getQuizResumeStep(savedPractice.snapshot, true) : snapshotResult?.ok ? getQuizResumeStep(snapshotResult.snapshot) : null;
     const lessonResumes = mounted ? readMotionLessonResumes() : [];
     const lessonResume = lessonResumes[0] ?? null;
     const resumeStep = quizResume ?? lessonResume;

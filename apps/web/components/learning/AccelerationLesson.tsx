@@ -244,7 +244,8 @@ export function AccelerationLesson() {
   const [summaryText, setSummaryText] = useState("");
   const [summaryTried, setSummaryTried] = useState(false);
   const [summarySaved, setSummarySaved] = useState(false);
-  const draftState = { screen, feeling, unitGuess, workedAnswer, workedChecked, finalAnswer, transferAnswer, transferFeedback, transferAttempts, finalDirection, finalFeedback, magnitudeChecked, summaryText, summaryTried, summarySaved };
+  const [investigationCompleted, setInvestigationCompleted] = useState(false);
+  const draftState = { screen, feeling, unitGuess, workedAnswer, workedChecked, finalAnswer, transferAnswer, transferFeedback, transferAttempts, finalDirection, finalFeedback, magnitudeChecked, summaryText, summaryTried, summarySaved, investigationCompleted };
   const lessonDraft = useLessonDraft("acceleration", draftState, (draft) => {
     setScreen(draft.screen);
     setFeeling(draft.feeling);
@@ -261,6 +262,7 @@ export function AccelerationLesson() {
     setSummaryText(draft.summaryText);
     setSummaryTried(draft.summaryTried);
     setSummarySaved(draft.summarySaved);
+    setInvestigationCompleted(draft.investigationCompleted);
   }, ACCELERATION_STAGES.length);
   const headingRef = useRef<HTMLHeadingElement>(null);
   const reduceMotion = useReducedMotion();
@@ -595,14 +597,14 @@ export function AccelerationLesson() {
           <textarea
             id="acceleration-summary"
             value={summaryText}
-            onChange={(event) => { setSummaryText(event.target.value); setSummaryTried(false); setSummarySaved(false); }}
+            onChange={(event) => { setSummaryText(event.target.value); setSummaryTried(false); setSummarySaved(false); setInvestigationCompleted(false); }}
             maxLength={10000} rows={5}
             placeholder="Например: ускорение показывает, на сколько меняется скорость за одну секунду…"
             className="mt-2 block min-h-[132px] w-full max-w-[700px] rounded-option border border-white/[.16] bg-[#0f1115] px-3 py-3 text-[14px] leading-[1.6] text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/75"
             aria-describedby="acceleration-summary-hint"
           />
           <p id="acceleration-summary-hint" className="mt-2 max-w-[64ch] text-[12px] leading-[1.55] text-white/60">Одной-двух фраз достаточно. Пиши так, как объяснил бы другу.</p>
-          <Button type="button" className="mt-4" onClick={() => { if (!summaryReady) { setSummaryTried(true); setSummarySaved(false); return; } setSummarySaved(lessonDraft.save({ ...draftState, summarySaved: true })); }}>Сохранить итог</Button>
+          <Button type="button" className="mt-4" onClick={() => { if (!summaryReady) { setSummaryTried(true); setSummarySaved(false); setInvestigationCompleted(false); return; } const saved = lessonDraft.save({ ...draftState, summarySaved: true, investigationCompleted: true }); setSummarySaved(saved); setInvestigationCompleted(saved); }}>Сохранить итог</Button>
           {summaryTried && !summaryReady ? <p role="alert" className="mt-3 text-[12px] leading-[1.5] text-[#e8b66d]">Добавь ещё немного слов — хотя бы одну законченную мысль.</p> : null}
           {summarySaved && !lessonDraft.error ? <div className="mt-5 border-l-2 border-nova-cyan/65 pl-4"><p className="text-[14px] leading-[1.6] text-white/75">Итог сохранён в этом браузере. Можно потренироваться ещё.</p><Link href="/practice/family/vt-slope" className="mt-3 inline-flex min-h-11 items-center gap-2 font-bold text-nova-cyan focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan/75">5 задач на ускорение по графику <ArrowRight size={17} weight="bold" /></Link></div> : null}
         </div>

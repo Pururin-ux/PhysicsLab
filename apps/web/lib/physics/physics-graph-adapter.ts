@@ -34,6 +34,7 @@ export function graphConfigToPhysicsGraphSpec(
   const points = config.series.map((point) => ({
     x: point.t,
     y: readGraphY(point, config.type),
+    label: point.label,
   }));
 
   return {

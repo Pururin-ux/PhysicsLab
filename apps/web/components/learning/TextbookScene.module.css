@@ -1,14 +1,4 @@
 .scene { min-width:0; }
-.densityBlocks { display:block; width:100%; max-width:460px; margin:20px auto; }
-.inertiaDiagram { width:100%; height:auto; display:block; margin:18px auto; overflow:hidden; }
-.inertiaObject { transition:transform 450ms ease-out; }
-.pressureGrid { display:grid; gap:3px; width:max-content; margin:22px auto; }
-.pressureGrid span { width:27px; height:27px; border:1px solid var(--action-primary); transition:background-color 300ms ease-out; }
-@media(prefers-reduced-motion:reduce) { .pressureGrid span { transition:none; } }
-@media(max-width:640px) { .inertiaDiagram text { font-size:32px; } }
-@media(prefers-reduced-motion:reduce) { .inertiaObject { transition:none; } }
-.sampleHalf { transition:transform 550ms cubic-bezier(.22,.7,.2,1); }
-@media(prefers-reduced-motion:reduce) { .sampleHalf { transition:none; } }
 .illustration { display:grid; grid-template-columns:1.4fr 1fr; align-items:center; gap:14px; margin:0 -18px 12px; }
 .art { width:100%; height:auto; mask-image:linear-gradient(to bottom,#000 65%,transparent 100%); border-radius:38% 8% 0 0 / 12% 5% 0 0; }
 .caption { padding:12px 18px 24px 4px; }
@@ -20,6 +10,8 @@
 .controls button { min-height: 44px; padding: 10px 14px; border: 1px solid var(--border-strong); border-radius: 10px; font-size: 14px; }
 .controls button[aria-pressed=true] { border-color: var(--action-primary); color: var(--action-primary); }
 .controls button:focus-visible { outline: 3px solid var(--action-primary); outline-offset: 3px; }
+.graphControls { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; align-items:start; }
+.graphPanel { margin-top:8px; padding:12px; border:1px solid var(--border-subtle); border-radius:14px; background:var(--surface-secondary); }
 .diagram { width: 100%; max-height: 180px; color: var(--text-primary); }
 .walker { transition: transform 650ms cubic-bezier(.22,.7,.2,1); }
 .distanceBars { display:grid; gap:10px; margin:20px 0; }
@@ -42,6 +34,7 @@
 .routeTrace { animation: reveal-route 400ms ease-out both; }
 @keyframes reveal-route { from { opacity: 0; } to { opacity: 1; } }
 .readout { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 14px; margin-top: 16px; }
+.journeyReadout { grid-template-columns: repeat(3,minmax(0,1fr)); }
 .readout p { padding: 14px; border-left: 2px solid var(--action-primary); line-height: 1.5; background: var(--surface-secondary); }
 .readout strong { display: block; font-size: 24px; margin-top: 4px; }
 .explanation { margin-top: 18px; line-height: 1.7; }
@@ -50,7 +43,6 @@
 .bridge h3 { font-size:21px; font-weight:750; margin-bottom:8px; }
 .bridge a { display:inline-flex; align-items:center; min-height:44px; margin-top:10px; color:var(--action-primary); font-weight:700; }
 .bridge a:focus-visible { outline:3px solid var(--action-primary); outline-offset:4px; }
-@media (max-width:640px) { .illustration { grid-template-columns:1fr; gap:0; margin:0 -10px; } .art { max-height:240px; object-fit:cover; object-position:center 42%; } .caption { padding:0 10px 16px; margin-top:-12px; position:relative; } .caption h2 { font-size:21px; } .caption p { display:none; } .experiment { padding:16px 0; } .readout { gap:8px; } .readout p { padding:10px; font-size:14px; } }
+@media (max-width:640px) { .illustration { grid-template-columns:1fr; gap:0; margin:0 -10px; } .art { max-height:240px; object-fit:cover; object-position:center 42%; } .caption { padding:0 10px 16px; margin-top:-12px; position:relative; } .caption h2 { font-size:21px; } .caption p { display:none; } .experiment { padding:16px 0; } .graphControls { grid-template-columns:1fr; gap:0; } .graphPanel { margin-inline:-4px; padding:6px; } .readout, .journeyReadout { grid-template-columns:1fr; gap:8px; } .readout p { padding:10px; font-size:14px; } }
 @media(prefers-reduced-motion:no-preference) { .scene { animation: enter-scene 300ms ease-out; } @keyframes enter-scene { from { opacity:0; transform:translateY(5px); } to { opacity:1; transform:translateY(0); } } }
 @media(prefers-reduced-motion:reduce) { .walker, .distanceBars span { transition:none; } .routeTrace { animation:none; } }
-.menzurka { display:block; width:100%; max-width:480px; height:auto; margin:20px auto; color:var(--text-primary); }

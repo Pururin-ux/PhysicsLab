@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import styles from "./ExamEntry.module.css";
 import { $examLog, getBestAttempt } from "../../lib/stores/exam-log-store";
+import { MIO_PORTRAITS } from "../../lib/learning/mio-assets";
 import { Button } from "../ui/Button";
 import { QuizSession } from "../quiz/QuizSession";
 import {
@@ -13,14 +14,6 @@ import {
   readExamResumeCandidate,
   type ExamResumeCandidate,
 } from "../../lib/quiz/active-session-snapshot";
-
-const ERROR_CATEGORIES = [
-  "Условие или модель",
-  "Формула",
-  "Знак или ось",
-  "Единицы СИ",
-  "Вычисление",
-] as const;
 
 function ExamHistoryLine() {
   const log = useStore($examLog);
@@ -48,7 +41,6 @@ function ExamHistoryLine() {
 
 function ExamTools() {
   const [scratch, setScratch] = useState("");
-  const [errorCategory, setErrorCategory] = useState<string | null>(null);
 
   return (
     <aside aria-label="Инструменты для решения" className="border-t border-white/[.1] pt-3 xl:border-l xl:border-t-0 xl:pl-6 xl:pt-0">
@@ -68,29 +60,6 @@ function ExamTools() {
         <p className="mt-2 text-[11px] leading-[1.5] text-white/58">Сохраняется только на этой странице и не отправляется с ответом.</p>
       </details>
 
-      <details className="group border-b border-white/[.1] py-3">
-        <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between text-[13px] font-bold text-white/76 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-blue/70 [&::-webkit-details-marker]:hidden">
-          Что помешало? <span aria-hidden="true" className="text-white/56 group-open:rotate-45">＋</span>
-        </summary>
-        <fieldset className="mt-2">
-          <legend className="text-[12px] leading-[1.55] text-white/52">Если ответ не совпал, выбери, что запутало.</legend>
-          <div className="mt-2 grid gap-1.5">
-            {ERROR_CATEGORIES.map((category) => (
-              <label key={category} className="flex min-h-9 cursor-pointer items-center gap-2 text-[12px] text-white/66">
-                <input
-                  type="radio"
-                  name="exam-error-category"
-                  checked={errorCategory === category}
-                  onChange={() => setErrorCategory(category)}
-                  className="size-4 accent-[var(--mode-exam-accent)]"
-                />
-                {category}
-              </label>
-            ))}
-          </div>
-          {errorCategory ? <p role="status" className="mt-2 text-[11px] leading-[1.5] text-nova-cyan/72">Отмечено: {errorCategory.toLowerCase()}.</p> : null}
-        </fieldset>
-      </details>
     </aside>
   );
 }
@@ -177,7 +146,7 @@ export function ExamDemo() {
           </div>
           <ExamHistoryLine />
         </div>
-        <Image src="/images/mio/mio-attentive-v1.png" width={1254} height={1254} alt="Мио внимательно слушает, держа блокнот" className={styles.mio} sizes="(max-width:640px) 110px, 240px" />
+        <Image src={MIO_PORTRAITS.attentive.src} width={1254} height={1254} alt="Мио внимательно слушает, держа блокнот" className={styles.mio} sizes="(max-width:640px) 110px, 240px" />
       </div>
       <p className={styles.note}>Это проверка отдельных тем, а не полный вариант ЦТ/ЦЭ. Результат поможет выбрать, что повторить.</p>
     </section>

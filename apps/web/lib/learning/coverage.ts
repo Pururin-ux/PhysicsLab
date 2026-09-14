@@ -7,6 +7,7 @@ export type CoverageStatus = "partial" | "not-covered";
 export type CoverageSection = {
   id: PhysicsSectionId;
   title: string;
+  officialTaskCount: number;
   status: CoverageStatus;
   familyIds: readonly TemplateId[];
   familyCount: number;
@@ -16,7 +17,7 @@ export type CoverageSection = {
 };
 
 export type CoverageCatalogDestination = {
-  topicId: TopicId;
+  id: string;
   label: string;
   href: string;
   familyCount: number;
@@ -31,9 +32,16 @@ export const EXAM_PROGRAM_SOURCE = {
   label: "Спецификация экзаменационной работы по физике ЦЭ/ЦТ 2026",
   organization: "Республиканский институт контроля знаний",
   url: "https://rikc.by/ru/specification/2026/03.pdf",
-  verificationStatus: "pending",
-  lastAccessAttempt: "08.09.2026",
+  verificationStatus: "verified",
+  verifiedAt: "2026-09-13",
+  sha256: "CC99C84E84637CDBF4A20C22E64C21F94B281A168C453294CFE35151A6E0F865",
 } as const;
+
+const examSectionOverrides: Partial<Record<TemplateId, PhysicsSectionId>> = {
+  // The product keeps density with matter and thermodynamics, while the official
+  // 2026 exam specification lists mass and density in Mechanics.
+  "density-volume-ratio": "mechanics",
+};
 
 const catalogDestinationDefinitions: Record<
   TopicId,
@@ -50,50 +58,67 @@ const coverageDefinitions: readonly CoverageDefinition[] = [
   {
     id: "mechanics",
     title: "Механика",
-    summary: "Кинематика и динамика: движение, силы, энергия и импульс.",
+    officialTaskCount: 10,
+    summary:
+      "Сейчас есть движение, силы, импульс, работа, КПД, мощность, кинетическая и потенциальная энергия, плотность, давление на опору и давление жидкости.",
     knownGaps: [
-      "Не все темы официальной программы представлены отдельными типами задач.",
-      "Задач на колебания и волны пока нет.",
+      "Нет отдельных задач на движение по окружности и броски тел.",
+      "Нет задач на закон всемирного тяготения, закон Гука и равновесие.",
+      "Нет задач на колебания и волны.",
     ],
   },
   {
     id: "molecular",
-    title: "Молекулярная физика и термодинамика",
-    summary: "Идеальный газ, нагревание, плавление и тепловой баланс.",
+    title: "Основы МКТ и термодинамики",
+    officialTaskCount: 7,
+    summary:
+      "Сейчас есть идеальный газ, нагревание, плавление и простой тепловой баланс.",
     knownGaps: [
-      "Задачи на графики газовых процессов пока есть не для всех случаев.",
-      "Некоторые виды задач этого раздела пока недоступны.",
+      "Нет задач на основное уравнение МКТ и среднюю квадратичную скорость молекул.",
+      "Нет задач на влажность, парообразование и тепловые двигатели.",
+      "Первый закон термодинамики и изопроцессы представлены не полностью.",
     ],
   },
   {
     id: "electrodynamics",
     title: "Электродинамика",
-    summary: "Постоянный ток, цепи, заряд и конденсатор.",
+    officialTaskCount: 9,
+    summary:
+      "Сейчас есть заряд, постоянный ток, соединения резисторов, полная цепь, мощность и конденсатор.",
     knownGaps: [
-      "Задач на магнитное поле и электромагнитную индукцию пока нет.",
-      "Не все типы электрических цепей представлены.",
+      "Нет задач на закон Кулона, напряжённость и потенциал электрического поля.",
+      "Нет задач на магнитное поле, индукцию и электромагнитные колебания.",
+      "Расчёты электрических цепей представлены не полностью.",
     ],
   },
   {
     id: "optics",
-    title: "Оптика",
-    summary: "Отражение, преломление и базовые задачи на линзы.",
+    title: "Оптика и основы СТО",
+    officialTaskCount: 2,
+    summary:
+      "Сейчас есть отражение, преломление, плоское зеркало и тонкие линзы.",
     knownGaps: [
-      "Пока доступны только базовые задачи геометрической оптики.",
-      "Задач по волновой оптике пока нет.",
+      "Нет задач на сферические зеркала, интерференцию и дифракцию.",
+      "Нет задач по специальной теории относительности.",
     ],
   },
   {
     id: "quantum",
-    title: "Квантовая физика",
+    title: "Основы квантовой физики",
+    officialTaskCount: 1,
     summary: "В каталоге пока нет задач этого раздела.",
-    knownGaps: ["Для этого раздела ещё нет задач и учебных объяснений."],
+    knownGaps: [
+      "Нет задач на фотоэффект, фотоны, постулаты Бора, излучение и поглощение света атомом.",
+    ],
   },
   {
     id: "atomic",
-    title: "Атомная и ядерная физика",
+    title: "Атомное ядро и элементарные частицы",
+    officialTaskCount: 1,
     summary: "В каталоге пока нет задач этого раздела.",
-    knownGaps: ["Для этого раздела ещё нет задач и учебных объяснений."],
+    knownGaps: [
+      "Нет задач на энергию связи ядра, ядерные реакции и радиоактивный распад.",
+    ],
   },
 ];
 
@@ -108,7 +133,8 @@ export function buildCoverageSections(
       throw new Error(`Catalog family "${familyId}" has no learning destination.`);
     }
 
-    const sectionId = skillMetadata[destination.skillId].sectionId;
+    const sectionId =
+      examSectionOverrides[familyId] ?? skillMetadata[destination.skillId].sectionId;
     const families = idsBySection.get(sectionId) ?? [];
     families.push(familyId);
     idsBySection.set(sectionId, families);
@@ -116,26 +142,27 @@ export function buildCoverageSections(
 
   return coverageDefinitions.map((definition) => {
     const familyIds = idsBySection.get(definition.id) ?? [];
-    const familyCountsByTopic = new Map<TopicId, number>();
+    const destinationsById = new Map<string, CoverageCatalogDestination>();
 
     for (const familyId of familyIds) {
       const destination = getLearningDestinationForFamily(familyId)!;
-      const topicId = skillMetadata[destination.skillId].topicId;
-      familyCountsByTopic.set(topicId, (familyCountsByTopic.get(topicId) ?? 0) + 1);
+      const skill = skillMetadata[destination.skillId];
+      const usesOfficialOverride = examSectionOverrides[familyId] !== undefined;
+      const catalogDestination = catalogDestinationDefinitions[skill.topicId];
+      const id = usesOfficialOverride ? `family:${familyId}` : `topic:${skill.topicId}`;
+      const current = destinationsById.get(id);
+
+      destinationsById.set(id, {
+        id,
+        label: usesOfficialOverride ? skill.shortTitle : catalogDestination.label,
+        href: usesOfficialOverride
+          ? `${destination.taskHref}?from=exam-program`
+          : catalogDestination.href,
+        familyCount: (current?.familyCount ?? 0) + 1,
+      });
     }
 
-    const catalogDestinations = [...familyCountsByTopic.entries()].map(
-      ([topicId, familyCount]) => {
-        const catalogDestination = catalogDestinationDefinitions[topicId];
-
-        return {
-          topicId,
-          label: catalogDestination.label,
-          href: catalogDestination.href,
-          familyCount,
-        };
-      },
-    );
+    const catalogDestinations = [...destinationsById.values()];
 
     return {
       ...definition,

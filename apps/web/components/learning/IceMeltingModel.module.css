@@ -1,0 +1,17 @@
+.model { display:grid; gap:18px; padding:clamp(20px,3.4vw,34px); border:1px solid color-mix(in srgb,var(--action-primary) 26%,var(--border-subtle)); border-radius:14px; background:color-mix(in srgb,var(--surface-secondary) 86%,transparent); }
+.model header>p { margin:0 0 7px; color:var(--action-primary); font-size:11px; font-weight:850; letter-spacing:.09em; text-transform:uppercase; }
+.model header h2 { max-width:24ch; margin:0; font-size:clamp(24px,3.4vw,34px); line-height:1.08; letter-spacing:-.035em; }
+.model header>span { display:block; max-width:64ch; margin-top:12px; color:var(--text-secondary); font-size:14px; line-height:1.6; }
+.controls { display:flex; flex-wrap:wrap; gap:8px; }
+.controls button { min-height:44px; padding:9px 14px; border:1px solid var(--border-strong); border-radius:9px; background:transparent; color:var(--text-primary); font:inherit; font-size:13px; font-weight:720; cursor:pointer; }
+.controls button[aria-pressed="true"] { border-color:var(--action-primary); background:color-mix(in srgb,var(--action-primary) 12%,transparent); color:var(--action-primary); }
+.controls button:focus-visible { outline:3px solid var(--action-primary); outline-offset:3px; }
+.graph { min-width:0; padding:8px; border:1px solid var(--border-subtle); border-radius:12px; background:rgba(7,13,20,.54); }
+.stages { display:grid; grid-template-columns:1fr 1fr .72fr; border-block:1px solid var(--border-subtle); }
+.stages section { padding:14px 16px; border-right:1px solid var(--border-subtle); }
+.stages section:last-child { border-right:0; }
+.stages p { margin:0; color:var(--text-secondary); font-size:10px; font-weight:760; letter-spacing:.045em; text-transform:uppercase; }
+.stages strong { display:block; margin-top:7px; font-family:var(--font-physics-numeric); font-size:19px; }
+.stages span { display:block; margin-top:5px; color:var(--text-secondary); font-family:var(--font-physics-numeric); font-size:13px; }
+.explanation { max-width:68ch; margin:0; color:var(--text-secondary); font-size:14px; line-height:1.65; }
+@media(max-width:640px){.model{gap:15px;padding:18px 12px}.controls{display:grid;grid-template-columns:1fr}.stages{grid-template-columns:1fr}.stages section{border-right:0;border-bottom:1px solid var(--border-subtle)}.stages section:last-child{border-bottom:0}}

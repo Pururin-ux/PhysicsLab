@@ -21,10 +21,16 @@ test("closed walk keeps nonzero path speed and zero displacement speed", () => {
   }
 });
 
-test("both scene drafts participate in backup and restore their controls", () => {
+test("interactive scene drafts participate in backup and restore their controls", () => {
   const fixtures = [
     { id: "textbook-walk", defaults: walkInitial, count: 3, saved: { ...walkInitial, stage: 2 } },
     { id: "textbook-round-trip-speed", defaults: roundTripInitial, count: 1, saved: { ...roundTripInitial, seconds: 40, stop: true } },
+    {
+      id: "textbook-matter-states",
+      defaults: { stage: 0, vaporAnswer: "", expansionState: "cold", thermometerAnswer: "", summaryText: "", summarySaved: false },
+      count: 3,
+      saved: { stage: 1, vaporAnswer: "invisible", expansionState: "hot", thermometerAnswer: "", summaryText: "", summarySaved: false },
+    },
   ];
   for (const { id, defaults, count, saved } of fixtures) {
     const exportCodec = lessonDraftExportCodecs.find(codec => codec.key === `physicslab-lesson-draft-${id}`);

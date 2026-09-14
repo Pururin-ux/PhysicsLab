@@ -7,13 +7,17 @@ import {
 import { skillMetadata, type TopicId } from "./taxonomy.ts";
 
 export type HelpSectionId =
+  | "archimedes-force"
   | "contact-pressure"
   | "uniform-motion"
+  | "uniform-motion-graphs"
   | "accelerated-motion"
   | "motion-graphs"
   | "average-speed"
   | "units-conversion"
   | "vectors-relative-motion"
+  | "gravity-force"
+  | "hydrostatic-pressure"
   | "newton-second-law"
   | "resultant-force"
   | "friction"
@@ -23,6 +27,8 @@ export type HelpSectionId =
   | "momentum"
   | "density-volume"
   | "kinetic-energy"
+  | "potential-energy"
+  | "energy-conservation"
   | "work-energy"
   | "ohms-law"
   | "full-circuit"
@@ -82,6 +88,13 @@ export const topicHelpSections: Record<TopicId, TopicHelpSection[]> = {
       mistake: "Не путай путь за всё время с одной координатой или одной отметкой на графике.",
     },
     {
+      id: "uniform-motion-graphs",
+      label: "Графики равномерного движения",
+      shortHint: "На s(t) скорость задаёт наклон прямой; на v(t) постоянная скорость — горизонтальная линия.",
+      formula: "v=\\frac{s}{t},\\quad s=vt",
+      mistake: "Сначала прочитай подписи осей: одна и та же высота означает разные величины на s(t) и v(t).",
+    },
+    {
       id: "accelerated-motion",
       label: "Равноускоренное движение",
       shortHint: "При постоянном ускорении координата содержит начальное положение, скорость и член at²/2.",
@@ -118,6 +131,21 @@ export const topicHelpSections: Record<TopicId, TopicHelpSection[]> = {
     },
   ],
   dynamics: [
+    {
+      id: "archimedes-force",
+      label: "Сила Архимеда",
+      shortHint: "Выталкивающая сила равна весу вытесненной среды и зависит от погружённого объёма.",
+      formula: "F_A=\\rho_{\\text{ж}}gV_{\\text{погр}}",
+      mistake: "В формулу входит объём погружённой части в м³, а не обязательно весь объём тела.",
+    },
+    {id:"hydrostatic-pressure",label:"Давление жидкости",shortHint:"На глубине h давление покоящейся жидкости равно ρgh.",formula:"p=\\rho gh",mistake:"Глубину отсчитывают от свободной поверхности; форму и площадь сосуда в формулу не подставляют."},
+    {
+      id: "gravity-force",
+      label: "Сила тяжести",
+      shortHint: "Земля действует на тело силой, прямо пропорциональной его массе.",
+      formula: "F_{\\text{т}}=gm",
+      mistake: "Сила тяжести приложена к телу и измеряется в ньютонах. Массу подставляй в килограммах.",
+    },
     {
       id: "newton-second-law",
       label: "Второй закон Ньютона",
@@ -175,14 +203,28 @@ export const topicHelpSections: Record<TopicId, TopicHelpSection[]> = {
       mistake: "Если скорость выросла в два раза, энергия выросла в четыре раза.",
     },
     {
+      id: "potential-energy",
+      label: "Потенциальная энергия",
+      shortHint: "Высоту поднятого тела отсчитывают от явно выбранного нулевого уровня.",
+      formula: "E_p=mgh",
+      mistake: "Одинаковое положение может иметь разные значения Eₚ при разных нулевых уровнях; физический смысл имеет изменение энергии.",
+    },
+    {
+      id: "energy-conservation",
+      label: "Сохранение механической энергии",
+      shortHint: "Без сопротивления уменьшение Eₖ равно увеличению Eₚ.",
+      formula: "E_k+E_p=\\text{const}",
+      mistake: "Сначала проверь условие: при заметном сопротивлении механическая энергия сама по себе не сохраняется.",
+    },
+    {
       id:"contact-pressure",label:"Давление на опору",shortHint:"Давление — перпендикулярная сила на единицу площади контакта. Для нескольких опор сложи их площади.",formula:"p=F/S",mistake:"1 см² = 0,0001 м²; 1 кПа = 1000 Па. Не дели полную силу только на площадь одной опоры.",
     },
     {
       id: "work-energy",
       label: "Работа силы",
-      shortHint: "Работа равна произведению силы, пути и cos угла между ними.",
-      formula: "A=Fs\\cos\\alpha",
-      mistake: "Если сила направлена против перемещения, работа отрицательна.",
+      shortHint: "Вдоль движения A = Fs; мощность показывает работу за единицу времени.",
+      formula: "A=Fs,\\quad P=\\frac{A}{t}",
+      mistake: "Без перемещения работа равна нулю; ватт — единица мощности, а джоуль — работы.",
     },
   ],
   electrodynamics: [
@@ -325,6 +367,9 @@ const blueprintTargets: Partial<
   "formula-substitution": { topicId: "kinematics", sectionId: "accelerated-motion" },
   "free-fall": { topicId: "kinematics", sectionId: "accelerated-motion" },
   "average-speed-segments": { topicId: "kinematics", sectionId: "average-speed" },
+  "average-speed-with-stop": { topicId: "kinematics", sectionId: "average-speed" },
+  "uniform-motion-basic": { topicId: "kinematics", sectionId: "uniform-motion" },
+  "uniform-motion-graphs": { topicId: "kinematics", sectionId: "uniform-motion-graphs" },
   "unit-conversion-speed": { topicId: "kinematics", sectionId: "units-conversion" },
   "nth-second-displacement": { topicId: "kinematics", sectionId: "accelerated-motion" },
   "graph-area": { topicId: "kinematics", sectionId: "motion-graphs" },
@@ -334,6 +379,9 @@ const blueprintTargets: Partial<
   "relative-motion-meeting": { topicId: "kinematics", sectionId: "vectors-relative-motion" },
   "relative-motion-overtake": { topicId: "kinematics", sectionId: "vectors-relative-motion" },
   "relative-velocity-vectors": { topicId: "kinematics", sectionId: "vectors-relative-motion" },
+  "gravity-force": { topicId: "dynamics", sectionId: "gravity-force" },
+  "archimedes-force": { topicId: "dynamics", sectionId: "archimedes-force" },
+  "hydrostatic-pressure": { topicId: "dynamics", sectionId: "hydrostatic-pressure" },
   "newton-second": { topicId: "dynamics", sectionId: "newton-second-law" },
   "resultant-force": { topicId: "dynamics", sectionId: "resultant-force" },
   "resultant-force-2d": { topicId: "dynamics", sectionId: "resultant-force" },
@@ -342,7 +390,9 @@ const blueprintTargets: Partial<
   "weight-lift": { topicId: "dynamics", sectionId: "weight-lift" },
   "impulse-momentum": { topicId: "dynamics", sectionId: "impulse-force" },
   "inelastic-collision-speed": { topicId: "dynamics", sectionId: "momentum" },
-  "kinetic-energy": { topicId: "dynamics", sectionId: "newton-second-law" },
+  "kinetic-energy": { topicId: "dynamics", sectionId: "kinetic-energy" },
+  "gravitational-potential-energy": { topicId: "dynamics", sectionId: "potential-energy" },
+  "mechanical-energy-conservation": { topicId: "dynamics", sectionId: "energy-conservation" },
   "work-force-distance": { topicId: "dynamics", sectionId: "work-energy" },
   "ohm-law": { topicId: "electrodynamics", sectionId: "ohms-law" },
   "resistor-network": { topicId: "electrodynamics", sectionId: "ohms-law" },

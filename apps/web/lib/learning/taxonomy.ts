@@ -14,13 +14,19 @@ export type TopicId =
   | "optics";
 
 export type SkillId =
+  | "archimedes-force"
   | "contact-pressure"
   | "vt-slope"
   | "vt-area"
   | "relative-velocity-vectors"
   | "free-fall"
   | "average-speed-segments"
+  | "average-speed-with-stop"
+  | "uniform-motion-basic"
+  | "uniform-motion-graphs"
   | "unit-conversion-speed"
+  | "gravity-force"
+  | "hydrostatic-pressure"
   | "newton-second"
   | "friction-force"
   | "incline-force"
@@ -31,7 +37,11 @@ export type SkillId =
   | "impulse-momentum"
   | "inelastic-collision-speed"
   | "kinetic-energy"
+  | "gravitational-potential-energy"
+  | "mechanical-energy-conservation"
   | "work-force-distance"
+  | "mechanical-power"
+  | "mechanical-efficiency"
   | "ohm-law"
   | "resistor-network"
   | "source-internal-resistance"
@@ -61,6 +71,14 @@ export type SkillMetadata = {
 };
 
 export const skillMetadata: Record<SkillId, SkillMetadata> = {
+  "archimedes-force": {
+    id: "archimedes-force",
+    topicId: "dynamics",
+    sectionId: "mechanics",
+    title: "Сила Архимеда",
+    shortTitle: "Сила Архимеда",
+    description: "Выталкивающая сила как произведение плотности среды, g и погружённого объёма.",
+  },
   "contact-pressure":{id:"contact-pressure",topicId:"dynamics",sectionId:"mechanics",title:"Давление на опору",shortTitle:"Давление на опору",description:"Связь перпендикулярной силы, общей площади контакта и давления; перевод см² в м² и Па в кПа."},
   "vt-slope": {
     id: "vt-slope",
@@ -102,6 +120,30 @@ export const skillMetadata: Record<SkillId, SkillMetadata> = {
     shortTitle: "Средняя по пути",
     description: "Средняя путевая скорость как весь путь, делённый на всё время движения.",
   },
+  "uniform-motion-basic": {
+    id: "uniform-motion-basic",
+    topicId: "kinematics",
+    sectionId: "mechanics",
+    title: "Равномерное движение: путь, скорость и время",
+    shortTitle: "Путь, скорость и время",
+    description: "Связь пути, постоянной скорости и времени при равномерном движении.",
+  },
+  "average-speed-with-stop": {
+    id: "average-speed-with-stop",
+    topicId: "kinematics",
+    sectionId: "mechanics",
+    title: "Неравномерное движение и средняя скорость",
+    shortTitle: "Средняя с остановкой",
+    description: "Весь путь, делённый на всё время, включая остановки.",
+  },
+  "uniform-motion-graphs": {
+    id: "uniform-motion-graphs",
+    topicId: "kinematics",
+    sectionId: "mechanics",
+    title: "Графики равномерного движения",
+    shortTitle: "Графики s(t) и v(t)",
+    description: "Путь и постоянная скорость на графиках равномерного движения.",
+  },
   "unit-conversion-speed": {
     id: "unit-conversion-speed",
     topicId: "kinematics",
@@ -109,6 +151,17 @@ export const skillMetadata: Record<SkillId, SkillMetadata> = {
     title: "Перевод скорости км/ч в м/с",
     shortTitle: "Единицы скорости",
     description: "Перевод скорости и времени к согласованным единицам перед расчетом пути.",
+  },
+  "gravity-force": {
+    id: "gravity-force",
+    topicId: "dynamics",
+    sectionId: "mechanics",
+    title: "Сила тяжести и масса",
+    shortTitle: "Сила тяжести",
+    description: "Сила притяжения тела Землёй и её прямая пропорциональность массе.",
+  },
+  "hydrostatic-pressure": {
+    id:"hydrostatic-pressure",topicId:"dynamics",sectionId:"mechanics",title:"Гидростатическое давление",shortTitle:"Давление жидкости",description:"Давление покоящейся жидкости на выбранной глубине.",
   },
   "newton-second": {
     id: "newton-second",
@@ -190,13 +243,45 @@ export const skillMetadata: Record<SkillId, SkillMetadata> = {
     shortTitle: "Кинетическая энергия",
     description: "Энергия движения как половина произведения массы на квадрат скорости.",
   },
+  "gravitational-potential-energy": {
+    id: "gravitational-potential-energy",
+    topicId: "dynamics",
+    sectionId: "mechanics",
+    title: "Потенциальная энергия поднятого тела",
+    shortTitle: "Потенциальная энергия",
+    description: "Энергия взаимодействия тела с Землёй относительно выбранного нулевого уровня.",
+  },
+  "mechanical-energy-conservation": {
+    id: "mechanical-energy-conservation",
+    topicId: "dynamics",
+    sectionId: "mechanics",
+    title: "Сохранение механической энергии",
+    shortTitle: "Превращение энергии",
+    description: "Переход кинетической энергии в потенциальную при отсутствии сопротивления.",
+  },
   "work-force-distance": {
     id: "work-force-distance",
     topicId: "dynamics",
     sectionId: "mechanics",
-    title: "Работа постоянной силы",
+    title: "Механическая работа",
     shortTitle: "Работа силы",
-    description: "Работа силы как произведение силы, пути и косинуса угла между ними.",
+    description: "Работа силы вдоль движения и её знак при противоположном направлении.",
+  },
+  "mechanical-power": {
+    id: "mechanical-power",
+    topicId: "dynamics",
+    sectionId: "mechanics",
+    title: "Механическая мощность",
+    shortTitle: "Мощность",
+    description: "Работа за единицу времени и связь P = A/t.",
+  },
+  "mechanical-efficiency": {
+    id: "mechanical-efficiency",
+    topicId: "dynamics",
+    sectionId: "mechanics",
+    title: "Коэффициент полезного действия",
+    shortTitle: "КПД механизма",
+    description: "Отношение полезной работы к полной совершённой работе.",
   },
   "ohm-law": {
     id: "ohm-law",

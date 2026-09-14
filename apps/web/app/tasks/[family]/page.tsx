@@ -17,6 +17,7 @@ import { getFamilyLesson } from "../../../lib/learning/family-lesson";
 
 type TaskTypePageProps = {
   params: Promise<{ family: string }>;
+  searchParams: Promise<{ from?: string | string[] }>;
 };
 
 export function generateStaticParams() {
@@ -34,10 +35,15 @@ export async function generateMetadata({ params }: TaskTypePageProps): Promise<M
     : { title: "Тренировка не найдена | PhysicsLab" };
 }
 
-export default async function TaskTypePage({ params }: TaskTypePageProps) {
+export default async function TaskTypePage({ params, searchParams }: TaskTypePageProps) {
   const { family } = await params;
+  const { from } = await searchParams;
   const entry = getTaskCatalogEntry(family);
   if (!entry) notFound();
+  const fromExamProgram =
+    (Array.isArray(from) ? from[0] : from) === "exam-program";
+  const returnHref = fromExamProgram ? "/exam/program" : "/tasks";
+  const returnLabel = fromExamProgram ? "К темам ЦТ/ЦЭ" : "Все тренировки";
   const referenceSolution = getReferenceSolution(entry.id);
   const destination = getLearningDestinationForFamily(entry.id);
   const lesson = getFamilyLesson(entry.id);
@@ -48,13 +54,13 @@ export default async function TaskTypePage({ params }: TaskTypePageProps) {
 
   return (
     <div className="mx-auto flex w-full max-w-[760px] min-w-0 flex-col gap-7">
-      <nav aria-label="Путь к тренировке" className="sm:hidden">
+      <nav aria-label="Путь к тренировке" className="md:hidden">
         <Link
           className="inline-flex min-h-10 w-fit items-center gap-2 rounded-option pr-2 text-[13px] font-semibold text-white/62 transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-blue/55"
-          href="/tasks"
+          href={returnHref}
         >
           <ArrowLeft size={16} weight="bold" aria-hidden="true" />
-          Все тренировки
+          {returnLabel}
         </Link>
       </nav>
 

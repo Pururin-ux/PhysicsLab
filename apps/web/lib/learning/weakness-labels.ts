@@ -20,6 +20,10 @@ export const weaknessCopyBySkill: Partial<Record<SkillId, {
   title: string;
   hint: string;
 }>> = {
+  "archimedes-force": {
+    title: "Сила Архимеда",
+    hint: "Проверь ==погружённый объём== и перевод см³ в м³ перед подстановкой в $F_A=\\rho_{\\text{ж}}gV_{\\text{погр}}$.",
+  },
   "contact-pressure":{title:"Давление на опору",hint:"Полная сила действует на ==суммарную площадь== опор. Проверь перевод квадратных единиц."},
   "vt-slope": {
     title: "Наклон v(t)",
@@ -37,10 +41,27 @@ export const weaknessCopyBySkill: Partial<Record<SkillId, {
     title: "Средняя путевая скорость",
     hint: "Считай ==весь путь / всё время==, а не среднее арифметическое скоростей.",
   },
+  "average-speed-with-stop": {
+    title: "Средняя скорость с остановкой",
+    hint: "Остановка не добавляет пути, но её время входит в ==всё время==.",
+  },
+  "uniform-motion-basic": {
+    title: "Путь, скорость и время",
+    hint: "Сначала назови неизвестную: $s=vt$, $v=\\frac{s}{t}$, $t=\\frac{s}{v}$.",
+  },
+  "uniform-motion-graphs": {
+    title: "Графики равномерного движения",
+    hint: "Прочитай оси: наклон $s(t)$ показывает скорость, а горизонтальная $v(t)$ — её постоянство.",
+  },
   "unit-conversion-speed": {
     title: "Единицы скорости",
     hint: "Перед расчетом пути переведи км/ч в м/с, а минуты в секунды.",
   },
+  "gravity-force": {
+    title: "Сила тяжести",
+    hint: "Умножь массу в килограммах на $g=9{,}8\\,\\text{Н/кг}$. Сила измеряется в ньютонах.",
+  },
+  "hydrostatic-pressure": {title:"Давление жидкости",hint:"Используй $p=\\rho gh$: важны плотность и ==глубина от поверхности==."},
   "newton-second": {
     title: "Второй закон Ньютона",
     hint: "Сначала реши, **что именно ищем**: силу, массу или ускорение.",
@@ -68,6 +89,14 @@ export const weaknessCopyBySkill: Partial<Record<SkillId, {
   "work-force-distance": {
     title: "Работа силы",
     hint: "Проверь знак: если сила направлена против перемещения, работа отрицательна.",
+  },
+  "mechanical-power": {
+    title: "Механическая мощность",
+    hint: "Различай работу и мощность: $P=\\frac{A}{t}$, а $A=Pt$.",
+  },
+  "mechanical-efficiency": {
+    title: "КПД механизма",
+    hint: "Полезная работа — часть полной: $\\eta=\\frac{A_{\\text{пол}}}{A_{\\text{сов}}}\\cdot100\\%$.",
   },
   "relative-velocity-vectors": {
     title: "Относительная скорость",
@@ -100,6 +129,14 @@ export const weaknessCopyBySkill: Partial<Record<SkillId, {
   "kinetic-energy": {
     title: "Кинетическая энергия",
     hint: "В $E_k=\\frac{mv^2}{2}$ скорость стоит ==в квадрате==, а не первой степенью.",
+  },
+  "gravitational-potential-energy": {
+    title: "Потенциальная энергия",
+    hint: "Сначала отметь нулевой уровень и высоту относительно него, затем используй $E_p=mgh$.",
+  },
+  "mechanical-energy-conservation": {
+    title: "Сохранение механической энергии",
+    hint: "Если сопротивлением пренебрегают, приравняй начальную и конечную суммы $E_k+E_p$.",
   },
   "electric-power": {
     title: "Мощность тока",

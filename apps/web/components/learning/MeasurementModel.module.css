@@ -1,0 +1,226 @@
+.study {
+  display: grid;
+  grid-template-columns: minmax(330px, 1.08fr) minmax(0, 0.92fr);
+  gap: clamp(24px, 4vw, 46px);
+  align-items: center;
+  padding-bottom: 24px;
+}
+
+.observation {
+  position: relative;
+  min-height: 410px;
+  overflow: hidden;
+  border-radius: 34px 8px 34px 8px;
+  background: var(--surface-secondary);
+}
+
+.observation::after {
+  position: absolute;
+  inset: 0;
+  content: "";
+  pointer-events: none;
+  border-radius: inherit;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--border-strong) 80%, transparent);
+}
+
+.observationImage {
+  object-fit: cover;
+  object-position: 61% 46%;
+}
+
+.observation figcaption {
+  position: absolute;
+  inset: auto 14px 14px;
+  z-index: 1;
+  max-width: 360px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--surface-canvas) 88%, transparent);
+  color: var(--text-primary);
+  font-size: 13px;
+  line-height: 1.5;
+  backdrop-filter: blur(10px);
+}
+
+.question {
+  min-width: 0;
+}
+
+.kicker {
+  color: var(--action-primary);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.question h2 {
+  margin-top: 8px;
+  font-size: clamp(25px, 4vw, 35px);
+  line-height: 1.14;
+  font-weight: 780;
+  letter-spacing: -0.025em;
+}
+
+.question > p:not(.kicker) {
+  margin-top: 14px;
+  color: var(--text-secondary);
+  font-size: 16px;
+  line-height: 1.7;
+}
+
+.predictions {
+  display: grid;
+  gap: 9px;
+  margin-top: 22px;
+}
+
+.predictions button {
+  min-height: 52px;
+  padding: 12px 15px;
+  border-block: 1px solid var(--border-strong);
+  color: var(--text-primary);
+  text-align: left;
+  line-height: 1.45;
+  transition: border-color 160ms ease, color 160ms ease, background-color 160ms ease;
+}
+
+.predictions button:hover {
+  border-color: var(--action-primary);
+}
+
+.predictions button[aria-pressed="true"] {
+  border-color: var(--action-primary);
+  background: color-mix(in srgb, var(--action-primary) 9%, transparent);
+  color: var(--action-primary);
+}
+
+.compare {
+  width: 100%;
+  min-height: 50px;
+  margin-top: 14px;
+  padding: 12px 18px;
+  border-radius: 10px;
+  background: var(--action-primary);
+  color: var(--surface-canvas);
+  font-weight: 780;
+}
+
+.compare:disabled {
+  cursor: not-allowed;
+  opacity: 0.42;
+}
+
+.predictions button:focus-visible,
+.compare:focus-visible,
+.uncertainty summary:focus-visible {
+  outline: 3px solid var(--action-primary);
+  outline-offset: 3px;
+}
+
+.result {
+  padding-block: 6px 24px;
+}
+
+.records {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  background: var(--border-strong);
+}
+
+.records section {
+  padding: 20px;
+  background: var(--surface-primary);
+}
+
+.records p {
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.records strong {
+  display: block;
+  margin-top: 7px;
+  font-size: clamp(24px, 4vw, 31px);
+  line-height: 1.2;
+}
+
+.records span {
+  display: block;
+  margin-top: 12px;
+  color: var(--text-secondary);
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.conclusion {
+  margin-top: 18px;
+  padding: 17px 20px;
+  border-left: 3px solid var(--action-primary);
+  background: color-mix(in srgb, var(--action-primary) 7%, var(--surface-primary));
+}
+
+.conclusion strong {
+  font-size: 17px;
+}
+
+.conclusion p {
+  margin-top: 6px;
+  color: var(--text-secondary);
+  line-height: 1.65;
+}
+
+.uncertainty {
+  border-block: 1px solid var(--border-strong);
+}
+
+.uncertainty summary {
+  min-height: 52px;
+  padding-block: 15px;
+  cursor: pointer;
+  font-weight: 750;
+}
+
+.uncertainty p {
+  max-width: 680px;
+  padding: 2px 0 20px;
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .predictions button {
+    transition: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .study {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .observation {
+    min-height: 325px;
+    margin-inline: -16px;
+    border-radius: 0 0 28px 0;
+  }
+
+  .observationImage {
+    object-position: 62% 46%;
+  }
+
+  .question h2 {
+    font-size: 27px;
+  }
+
+  .predictions button {
+    min-height: 56px;
+  }
+
+  .records {
+    grid-template-columns: 1fr;
+  }
+}

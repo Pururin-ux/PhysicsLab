@@ -12,14 +12,19 @@ Scope: current behaviour implemented in `apps/web`.
   explanations and interactions.
 - Practice gives task-specific feedback, optional help, retry, and a next
   action.
-- Incorrect attempts can enter the review queue. An unfinished valid session
-  has priority when the learner returns.
+- Incorrect attempts can enter the review queue. A checked incorrect textbook
+  self-check links back to that exact question; an unfinished or outdated
+  self-check is not classified as a mistake. An unfinished valid practice
+  session has priority when the learner returns.
 - The profile reports observed practice evidence; it does not claim a global
   mastery percentage.
 - Authored lessons with an итог explanation preserve their position, answers,
   and explanation in browser drafts. Saving a lesson is not mastery evidence.
   Drafts are included in progress backups and the confirmed full data reset
   (decision 0004).
+- The states, expansion, and temperature investigation preserves its selected
+  stage and answers after the learner changes them. Merely opening the chapter
+  creates no learning-work claim and is not completion evidence.
 
 ## Boundaries
 

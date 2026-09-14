@@ -1,0 +1,51 @@
+.browser { color:var(--text-primary); }
+.searchArea { max-width:800px; margin:24px 0; }
+.searchArea>label { display:block; font-size:14px; font-weight:650; margin-bottom:9px; }
+.searchBox { display:flex; border:1px solid var(--border-strong); border-radius:12px; background:var(--surface-primary); }
+.searchBox input { min-width:0; width:100%; min-height:54px; padding:14px 18px; background:transparent; color:var(--text-primary); font-size:16px; border-radius:12px; }
+.searchBox button { padding:10px 14px; font-size:14px; color:var(--action-primary); }
+.filters { display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin-top:12px; }
+.filters button { min-height:44px; padding:9px 14px; border-radius:8px; border:1px solid var(--border-strong); font-size:14px; }
+.filters button[aria-pressed=true] { background:var(--action-primary); color:var(--action-ink); border-color:var(--action-primary); }
+.filters>span { font-size:13px; color:var(--text-secondary); margin-left:auto; }
+.shortcuts { display:flex; flex-wrap:wrap; gap:0 24px; margin-top:8px; }
+.shortcuts a { display:inline-flex; min-height:44px; align-items:center; font-size:14px; color:var(--action-primary); }
+.layout { max-width:800px; border-top:1px solid var(--border-strong); padding-top:24px; }
+.group { scroll-margin-top:100px; margin-bottom:42px; }
+.group>header { margin-bottom:0; }
+.group>header p { font-size:13px; line-height:1.6; color:var(--text-secondary); }
+.entry { display:grid; grid-template-columns:minmax(0,1fr); gap:16px; padding:28px 0; border-bottom:1px solid var(--border-strong); scroll-margin-top:100px; }
+.question>p { font-size:13px; color:var(--text-secondary); line-height:1.5; margin-bottom:8px; }
+.question h2 { font-size:clamp(22px,2.2vw,28px); max-width:34ch; font-weight:750; letter-spacing:-.025em; line-height:1.3; }
+.actions { display:flex; align-items:baseline; flex-wrap:wrap; gap:0 24px; }
+.materials nav { display:flex; align-items:center; flex-wrap:wrap; gap:4px 24px; }
+.materials nav a { display:flex; gap:20px; align-items:center; min-height:44px; font-size:14px; line-height:1.5; color:var(--text-secondary); text-decoration:underline; text-underline-offset:4px; }
+.materials nav a:first-child { padding:11px 20px; border-radius:7px; background:var(--action-primary); color:var(--action-ink); font-weight:650; text-decoration:none; }
+.materials nav a:first-child span { color:inherit; }
+.nextStep { display:grid; grid-template-columns:64px minmax(0,1fr); gap:16px; align-items:start; max-width:62ch; margin-top:24px; padding-top:16px; border-top:1px solid var(--border-strong); }
+.nextStep>span { padding-top:3px; font-size:12px; font-weight:650; letter-spacing:.04em; text-transform:uppercase; color:var(--text-secondary); }
+.nextStep a { font-size:16px; line-height:1.65; color:var(--text-primary); }
+.nextStep a span { color:var(--action-primary); }
+.context { font-size:13px; color:var(--text-secondary); line-height:1.65; }
+.context summary { cursor:pointer; padding:10px 0; min-height:44px; }
+.context p { padding:0 0 9px 14px; border-left:2px solid var(--border-strong); }
+.footer { border-top:1px solid var(--border-strong); padding:28px 0; }
+.footer h2,.empty h2 { font-size:21px; font-weight:750; }
+.footer p,.empty p { color:var(--text-secondary); line-height:1.7; font-size:14px; max-width:70ch; margin-top:10px; }
+.footer nav { display:flex; flex-wrap:wrap; gap:4px 24px; margin-top:16px; }
+.footer a,.empty a,.empty button { display:inline-flex; align-items:center; min-height:44px; color:var(--action-primary); font-size:14px; }
+.empty button { margin-right:24px; }
+.browser a:hover { color:var(--action-primary); }
+.browser :is(a,button,input,summary):focus-visible { outline:3px solid var(--action-primary); outline-offset:3px; }
+@media(max-width:560px) {
+  .searchArea { margin:18px 0; }
+  .searchBox input { padding:12px; }
+  .filters>span { width:100%; margin:2px 0 0; }
+  .entry { grid-template-columns:minmax(0,1fr); gap:12px; padding:22px 0; }
+  .question h2 { font-size:23px; }
+  .materials nav { display:grid; grid-template-columns:minmax(0,1fr); gap:0; }
+  .materials nav a { justify-self:start; }
+  .materials nav a:first-child { justify-self:start; margin-bottom:6px; }
+  .nextStep { grid-template-columns:1fr; gap:4px; margin-top:20px; }
+  .group { margin-bottom:32px; }
+}

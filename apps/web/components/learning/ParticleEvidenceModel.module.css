@@ -1,0 +1,211 @@
+.model {
+  overflow: hidden;
+  border-block: 1px solid var(--border-strong);
+  background: var(--surface-primary);
+}
+
+.intro {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 230px;
+  gap: 30px;
+  align-items: end;
+  padding: 30px 30px 24px;
+}
+
+.kicker,
+.stepLabel {
+  margin: 0 0 8px;
+  color: var(--action-primary);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.intro h2 {
+  max-width: 610px;
+  margin: 0;
+  font-size: clamp(1.7rem, 4vw, 2.6rem);
+  line-height: 1.03;
+  letter-spacing: -0.035em;
+}
+
+.intro > div:first-child > p:last-child {
+  max-width: 600px;
+  margin: 16px 0 0;
+  color: var(--text-secondary);
+  line-height: 1.65;
+}
+
+.mioNote {
+  display: grid;
+  grid-template-columns: 94px 1fr;
+  align-items: end;
+  min-height: 128px;
+}
+
+.mioNote img {
+  width: 128px;
+  height: 128px;
+  margin-left: -30px;
+  object-fit: contain;
+  object-position: bottom;
+}
+
+.mioNote p {
+  position: relative;
+  z-index: 1;
+  margin: 0 0 8px;
+  padding: 12px 0 12px 14px;
+  border-left: 2px solid var(--action-primary);
+  font-size: 0.83rem;
+  line-height: 1.45;
+}
+
+.stageTabs {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border-block: 1px solid var(--border-strong);
+}
+
+.stageTabs button {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  min-height: 54px;
+  padding: 10px 14px;
+  border: 0;
+  border-right: 1px solid var(--border-strong);
+  background: transparent;
+  color: var(--text-secondary);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.stageTabs button:last-child { border-right: 0; }
+.stageTabs button[aria-pressed="true"] { background: var(--action-primary); color: var(--action-ink); }
+.stageTabs button:focus-visible,
+.options button:focus-visible,
+.credit:focus-visible,
+.recordingLink:focus-visible,
+.traceFigure a:focus-visible { outline: 3px solid var(--action-primary); outline-offset: 3px; }
+
+.stageTabs span {
+  display: grid;
+  place-items: center;
+  width: 25px;
+  height: 25px;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  font-size: 0.72rem;
+}
+
+.observationStage {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(260px, 0.9fr);
+  min-height: 430px;
+}
+
+.inkFigure {
+  position: relative;
+  min-height: 430px;
+  margin: 0;
+  background: #e8e8e6;
+}
+
+.inkFigure img { object-fit: cover; }
+.inkFigure figcaption {
+  position: absolute;
+  inset: auto 18px 18px;
+  max-width: 520px;
+  padding: 11px 13px;
+  background: rgb(15 20 24 / 86%);
+  color: #fff;
+  font-size: 0.76rem;
+  line-height: 1.5;
+}
+
+.observationQuestion {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 28px;
+  border-left: 1px solid var(--border-strong);
+}
+
+.observationQuestion h3,
+.microscopeCopy h3,
+.explanationLead h3 {
+  margin: 0;
+  font-size: clamp(1.35rem, 3vw, 1.85rem);
+  line-height: 1.12;
+  letter-spacing: -0.025em;
+}
+
+.options { display: grid; gap: 9px; margin-top: 20px; }
+.options button {
+  min-height: 48px;
+  padding: 11px 13px;
+  border: 1px solid var(--border-strong);
+  border-radius: 10px;
+  background: transparent;
+  color: var(--text-primary);
+  text-align: left;
+  font: inherit;
+  line-height: 1.4;
+  cursor: pointer;
+}
+.options button[aria-pressed="true"] { border-color: var(--action-primary); background: var(--surface-secondary); }
+.correct,
+.correction { margin: 14px 0 0; padding-left: 12px; border-left: 3px solid var(--feedback-success); line-height: 1.5; }
+.correction { border-left-color: var(--feedback-warning); }
+.credit { align-self: flex-start; margin-top: 18px; color: var(--text-secondary); font-size: 0.72rem; text-underline-offset: 3px; }
+
+.microscopeStage {
+  display: grid;
+  grid-template-columns: minmax(260px, 0.95fr) minmax(300px, 1.05fr);
+  gap: 0;
+}
+.microscopeCopy { padding: 34px 30px; border-right: 1px solid var(--border-strong); }
+.microscopeCopy > p:not(.stepLabel) { margin: 18px 0 0; line-height: 1.7; }
+.boundary { padding-top: 18px; border-top: 1px solid var(--border-strong); color: var(--text-secondary); }
+.recordingLink { display: block; margin-top: 22px; padding: 15px 16px; border: 1px solid var(--border-strong); color: var(--action-primary); font-weight: 750; line-height: 1.45; text-decoration: none; }
+.recordingLink small { display: block; margin-top: 4px; color: var(--text-secondary); font-weight: 500; }
+.traceFigure { display: grid; grid-template-columns: minmax(0, 1fr); align-content: center; gap: 16px; margin: 0; padding: 26px; }
+.traceFigure img { width: 100%; max-width: 420px; height: auto; margin-inline: auto; image-rendering: auto; }
+.traceFigure figcaption { color: var(--text-secondary); font-size: 0.8rem; line-height: 1.6; }
+.traceFigure a { display: block; margin-top: 8px; color: var(--action-primary); }
+
+.explanationStage { padding: 34px 30px 30px; }
+.explanationLead { display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(260px, 1fr); gap: 28px; align-items: end; }
+.explanationLead .stepLabel { grid-column: 1 / -1; margin-bottom: -18px; }
+.explanationLead > p:last-child { margin: 0; color: var(--text-secondary); line-height: 1.7; }
+.evidenceChain { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; margin: 30px 0 0; padding: 0; list-style: none; border-block: 1px solid var(--border-strong); }
+.evidenceChain li { padding: 22px; border-right: 1px solid var(--border-strong); line-height: 1.6; }
+.evidenceChain li:last-child { border-right: 0; }
+.evidenceChain span { display: block; margin-bottom: 10px; color: var(--action-primary); font-size: 0.76rem; font-weight: 800; letter-spacing: 0.07em; text-transform: uppercase; }
+.limitNote { margin-top: 22px; padding: 17px 20px; border-left: 3px solid var(--feedback-warning); background: var(--surface-secondary); line-height: 1.6; }
+.limitNote strong { display: block; margin-bottom: 4px; }
+
+@media (max-width: 680px) {
+  .intro { grid-template-columns: 1fr; gap: 16px; padding: 24px 18px 16px; }
+  .mioNote { grid-template-columns: 92px 1fr; min-height: 104px; }
+  .mioNote img { width: 116px; height: 116px; margin-left: -24px; }
+  .stageTabs button { flex-direction: column; gap: 4px; min-height: 66px; padding-inline: 6px; font-size: 0.77rem; }
+  .observationStage { grid-template-columns: 1fr; }
+  .inkFigure { min-height: 300px; }
+  .inkFigure figcaption { inset: auto 10px 10px; }
+  .observationQuestion { padding: 24px 18px; border-top: 1px solid var(--border-strong); border-left: 0; }
+  .microscopeStage { grid-template-columns: 1fr; }
+  .microscopeCopy { padding: 26px 18px; border-right: 0; border-bottom: 1px solid var(--border-strong); }
+  .traceFigure { padding: 20px 18px 22px; }
+  .traceFigure img { max-width: 324px; margin-inline: auto; }
+  .explanationStage { padding: 26px 18px 24px; }
+  .explanationLead { grid-template-columns: 1fr; gap: 16px; }
+  .explanationLead .stepLabel { grid-column: auto; margin-bottom: -8px; }
+  .evidenceChain { grid-template-columns: 1fr; }
+  .evidenceChain li { padding: 18px 0; border-right: 0; border-bottom: 1px solid var(--border-strong); }
+  .evidenceChain li:last-child { border-bottom: 0; }
+}

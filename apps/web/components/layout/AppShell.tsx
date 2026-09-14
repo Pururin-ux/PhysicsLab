@@ -12,7 +12,7 @@ import {
   Sun,
 } from "@phosphor-icons/react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import {
   getActiveProductDestination,
@@ -196,13 +196,19 @@ function MobileNavigation() {
 
 function ContextBack() {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const show =
     pathname.startsWith("/tasks/") ||
     (pathname.startsWith("/practice/") && !isExamDestination(pathname) && pathname !== "/practice/average-speed-lesson");
   if (!show) return null;
-  const href = pathname.startsWith("/tasks/")
-    ? "/tasks"
-    : getProductDestination("learn").href;
+  const fromExamProgram =
+    pathname.startsWith("/tasks/") && searchParams.get("from") === "exam-program";
+  const href = fromExamProgram
+    ? "/exam/program"
+    : pathname.startsWith("/tasks/")
+      ? "/tasks"
+      : getProductDestination("learn").href;
+  const label = fromExamProgram ? "К темам ЦТ/ЦЭ" : "Назад";
   // Кнопка «Назад» остаётся под липкой шапкой при прокрутке. z-30 держит её
   // под самой шапкой (z-40), но над содержимым страницы.
   return (
@@ -212,7 +218,7 @@ function ContextBack() {
         className="context-back-link"
       >
         <ArrowLeft size={16} weight="bold" aria-hidden="true" />
-        Назад
+        {label}
       </Link>
     </div>
   );
@@ -264,7 +270,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         pathname === "/" ? "app-shell--home" : "app-shell--inner",
       )}
     >
-      {theme === "dark" && !["/practice/average-speed-lesson", "/learn/path-and-displacement", "/learn/average-speed"].includes(pathname) ? <StarField /> : null}
+      {theme === "dark" && !pathname.startsWith("/learn") && !["/topics", "/practice/average-speed-lesson"].includes(pathname) ? <StarField /> : null}
       <SmoothAnchorScroll />
       <a href="#main-content" className="skip-link">Перейти к содержимому</a>
       <Header theme={theme} onToggleTheme={toggleTheme} />

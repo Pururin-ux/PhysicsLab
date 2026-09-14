@@ -5,6 +5,7 @@ export type GraphPoint = {
   v?: number;
   x?: number;
   a?: number;
+  label?: string;
 };
 
 export interface GraphConfig {

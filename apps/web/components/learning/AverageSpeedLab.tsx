@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { useLessonDraft } from "../../lib/learning/use-lesson-draft";
 import { averageSpeedInitial as initial, averageSpeedHeadings as headings } from "../../lib/learning/average-speed-draft";
 import { speedTapes } from "../../lib/learning/average-speed-view";
+import { MIO_PORTRAITS, type MioPortraitState } from "../../lib/learning/mio-assets";
 import { Button } from "../ui/Button";
 import { MathText } from "../ui/MathText";
 import styles from "./AverageSpeedLab.module.css";
@@ -23,7 +24,7 @@ export function AverageSpeedLab() {
   const tapes = speedTapes(slowTime);
   const normalizedAnswer = state.answer.trim().replace(",", ".");
   const correct = /^\+?\d+(?:\.\d+)?$/.test(normalizedAnswer) && Number(normalizedAnswer) === 4;
-  const mood = state.stage === 4 || (state.stage === 3 && state.checked && correct)
+  const mood: MioPortraitState = state.stage === 4 || (state.stage === 3 && state.checked && correct)
     ? "celebrate"
     : state.stage === 1 && state.observed && slowTime !== 5 ? "attentive"
     : state.stage === 2 || state.stage === 3 ? "attentive" : "skeptical";
@@ -51,7 +52,7 @@ export function AverageSpeedLab() {
     <div className={styles.layout} data-experiment={state.stage === 1 || undefined}>
       {state.stage !== 1 && <aside className={styles.companion} aria-label="Напарница Мио">
         <button className={styles.toggle} onClick={() => patch({ hideMio: !state.hideMio })}>{state.hideMio ? "Показать Мио" : "Скрыть Мио"}</button>
-        {!state.hideMio && <><Image key={mood} data-mood={mood} className={styles.portrait} src={`/images/mio/mio-${mood}-${mood === "skeptical" ? "v2" : "v1"}.png`} alt={mioAlt} width={1254} height={1254} sizes="(max-width: 700px) 96px, 260px" priority /><div className={styles.speech}><strong>Мио · напарница по опытам</strong><p>{replies[state.stage]}</p>{state.stage===1&&state.observed&&slowTime!==5&&<div className={styles.revision} aria-label="Исправление гипотезы Мио"><span className={styles.crossed}>Всегда 5 м/с<svg viewBox="0 0 160 24" preserveAspectRatio="none" aria-hidden="true"><path d="M3 17 Q70 6 157 8" pathLength="1"/></svg></span><p>В этом опыте: <strong>{average} м/с</strong></p><small>Исправляю свою догадку.</small></div>}</div></>}
+        {!state.hideMio && <><Image key={mood} data-mood={mood} className={styles.portrait} src={MIO_PORTRAITS[mood].src} alt={mioAlt} width={1254} height={1254} sizes="(max-width: 700px) 96px, 260px" priority /><div className={styles.speech}><strong>Мио · напарница по опытам</strong><p>{replies[state.stage]}</p>{state.stage===1&&state.observed&&slowTime!==5&&<div className={styles.revision} aria-label="Исправление гипотезы Мио"><span className={styles.crossed}>Всегда 5 м/с<svg viewBox="0 0 160 24" preserveAspectRatio="none" aria-hidden="true"><path d="M3 17 Q70 6 157 8" pathLength="1"/></svg></span><p>В этом опыте: <strong>{average} м/с</strong></p><small>Исправляю свою догадку.</small></div>}</div></>}
       </aside>}
       <section className={styles.workspace} aria-label="Опыт со средней скоростью">
         {state.stage === 0 && <>
@@ -96,7 +97,7 @@ export function AverageSpeedLab() {
               </> : <p>Средняя скорость за всю поездку?<br />Сравни её с догадкой Мио: 5 м/с.</p>}
             </div>
             <aside className={styles.labPartner} aria-label="Мио сверяет результат">
-              {!state.hideMio && <><Image src={`/images/mio/mio-${state.observed ? "attentive-v1" : "skeptical-v2"}.png`} alt={state.observed ? "Мио внимательно сверяет результат с блокнотом" : "Мио сомневается в своей гипотезе"} width={1254} height={1254} sizes="(max-width:700px) 76px, 112px" />
+              {!state.hideMio && <><Image src={MIO_PORTRAITS[state.observed ? "attentive" : "skeptical"].src} alt={state.observed ? "Мио внимательно сверяет результат с блокнотом" : "Мио сомневается в своей гипотезе"} width={1254} height={1254} sizes="(max-width:700px) 76px, 112px" />
                 <div><strong>Мио</strong>{state.observed ? slowTime === 5 ? <p>Пока 5 м/с. А если ехать медленно дольше?</p> : <p><s>Всегда 5 м/с</s><br />{slowTime === 8 ? "Одинаковый путь — за разное время. Моя догадка не выдержала проверки." : "Скорости те же. Средняя — другая."}</p> : <p>Скорости не меняем. Проверим разное время.</p>}</div></>}
               <button className={styles.toggle} onClick={() => patch({ hideMio: !state.hideMio })}>{state.hideMio ? "Показать Мио" : "Скрыть Мио"}</button>
             </aside>
@@ -127,7 +128,7 @@ export function AverageSpeedLab() {
           <details className={styles.writing}>
             <summary>{state.summaryText.trim() ? "Открыть моё объяснение" : "Объяснить своими словами"}</summary>
             <label htmlFor="speed-summary">Скорости остались 2 и 8 м/с. Почему средняя скорость изменилась, когда медленный участок стал длиться дольше?</label>
-            <textarea id="speed-summary" rows={3} maxLength={10000} value={state.summaryText} onChange={(event) => patch({ summaryText: event.target.value, summarySaved: true })} />
+            <textarea id="speed-summary" rows={3} maxLength={10000} value={state.summaryText} onChange={(event) => patch({ summaryText: event.target.value, summarySaved: true, investigationCompleted: true })} />
             <p className={styles.note}>Можно набросать мысль и дополнить позже. Текст сохраняется автоматически в этом браузере; сайт не оценивает его.</p>
           </details>
           <Button asChild size="lg"><Link href="/practice/family/average-speed-segments">Закрепить на новых задачах</Link></Button>

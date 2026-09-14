@@ -53,9 +53,11 @@ export function QuestionCard({
     graph?.type === "vt"
       ? "График v(t)"
       : graph?.type === "xt"
-        ? "График x(t)"
+        ? graph.yLabel.trim().toLowerCase().startsWith("s")
+          ? "График s(t)"
+          : "График x(t)"
         : "График a(t)";
-  const showArea = graph?.type === "vt" && graph.series.length > 2;
+  const showArea = graph?.showArea ?? (graph?.type === "vt" && graph.series.length > 2);
   const visualActivityLabel = diagram
     ? "Работа с диаграммой"
     : graphConfig

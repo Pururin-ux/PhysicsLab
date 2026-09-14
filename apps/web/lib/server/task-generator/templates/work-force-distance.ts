@@ -19,7 +19,7 @@ export const workForceDistanceBlueprint: TaskBlueprint = {
     F: { min: 10, max: 120, step: 10, unit: "Н" },
     s: { min: 2, max: 20, step: 2, unit: "м" },
   },
-  formula: "A=Fs\\cos\\alpha",
+  formula: "A=Fs",
   answerUnit: "Дж",
   answerKind: "signed",
   answerFormat: "numeric_input",
@@ -28,9 +28,9 @@ export const workForceDistanceBlueprint: TaskBlueprint = {
   textTemplate: (p) =>
     `На тело действует постоянная сила ${p.F} Н, ${directionText(p)}. Тело переместилось на ${p.s} м. Найдите работу этой силы.`,
   explanationTemplate: (p, answer) => {
-    const signText = variantIndex(p, 2) === 0 ? "\\cos 0^\\circ=1" : "\\cos 180^\\circ=-1";
-
-    return `Работа силы: $A=Fs\\cos\\alpha$. Здесь ${signText}, поэтому $A=${p.F}\\cdot${p.s}\\cdot${variantIndex(p, 2) === 0 ? "1" : "(-1)"}=${formatMathValue(answer)}$ Дж.`;
+    return variantIndex(p, 2) === 0
+      ? `Сила направлена вдоль перемещения: $A=Fs=${p.F}\\cdot${p.s}=${formatMathValue(answer)}$ Дж.`
+      : `Сила направлена против перемещения, поэтому её работа отрицательна: $A=-Fs=-${p.F}\\cdot${p.s}=${formatMathValue(answer)}$ Дж.`;
   },
   trap: "Знак работы зависит от направления силы относительно перемещения.",
   coachLines: {

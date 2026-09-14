@@ -1,34 +1,98 @@
 "use client";
-import {useState} from "react";
+
+import Image from "next/image";
+import { useState } from "react";
+import { MIO_SCENES } from "../../lib/learning/mio-assets";
 import shared from "./TextbookScene.module.css";
 import styles from "./ForceModel.module.css";
 
-export function ForceModel(){
-  const [loads,setLoads]=useState(1);
-  const [revealed,setRevealed]=useState(false);
-  const force=loads*1.5;
-  const springPoints=Array.from({length:17},(_,i)=>`${i===0||i===16?135:i%2?121:149},${50+30*i/16}`).join(" ");
-  return <div className={shared.experiment}>
-    <p>Прочитай силу по положению указателя. Между подписанными отметками 1 Н и 2 Н — два одинаковых промежутка.</p>
-    <div className={shared.controls} aria-label="Нагрузка динамометра">{["Снять нагрузку","Один груз","Два одинаковых груза"].map((label,i)=><button key={label} aria-pressed={loads===i} onClick={()=>{setLoads(i);setRevealed(false);}}>{label}</button>)}</div>
+const answers = [
+  { id: "mass", label: "Массу груза в килограммах" },
+  { id: "force", label: "Силу действия груза на пружину в ньютонах" },
+  { id: "length", label: "Длину растянутой пружины в сантиметрах" },
+] as const;
 
-    <svg className={styles.instrument} viewBox="0 0 320 530" role="img" aria-label={`Динамометр от 0 до 5 Н с ценой деления 0,5 Н. Указатель ${loads===0?"на нулевой отметке":loads===1?"посередине между 1 и 2 Н":"на отметке 3 Н"}.`}>
-      <path d="M100 15 H170 M135 15 V50" stroke="currentColor" strokeWidth="4" fill="none"/>
-      <rect x="95" y="25" width="130" height="280" rx="14" fill="var(--surface-secondary)" stroke="currentColor" strokeWidth="2"/>
-      <path d="M135 25 V50" stroke="currentColor" strokeWidth="3"/>
-      <g className={styles.spring} style={{transform:`scaleY(${1+force*40/30})`}}><polyline points={springPoints} fill="none" stroke="var(--action-primary)" strokeWidth="3" vectorEffect="non-scaling-stroke"/></g>
-      {Array.from({length:11},(_,i)=><g key={i}><path d={`M165 ${80+i*20} h${i%2?12:20}`} stroke="currentColor" strokeWidth="2"/>{i%2===0&&<text x="194" y={86+i*20} fill="currentColor" fontSize="19">{i/2}</text>}</g>)}
-      <text x="194" y="55" fill="currentColor" fontSize="19">Н</text>
-      <g className={styles.moving} style={{transform:`translateY(${force*40}px)`}}>
-        <path d="M135 80 V320 q0 13 10 13 q10 0 10 -10" fill="none" stroke="currentColor" strokeWidth="3"/>
-        <path d="M135 80 H160 l-9 -5 m9 5 l-9 5" fill="none" stroke="#dca638" strokeWidth="4"/>
-        {loads>0&&<g><path d="M145 333 V342" stroke="currentColor" strokeWidth="3"/><rect x="113" y="342" width="64" height="25" rx="4" fill="var(--action-primary)"/>{loads===2&&<><path d="M145 367 V373" stroke="currentColor" strokeWidth="3"/><rect x="113" y="373" width="64" height="25" rx="4" fill="var(--action-primary)"/></>}</g>}
-      </g>
-    </svg>
+type AnswerId = (typeof answers)[number]["id"];
 
-    <div className={shared.controls}><button onClick={()=>setRevealed(true)} aria-expanded={revealed}>Показать разбор шкалы</button></div>
-    {revealed&&<div role="status" className={shared.explanation}><p>Цена деления: (2 − 1) / 2 = 0,5 Н. Показание: <strong>{force.toLocaleString("ru-RU")} Н</strong>.</p><p>{loads===0?"Без нагрузки указатель вернулся к нулю: пружина восстановила исходную длину.":loads===1?"Указатель прошёл три деления от нуля: 3 · 0,5 = 1,5 Н. Это сила, с которой груз растягивает пружину, а не масса в килограммах.":"Два одинаковых неподвижных груза действуют на пружину вдвое большей силой: 3 Н. В этой модели удлинение тоже увеличилось вдвое."}</p></div>}
-    <details className={shared.aside}><summary>Как работает этот прибор?</summary><p>Груз свободно висит на упругой пружине. Чем сильнее он её растягивает, тем больше показание. Здесь сравниваем положения, когда груз уже остановился; движение между ними показано условно.</p></details>
-  </div>;
+export function ForceModel() {
+  const [answer, setAnswer] = useState<AnswerId | null>(null);
+  const correct = answer === "force";
+
+  return (
+    <div className={shared.experiment}>
+      <div className={styles.study}>
+        <figure className={styles.closeup}>
+          <Image
+            className={styles.closeupImage}
+            src={MIO_SCENES.force}
+            alt="Пружинный динамометр на штативе: груз растянул пружину, указатель сместился вдоль шкалы"
+            fill
+            sizes="(max-width: 640px) 100vw, 310px"
+          />
+          <figcaption>Мио сверяет указатель: груз остановился, а пружина остаётся растянутой.</figcaption>
+        </figure>
+
+        <div className={styles.question}>
+          <p className={styles.kicker}>Сначала наблюдение</p>
+          <h2>Что показывает этот прибор?</h2>
+          <p>
+            Выбери величину вместе с её единицей. Неподвижность груза не означает,
+            что он перестал действовать на пружину.
+          </p>
+          <div className={styles.answers} role="group" aria-label="Что измеряет динамометр">
+            {answers.map((option) => (
+              <button
+                key={option.id}
+                type="button"
+                aria-pressed={answer === option.id}
+                onClick={() => setAnswer(option.id)}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {answer ? (
+        <div className={styles.feedback} role="status">
+          <strong>{correct ? "Да: динамометр измеряет силу." : "Посмотри на единицу шкалы."}</strong>
+          <p>
+            {correct
+              ? "Груз действует на пружину и деформирует её. Положение указателя сравнивают с заранее проградуированной шкалой в ньютонах."
+              : "Килограмм — единица массы, сантиметр — единица длины. Шкала динамометра подписана в ньютонах: она показывает силу."}
+          </p>
+        </div>
+      ) : null}
+
+      <details className={styles.calibration}>
+        <summary>Как пружина получила шкалу в ньютонах?</summary>
+        <div className={styles.calibrationBody}>
+          <p>
+            На Земле тело массой 102 г притягивается с силой примерно 1 Н. Если
+            подвешивать такие гири по одной и отмечать положения указателя,
+            получится шкала силы.
+          </p>
+          <dl aria-label="Пример градуировки школьного динамометра">
+            <div>
+              <dt>Нагрузка снята</dt>
+              <dd>0 Н</dd>
+            </div>
+            <div>
+              <dt>Одна гиря · 102 г</dt>
+              <dd>≈ 1 Н</dd>
+            </div>
+            <div>
+              <dt>Две гири · 204 г</dt>
+              <dd>≈ 2 Н</dd>
+            </div>
+          </dl>
+          <p className={styles.boundary}>
+            Это градуировка для условий у поверхности Земли. Масса гирь остаётся
+            в граммах, а показание прибора записывают в ньютонах.
+          </p>
+        </div>
+      </details>
+    </div>
+  );
 }
-

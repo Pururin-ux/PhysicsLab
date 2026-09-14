@@ -2,6 +2,7 @@
 
 import { motion } from "motion/react";
 import Link from "next/link";
+import { getLearningDestination } from "../../lib/learning/learning-links";
 import { formatWeakness } from "../../lib/learning/weakness-labels";
 import { Badge } from "../ui/Badge";
 import { Button } from "../ui/Button";
@@ -161,6 +162,8 @@ type SummaryWeakness = {
   dedupeKey: string;
   title: string;
   hint: string;
+  explanation: { href: string; label: string } | null;
+  practiceHref: string | null;
 };
 
 function formatSummaryWeakness(value: string): SummaryWeakness | null {
@@ -174,6 +177,7 @@ function formatSummaryWeakness(value: string): SummaryWeakness | null {
     const formatted = formatWeakness(trimmed, 1);
 
     if (formatted) {
+      const destination = getLearningDestination(formatted.skillId);
       return {
         key: formatted.key,
         // Один навык — один пункт сводки, даже если ловушки внутри навыка
@@ -181,6 +185,8 @@ function formatSummaryWeakness(value: string): SummaryWeakness | null {
         dedupeKey: formatted.skillId,
         title: formatted.title,
         hint: formatted.hint,
+        explanation: destination?.explanation ?? null,
+        practiceHref: destination?.practiceHref ?? null,
       };
     }
   }
@@ -190,6 +196,8 @@ function formatSummaryWeakness(value: string): SummaryWeakness | null {
     dedupeKey: trimmed,
     title: "Типовая ошибка",
     hint: trimmed,
+    explanation: null,
+    practiceHref: null,
   };
 }
 
@@ -230,6 +238,7 @@ export function SessionSummary({
       : `В этом наборе тренировали «${focus.focusLabel}». Разбери отмеченные ошибки и проверь эту связь: ${focus.shortHint}`
     : null;
   const summaryWeaknesses = getUniqueSummaryWeaknesses(weakTraps);
+  const showWeaknessActions = Boolean(variant) || summaryWeaknesses.length > 1;
   const ratio = total === 0 ? 0 : score / total;
   const showTopicMeme = hasTopicMeme(topic, variant);
 
@@ -299,6 +308,26 @@ export function SessionSummary({
                       {weakness.title}
                     </span>
                     <MathText text={weakness.hint} />
+                    {showWeaknessActions && (weakness.explanation || weakness.practiceHref) ? (
+                      <span className="mt-1 flex flex-wrap gap-x-4 gap-y-2">
+                        {weakness.explanation ? (
+                          <Link
+                            href={weakness.explanation.href}
+                            className="inline-flex min-h-10 items-center font-semibold text-nova-cyan/90 underline underline-offset-4 hover:text-nova-cyan focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-blue/50"
+                          >
+                            Разобраться →
+                          </Link>
+                        ) : null}
+                        {weakness.practiceHref ? (
+                          <Link
+                            href={weakness.practiceHref}
+                            className="inline-flex min-h-10 items-center font-semibold text-white/72 underline underline-offset-4 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-blue/50"
+                          >
+                            Решить 5 похожих →
+                          </Link>
+                        ) : null}
+                      </span>
+                    ) : null}
                   </span>
                 </li>
               ))}

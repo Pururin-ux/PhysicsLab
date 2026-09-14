@@ -87,3 +87,32 @@ test("pending ошибка остаётся выше delayed recall", () => {
   assert.equal(step.href, "/practice/dynamics-demo");
   assert.equal(step.cta, "Продолжить задачу");
 });
+
+test("новая тема не выдаётся за продолжение уже начатой", () => {
+  const progress = migrateStoredProgress({
+    version: 6,
+    topics: {
+      thermodynamics: {
+        solved: 5,
+        correct: 4,
+        completedSessions: 1,
+        weakTraps: {},
+        weakTrapLastSeenAt: {},
+        skillEvidence: {},
+        lastPracticedAt: "2026-09-13T10:00:00.000Z",
+      },
+    },
+    pendingMistakes: {},
+  });
+
+  assert.ok(progress);
+
+  const step = getLearningNextStep(
+    progress,
+    false,
+    new Date("2026-09-13T12:00:00.000Z"),
+  );
+
+  assert.equal(step.label, "Новая тема");
+  assert.match(step.reason, /ещё не пробовал/);
+});

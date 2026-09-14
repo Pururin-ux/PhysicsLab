@@ -159,7 +159,7 @@ export function getLearningNextStep(
 
   if (firstUnstartedTopic) {
     return {
-      label: "Тема",
+      label: "Новая тема",
       title:
         firstUnstartedTopic.id === "kinematics"
           ? "Движение и графики"
@@ -168,7 +168,7 @@ export function getLearningNextStep(
         firstUnstartedTopic.id === "kinematics"
           ? "Скорость, ускорение и графики движения."
           : firstUnstartedTopic.description,
-      reason: "Эта тема продолжает уже начатую работу без скачка в более сложный материал.",
+      reason: "Эту тему ты ещё не пробовал. Можно открыть её сейчас или выбрать другую ниже.",
       href: firstUnstartedTopic.href,
       cta: "Открыть тему",
       tone: "cyan",

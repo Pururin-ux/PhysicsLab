@@ -8,7 +8,7 @@ the current request; this index is not a mandate to load every document.
 | Question | Current source |
 | --- | --- |
 | Product and implemented coverage | [PRODUCT.md](PRODUCT.md) |
-| Release objective and remaining acceptance | [RELEASE_GOAL.md](RELEASE_GOAL.md) |
+| Current phase and long-term product objective | [RELEASE_GOAL.md](RELEASE_GOAL.md) |
 | Learning behaviour and progression | [LEARNING_MODEL.md](LEARNING_MODEL.md) |
 | Authored design decisions | [DESIGN_DIRECTION.md](DESIGN_DIRECTION.md) |
 | Mio identity and behaviour | [MIO_CHARACTER.md](MIO_CHARACTER.md) |

@@ -21,12 +21,13 @@ export type QuizOption = {
 
 export type QuizGraph = {
   type: "vt" | "xt" | "at";
-  series: { t: number; v?: number; x?: number; a?: number }[];
+  series: { t: number; v?: number; x?: number; a?: number; label?: string }[];
   xLabel: string;
   yLabel: string;
   xRange: [number, number];
   yRange: [number, number];
   color?: "cyan" | "gold";
+  showArea?: boolean;
 };
 
 export type QuizDiagram =

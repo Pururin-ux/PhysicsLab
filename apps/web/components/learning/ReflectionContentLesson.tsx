@@ -105,7 +105,7 @@ function ReflectionDiagram({
   );
 }
 
-function InteractiveReflection() {
+export function ReflectionTextbookExperiment() {
   const [angle, setAngle] = useState(30);
   const id = useId().replace(/:/g, "");
   return (
@@ -304,7 +304,7 @@ export function ReflectionContentLesson() {
 
     <aside className={styles.empiricalNote} aria-labelledby="why-equal-heading"><h2 id="why-equal-heading">Почему угол отражения равен углу падения?</h2><p>Это экспериментально установленная закономерность: она точно описывает то, что наблюдают при отражении света. Более глубокое объяснение требует другой модели света, с которой ты познакомишься позже.</p></aside>
 
-    <section className={`${styles.section} ${styles.interactionSection}`} aria-label="Интерактивная модель отражения"><InteractiveReflection /></section>
+    <section className={`${styles.section} ${styles.interactionSection}`} aria-label="Интерактивная модель отражения"><ReflectionTextbookExperiment /></section>
 
     <section className={styles.section} aria-labelledby="example-heading"><div className={styles.sectionCopy}><p className={styles.sectionMark}>Пример</p><h2 id="example-heading">Когда угол дан к поверхности зеркала</h2><p>Падающий луч образует с поверхностью зеркала угол 35°. Это ещё не угол падения: его считают от нормали.</p><p>Нормаль образует с поверхностью прямой угол 90°, поэтому 35° и угол падения вместе составляют 90°.</p><div className={styles.workedMath} aria-label="Тридцать пять градусов плюс альфа равно девяносто градусов. Альфа равно пятьдесят пять градусов. Бета равно альфа равно пятьдесят пять градусов."><p>35° + α = 90°</p><p>α = 55°</p><p>β = α = 55°</p></div><p>Значит, отражённый луч нужно провести по другую сторону нормали под углом 55° к ней. К поверхности зеркала он снова образует угол 35°.</p></div><figure className={styles.evolvingFigure}><ReflectionDiagram phase="worked" angle={55} className={styles.diagram} /><figcaption>Сначала дан угол к поверхности, затем находятся и сравниваются углы к нормали.</figcaption></figure></section>
 
@@ -312,6 +312,6 @@ export function ReflectionContentLesson() {
 
     <section className={`${styles.section} ${styles.diffuseSection}`} aria-labelledby="diffuse-heading"><div className={styles.sectionCopy}><p className={styles.sectionMark}>Поверхности</p><h2 id="diffuse-heading">Почему зеркало даёт чёткое изображение, а стена — нет</h2><p>Поверхность зеркала очень гладкая. На её малых участках нормали направлены почти одинаково, поэтому отражённые лучи идут упорядоченно. Такое отражение называют зеркальным.</p><p>Поверхность стены, бумаги или ткани неровная. У каждого малого участка своя нормаль, направленная немного иначе. Закон отражения выполняется локально для каждого малого участка поверхности, но отражённые лучи уходят в разные стороны. Такое отражение называют рассеянным.</p><p>Благодаря рассеянному отражению мы видим обычные предметы с разных направлений. Но чёткого изображения, как в зеркале, такая поверхность не создаёт.</p></div><SurfaceComparison /></section>
 
-    <footer className={styles.lessonFooter}><h2>Дальше</h2><p>Теперь можно потренироваться применять закон отражения в задачах. Следующая связанная тема — плоское зеркало и построение изображения в нём.</p><div className={styles.handoffActions}><Link className={styles.primaryLink} href="/practice/family/reflection-angle">Тренировка по отражению</Link><Link className={styles.secondaryLink} href="/topics">Все темы</Link></div></footer>
+    <footer className={styles.lessonFooter}><h2>Дальше</h2><p>Теперь можно потренироваться применять закон отражения в задачах. Следующая связанная тема — плоское зеркало и построение изображения в нём.</p><div className={styles.handoffActions}><Link className={styles.primaryLink} href="/practice/family/reflection-angle">Тренировка по отражению</Link><Link className={styles.secondaryLink} href="/learn">К учебнику</Link></div></footer>
   </article>;
 }

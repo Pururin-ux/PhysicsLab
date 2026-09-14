@@ -93,6 +93,25 @@ on 2026-09-12. Release checks and acceptance for specific critical flows still
 apply when that work is actually in scope. Historical audits or memory notes
 requiring a browser after every edit do not override this current instruction.
 
+## Tool-output and CI budget
+
+Large tool outputs are expensive context.
+
+For GitHub Actions:
+
+- inspect run/job/step metadata before fetching logs;
+- fetch a full job log only when the failure cannot be diagnosed from summaries;
+- never fetch the same unchanged job log more than once in a task;
+- do not poll a running workflow repeatedly;
+- after starting a long CI run, return control instead of waiting in a loop;
+- on follow-up, inspect only runs created since the last known run;
+- do not read successful job logs unless investigating a concrete anomaly.
+
+Prefer a narrow local reproduction over repeatedly reading a large CI log.
+
+When a tool result is unexpectedly huge, stop and reconsider before making
+another related tool call.
+
 ## Change discipline
 
 - Do not expand task scope silently.

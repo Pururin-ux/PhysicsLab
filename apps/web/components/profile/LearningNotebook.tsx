@@ -26,8 +26,8 @@ export function LearningNotebook() {
     {notebook.unavailable > 0 && <p role="alert" className="rounded-xl border border-[var(--border-strong)] p-4">Часть записей не удалось прочитать. Их содержимое не изменено. Сохрани имеющийся файл резервной копии, если он у тебя есть.</p>}
     {notebook.notes.length === 0 ? <section className="rounded-2xl border border-[var(--border-strong)] bg-[var(--surface-primary)] p-6">
       <h2 className="type-h2">Здесь появятся твои записи</h2>
-      <p className="my-4 leading-relaxed text-[var(--text-secondary)]">В опыте со средней скоростью можно оставить личную заметку, а в конце — объяснить результат своими словами. Текст появится здесь автоматически. Для прохождения урока записывать что-либо не обязательно.</p>
-      <Button asChild><Link href="/practice/average-speed-lesson">Провести опыт с Мио</Link></Button>
+      <p className="my-4 leading-relaxed text-[var(--text-secondary)]">В конце учебных опытов можно сохранить объяснение своими словами. В расследовании средней скорости есть ещё отдельная личная заметка. Оба вида записей появятся здесь; для прохождения урока писать что-либо не обязательно.</p>
+      <Button asChild><Link href="/topics">Выбрать урок или опыт</Link></Button>
     </section> : <>
       <div>
         <label className="mb-2 block text-sm font-semibold" htmlFor="notebook-search">Найти в записях</label>

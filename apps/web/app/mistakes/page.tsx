@@ -2,7 +2,7 @@ import { MistakesList } from "../../components/mistakes/MistakesList";
 
 export const metadata = {
   title: "К чему вернуться | PhysicsLab",
-  description: "Короткие тренировки на местах, где ответ пока сбивается.",
+  description: "Объяснения и похожие задачи для мест, где ответ пока сбивается.",
 };
 
 export default function MistakesPage() {
@@ -13,8 +13,7 @@ export default function MistakesPage() {
           К чему вернуться
         </h1>
         <p className="max-w-[58ch] text-[15px] leading-[1.7] text-white/68">
-          Выбери одно место, где ответ сбился. Пять похожих задач помогут
-          закрепить ход решения без спешки.
+          Выбери одно место: сначала вспомни идею или сразу реши похожие задачи.
         </p>
       </header>
 

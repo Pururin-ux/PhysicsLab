@@ -10,15 +10,14 @@ import Image from "next/image";
 import Link from "next/link";
 import {
   CONTEXTUAL_TOOLS,
-  getProductDestination,
   PRODUCT_DESTINATIONS,
 } from "../../lib/product-routes";
+import { MIO_PORTRAITS } from "../../lib/learning/mio-assets";
 import { useHomeLearningState } from "../landing/HomeLearningState";
 import styles from "./HomeEditorial.module.css";
 
-const examDestination = getProductDestination("exam");
 const taskTool = CONTEXTUAL_TOOLS.find((tool) => tool.id === "tasks")!;
-const heroArt = "/images/mio/mio-thinking-v1.png";
+const heroArt = MIO_PORTRAITS.thinking.src;
 
 const homeActions = [
   {
@@ -36,10 +35,10 @@ const homeActions = [
     icon: ListChecks,
   },
   {
-    id: "exam",
-    href: examDestination.href,
-    label: "Подготовиться к ЦТ/ЦЭ",
-    description: "10 задач по 5 темам",
+    id: "diagnostic",
+    href: "/practice/diagnostic",
+    label: "Понять, с чего начать",
+    description: "10 задач без таймера",
     icon: GraduationCap,
   },
 ] as const;
@@ -119,7 +118,7 @@ export function HomeEditorial() {
               ))}
             </nav>
 
-              <Link className={styles.diagnosticLink} href="/learn">
+              <Link className={styles.diagnosticLink} href="/topics">
                 Выбрать другую тему
                 <ArrowRight size={16} weight="bold" aria-hidden="true" />
               </Link>

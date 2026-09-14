@@ -33,7 +33,7 @@ export const formulaReference: FormulaReferenceGroup[] = [
     entries: [
       {
         id: "uniform-motion",
-        relatedSkillIds: [],
+        relatedSkillIds: ["uniform-motion-basic", "uniform-motion-graphs"],
         title: "Равномерное движение",
         formula: FORMULAS.uniform_motion,
         caption: "путь при постоянной скорости вдоль одной прямой",
@@ -122,14 +122,14 @@ export const formulaReference: FormulaReferenceGroup[] = [
       },
       {
         id: "average-speed-segments",
-        relatedSkillIds: ["average-speed-segments"],
+        relatedSkillIds: ["average-speed-segments", "average-speed-with-stop"],
         title: "Средняя путевая скорость",
         formula: "v_{\\text{ср}}=\\frac{s_1+s_2+\\ldots}{t_1+t_2+\\ldots}",
-        caption: "весь путь делится на всё время движения",
+        caption: "весь путь делится на всё время от начала до конца, включая остановки",
         symbols: [
           { latex: "v_{\\text{ср}}", description: "средняя путевая скорость, м/с" },
           { latex: "s_1, s_2", description: "пути на отдельных участках, м" },
-          { latex: "t_1, t_2", description: "время на отдельных участках, с" },
+          { latex: "t_1, t_2", description: "промежутки движения и остановок, с" },
         ],
         limitation:
           "Это скалярная средняя скорость по пути. Средняя векторная скорость определяется через перемещение.",
@@ -171,6 +171,35 @@ export const formulaReference: FormulaReferenceGroup[] = [
     badgeTone: "blue",
     status: "active",
     entries: [
+      {
+        id: "archimedes-force",
+        relatedSkillIds: ["archimedes-force"],
+        title: "Сила Архимеда",
+        formula: "F_A=\\rho_{\\text{ж}}gV_{\\text{погр}}",
+        caption: "выталкивающая сила равна весу вытесненной среды",
+        symbols: [
+          { latex: "F_A", description: "сила Архимеда, Н" },
+          { latex: "\\rho_{\\text{ж}}", description: "плотность жидкости или газа, кг/м³" },
+          { latex: "g", description: "коэффициент, Н/кг" },
+          { latex: "V_{\\text{погр}}", description: "объём погружённой части тела, м³" },
+        ],
+        limitation: "Для частично погружённого тела используют только объём части под поверхностью. Тело не должно опираться на дно.",
+      },
+      {
+        id: "gravity-force",
+        relatedSkillIds: ["gravity-force"],
+        title: "Сила тяжести",
+        formula: "F_{\\text{т}}=gm",
+        caption: "сила притяжения тела Землёй возле её поверхности",
+        symbols: [
+          { latex: "F_{\\text{т}}", description: "сила тяжести, Н" },
+          { latex: "m", description: "масса тела, кг" },
+          { latex: "g", description: "коэффициент 9,8 Н/кг возле поверхности Земли" },
+        ],
+        limitation:
+          "Сила тяжести приложена к телу. Не подменяй её весом: вес приложен к опоре или подвесу.",
+      },
+      {id:"hydrostatic-pressure",relatedSkillIds:["hydrostatic-pressure"],title:"Гидростатическое давление",formula:"p=\\rho gh",caption:"давление покоящейся жидкости на глубине h",symbols:[{latex:"p",description:"гидростатическое давление, Па"},{latex:"\\rho",description:"плотность жидкости, кг/м³"},{latex:"g",description:"коэффициент, Н/кг"},{latex:"h",description:"глубина от поверхности, м"}],limitation:"Даёт давление, обусловленное весом жидкости. Атмосферное давление учитывают отдельно, если это требует условие."},
       {
         id: "contact-pressure",
         relatedSkillIds:["contact-pressure"],
@@ -307,19 +336,72 @@ export const formulaReference: FormulaReferenceGroup[] = [
           "Скорость входит в квадрате, поэтому при удвоении скорости энергия возрастает в четыре раза.",
       },
       {
+        id: "gravitational-potential-energy",
+        relatedSkillIds: ["gravitational-potential-energy"],
+        title: "Потенциальная энергия поднятого тела",
+        formula: "E_p=mgh",
+        caption: "энергия взаимодействия тела с Землёй относительно выбранного уровня",
+        symbols: [
+          { latex: "E_p", description: "потенциальная энергия, Дж" },
+          { latex: "m", description: "масса тела, кг" },
+          { latex: "g", description: "ускорение свободного падения, Н/кг" },
+          { latex: "h", description: "высота относительно выбранного нулевого уровня, м" },
+        ],
+        limitation:
+          "Значение зависит от выбранного нулевого уровня; при решении нужно явно понимать, откуда отсчитывается h.",
+      },
+      {
+        id: "mechanical-energy-conservation",
+        relatedSkillIds: ["mechanical-energy-conservation"],
+        title: "Сохранение механической энергии",
+        formula: "E_k+E_p=\\text{const}",
+        caption: "превращение энергии движения в энергию взаимного положения",
+        symbols: [
+          { latex: "E_k", description: "кинетическая энергия, Дж" },
+          { latex: "E_p", description: "потенциальная энергия, Дж" },
+        ],
+        limitation:
+          "Сумма механических энергий сохраняется, только если силами трения и сопротивления можно пренебречь.",
+      },
+      {
         id: "work-force-distance",
         relatedSkillIds: ["work-force-distance"],
-        title: "Работа постоянной силы",
-        formula: "A=Fs\\cos\\alpha",
-        caption: "работа зависит от направления силы относительно перемещения",
+        title: "Работа силы вдоль движения",
+        formula: "A=Fs",
+        caption: "для сонаправленной силы; против движения работа имеет знак минус",
         symbols: [
           { latex: "A", description: "работа силы, Дж" },
           { latex: "F", description: "модуль силы, Н" },
-          { latex: "s", description: "перемещение, м" },
-          { latex: "\\alpha", description: "угол между силой и перемещением" },
+          { latex: "s", description: "пройденный путь, м" },
         ],
         limitation:
-          "Если сила направлена против перемещения, работа отрицательна.",
+          "Запись относится к случаям вдоль одной прямой: при силе против движения A = -Fs, а без перемещения A = 0.",
+      },
+      {
+        id: "mechanical-power",
+        relatedSkillIds: ["mechanical-power"],
+        title: "Механическая мощность",
+        formula: "P=\\frac{A}{t}",
+        caption: "работа, совершённая за единицу времени",
+        symbols: [
+          { latex: "P", description: "мощность, Вт" },
+          { latex: "A", description: "работа, Дж" },
+          { latex: "t", description: "время, с" },
+        ],
+        limitation: "Формула даёт среднюю мощность за выбранный промежуток времени.",
+      },
+      {
+        id: "mechanical-efficiency",
+        relatedSkillIds: ["mechanical-efficiency"],
+        title: "Коэффициент полезного действия",
+        formula: "\\eta=\\frac{A_{\\text{пол}}}{A_{\\text{сов}}}\\cdot100\\%",
+        caption: "доля полезной работы во всей совершённой работе",
+        symbols: [
+          { latex: "\\eta", description: "коэффициент полезного действия, %" },
+          { latex: "A_{\\text{пол}}", description: "полезная работа, Дж" },
+          { latex: "A_{\\text{сов}}", description: "полная совершённая работа, Дж" },
+        ],
+        limitation: "Для реального механизма полезная работа меньше полной, поэтому КПД меньше 100%.",
       },
     ],
   },

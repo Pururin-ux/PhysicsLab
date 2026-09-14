@@ -1,11 +1,12 @@
 import Image from "next/image";
 import Link from "next/link";
+import { MIO_SCENES } from "../../lib/learning/mio-assets";
 import styles from "./MotionJourneyEntry.module.css";
 
 export function MotionJourneyEntry() {
   return <section className={styles.journey} aria-labelledby="motion-journey-title">
     <div className={styles.art}>
-      <Image src="/images/mio/textbook-path-v1.png" alt="Мио вернулась в кабинет за забытым блокнотом" width={1536} height={1024} sizes="(max-width:700px) 100vw, 420px" />
+      <Image src={MIO_SCENES.path} alt="Мио вернулась в кабинет за забытым блокнотом" width={1536} height={1024} sizes="(max-width:700px) 100vw, 420px" />
     </div>
     <div className={styles.content}>
       <p className={styles.eyebrow}>Движение · 9 класс</p>

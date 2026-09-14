@@ -387,7 +387,8 @@ export function TopicPrimer({ config, className }: TopicPrimerProps) {
   const [summaryText, setSummaryText] = useState("");
   const [summaryTried, setSummaryTried] = useState(false);
   const [summarySaved, setSummarySaved] = useState(false);
-  const draftState = { stage, predictionId, faded: { ...faded }, independent: { ...independent }, transfer: { ...transfer }, summaryText, summaryTried, summarySaved };
+  const [investigationCompleted, setInvestigationCompleted] = useState(false);
+  const draftState = { stage, predictionId, faded: { ...faded }, independent: { ...independent }, transfer: { ...transfer }, summaryText, summaryTried, summarySaved, investigationCompleted };
   const lessonDraft = useLessonDraft(config.draftId, draftState, (draft) => {
     setStage(draft.stage);
     setPredictionId(draft.predictionId);
@@ -397,6 +398,7 @@ export function TopicPrimer({ config, className }: TopicPrimerProps) {
     setSummaryText(draft.summaryText);
     setSummaryTried(draft.summaryTried);
     setSummarySaved(draft.summarySaved);
+    setInvestigationCompleted(draft.investigationCompleted);
   }, TOPIC_PRIMER_STAGES.length);
   const reduceMotion = useReducedMotion();
   const id = useId().replace(/:/g, "");
@@ -628,6 +630,7 @@ export function TopicPrimer({ config, className }: TopicPrimerProps) {
             setSummaryText(event.target.value);
             setSummaryTried(false);
             setSummarySaved(false);
+            setInvestigationCompleted(false);
           }}
           maxLength={10000} rows={5}
           placeholder="Какая связь объясняет наблюдение? При каких условиях она работает?"
@@ -643,9 +646,12 @@ export function TopicPrimer({ config, className }: TopicPrimerProps) {
             if (!summaryReady) {
               setSummaryTried(true);
               setSummarySaved(false);
+              setInvestigationCompleted(false);
               return;
             }
-            setSummarySaved(lessonDraft.save({ ...draftState, summarySaved: true }));
+            const saved = lessonDraft.save({ ...draftState, summarySaved: true, investigationCompleted: true });
+            setSummarySaved(saved);
+            setInvestigationCompleted(saved);
           }}
         >
           Сохранить итог

@@ -1,22 +1,160 @@
 "use client";
-import {useState} from "react";
-import styles from "./TextbookScene.module.css";
 
-export function PressureModel(){
-  const [area,setArea]=useState(20);
-  const [force,setForce]=useState(40);
-  const [prediction,setPrediction]=useState("");
-  const perCell=force/area;
-  const pressure=force/(area/10000);
-  return <div className={styles.experiment}>
-    <fieldset className={styles.prediction}><legend>При той же силе увеличим площадь вдвое. Как изменится давление?</legend>{["Уменьшится вдвое","Не изменится","Увеличится вдвое"].map(value=><label key={value}><input type="radio" name="pressure-prediction" checked={prediction===value} onChange={()=>setPrediction(value)}/>{value}</label>)}</fieldset>
-    <p className={styles.explanation}>Вид на поверхность контакта сверху. Сила направлена перпендикулярно этой поверхности и равномерно распределена. Каждая клетка — 1 см².</p>
-    <div className={styles.controls}>{[20,40].map(value=><button key={value} aria-pressed={area===value} onClick={()=>setArea(value)}>Площадь {value} см²</button>)}</div>
-    <div className={styles.controls}>{[40,80].map(value=><button key={value} aria-pressed={force===value} onClick={()=>setForce(value)}>Сила {value} Н</button>)}</div>
-    <div className={styles.pressureGrid} style={{gridTemplateColumns:`repeat(${area/5}, 1fr)`}} role="img" aria-label={`${area} клеток по 1 см². На каждую приходится ${perCell} Н. Давление ${pressure/1000} кПа.`}>{Array.from({length:area},(_,i)=><span key={i} aria-hidden="true" style={{backgroundColor:`rgba(44, 177, 203, ${.15+perCell*.18})`}}/>)}</div>
-    <div className={styles.readout} aria-live="polite"><p>Сила на клетку 1 см²<strong>{perCell} Н</strong></p><p>Давление<strong>{pressure/1000} кПа</strong></p></div>
-    <p className={styles.explanation}>{area} см² = {(area/10000).toString().replace(".",",")} м². p = {force} / {(area/10000).toString().replace(".",",")} = {pressure.toLocaleString("ru-RU")} Па.</p>
-    <p className={styles.aside}>Размер каждой клетки на экране одинаковый; темнее — больше сила на неё. По этой схеме нельзя вычислить глубину вмятины: она зависит ещё от свойств опоры.</p>
-    {area===40&&prediction&&<p role="status" className={styles.explanation}>{prediction==="Уменьшится вдвое"?"Верно при неизменной силе: увеличение площади с 20 до 40 см² уменьшает давление вдвое.":"Сравни две площади при одной и той же выбранной силе: на каждую клетку большой площади приходится вдвое меньше силы."} {force===80?"Ты также увеличил силу: относительно исходных 40 Н и 20 см² давление теперь прежнее — 20 кПа.":"Мио: «Сила та же. Делить её теперь нужно на большее число клеток»."}</p>}
-  </div>;
+import Image from "next/image";
+import { useState } from "react";
+import { MathText } from "../ui/MathText";
+import { MIO_SCENES } from "../../lib/learning/mio-assets";
+import shared from "./TextbookScene.module.css";
+import styles from "./PressureModel.module.css";
+
+const predictions = [
+  { id: "narrow", label: "У узкой грани — площадь меньше" },
+  { id: "same", label: "Одинаковое — бруски одинаковые" },
+  { id: "wide", label: "У широкой грани — площадь больше" },
+] as const;
+
+type PredictionId = (typeof predictions)[number]["id"];
+type Force = 40 | 80;
+
+const areas = {
+  narrow: 20,
+  wide: 40,
+} as const;
+
+function pressureKPa(force: Force, areaCm2: number) {
+  return force / (areaCm2 / 10_000) / 1_000;
+}
+
+export function PressureModel() {
+  const [prediction, setPrediction] = useState<PredictionId | null>(null);
+  const [compared, setCompared] = useState(false);
+  const [wideForce, setWideForce] = useState<Force>(40);
+
+  const choosePrediction = (value: PredictionId) => {
+    setPrediction(value);
+    setCompared(false);
+  };
+
+  const narrowPressure = pressureKPa(40, areas.narrow);
+  const widePressure = pressureKPa(40, areas.wide);
+  const changedForcePressure = pressureKPa(wideForce, areas.wide);
+
+  return (
+    <div className={shared.experiment}>
+      <div className={styles.study}>
+        <figure className={styles.observation}>
+          <Image
+            className={styles.observationImage}
+            src={MIO_SCENES.pressure}
+            alt="Мио сравнивает следы двух одинаковых брусков: один стоит на широкой грани, другой — на узкой"
+            fill
+            sizes="(max-width: 640px) 100vw, 430px"
+            priority
+          />
+          <figcaption>
+            Мио поставила одинаковые бруски на разные грани. Узкая грань продавила
+            опору сильнее.
+          </figcaption>
+        </figure>
+
+        <div className={styles.question}>
+          <p className={styles.kicker}>Одна сила · разная площадь</p>
+          <h2>Где давление больше?</h2>
+          <p>
+            В модели сила давления каждого бруска равна 40 Н. Площадь узкой грани —
+            20 см², широкой — 40 см². Сначала сделай прогноз.
+          </p>
+          <div className={styles.predictions} role="group" aria-label="Прогноз о давлении">
+            {predictions.map((option) => (
+              <button
+                key={option.id}
+                type="button"
+                aria-pressed={prediction === option.id}
+                onClick={() => choosePrediction(option.id)}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+          <button
+            className={styles.compare}
+            type="button"
+            disabled={!prediction}
+            onClick={() => setCompared(true)}
+          >
+            Сравнить давление
+          </button>
+        </div>
+      </div>
+
+      {compared ? (
+        <section className={styles.result} aria-labelledby="pressure-result-title">
+          <div className={styles.resultHeading}>
+            <p>Сила в обоих случаях</p>
+            <strong>40 Н</strong>
+          </div>
+
+          <div className={styles.comparison} aria-label="Сравнение давления на узкой и широкой грани">
+            <article className={styles.narrowCase}>
+              <p>Узкая грань</p>
+              <dl>
+                <div><dt>Площадь</dt><dd>20 см²</dd></div>
+                <div><dt>Давление</dt><dd>{narrowPressure} кПа</dd></div>
+              </dl>
+              <MathText text={String.raw`$p=\frac{40\ \text{Н}}{0{,}002\ \text{м}^2}=20\ \text{кПа}$`} />
+            </article>
+            <article className={styles.wideCase}>
+              <p>Широкая грань</p>
+              <dl>
+                <div><dt>Площадь</dt><dd>40 см²</dd></div>
+                <div><dt>Давление</dt><dd>{widePressure} кПа</dd></div>
+              </dl>
+              <MathText text={String.raw`$p=\frac{40\ \text{Н}}{0{,}004\ \text{м}^2}=10\ \text{кПа}$`} />
+            </article>
+          </div>
+
+          <div className={styles.conclusion} role="status">
+            <strong id="pressure-result-title">
+              {prediction === "narrow"
+                ? "Верно: меньшая площадь дала большее давление."
+                : "Давление больше у узкой грани."}
+            </strong>
+            <p>
+              Площадь увеличилась вдвое, а сила осталась прежней — поэтому давление
+              уменьшилось с 20 до 10 кПа, тоже вдвое.
+            </p>
+          </div>
+        </section>
+      ) : null}
+
+      <details className={styles.forceCheck}>
+        <summary>А если увеличить силу?</summary>
+        <div className={styles.forceCheckBody}>
+          <p>Оставим площадь широкой грани равной 40 см² и изменим только силу.</p>
+          <div className={styles.forceOptions} role="group" aria-label="Сила давления на широкую грань">
+            {([40, 80] as const).map((force) => (
+              <button
+                key={force}
+                type="button"
+                aria-pressed={wideForce === force}
+                onClick={() => setWideForce(force)}
+              >
+                {force} Н
+              </button>
+            ))}
+          </div>
+          <div className={styles.forceReading} aria-live="polite">
+            <MathText
+              text={String.raw`$p=\frac{${wideForce}\ \text{Н}}{0{,}004\ \text{м}^2}=${changedForcePressure}\ \text{кПа}$`}
+            />
+            <p>
+              {wideForce === 80
+                ? "При той же площади сила выросла вдвое — давление тоже выросло вдвое."
+                : "Это исходное давление на широкую грань."}
+            </p>
+          </div>
+        </div>
+      </details>
+    </div>
+  );
 }
