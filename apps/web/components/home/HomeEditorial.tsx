@@ -2,9 +2,14 @@
 
 import {
   ArrowRight,
+  BookOpenText,
   Books,
-  GraduationCap,
+  ChartLineUp,
   ListChecks,
+  Notebook,
+  GraduationCap,
+  Lightbulb,
+  Atom,
 } from "@phosphor-icons/react";
 import Image from "next/image";
 import Link from "next/link";
@@ -18,6 +23,16 @@ import styles from "./HomeEditorial.module.css";
 
 const taskTool = CONTEXTUAL_TOOLS.find((tool) => tool.id === "tasks")!;
 const heroArt = MIO_PORTRAITS.thinking.src;
+
+// Вечерняя лаборатория — утверждённый прод-арт (общий фон сцены).
+const heroSceneArt = "/art/production/hero-night-study-ultrawide-v3.webp";
+
+const toolIcons = {
+  notebook: Notebook,
+  formulas: Atom,
+  tasks: ListChecks,
+  mistakes: ChartLineUp,
+} as const;
 
 const homeActions = [
   {
@@ -52,22 +67,19 @@ export function HomeEditorial() {
         className={styles.hero}
         aria-labelledby="home-title"
       >
-        <div
-          className={styles.heroScene}
-          data-art-id="home-mio"
-          data-art-source={heroArt}
-          data-art-viewport-policy="single-source-crop"
-          aria-hidden="true"
-        >
+        {/* Фон сцены: вечерняя лаборатория, мягко размытая и утопленная
+            в темноту — глубина без конкуренции с текстом. */}
+        <div className={styles.heroBackdrop} aria-hidden="true">
           <Image
-            src={heroArt}
+            src={heroSceneArt}
             alt=""
             fill
             priority
-            quality={92}
-            sizes="(max-width:700px) 110px, 440px"
-            className={styles.heroArt}
+            quality={75}
+            sizes="100vw"
+            className={styles.heroBackdropArt}
           />
+          <span className={styles.heroLampGlow} />
         </div>
 
         <div className={styles.heroInner}>
@@ -79,7 +91,9 @@ export function HomeEditorial() {
             <p className={styles.heroLead}>
               Уроки, опыты и задачи — в одном месте.
             </p>
-            {learningState.hasActivity && (
+
+            <div className={styles.rise}>
+              {learningState.hasActivity && (
                 <aside
                   className={styles.todayStep}
                   data-tone={learningState.nextStep.tone}
@@ -103,25 +117,49 @@ export function HomeEditorial() {
                     </Link>
                   ))}
                 </aside>
-            )}
+              )}
 
-            <nav className={styles.quickActions} aria-label="С чего начать">
-              {homeActions.map(({ id, href, label, description, icon: Icon }) => (
-                <Link key={id} href={href} data-action={id}>
-                  <Icon size={22} weight="duotone" aria-hidden="true" />
-                  <span>
-                    <strong>{label}</strong>
-                    <small>{description}</small>
-                  </span>
-                  <ArrowRight size={17} weight="bold" aria-hidden="true" />
-                </Link>
-              ))}
-            </nav>
+              <nav className={styles.quickActions} aria-label="С чего начать">
+                {homeActions.map(({ id, href, label, description, icon: Icon }) => (
+                  <Link key={id} href={href} data-action={id} className={styles.actionCard}>
+                    <span className={styles.actionIcon}>
+                      <Icon size={22} weight="duotone" aria-hidden="true" />
+                    </span>
+                    <span>
+                      <strong>{label}</strong>
+                      <small>{description}</small>
+                    </span>
+                    <ArrowRight size={17} weight="bold" aria-hidden="true" className={styles.actionArrow} />
+                  </Link>
+                ))}
+              </nav>
 
               <Link className={styles.diagnosticLink} href="/topics">
                 Выбрать другую тему
                 <ArrowRight size={16} weight="bold" aria-hidden="true" />
               </Link>
+            </div>
+          </div>
+
+          {/* Мио на переднем плане: вырезанный портрет с тёплым светом
+              позади, чтобы персонаж «стоял» в сцене, а не висел. */}
+          <div
+            className={styles.heroScene}
+            data-art-id="home-mio"
+            data-art-source={heroArt}
+            data-art-viewport-policy="single-source-crop"
+            aria-hidden="true"
+          >
+            <span className={styles.heroSceneGlow} />
+            <Image
+              src={heroArt}
+              alt=""
+              fill
+              priority
+              quality={92}
+              sizes="(max-width:700px) 110px, 440px"
+              className={styles.heroArt}
+            />
           </div>
         </div>
       </section>
@@ -129,23 +167,33 @@ export function HomeEditorial() {
       <section className={styles.tools} aria-labelledby="tools-title">
         <header className={styles.toolsHeading}>
           <p className={styles.eyebrow}>
+            <Lightbulb size={14} weight="duotone" aria-hidden="true" />
             Под рукой
           </p>
           <h2 id="tools-title">
             Справочник и записи
           </h2>
+          <p className={styles.toolsNote}>
+            Всё, что нужно рядом с уроком: формулы, разборы и твои заметки.
+          </p>
         </header>
 
-        <div className={styles.toolList}>
-          {CONTEXTUAL_TOOLS.map((tool) => (
-            <Link key={tool.id} className={styles.toolLink} href={tool.href}>
-              <span>
-                <strong>{tool.label}</strong>
-                <small>{tool.description}</small>
-              </span>
-              <ArrowRight size={18} weight="bold" aria-hidden="true" />
-            </Link>
-          ))}
+        <div className={`${styles.toolList} rise-seq`}>
+          {CONTEXTUAL_TOOLS.map((tool) => {
+            const Icon = toolIcons[tool.id as keyof typeof toolIcons] ?? BookOpenText;
+            return (
+              <Link key={tool.id} className={styles.toolLink} href={tool.href}>
+                <span className={styles.toolIcon}>
+                  <Icon size={20} weight="duotone" aria-hidden="true" />
+                </span>
+                <span>
+                  <strong>{tool.label}</strong>
+                  <small>{tool.description}</small>
+                </span>
+                <ArrowRight size={18} weight="bold" aria-hidden="true" className={styles.actionArrow} />
+              </Link>
+            );
+          })}
         </div>
       </section>
 

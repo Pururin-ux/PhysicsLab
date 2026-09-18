@@ -270,7 +270,9 @@ export function AppShell({ children }: { children: ReactNode }) {
         pathname === "/" ? "app-shell--home" : "app-shell--inner",
       )}
     >
-      {theme === "dark" && !pathname.startsWith("/learn") && !["/topics", "/practice/average-speed-lesson"].includes(pathname) ? <StarField /> : null}
+      {/* StarField ждёт themeReady: иначе при сохранённой светлой теме canvas
+          успевает отрисовать один тёмный кадр до чтения localStorage. */}
+      {themeReady && theme === "dark" && !pathname.startsWith("/learn") && !["/topics", "/practice/average-speed-lesson"].includes(pathname) ? <StarField /> : null}
       <SmoothAnchorScroll />
       <a href="#main-content" className="skip-link">Перейти к содержимому</a>
       <Header theme={theme} onToggleTheme={toggleTheme} />

@@ -1,37 +1,184 @@
 .page { color:var(--text-primary); overflow:hidden; }
+
+/* ---------- Герой: вечерняя лаборатория ---------- */
+
 .hero { position:relative; isolation:isolate; }
+
+/* Фон-сцена: прод-арт «ночная лаборатория» под лёгким размытием и
+   радиальной маской — глубина пространства без конкуренции с текстом. */
+.heroBackdrop { position:absolute; inset:0; z-index:0; opacity:.48; pointer-events:none; }
+.heroBackdropArt {
+  object-fit:cover; object-position:22% 26%;
+  filter:blur(3px) brightness(.7) saturate(.95);
+  transform:scale(1.07);
+  /* Маска держит сцену слева от текста; правая часть арта (где стоит Мио)
+     уходит в темноту — вторых персонажей в кадре быть не должно. */
+  mask-image:radial-gradient(105% 92% at 30% 44%, #000 20%, transparent 62%);
+  -webkit-mask-image:radial-gradient(105% 92% at 30% 44%, #000 20%, transparent 62%);
+}
+/* Свет настольной лампы из правого верхнего угла + холодный отсвет слева
+   и правое затухание сцены под портрет Мио. */
+.heroLampGlow {
+  position:absolute; inset:0;
+  background:
+    linear-gradient(97deg, transparent 44%, rgba(15, 17, 21, .82) 74%),
+    radial-gradient(46% 38% at 76% 12%, rgba(224,173,104,.11), transparent 70%),
+    radial-gradient(40% 44% at 8% 30%, rgba(6,186,213,.08), transparent 72%);
+}
+
+/* Светлая тема: ночной арт-фон не сочетается с бумажной палитрой —
+   оставляем только мягкие тёплые пятна света. */
+:global(html[data-theme="light"]) .heroBackdropArt { display:none; }
+:global(html[data-theme="light"]) .heroBackdrop { opacity:1; }
+:global(html[data-theme="light"]) .heroLampGlow {
+  background:
+    radial-gradient(46% 38% at 76% 12%, rgba(130,97,80,.1), transparent 70%),
+    radial-gradient(40% 44% at 8% 30%, rgba(8,126,144,.08), transparent 72%);
+}
+
 .heroInner,.tools,.footer { width:min(calc(100% - 2 * var(--physics-gutter)),1120px); margin-inline:auto; }
-.heroInner { padding:90px 0 66px; min-height:540px; display:flex; align-items:center; }
-.heroCopy { width:57%; position:relative; z-index:1; }
-.heroScene { position:absolute; right:max(calc((100% - 1140px)/2),20px); bottom:25px; width:42%; max-width:440px; height:470px; pointer-events:none; }
-.heroArt { object-fit:contain; object-position:center bottom; mask-image:linear-gradient(#000 82%,transparent); }
-.eyebrow { color:var(--action-primary); font-size:12px; font-weight:800; letter-spacing:.1em; text-transform:uppercase; }
+.heroInner { position:relative; padding:96px 0 72px; min-height:580px; display:flex; align-items:center; }
+.heroCopy { width:62%; position:relative; z-index:2; }
+
+/* Мио стоит в сцене: тёплый ореол позади персонажа собирает фокус. */
+.heroScene { position:absolute; right:-16px; bottom:0; width:42%; max-width:470px; height:520px; pointer-events:none; z-index:1; }
+.heroSceneGlow {
+  position:absolute; inset:-6% -10% 0;
+  background:
+    radial-gradient(52% 46% at 50% 36%, rgba(6,186,213,.14), transparent 72%),
+    radial-gradient(44% 34% at 52% 78%, rgba(224,173,104,.08), transparent 74%);
+  filter:blur(6px);
+}
+.heroArt {
+  object-fit:contain; object-position:center bottom; z-index:1;
+  filter:drop-shadow(0 22px 44px rgba(0,0,0,.5));
+  mask-image:linear-gradient(#000 84%,transparent);
+  -webkit-mask-image:linear-gradient(#000 84%,transparent);
+}
+
+.eyebrow { display:inline-flex; align-items:center; gap:8px; color:var(--action-primary); font-size:12px; font-weight:800; letter-spacing:.1em; text-transform:uppercase; }
 .hero h1 { font-size:clamp(38px,5vw,64px); font-weight:800; line-height:1.04; letter-spacing:-.045em; margin-top:14px; }
-.heroLead { color:var(--text-secondary); font-size:17px; line-height:1.65; margin-top:18px; max-width:40ch; }
-.todayStep { display:flex; flex-wrap:wrap; justify-content:space-between; gap:16px; align-items:center; margin-top:24px; padding:18px 0; border-block:1px solid var(--border-strong); }
+.heroLead { color:var(--text-secondary); font-size:17px; line-height:1.65; margin-top:16px; max-width:40ch; }
+
+.rise { animation:page-rise .55s cubic-bezier(.22,.61,.36,1) .12s both; }
+
+/* ---------- Шаг «продолжить» ---------- */
+
+.todayStep {
+  position:relative; display:flex; flex-wrap:wrap; justify-content:space-between; gap:16px; align-items:center;
+  margin-top:26px; padding:18px 20px; border:1px solid var(--border-strong); border-radius:14px;
+  background:linear-gradient(150deg, color-mix(in srgb,var(--action-primary) 7%, var(--surface-primary)), var(--surface-primary) 58%);
+  box-shadow:0 14px 34px rgba(0,0,0,.24);
+}
+.todayStep::before {
+  content:""; position:absolute; left:0; top:14px; bottom:14px; width:3px; border-radius:999px;
+  background:linear-gradient(180deg, var(--action-primary), transparent);
+}
 .todayCopy { min-width:0; }
-.todayCopy p { font-size:11px; color:var(--text-secondary); }
-.todayCopy h2 { margin-top:5px; font-size:19px; font-weight:750; }
-.todayCopy .resumeDetail { margin-top:8px; font-size:13px; line-height:1.5; }
+.todayCopy p { font-size:11px; color:var(--text-secondary); text-transform:uppercase; letter-spacing:.08em; font-weight:700; }
+.todayCopy h2 { margin-top:6px; font-size:19px; font-weight:750; }
+.todayCopy .resumeDetail { margin-top:8px; font-size:13px; line-height:1.5; text-transform:none; letter-spacing:0; font-weight:400; }
 .todayStep>a.secondaryResume { flex-basis:100%; padding:6px 0; background:transparent; color:var(--action-primary); font-size:13px; font-weight:600; }
-.todayStep>a { display:flex; min-height:44px; align-items:center; gap:12px; padding:10px 15px; border-radius:9px; background:var(--action-primary); color:var(--action-ink); font-weight:750; font-size:14px; }
-.quickActions { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; margin-top:22px; }
-.quickActions>a { display:flex; gap:12px; align-items:center; min-height:72px; padding:15px; border:1px solid var(--border-strong); border-radius:10px; background:var(--surface-primary); }
-.quickActions>a[data-action=learn] { grid-column:1/-1; }
-.quickActions>a>svg:first-child { color:var(--action-primary); flex-shrink:0; }
-.quickActions>a>svg:last-child { margin-left:auto; flex-shrink:0; color:var(--text-secondary); }
-.quickActions strong { font-size:15px; font-weight:750; }
-.quickActions small { display:block; font-size:12px; line-height:1.4; color:var(--text-secondary); margin-top:3px; }
-.diagnosticLink { display:inline-flex; align-items:center; gap:10px; min-height:44px; margin-top:12px; font-size:14px; color:var(--text-secondary); }
-.tools { padding:32px 0 44px; border-top:1px solid var(--border-strong); display:grid; grid-template-columns:1fr 1.5fr; gap:35px; }
+.todayStep>a {
+  display:flex; min-height:44px; align-items:center; gap:12px; padding:10px 18px; border-radius:10px;
+  background:var(--action-primary); color:var(--action-ink); font-weight:750; font-size:14px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.25), 0 8px 20px color-mix(in srgb, var(--action-primary) 24%, transparent);
+  transition:transform 180ms ease, filter 180ms ease;
+}
+.todayStep>a:hover { transform:translateY(-1px); filter:brightness(1.07); }
+
+/* ---------- Быстрые действия: плитки с откликом ---------- */
+
+.quickActions { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; margin-top:16px; }
+.actionCard[data-action=learn] { grid-column:1/-1; }
+.actionCard {
+  display:flex; gap:13px; align-items:center; min-height:88px; padding:15px 16px;
+  border:1px solid var(--border-strong); border-radius:14px;
+  background:linear-gradient(180deg, color-mix(in srgb,var(--surface-secondary) 46%, var(--surface-primary)), var(--surface-primary) 72%);
+  transition:transform 200ms cubic-bezier(.22,.61,.36,1), border-color 200ms ease, box-shadow 200ms ease;
+}
+.actionCard:hover {
+  transform:translateY(-3px);
+  border-color:color-mix(in srgb, var(--action-primary) 42%, var(--border-strong));
+  box-shadow:0 18px 40px rgba(0,0,0,.32), 0 0 0 1px color-mix(in srgb, var(--action-primary) 14%, transparent);
+}
+.actionIcon {
+  display:grid; place-items:center; width:44px; height:44px; flex-shrink:0; border-radius:12px;
+  color:var(--action-primary);
+  background:color-mix(in srgb, var(--action-primary) 11%, transparent);
+  border:1px solid color-mix(in srgb, var(--action-primary) 20%, transparent);
+  transition:background-color 200ms ease, box-shadow 200ms ease;
+}
+.actionCard:hover .actionIcon {
+  background:color-mix(in srgb, var(--action-primary) 18%, transparent);
+  box-shadow:0 0 16px color-mix(in srgb, var(--action-primary) 22%, transparent);
+}
+.actionCard strong { font-size:15px; font-weight:750; }
+.actionCard small { display:block; font-size:12px; line-height:1.4; color:var(--text-secondary); margin-top:3px; }
+.actionArrow { margin-left:auto; flex-shrink:0; color:var(--text-secondary); transition:transform 200ms cubic-bezier(.22,.61,.36,1), color 200ms ease; }
+.actionCard:hover .actionArrow { transform:translateX(4px); color:var(--action-primary); }
+
+.diagnosticLink { display:inline-flex; align-items:center; gap:10px; min-height:44px; margin-top:14px; font-size:14px; color:var(--text-secondary); transition:color 160ms ease; }
+.diagnosticLink:hover { color:var(--action-primary); }
+
+/* ---------- Инструменты ---------- */
+
+.tools { padding:44px 0 48px; border-top:1px solid var(--border-strong); display:grid; grid-template-columns:1fr 1.5fr; gap:40px; }
 .tools h2 { margin-top:10px; font-size:28px; line-height:1.15; font-weight:800; }
-.toolLink { display:flex; justify-content:space-between; align-items:center; gap:16px; padding:16px 0; border-bottom:1px solid var(--border-strong); }
+.toolsNote { margin-top:10px; max-width:34ch; color:var(--text-secondary); font-size:14px; line-height:1.6; }
+.toolList { display:grid; grid-template-columns:1fr 1fr; gap:12px; align-content:start; }
+.toolLink {
+  display:flex; gap:13px; align-items:center; padding:16px 17px; border-radius:14px;
+  border:1px solid var(--border-strong);
+  background:linear-gradient(180deg, color-mix(in srgb,var(--surface-secondary) 38%, var(--surface-primary)), var(--surface-primary) 74%);
+  transition:transform 200ms cubic-bezier(.22,.61,.36,1), border-color 200ms ease, box-shadow 200ms ease;
+}
+.toolLink:hover {
+  transform:translateY(-3px);
+  border-color:color-mix(in srgb, var(--action-primary) 42%, var(--border-strong));
+  box-shadow:0 16px 36px rgba(0,0,0,.28);
+}
+.toolIcon {
+  display:grid; place-items:center; width:40px; height:40px; flex-shrink:0; border-radius:11px;
+  color:var(--action-primary);
+  background:color-mix(in srgb, var(--action-primary) 11%, transparent);
+  border:1px solid color-mix(in srgb, var(--action-primary) 20%, transparent);
+}
 .toolLink strong { font-size:15px; font-weight:750; }
-.toolLink small { display:block; color:var(--text-secondary); font-size:13px; margin-top:5px; }
-.footer { display:flex; justify-content:space-between; gap:24px; padding:24px 0; color:var(--text-secondary); font-size:13px; }
+.toolLink small { display:block; color:var(--text-secondary); font-size:12.5px; margin-top:4px; line-height:1.45; }
+
+/* ---------- Подвал ---------- */
+
+.footer { display:flex; justify-content:space-between; gap:24px; padding:26px 0; border-top:1px solid var(--border-strong); color:var(--text-secondary); font-size:13px; }
 .footer p { font-weight:800; }.footer p span { color:var(--action-primary); }
-.footer nav { display:flex; flex-wrap:wrap; gap:20px; }.footer a { min-height:44px; display:inline-flex; align-items:center; }
+.footer nav { display:flex; flex-wrap:wrap; gap:20px; }.footer a { min-height:44px; display:inline-flex; align-items:center; transition:color 160ms ease; }
+.footer a:hover { color:var(--action-primary); }
 .page a:focus-visible { outline:3px solid var(--action-primary); outline-offset:4px; }
+
+
+
 @media(max-width:700px) {
- .heroInner { min-height:0; padding:42px 0 34px; }.heroCopy { width:100%; }.heroScene { width:112px; height:135px; top:20px; right:16px; bottom:auto; }.hero h1 { max-width:calc(100% - 100px); font-size:38px; }.heroLead { max-width:calc(100% - 80px); font-size:15px; }.quickActions { margin-top:24px; }.quickActions>a { padding:12px; gap:8px; }.quickActions strong { font-size:13px; }.quickActions small { font-size:11px; }.quickActions>a>svg:last-child { display:none; }.tools { grid-template-columns:1fr; gap:10px; padding:26px 0; }.tools h2 { font-size:25px; }.footer { flex-direction:column; gap:10px; }
+  .heroInner { min-height:0; padding:42px 0 34px; }
+  .heroCopy { width:100%; }
+  .heroBackdrop { opacity:.4; }
+  .heroBackdropArt { object-position:24% 30%; }
+  .heroScene { width:112px; height:135px; top:20px; right:16px; bottom:auto; }
+  .heroSceneGlow { inset:-10% -22% 0; }
+  .hero h1 { max-width:calc(100% - 100px); font-size:38px; }
+  .heroLead { max-width:calc(100% - 80px); font-size:15px; }
+  .quickActions { grid-template-columns:1fr; margin-top:24px; }
+  .actionCard { padding:13px 14px; gap:11px; min-height:0; }
+  .actionCard strong { font-size:14px; }
+  .actionCard small { font-size:11.5px; }
+  .actionArrow { display:none; }
+  .toolList { grid-template-columns:1fr; gap:10px; }
+  .tools { grid-template-columns:1fr; gap:14px; padding:28px 0; }
+  .tools h2 { font-size:25px; }
+  .footer { flex-direction:column; gap:10px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rise { animation:none; }
+  .actionCard, .toolLink, .todayStep>a, .actionArrow { transition:none; }
+  .actionCard:hover, .toolLink:hover { transform:none; }
 }

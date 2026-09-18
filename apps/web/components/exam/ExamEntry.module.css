@@ -1,13 +1,77 @@
-.entry { width:100%; max-width:920px; margin:0 auto; color:var(--text-primary); }
-.topics { display:flex; align-items:center; justify-content:space-between; gap:20px; padding:20px 0; border-top:1px solid var(--border-strong); border-bottom:1px solid var(--border-strong); }
-.topics strong { display:block; font-size:22px; }
-.topics small { display:block; margin-top:6px; color:var(--text-secondary); font-size:14px; }
-.topics > span:last-child { font-size:28px; color:var(--action-primary); }
-.check { display:grid; grid-template-columns:minmax(0,1fr) 240px; align-items:center; gap:24px; padding:28px 0 14px; }
-.body h2 { font-size:28px; font-weight:750; }
-.body > p { font-size:15px; line-height:1.7; margin-top:12px; color:var(--text-secondary); }
-.actions { margin-top:22px; }
-.mio { width:100%; height:auto; align-self:end; }
-.note { font-size:13px; line-height:1.7; color:var(--text-secondary); border-top:1px solid var(--border-subtle); padding-top:18px; margin-top:12px; }
+.entry { width:100%; max-width:960px; margin:0 auto; color:var(--text-primary); display:grid; gap:14px; }
+
+/* Карточка выбора темы: во всю ширину, с иконкой и откликом на наведение. */
+.topics {
+  display:flex; align-items:center; gap:16px;
+  padding:20px 22px; border:1px solid var(--border-strong); border-radius:16px;
+  background:linear-gradient(160deg, color-mix(in srgb,var(--mode-exam-accent) 6%, var(--surface-primary)), var(--surface-primary) 60%);
+  transition:transform 200ms cubic-bezier(.22,.61,.36,1), border-color 200ms ease, box-shadow 200ms ease;
+}
+.topics:hover {
+  transform:translateY(-2px);
+  border-color:color-mix(in srgb, var(--mode-exam-accent) 42%, var(--border-strong));
+  box-shadow:0 16px 36px rgba(0,0,0,.28);
+}
+.topics-icon {
+  display:grid; place-items:center; width:46px; height:46px; flex-shrink:0; border-radius:13px;
+  color:var(--mode-exam-accent);
+  background:color-mix(in srgb, var(--mode-exam-accent) 12%, transparent);
+  border:1px solid color-mix(in srgb, var(--mode-exam-accent) 24%, transparent);
+}
+.topics strong { display:block; font-size:19px; font-weight:760; letter-spacing:-.015em; }
+.topics small { display:block; margin-top:4px; color:var(--text-secondary); font-size:13.5px; }
+.topics > span:last-child { margin-left:auto; font-size:24px; color:var(--mode-exam-accent); transition:transform 200ms cubic-bezier(.22,.61,.36,1); }
+.topics:hover > span:last-child { transform:translateX(4px); }
+
+/* Диагностика: контент + Мио. */
+.check {
+  position:relative; overflow:hidden;
+  display:grid; grid-template-columns:minmax(0,1fr) 240px; align-items:center; gap:24px;
+  padding:26px 26px 20px; border:1px solid var(--border-strong); border-radius:16px;
+  background:
+    radial-gradient(60% 50% at 100% 0%, color-mix(in srgb, var(--mode-exam-accent) 7%, transparent), transparent 70%),
+    linear-gradient(180deg, color-mix(in srgb,var(--surface-secondary) 34%, var(--surface-primary)), var(--surface-primary) 74%);
+  box-shadow:0 14px 34px rgba(0,0,0,.22);
+}
+.body h2 { font-size:27px; font-weight:770; letter-spacing:-.02em; }
+.body > p { font-size:15px; line-height:1.7; margin-top:10px; color:var(--text-secondary); max-width:52ch; }
+
+/* Из чего состоит диагностика: пять точек-тем, цвет как в каталоге задач. */
+.exam-topics { display:flex; flex-wrap:wrap; gap:7px; margin-top:16px; }
+.exam-topics li {
+  display:inline-flex; align-items:center; gap:7px; min-height:30px;
+  padding:4px 11px; border-radius:999px;
+  border:1px solid var(--border-subtle);
+  background:color-mix(in srgb, var(--surface-secondary) 55%, transparent);
+  font-size:12.5px; font-weight:650; color:var(--text-secondary);
+  list-style:none;
+}
+.exam-topics li::before {
+  content:""; width:7px; height:7px; border-radius:999px;
+  background:var(--exam-topic-accent, var(--brand-accent));
+  box-shadow:0 0 7px color-mix(in srgb, var(--exam-topic-accent, var(--brand-accent)) 65%, transparent);
+}
+
+.actions { margin-top:20px; }
+.mio { width:100%; height:auto; align-self:end; filter:drop-shadow(0 16px 30px rgba(0,0,0,.4)); }
+.note {
+  display:flex; gap:10px; align-items:flex-start;
+  font-size:13px; line-height:1.65; color:var(--text-secondary);
+  border:1px solid var(--border-subtle); border-radius:12px;
+  padding:13px 16px; background:color-mix(in srgb, var(--surface-secondary) 40%, transparent);
+}
+.note-icon { flex-shrink:0; margin-top:2px; color:var(--mode-exam-accent); }
+
 .topics:focus-visible { outline:3px solid var(--focus-ring); outline-offset:4px; }
-@media(max-width:640px) { .check { grid-template-columns:minmax(0,1fr) 90px; gap:8px; align-items:start; } .body { display:contents; } .body h2 { font-size:25px; align-self:center; grid-column:1; grid-row:1; } .mio { grid-column:2; grid-row:1; } .body > p,.actions { grid-column:1 / -1; } .body > p { margin-top:4px; } .actions { margin-top:12px; } }
+
+@media(max-width:640px) {
+  .check { grid-template-columns:minmax(0,1fr) 90px; gap:8px; align-items:start; padding:20px 18px 16px; }
+  .body { display:contents; }
+  .body h2 { font-size:24px; align-self:center; grid-column:1; grid-row:1; }
+  .mio { grid-column:2; grid-row:1; }
+  .body > p, .exam-topics, .actions { grid-column:1 / -1; }
+  .body > p { margin-top:4px; }
+  .actions { margin-top:12px; }
+  .topics { padding:16px 16px; }
+  .topics strong { font-size:17px; }
+}

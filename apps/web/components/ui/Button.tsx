@@ -14,11 +14,12 @@ interface ButtonProps extends ComponentPropsWithoutRef<"button"> {
 
 const variantClasses: Record<ButtonVariant, string> = {
   // Основное действие выделяется цветом и контрастом, а не большой неоновой
-  // подушкой: тень маленькая и направленная.
+  // подушкой: тень маленькая и направленная. Детали (градиент, блик) —
+  // в globals.css, класс physics-btn-primary.
   primary:
-    "border-transparent bg-[var(--action-primary)] text-[var(--action-ink)] shadow-[0_6px_16px_rgba(6,186,213,.2)] hover:bg-[var(--action-hover)] hover:shadow-[0_8px_20px_rgba(6,186,213,.26)] disabled:hover:bg-[var(--action-primary)]",
+    "physics-btn-primary border-transparent text-[var(--action-ink)] hover:bg-[var(--action-hover)] disabled:hover:bg-[var(--action-primary)]",
   ghost:
-    "border-white/[.14] bg-white/[.03] text-white/82 hover:border-nova-blue/45 hover:bg-white/[.06] hover:text-white",
+    "physics-btn-ghost text-[var(--text-primary)]/82 hover:text-[var(--text-primary)]",
 };
 
 const sizeClasses: Record<ButtonSize, string> = {

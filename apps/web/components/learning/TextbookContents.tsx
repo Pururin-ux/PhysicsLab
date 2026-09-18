@@ -72,7 +72,7 @@ export function TextbookContents({chapters,entries}:{chapters:TextbookChapter[];
           const state=item.chapter?(states?.[item.id]??"untouched"):"untouched";
           return <li key={item.id}>
             <div className={styles.chapterRow}>
-              <span className={styles.number} aria-hidden="true">{itemNumber.get(item.id)}</span>
+              <span className={styles.number} data-state={state} aria-hidden="true">{itemNumber.get(item.id)}</span>
               <div className={styles.chapterBody}>
                 <Link className={styles.chapterLink} href={`${item.href}${reviewOnly&&item.chapter?"#self-check":""}`}>
                   <h4>{item.question}</h4>

@@ -216,10 +216,15 @@ export function FormulasEditorialBrowser({ groups }: FormulasEditorialBrowserPro
       </header>
 
       {!isFiltering && !selectedEntry ? (
-        <nav className={styles.sectionNav} aria-label="Разделы формул">
+        <nav className={`${styles.sectionNav} rise-seq`} aria-label="Разделы формул">
           {groups.map((group) => (
-            <a key={group.id} href={`#${group.id}`}>
+            <a
+              key={group.id}
+              href={`#${group.id}`}
+              data-topic={group.id}
+            >
               {shortGroupTitle[group.id] ?? group.title}
+              <span className={styles.sectionNavCount}>{group.entries.length}</span>
             </a>
           ))}
         </nav>

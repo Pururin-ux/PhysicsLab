@@ -11,10 +11,27 @@
 .shortcuts { display:flex; flex-wrap:wrap; gap:0 24px; margin-top:8px; }
 .shortcuts a { display:inline-flex; min-height:44px; align-items:center; font-size:14px; color:var(--action-primary); }
 .layout { max-width:800px; border-top:1px solid var(--border-strong); padding-top:24px; }
+.groupChips { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:26px; }
+.groupChip {
+  display:inline-flex; align-items:center; gap:8px; min-height:36px; padding:6px 14px;
+  border:1px solid var(--border-strong); border-radius:999px;
+  background:color-mix(in srgb, var(--surface-secondary) 60%, transparent);
+  color:var(--text-secondary); font-size:13px; font-weight:700;
+  transition:transform 180ms ease, border-color 180ms ease, background-color 180ms ease, color 180ms ease;
+}
+.groupChip span { color:var(--text-muted); font-size:11.5px; font-weight:750; }
+.groupChip:hover {
+  transform:translateY(-1px);
+  border-color:color-mix(in srgb, var(--brand-accent) 48%, var(--border-strong));
+  background:color-mix(in srgb, var(--brand-accent) 9%, var(--surface-secondary));
+  color:var(--text-primary);
+}
+.entry { transition:background-color 200ms ease; border-radius:12px; }
+.entry:hover { background:color-mix(in srgb, var(--surface-secondary) 34%, transparent); }
 .group { scroll-margin-top:100px; margin-bottom:42px; }
 .group>header { margin-bottom:0; }
 .group>header p { font-size:13px; line-height:1.6; color:var(--text-secondary); }
-.entry { display:grid; grid-template-columns:minmax(0,1fr); gap:16px; padding:28px 0; border-bottom:1px solid var(--border-strong); scroll-margin-top:100px; }
+.entry { display:grid; grid-template-columns:minmax(0,1fr); gap:16px; padding:28px 16px; margin:0 -16px; border-bottom:1px solid var(--border-strong); scroll-margin-top:100px; border-radius:12px 12px 0 0; }
 .question>p { font-size:13px; color:var(--text-secondary); line-height:1.5; margin-bottom:8px; }
 .question h2 { font-size:clamp(22px,2.2vw,28px); max-width:34ch; font-weight:750; letter-spacing:-.025em; line-height:1.3; }
 .actions { display:flex; align-items:baseline; flex-wrap:wrap; gap:0 24px; }

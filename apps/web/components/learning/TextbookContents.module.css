@@ -124,14 +124,45 @@
   display: grid;
   grid-template-columns: 42px minmax(0, 1fr);
   gap: 14px;
+  padding-inline: 12px;
+  margin-inline: -12px;
   padding-block: 10px 8px;
+  border-radius: 12px;
+  transition: background-color 180ms ease;
+}
+
+.chapterRow:hover {
+  background: color-mix(in srgb, var(--surface-secondary) 36%, transparent);
 }
 
 .number {
-  padding-top: 4px;
+  display: inline-grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  margin-top: 2px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 9px;
   color: var(--text-secondary);
-  font-size: 14px;
+  background: color-mix(in srgb, var(--surface-secondary) 55%, transparent);
+  font-size: 13px;
+  font-weight: 720;
   font-variant-numeric: tabular-nums;
+}
+
+/* Статус главы виден до чтения: цвет номера = состояние самопроверки. */
+.number[data-state="correct"] {
+  border-color: color-mix(in srgb, var(--feedback-success) 55%, transparent);
+  background: color-mix(in srgb, var(--feedback-success) 14%, transparent);
+  color: var(--feedback-success);
+}
+
+.number[data-state="draft"],
+.number[data-state="retry"],
+.number[data-state="updated"] {
+  border-color: color-mix(in srgb, var(--feedback-warning) 55%, transparent);
+  background: color-mix(in srgb, var(--feedback-warning) 14%, transparent);
+  color: var(--feedback-warning);
 }
 
 .chapterBody {

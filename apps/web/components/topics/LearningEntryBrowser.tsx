@@ -44,6 +44,14 @@ export function LearningEntryBrowser({ entries }: { entries: LearningEntry[] }) 
       <nav className={styles.shortcuts} aria-label="Открыть напрямую"><Link href="/learn">Учебник →</Link><Link href="/tasks">Все задачи →</Link><Link href="/formulas">Формулы →</Link></nav>
     </div>
     <div className={styles.layout}>
+      <nav className={styles.groupChips} aria-label="Классы">
+        {learningGroupDefinitions.filter(group => shown.some(entry => entry.group === group.id)).map(group => (
+          <a key={group.id} href={`#learning-group-${group.id}`} className={styles.groupChip}>
+            {group.label}
+            <span>{shown.filter(entry => entry.group === group.id).length}</span>
+          </a>
+        ))}
+      </nav>
       <div>
         {shown.length === 0 && <div className={styles.empty}><h2>По этому запросу темы не нашлись</h2><p>Попробуй более короткое название{grade ? " или другой класс" : ""}. В банке задач есть и другие вопросы.</p><button onClick={() => chooseFilters("", null)}>Показать все материалы</button><Link href={`/tasks?q=${encodeURIComponent(query)}`}>Поискать в задачах →</Link></div>}
         {learningGroupDefinitions.map(group => {

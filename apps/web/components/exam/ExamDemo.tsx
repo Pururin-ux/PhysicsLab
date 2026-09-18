@@ -1,9 +1,10 @@
 "use client";
 
 import { useStore } from "@nanostores/react";
+import { Compass, Info } from "@phosphor-icons/react";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type CSSProperties } from "react";
 import styles from "./ExamEntry.module.css";
 import { $examLog, getBestAttempt } from "../../lib/stores/exam-log-store";
 import { MIO_PORTRAITS } from "../../lib/learning/mio-assets";
@@ -101,14 +102,28 @@ export function ExamDemo() {
   }
 
   return (
-    <section aria-labelledby="exam-entry-title" className={styles.entry}>
+    <section aria-labelledby="exam-entry-title" className={`${styles.entry} rise-seq`}>
       <Link href="/exam/program" className={styles.topics}>
-        <span><strong>Выбрать тему</strong><small>Задачи по разделам физики</small></span><span aria-hidden="true">→</span>
+        <span aria-hidden="true" className={styles["topics-icon"]}>
+          <Compass size={24} weight="duotone" />
+        </span>
+        <span>
+          <strong>Выбрать тему</strong>
+          <small>Задачи по разделам физики: от движения до оптики</small>
+        </span>
+        <span aria-hidden="true">→</span>
       </Link>
       <div className={styles.check}>
         <div className={styles.body}>
           <h2 id="exam-entry-title">Проверить себя</h2>
-          <p>10 задач: движение, силы, электричество, теплота и оптика. Решай в своём темпе, затем посмотри разбор.</p>
+          <p>10 задач без таймера: решай в своём темпе, затем посмотри разбор.</p>
+          <ul className={styles["exam-topics"]} aria-label="Темы диагностики">
+            <li style={{ "--exam-topic-accent": "var(--topic-kinematics-accent)" } as CSSProperties}>Движение</li>
+            <li style={{ "--exam-topic-accent": "var(--topic-dynamics-accent)" } as CSSProperties}>Силы</li>
+            <li style={{ "--exam-topic-accent": "var(--topic-electrodynamics-accent)" } as CSSProperties}>Электричество</li>
+            <li style={{ "--exam-topic-accent": "var(--topic-thermodynamics-accent)" } as CSSProperties}>Теплота</li>
+            <li style={{ "--exam-topic-accent": "var(--topic-optics-accent)" } as CSSProperties}>Оптика</li>
+          </ul>
           <div className={styles.actions}>
             {resumeCandidate === undefined ? (
               <Button size="lg" disabled aria-label="Проверяем незавершённую диагностику" className="sm:w-auto">
@@ -148,7 +163,10 @@ export function ExamDemo() {
         </div>
         <Image src={MIO_PORTRAITS.attentive.src} width={1254} height={1254} alt="Мио внимательно слушает, держа блокнот" className={styles.mio} sizes="(max-width:640px) 110px, 240px" />
       </div>
-      <p className={styles.note}>Это проверка отдельных тем, а не полный вариант ЦТ/ЦЭ. Результат поможет выбрать, что повторить.</p>
+      <p className={styles.note}>
+          <Info size={16} weight="duotone" aria-hidden="true" className={styles["note-icon"]} />
+          <span>Это проверка отдельных тем, а не полный вариант ЦТ/ЦЭ. Результат поможет выбрать, что повторить.</span>
+        </p>
     </section>
   );
 }

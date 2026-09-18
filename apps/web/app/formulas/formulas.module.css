@@ -144,6 +144,7 @@
 
 .sectionNav {
   display: flex;
+  gap: 8px;
   margin: 0;
   padding: 0.85rem 0;
   position: sticky;
@@ -163,30 +164,51 @@
 
 .sectionNav a {
   display: inline-flex;
-  min-height: 42px;
-  padding: 0.55rem clamp(1.1rem, 2.5vw, 2rem);
+  min-height: 38px;
+  padding: 0.4rem 1rem;
   align-items: center;
-  flex: 1;
-  gap: 0.65rem;
-  border-right: 1px solid var(--border-subtle);
+  gap: 0.5rem;
+  flex: 0 0 auto;
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--surface-secondary) 60%, transparent);
   color: var(--text-secondary);
-  font-size: 0.76rem;
-  font-weight: 740;
+  font-size: 0.78rem;
+  font-weight: 730;
   white-space: nowrap;
-  transition: background-color 180ms ease, color 180ms ease;
+  transition: transform 180ms ease, border-color 180ms ease,
+    background-color 180ms ease, color 180ms ease;
 }
 
-.sectionNav a:first-child {
-  padding-left: 0.25rem;
+/* Точка-акцент повторяет цвет раздела в каталоге задач: один цвет —
+   одна тема во всём продукте. */
+.sectionNav a::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  flex-shrink: 0;
+  border-radius: 999px;
+  background: var(--chip-accent, var(--brand-accent));
+  box-shadow: 0 0 8px color-mix(in srgb, var(--chip-accent, var(--brand-accent)) 70%, transparent);
 }
 
-.sectionNav a:last-child {
-  border-right: 0;
-}
+.sectionNav a[data-topic="optics"] { --chip-accent: var(--topic-optics-accent); }
+.sectionNav a[data-topic="kinematics"] { --chip-accent: var(--topic-kinematics-accent); }
+.sectionNav a[data-topic="dynamics"] { --chip-accent: var(--topic-dynamics-accent); }
+.sectionNav a[data-topic="electrodynamics"] { --chip-accent: var(--topic-electrodynamics-accent); }
+.sectionNav a[data-topic="thermodynamics"] { --chip-accent: var(--topic-thermodynamics-accent); }
 
 .sectionNav a:hover {
-  background: var(--surface-hover);
+  transform: translateY(-1px);
+  border-color: color-mix(in srgb, var(--chip-accent, var(--brand-accent)) 52%, var(--border-strong));
+  background: color-mix(in srgb, var(--chip-accent, var(--brand-accent)) 9%, var(--surface-secondary));
   color: var(--text-primary);
+}
+
+.sectionNavCount {
+  color: var(--text-muted);
+  font-size: 0.68rem;
+  font-weight: 750;
 }
 
 .groups {

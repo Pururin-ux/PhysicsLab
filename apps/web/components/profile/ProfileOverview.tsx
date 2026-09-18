@@ -32,6 +32,13 @@ import { Button } from "../ui/Button";
 import { Card } from "../ui/Card";
 import { MathText } from "../ui/MathText";
 import { DataTransfer } from "./DataTransfer";
+import { MIO_PORTRAITS } from "../../lib/learning/mio-assets";
+import {
+  ArrowCounterClockwise,
+  CheckCircle,
+  PlayCircle,
+} from "@phosphor-icons/react";
+import Image from "next/image";
 
 function formatLastPracticed(iso: string | null) {
   if (!iso) {
@@ -156,7 +163,7 @@ function ProfileLoadingState() {
 
 function EmptyProgress() {
   return (
-    <Card variant="semantic" className="grid overflow-hidden !p-0 lg:grid-cols-[minmax(0,1fr)_280px]">
+    <Card variant="semantic" className="grid overflow-hidden !p-0 lg:grid-cols-[minmax(0,1fr)_300px]">
       <div className="p-6 sm:p-8 lg:pr-10">
         <p className="text-[11px] font-bold uppercase tracking-[.16em] text-[var(--mode-learn-accent)]">
           Пока без истории
@@ -178,16 +185,37 @@ function EmptyProgress() {
         </div>
       </div>
       <div
-        className="flex min-h-[190px] flex-col justify-between border-t border-[var(--border-muted)] bg-[var(--surface-panel-raised)] px-6 py-6 lg:min-h-full lg:border-l lg:border-t-0 lg:px-7"
+        className="relative flex min-h-[190px] flex-col justify-between overflow-hidden border-t border-[var(--border-muted)] px-6 py-6 lg:min-h-full lg:border-l lg:border-t-0 lg:px-7"
+        style={{
+          background:
+            "radial-gradient(120% 90% at 80% 0%, color-mix(in srgb, var(--mode-learn-accent) 10%, transparent), transparent 62%), var(--surface-panel-raised)",
+        }}
         aria-label="Что сохраняется в прогрессе"
       >
-        <p className="text-[11px] font-bold uppercase tracking-[.18em] text-[var(--text-default)]">
+        <Image
+          src={MIO_PORTRAITS.thinking.src}
+          width={1254}
+          height={1254}
+          alt=""
+          aria-hidden="true"
+          className="pointer-events-none absolute -right-9 -top-1 h-28 w-28 select-none object-contain opacity-80 [mask-image:radial-gradient(75%_75%_at_50%_45%,#000_50%,transparent_76%)]"
+        />
+        <p className="relative text-[11px] font-bold uppercase tracking-[.18em] text-[var(--text-default)]">
           После первого шага
         </p>
-        <ul className="grid gap-3 text-[12px] font-semibold leading-[1.5] text-[var(--text-default)]">
-          <li>Решённые задачи</li>
-          <li>Темы для повторения</li>
-          <li>Место, где можно продолжить</li>
+        <ul className="relative mt-auto grid gap-3 pt-10 text-[12px] font-semibold leading-[1.5] text-[var(--text-default)]">
+          <li className="flex items-center gap-2.5">
+            <CheckCircle size={15} weight="duotone" className="shrink-0 text-[var(--feedback-success)]" aria-hidden="true" />
+            Решённые задачи
+          </li>
+          <li className="flex items-center gap-2.5">
+            <ArrowCounterClockwise size={15} weight="duotone" className="shrink-0 text-[var(--mode-exam-accent)]" aria-hidden="true" />
+            Темы для повторения
+          </li>
+          <li className="flex items-center gap-2.5">
+            <PlayCircle size={15} weight="duotone" className="shrink-0 text-[var(--mode-learn-accent)]" aria-hidden="true" />
+            Место, где можно продолжить
+          </li>
         </ul>
       </div>
     </Card>

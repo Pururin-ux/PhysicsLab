@@ -421,7 +421,12 @@ html {
 /* App chrome is deliberately opaque and quiet: the learning material, not a
    glass dashboard, owns the visual hierarchy. */
 .app-shell {
+  /* Лабораторная фактура: плитки сетки и зерна сгенерированы
+     tools/physics-art (C++). Альфа в самих PNG уже низкая, поэтому слой
+     читается как бумага, а не как узор; радиальные пятна добавляют свет. */
   background:
+    url("/art/textures/lab-grid.png") repeat 0 0 / 56px 56px,
+    url("/art/textures/lab-noise.png") repeat 0 0 / 64px 64px,
     radial-gradient(circle at 50% -10%, rgba(6, 186, 213, 0.07), transparent 42%),
     var(--background-deep);
   color: var(--text-primary);
@@ -435,10 +440,14 @@ html {
   border-bottom: 1px solid transparent;
 }
 
+/* Шапка — стекло над содержимым: содержимое продолжает просвечивать,
+   а липкая полоса не выглядит глухой плашкой. */
 .site-header--inner {
   border-bottom-color: var(--border-subtle);
-  background: var(--surface-shell);
-  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.18);
+  background: color-mix(in srgb, var(--surface-shell) 80%, transparent);
+  backdrop-filter: blur(16px) saturate(1.12);
+  -webkit-backdrop-filter: blur(16px) saturate(1.12);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.16);
 }
 
 .physicslab-brand {
@@ -1291,7 +1300,7 @@ html[data-theme="light"] .app-shell {
 
 html[data-theme="light"] .app-shell--inner > header {
   border-color: var(--border-subtle) !important;
-  background: var(--surface-shell) !important;
+  background: color-mix(in srgb, var(--surface-shell) 84%, transparent) !important;
   box-shadow: 0 8px 22px rgba(66, 52, 42, 0.1) !important;
 }
 
@@ -1551,3 +1560,92 @@ html[data-theme="light"] [data-testid="quiz-session"] .quiz-option[data-state="i
   }
 }
 
+
+/* ============================================================
+   Полировка интерфейса (визуальный аудит 2026-09)
+   Общие утилиты: кнопки, карточки, последовательное появление.
+   Всё построено на существующих токенах, чтобы светлой теме не
+   требовались отдельные переопределения.
+   ============================================================ */
+
+/* Основная кнопка: лёгкий вертикальный градиент вместо плоской заливки,
+   блик сверху и «пробегающий» блик по наведению. Работает и как <button>,
+   и как <a> через Radix Slot. */
+.physics-btn-primary {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--action-primary) 72%, #000 8%);
+  background-image: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--action-primary) 88%, #fff 12%),
+    var(--action-primary) 46%,
+    color-mix(in srgb, var(--action-primary) 90%, #000 10%)
+  );
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.28),
+    0 8px 20px color-mix(in srgb, var(--action-primary) 26%, transparent);
+}
+
+.physics-btn-primary::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    115deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.22) 48%,
+    transparent 62%
+  );
+  transform: translateX(-110%);
+  pointer-events: none;
+}
+
+.physics-btn-primary:hover:not(:disabled)::after {
+  transition: transform 520ms cubic-bezier(0.22, 0.61, 0.36, 1);
+  transform: translateX(110%);
+}
+
+.physics-btn-primary:hover:not(:disabled) {
+  filter: brightness(1.06);
+}
+
+/* Вторичная кнопка: стекло с тонкой рамкой; наведение подсвечивает рамку
+   фирменным цветом и добавляет мягкое свечение. */
+.physics-btn-ghost {
+  border: 1px solid var(--border-strong);
+  background: color-mix(in srgb, var(--surface-secondary) 62%, transparent);
+  color: var(--text-primary);
+}
+
+.physics-btn-ghost:hover:not(:disabled) {
+  border-color: color-mix(in srgb, var(--brand-accent) 46%, var(--border-strong));
+  background: color-mix(in srgb, var(--brand-accent) 9%, var(--surface-secondary));
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--brand-accent) 18%, transparent),
+    0 8px 22px rgba(0, 0, 0, 0.2);
+}
+
+/* Последовательное появление детей контейнера — лёгкий каскад вместо
+   одновременного «вспыхивания» целой секции. */
+.rise-seq > * {
+  animation: page-rise 0.5s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+
+.rise-seq > *:nth-child(1) { animation-delay: 0.04s; }
+.rise-seq > *:nth-child(2) { animation-delay: 0.1s; }
+.rise-seq > *:nth-child(3) { animation-delay: 0.16s; }
+.rise-seq > *:nth-child(4) { animation-delay: 0.22s; }
+.rise-seq > *:nth-child(5) { animation-delay: 0.28s; }
+.rise-seq > *:nth-child(6) { animation-delay: 0.34s; }
+.rise-seq > *:nth-child(7) { animation-delay: 0.4s; }
+.rise-seq > *:nth-child(8) { animation-delay: 0.46s; }
+
+@media (prefers-reduced-motion: reduce) {
+  .rise-seq > * {
+    animation: none;
+  }
+
+  .physics-btn-primary::after {
+    display: none;
+  }
+
+}
