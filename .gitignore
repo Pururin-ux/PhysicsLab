@@ -63,3 +63,6 @@ ds-bundle/
 fox-that-never-was-debug-apk.zip
 PhysicsChannelKit/.venv/
 PhysicsDungeon-vertical-slice-*.zip
+
+# tools/physics-art: собранный бинарник
+/tools/physics-art/lab-textures
