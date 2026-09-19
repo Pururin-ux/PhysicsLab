@@ -526,10 +526,10 @@ html {
 .shell-icon-button,
 .shell-progress-link,
 .context-back-link {
-  border: 1px solid var(--border-subtle);
+  border: 1px solid var(--border-strong);
   border-radius: var(--radius-control);
-  background: var(--surface-primary);
-  color: var(--text-secondary);
+  background: color-mix(in srgb, var(--surface-secondary) 72%, transparent);
+  color: var(--text-primary);
   transition: transform 160ms ease, border-color 160ms ease, background-color 160ms ease, color 160ms ease;
 }
 
