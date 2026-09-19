@@ -2,16 +2,6 @@
 
 import Image from "next/image";
 import { useId, useState } from "react";
-import { useReducedMotion } from "motion/react";
-import {
-  CartesianGrid,
-  Line,
-  LineChart,
-  ReferenceDot,
-  ResponsiveContainer,
-  XAxis,
-  YAxis,
-} from "recharts";
 import { MathText } from "../ui/MathText";
 import { cn } from "../../lib/utils";
 
@@ -35,7 +25,6 @@ export function AccelerationStudyStage({
 }: AccelerationStudyStageProps) {
   const [time, setTime] = useState(0);
   const rangeId = useId();
-  const prefersReducedMotion = useReducedMotion();
   const moment = MOMENTS[time];
   const hasMoved = time > 0;
   const hasReachedEnd = time === MOMENTS.length - 1;
@@ -51,10 +40,12 @@ export function AccelerationStudyStage({
       ? `От ${time - 1} до ${time} с скорость выросла с ${MOMENTS[time - 1].velocity} до ${moment.velocity} м/с.`
       : "Нажимай отметки 0, 1, 2 и 3 с: точки графика будут появляться вместе с моментами движения.";
 
-  const chartData = MOMENTS.map((item, index) => ({
-    ...item,
-    observedVelocity: index <= time ? item.velocity : null,
-  }));
+  const plotPoint = (item: (typeof MOMENTS)[number]) => ({
+    x: 48 + (item.time / 3) * 468,
+    y: 178 - (item.velocity / 8) * 144,
+  });
+  const observedPoints = MOMENTS.slice(0, time + 1).map(plotPoint);
+  const observedPath = observedPoints.map((point) => `${point.x},${point.y}`).join(" ");
 
   return (
     <section
@@ -132,53 +123,51 @@ export function AccelerationStudyStage({
             <p className="text-[13px] text-nova-cyan"><MathText text="$v(t)$" /></p>
           </div>
           <div
-            className="mt-2 h-[190px] w-full"
+            className="mt-2 w-full overflow-hidden border-y border-white/[.1] py-2"
             role="img"
             aria-label={`График скорости от времени: выбран момент ${time} секунд, скорость ${moment.velocity} метров в секунду.`}
           >
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={chartData} margin={{ top: 14, right: 18, bottom: 20, left: 0 }}>
-                <CartesianGrid stroke="rgba(229,223,217,.10)" strokeDasharray="2 7" vertical={false} />
-                <XAxis
-                  dataKey="time"
-                  type="number"
-                  domain={[0, 3]}
-                  ticks={[0, 1, 2, 3]}
-                  tick={{ fill: "rgba(229,223,217,.68)", fontSize: 11 }}
-                  axisLine={{ stroke: "rgba(229,223,217,.34)" }}
-                  tickLine={false}
-                  label={{ value: "t, с", position: "insideBottomRight", offset: -12, fill: "rgba(229,223,217,.7)", fontSize: 11 }}
-                />
-                <YAxis
-                  domain={[0, 8]}
-                  ticks={[0, 2, 4, 6, 8]}
-                  width={34}
-                  tick={{ fill: "rgba(229,223,217,.68)", fontSize: 11 }}
-                  axisLine={{ stroke: "rgba(229,223,217,.34)" }}
-                  tickLine={false}
-                  label={{ value: "v, м/с", angle: -90, position: "insideLeft", fill: "rgba(229,223,217,.7)", fontSize: 11 }}
-                />
-                <Line
-                  type="linear"
-                  dataKey="observedVelocity"
-                  stroke="#06bad5"
-                  strokeWidth={3}
-                  connectNulls={false}
-                  dot={{ r: 4, fill: "#06bad5", stroke: "#11161a", strokeWidth: 2 }}
-                  activeDot={false}
-                  isAnimationActive={!prefersReducedMotion}
-                  animationDuration={360}
-                />
-                <ReferenceDot
-                  x={moment.time}
-                  y={moment.velocity}
-                  r={6}
-                  fill="#f4d29f"
-                  stroke="#e0ad68"
-                  strokeWidth={2}
-                />
-              </LineChart>
-            </ResponsiveContainer>
+            <svg viewBox="0 0 560 210" className="block h-auto w-full" aria-hidden="true">
+              <g stroke="rgba(229,223,217,.11)" strokeDasharray="2 8">
+                {[2, 4, 6, 8].map((velocity) => {
+                  const y = 178 - (velocity / 8) * 144;
+                  return <line key={velocity} x1="48" y1={y} x2="516" y2={y} />;
+                })}
+              </g>
+              <g stroke="rgba(229,223,217,.42)" strokeWidth="1.5">
+                <path d="M48 18 V178 H532" fill="none" />
+                {[0, 1, 2, 3].map((tick) => {
+                  const x = 48 + (tick / 3) * 468;
+                  return <line key={tick} x1={x} y1="178" x2={x} y2="184" />;
+                })}
+                {[0, 2, 4, 6, 8].map((tick) => {
+                  const y = 178 - (tick / 8) * 144;
+                  return <line key={tick} x1="42" y1={y} x2="48" y2={y} />;
+                })}
+              </g>
+              <g fill="rgba(229,223,217,.68)" fontSize="11" fontFamily="inherit">
+                {[0, 1, 2, 3].map((tick) => {
+                  const x = 48 + (tick / 3) * 468;
+                  return <text key={tick} x={x} y="201" textAnchor="middle">{tick}</text>;
+                })}
+                {[0, 2, 4, 6, 8].map((tick) => {
+                  const y = 178 - (tick / 8) * 144;
+                  return <text key={tick} x="34" y={y + 4} textAnchor="end">{tick}</text>;
+                })}
+                <text x="526" y="201">t, с</text>
+                <text x="14" y="18">v, м/с</text>
+              </g>
+              {observedPoints.length > 1 ? (
+                <polyline points={observedPath} fill="none" stroke="#06bad5" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" className="motion-safe:transition-[stroke-dashoffset]" />
+              ) : null}
+              {observedPoints.map((point, index) => (
+                <circle key={MOMENTS[index].time} cx={point.x} cy={point.y} r={index === time ? 7 : 5} fill={index === time ? "#f4d29f" : "#06bad5"} stroke={index === time ? "#e0ad68" : "#11161a"} strokeWidth="2" />
+              ))}
+              <g transform={`translate(${plotPoint(moment).x} ${plotPoint(moment).y})`}>
+                <line y1="12" y2="31" stroke="rgba(244,210,159,.72)" />
+                <text y="46" textAnchor="middle" fill="#f4d29f" fontSize="12" fontWeight="700">{moment.velocity} м/с</text>
+              </g>
+            </svg>
           </div>
           <figcaption id={`${rangeId}-chart-caption`} className="mt-2 text-[13px] leading-[1.55] text-white/62">
             {chartCaption}

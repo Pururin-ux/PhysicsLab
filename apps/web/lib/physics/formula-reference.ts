@@ -1,4 +1,4 @@
-﻿import type { SkillId } from "../learning/taxonomy";
+import type { SkillId } from "../learning/taxonomy";
 import type { FormulaSymbol } from "./formula-symbol.ts";
 import { FORMULAS } from "./formulas.ts";
 
@@ -33,13 +33,16 @@ export const formulaReference: FormulaReferenceGroup[] = [
     entries: [
       {
         id: "uniform-motion",
-        relatedSkillIds: ["uniform-motion-basic", "uniform-motion-graphs"],
+        relatedSkillIds: ["uniform-motion-basic", "uniform-coordinate-law", "uniform-motion-graphs"],
         title: "Равномерное движение",
-        formula: FORMULAS.uniform_motion,
-        caption: "путь при постоянной скорости вдоль одной прямой",
+        formula: "s=vt,\\qquad x=x_0+v_xt",
+        caption: "путь и координата при постоянной скорости вдоль одной прямой",
         symbols: [
           { latex: "s", description: "путь, м" },
           { latex: "v", description: "постоянная скорость, м/с" },
+          { latex: "x", description: "координата тела, м" },
+          { latex: "x_0", description: "начальная координата, м" },
+          { latex: "v_x", description: "проекция скорости на ось, м/с" },
           { latex: "t", description: "время движения, с" },
         ],
         limitation:
@@ -121,6 +124,23 @@ export const formulaReference: FormulaReferenceGroup[] = [
           "Без сопротивления воздуха и с нулевой начальной скоростью.",
       },
       {
+        id: "projectile-components",
+        relatedSkillIds: ["projectile-components"],
+        title: "Бросок под углом по компонентам",
+        formula: "t_{\\text{пол}}=\\frac{2v_{0y}}{g},\\qquad H=\\frac{v_{0y}^2}{2g},\\qquad L=v_{0x}t_{\\text{пол}}",
+        caption: "вертикальная компонента задаёт время и высоту, горизонтальная — дальность",
+        symbols: [
+          { latex: "v_{0x}", description: "горизонтальная компонента начальной скорости, м/с" },
+          { latex: "v_{0y}", description: "вертикальная компонента начальной скорости, м/с" },
+          { latex: "t_{\\text{пол}}", description: "время возвращения на высоту бросания, с" },
+          { latex: "H", description: "максимальная высота над точкой бросания, м" },
+          { latex: "L", description: "дальность до возвращения на высоту бросания, м" },
+          { latex: "g", description: "ускорение свободного падения, м/с²" },
+        ],
+        limitation:
+          "Только без сопротивления воздуха и при одинаковых высотах старта и приземления. Для другого уровня финиша полное время не равно 2v₀ᵧ/g.",
+      },
+      {
         id: "average-speed-segments",
         relatedSkillIds: ["average-speed-segments", "average-speed-with-stop"],
         title: "Средняя путевая скорость",
@@ -162,6 +182,35 @@ export const formulaReference: FormulaReferenceGroup[] = [
         limitation:
           "Складываются именно векторы. Если два слагаемых перпендикулярны, модуль результата равен √(v₁²+v₂²).",
       },
+      {
+        id: "rotation-frequency",
+        relatedSkillIds: ["rotation-frequency"],
+        title: "Частота и период вращения",
+        formula: "\\nu=\\frac{N}{\\Delta t}=\\frac{1}{T}, \\qquad \\omega=2\\pi\\nu",
+        caption: "число полных оборотов за время и время одного оборота",
+        symbols: [
+          { latex: "N", description: "число полных оборотов" },
+          { latex: "\\Delta t", description: "время наблюдения, с" },
+          { latex: "\\nu", description: "частота вращения, с⁻¹" },
+          { latex: "T", description: "период обращения, с" },
+          { latex: "\\omega", description: "угловая скорость, рад/с" },
+        ],
+        limitation: "Для равномерного вращения; углы в формулах угловой скорости выражены в радианах.",
+      },
+      {
+        id: "centripetal-acceleration",
+        relatedSkillIds: ["centripetal-acceleration"],
+        title: "Центростремительное ускорение",
+        formula: "a=\\frac{v^2}{R}=\\omega^2R",
+        caption: "изменение направления скорости при движении по окружности",
+        symbols: [
+          { latex: "a", description: "центростремительное ускорение, м/с²" },
+          { latex: "v", description: "модуль линейной скорости, м/с" },
+          { latex: "R", description: "радиус окружности, м" },
+          { latex: "\\omega", description: "угловая скорость, рад/с" },
+        ],
+        limitation: "Для движения по окружности; вектор ускорения направлен к центру и перпендикулярен мгновенной скорости.",
+      },
     ],
   },
   {
@@ -186,6 +235,19 @@ export const formulaReference: FormulaReferenceGroup[] = [
         limitation: "Для частично погружённого тела используют только объём части под поверхностью. Тело не должно опираться на дно.",
       },
       {
+        id: "ship-payload",
+        relatedSkillIds: ["ship-payload"],
+        title: "Грузоподъёмность судна",
+        formula: "m_{\\text{гр}}=m_{\\text{в}}-m",
+        caption: "предельная масса груза — часть водоизмещения без массы самого судна",
+        symbols: [
+          { latex: "m_{\\text{гр}}", description: "максимально допустимая масса груза, т" },
+          { latex: "m_{\\text{в}}", description: "водоизмещение при предельной осадке, т" },
+          { latex: "m", description: "масса судна без груза, т" },
+        ],
+        limitation: "Формула относится к указанной предельной осадке. Фактическая загрузка должна быть не больше найденной грузоподъёмности.",
+      },
+      {
         id: "gravity-force",
         relatedSkillIds: ["gravity-force"],
         title: "Сила тяжести",
@@ -198,6 +260,20 @@ export const formulaReference: FormulaReferenceGroup[] = [
         ],
         limitation:
           "Сила тяжести приложена к телу. Не подменяй её весом: вес приложен к опоре или подвесу.",
+      },
+      {
+        id: "gravitation-distance",
+        relatedSkillIds: ["gravitation-distance"],
+        title: "Закон всемирного тяготения",
+        formula: "F=G\\frac{m_1m_2}{r^2}",
+        caption: "модуль взаимного притяжения двух материальных точек или однородных шаров",
+        symbols: [
+          { latex: "F", description: "модуль силы тяготения, Н" },
+          { latex: "G", description: "гравитационная постоянная" },
+          { latex: "m_1,m_2", description: "массы тел, кг" },
+          { latex: "r", description: "расстояние между центрами, м" },
+        ],
+        limitation: "Точная запись для материальных точек и однородных шаров; r измеряется между центрами.",
       },
       {id:"hydrostatic-pressure",relatedSkillIds:["hydrostatic-pressure"],title:"Гидростатическое давление",formula:"p=\\rho gh",caption:"давление покоящейся жидкости на глубине h",symbols:[{latex:"p",description:"гидростатическое давление, Па"},{latex:"\\rho",description:"плотность жидкости, кг/м³"},{latex:"g",description:"коэффициент, Н/кг"},{latex:"h",description:"глубина от поверхности, м"}],limitation:"Даёт давление, обусловленное весом жидкости. Атмосферное давление учитывают отдельно, если это требует условие."},
       {
@@ -294,6 +370,33 @@ export const formulaReference: FormulaReferenceGroup[] = [
           "P и N приложены к разным телам; по вертикали учтены только тяжесть и опора. Плюс — ускорение вверх, минус — вниз; при ускорении g вниз P=0.",
       },
       {
+        id: "torque-balance",
+        relatedSkillIds: ["torque-balance"],
+        title: "Момент силы и равновесие",
+        formula: "M=\\pm Fl, \\qquad \\sum M=0",
+        caption: "вращение определяется силой, плечом и выбранным знаком направления",
+        symbols: [
+          { latex: "M", description: "момент силы относительно выбранной оси, Н·м" },
+          { latex: "F", description: "модуль силы, Н" },
+          { latex: "l", description: "перпендикулярное плечо силы, м" },
+        ],
+        limitation:
+          "Плечо измеряют до линии действия силы, а не до точки приложения. Для равновесия также должна быть равна нулю векторная сумма сил.",
+      },
+      {
+        id: "movable-pulley",
+        relatedSkillIds: ["movable-pulley"],
+        title: "Идеальный подвижный блок",
+        formula: "P \\approx 2F",
+        caption: "две ветви одной нити поддерживают движущийся блок вместе с грузом",
+        symbols: [
+          { latex: "P", description: "вес поднимаемого груза, Н" },
+          { latex: "F", description: "сила на свободном конце нити, Н" },
+        ],
+        limitation:
+          "Весом блока и нити и трением пренебрегают. Неподвижный блок выигрыша в силе не даёт: он только меняет направление.",
+      },
+      {
         id: "impulse-momentum",
         relatedSkillIds: ["impulse-momentum"],
         title: "Импульс силы",
@@ -378,6 +481,20 @@ export const formulaReference: FormulaReferenceGroup[] = [
           "Запись относится к случаям вдоль одной прямой: при силе против движения A = -Fs, а без перемещения A = 0.",
       },
       {
+        id: "work-at-angle",
+        relatedSkillIds: ["work-at-angle"],
+        title: "Работа постоянной силы под углом",
+        formula: "A=Fs\\cos\\alpha",
+        caption: "работу совершает составляющая силы вдоль перемещения",
+        symbols: [
+          { latex: "A", description: "работа выбранной силы, Дж" },
+          { latex: "F", description: "модуль силы, Н" },
+          { latex: "s", description: "модуль перемещения, м" },
+          { latex: "\\alpha", description: "угол между силой и перемещением" },
+        ],
+        limitation: "Формула записана для постоянной силы. При тупом угле косинус отрицателен, при 90° работа равна нулю.",
+      },
+      {
         id: "mechanical-power",
         relatedSkillIds: ["mechanical-power"],
         title: "Механическая мощность",
@@ -408,10 +525,24 @@ export const formulaReference: FormulaReferenceGroup[] = [
   {
     id: "electrodynamics",
     title: "Электричество",
-    intro: "Постоянный ток в участке цепи.",
+    intro: "Электрический заряд и постоянный ток.",
     badgeTone: "cyan",
     status: "active",
     entries: [
+      {
+        id: "elementary-charge-count",
+        relatedSkillIds: ["elementary-charge-count"],
+        title: "Дискретность электрического заряда",
+        formula: "N = \\frac{|q|}{e}, \\qquad e = 1{,}6 \\cdot 10^{-19}\\,\\text{Кл}",
+        caption: "заряд тела изменяется целым числом элементарных зарядов",
+        symbols: [
+          { latex: "N", description: "число элементарных зарядов" },
+          { latex: "q", description: "электрический заряд тела, Кл" },
+          { latex: "e", description: "модуль элементарного заряда, Кл" },
+        ],
+        limitation:
+          "Формула определяет число элементарных зарядов по модулю q; направление переноса электронов устанавливают по знаку заряда и условию.",
+      },
       {
         id: "ohm-law",
         relatedSkillIds: ["ohm-law"],
@@ -428,15 +559,15 @@ export const formulaReference: FormulaReferenceGroup[] = [
       },
       {
         id: "resistance-wire",
-        relatedSkillIds: [],
+        relatedSkillIds: ["conductor-resistance"],
         title: "Сопротивление проводника",
         formula: "R = \\frac{\\rho\\,l}{S}",
         caption: "длинный и тонкий провод сопротивляется сильнее",
         symbols: [
           { latex: "R", description: "сопротивление, Ом" },
-          { latex: "\\rho", description: "удельное сопротивление материала, Ом·м" },
+          { latex: "\\rho", description: "удельное сопротивление материала, Ом·м или Ом·мм²/м" },
           { latex: "l", description: "длина проводника, м" },
-          { latex: "S", description: "площадь поперечного сечения, м²" },
+          { latex: "S", description: "площадь поперечного сечения в единицах, согласованных с ρ" },
         ],
         limitation: "Для однородного проводника постоянного сечения.",
       },
@@ -486,6 +617,18 @@ export const formulaReference: FormulaReferenceGroup[] = [
           "Вторая запись получается подстановкой U = IR и удобна, когда известен ток.",
       },
       {
+        id: "magnetic-field-direction",
+        relatedSkillIds: ["magnetic-field-direction"],
+        title: "Направление магнитного поля тока",
+        formula: "I\\;\\Longrightarrow\\;\\vec B",
+        caption: "направление поля определяется направлением тока",
+        symbols: [
+          { latex: "I", description: "направление электрического тока" },
+          { latex: "\\vec B", description: "направление магнитного поля" },
+        ],
+        limitation: "Стрелка показывает направление поля северным концом; для проводника и катушки применяют соответствующее правило правой руки.",
+      },
+      {
         id: "charge-sharing",
         relatedSkillIds: ["charge-sharing"],
         title: "Деление заряда при контакте",
@@ -521,6 +664,46 @@ export const formulaReference: FormulaReferenceGroup[] = [
     badgeTone: "gold",
     status: "active",
     entries: [
+      {
+        id: "molecule-count-from-mass",
+        relatedSkillIds: ["molecule-count-from-mass"],
+        title: "Число частиц по массе вещества",
+        formula: "N=\\frac{m}{M}N_A",
+        caption: "масса образца переходит в количество вещества, затем в число частиц",
+        symbols: [
+          { latex: "N", description: "число частиц вещества" },
+          { latex: "m", description: "масса образца, кг или г" },
+          { latex: "M", description: "молярная масса в согласованных единицах, кг/моль или г/моль" },
+          { latex: "N_A", description: "постоянная Авогадро, 6,022 · 10²³ моль⁻¹" },
+        ],
+        limitation: "Формула требует согласованных единиц массы и молярной массы; вид частиц задаётся химической формулой и условием.",
+      },
+      {
+        id: "particle-concentration",
+        relatedSkillIds: ["particle-concentration"],
+        title: "Концентрация частиц",
+        formula: "n=\\frac{N}{V}",
+        caption: "число частиц в единице объёма",
+        symbols: [
+          { latex: "n", description: "концентрация частиц, м⁻³" },
+          { latex: "N", description: "число частиц в выбранном объёме" },
+          { latex: "V", description: "объём, м³" },
+        ],
+        limitation: "Частицы и объём должны относиться к одной системе; для результата в м⁻³ объём подставляют в кубических метрах.",
+      },
+      {
+        id: "molecular-kinetic-energy",
+        relatedSkillIds: ["molecular-kinetic-energy"],
+        title: "Средняя кинетическая энергия молекулы",
+        formula: "\\overline{E_k}=\\frac{3}{2}kT",
+        caption: "энергетический смысл абсолютной температуры",
+        symbols: [
+          { latex: "\\overline{E_k}", description: "средняя кинетическая энергия поступательного движения молекулы, Дж" },
+          { latex: "k", description: "постоянная Больцмана, 1,38 · 10⁻²³ Дж/К" },
+          { latex: "T", description: "абсолютная температура, К" },
+        ],
+        limitation: "Формула относится к поступательному движению частиц идеального газа; температуру подставляют только в кельвинах.",
+      },
       {
         id: "density-volume-ratio",
         relatedSkillIds: ["density-volume-ratio"],
@@ -641,6 +824,70 @@ export const formulaReference: FormulaReferenceGroup[] = [
           "Температуру обязательно переводят в кельвины.",
       },
       {
+        id: "ideal-gas-isoprocess",
+        relatedSkillIds: ["ideal-gas-isoprocess"],
+        title: "Законы изопроцессов",
+        formula: "T=\\mathrm{const}:\\ pV=\\mathrm{const};\\quad p=\\mathrm{const}:\\frac VT=\\mathrm{const};\\quad V=\\mathrm{const}:\\frac pT=\\mathrm{const}",
+        caption: "связи параметров данной порции газа при одном постоянном параметре",
+        symbols: [
+          { latex: "p", description: "давление газа" },
+          { latex: "V", description: "объём газа" },
+          { latex: "T", description: "абсолютная температура, К" },
+        ],
+        limitation: "Для данной массы газа неизменного состава в области применимости модели идеального газа; температура только в кельвинах.",
+      },
+      {
+        id: "solid-structure-properties",
+        relatedSkillIds: ["solid-structure-properties"],
+        title: "Строение и свойства твёрдых тел",
+        formula: "\\text{строение}\\;\\Longrightarrow\\;\\text{наблюдаемое свойство}",
+        caption: "дальний порядок и ориентация кристаллов проявляются в свойствах материала",
+        symbols: [
+          { latex: "\\text{монокристалл}", description: "единая кристаллическая решётка во всём объёме" },
+          { latex: "\\text{поликристалл}", description: "множество сросшихся кристаллических зёрен" },
+          { latex: "\\text{аморфное тело}", description: "нет дальнего порядка и одной температуры плавления" },
+        ],
+        limitation: "Внешний вид отдельного образца не доказывает тип строения; нужны наблюдаемые свойства или данные о процессе плавления.",
+      },
+      {
+        id: "liquid-structure-properties",
+        relatedSkillIds: ["liquid-structure-properties"],
+        title: "Строение и свойства жидкостей",
+        formula: "\\text{временные положения}\\to\\text{текучесть};\\qquad \\sum\\vec F_{\\text{пов}}\\ne0",
+        caption: "движение частиц в объёме и нескомпенсированные силы поверхностного слоя",
+        symbols: [
+          { latex: "\\sum\\vec F_{\\text{пов}}", description: "результирующая сил притяжения для молекулы поверхностного слоя" },
+          { latex: "\\text{ближний порядок}", description: "упорядоченность среди ближайших соседей" },
+        ],
+        limitation: "Качественная молекулярная модель не задаёт траектории отдельных молекул и не отменяет действие тяжести, опоры и смачивания.",
+      },
+      {
+        id: "vapor-dynamic-equilibrium",
+        relatedSkillIds: ["vapor-dynamic-equilibrium"],
+        title: "Динамическое равновесие жидкости и пара",
+        formula: "N_{\\text{исп}}=N_{\\text{конд}}",
+        caption: "числа молекул, пересекающих поверхность в противоположных направлениях за одинаковое время",
+        symbols: [
+          { latex: "N_{\\text{исп}}", description: "число молекул, покинувших жидкость" },
+          { latex: "N_{\\text{конд}}", description: "число молекул, вернувшихся из пара в жидкость" },
+          { latex: "p_{\\text{н}}", description: "давление насыщенного пара при данной температуре" },
+        ],
+        limitation: "Постоянство давления при изменении объёма относится к насыщенному пару при постоянной температуре, пока присутствует жидкость.",
+      },
+      {
+        id: "relative-humidity-pressure",
+        relatedSkillIds: ["relative-humidity-pressure"],
+        title: "Относительная влажность воздуха",
+        formula: "\\varphi=\\frac{p_{\\text{п}}}{p_{\\text{н}}}\\cdot100\\%=\\frac{\\rho_{\\text{п}}}{\\rho_{\\text{н}}}\\cdot100\\%",
+        caption: "доля фактического водяного пара от насыщения при той же температуре",
+        symbols: [
+          { latex: "p_{\\text{п}},\\;\\rho_{\\text{п}}", description: "парциальное давление и плотность водяного пара" },
+          { latex: "p_{\\text{н}},\\;\\rho_{\\text{н}}", description: "давление и плотность насыщенного пара при той же температуре" },
+          { latex: "\\varphi", description: "относительная влажность воздуха" },
+        ],
+        limitation: "Числитель и знаменатель должны относиться к одной температуре; при охлаждении ниже точки росы часть пара конденсируется.",
+      },
+      {
         id: "heat-balance-simple",
         relatedSkillIds: ["heat-balance-simple"],
         title: "Тепловой баланс",
@@ -663,6 +910,20 @@ export const formulaReference: FormulaReferenceGroup[] = [
     badgeTone: "pink",
     status: "active",
     entries: [
+      {
+        id: "shadow-and-penumbra",
+        relatedSkillIds: ["shadow-and-penumbra"],
+        title: "Лучевая модель тени",
+        formula: "\\text{источник}\\;\\to\\;\\text{препятствие}\\;\\to\\;\\text{экран}",
+        caption: "граничные лучи связывают размер источника с тенью и полутенью",
+        symbols: [
+          { latex: "\\text{источник}", description: "точечный или протяжённый источник света" },
+          { latex: "\\text{препятствие}", description: "непрозрачное тело, перекрывающее часть лучей" },
+          { latex: "\\text{экран}", description: "поверхность, на которой наблюдают освещённые и неосвещённые области" },
+        ],
+        limitation:
+          "Это качественная схема для однородной прозрачной среды, а не формула расчёта размеров тени. Граница строится граничными лучами от краёв источника и препятствия.",
+      },
       {
         id: "reflection-angle",
         relatedSkillIds: ["reflection-angle"],
@@ -688,6 +949,19 @@ export const formulaReference: FormulaReferenceGroup[] = [
         ],
         limitation:
           "Изображение в плоском зеркале мнимое и равно предмету по размеру; L — именно расстояние предмет—изображение.",
+      },
+      {
+        id: "refraction-direction",
+        relatedSkillIds: ["refraction-direction"],
+        title: "Направление преломлённого луча",
+        formula: "\\gamma<\\alpha\\;\\text{(в более плотную среду)},\\qquad \\gamma>\\alpha\\;\\text{(в менее плотную)}",
+        caption: "оба угла отсчитываются от нормали к границе сред",
+        symbols: [
+          { latex: "\\alpha", description: "угол падения, от нормали" },
+          { latex: "\\gamma", description: "угол преломления, от нормали" },
+        ],
+        limitation:
+          "Это качественная связь для ненулевого угла. При падении вдоль нормали α = γ = 0°, и направление луча не меняется.",
       },
       {
         id: "refractive-index-speed",
@@ -732,6 +1006,19 @@ export const formulaReference: FormulaReferenceGroup[] = [
           "В таком виде — для собирающей линзы и действительного изображения (d > F); иначе слагаемые берут со знаками.",
       },
       {
+        id: "lens-image-properties",
+        relatedSkillIds: ["lens-image-properties"],
+        title: "Положение предмета и вид изображения",
+        formula: "d>2F;\\quad d=2F;\\quad F<d<2F;\\quad d<F",
+        caption: "четыре положения предмета у собирающей линзы",
+        symbols: [
+          { latex: "d", description: "расстояние от предмета до линзы" },
+          { latex: "F", description: "фокусное расстояние" },
+        ],
+        limitation:
+          "Для собирающей линзы при d > F изображение действительное и перевёрнутое; при d < F — мнимое, прямое и увеличенное. Рассеивающая линза при действительном предмете даёт мнимое прямое уменьшенное изображение.",
+      },
+      {
         id: "lens-optical-power",
         relatedSkillIds: ["lens-optical-power"],
         title: "Оптическая сила линзы",
@@ -742,7 +1029,7 @@ export const formulaReference: FormulaReferenceGroup[] = [
           { latex: "F", description: "фокусное расстояние, м" },
         ],
         limitation:
-          "F подставляют строго в метрах: дптр = 1/м. У собирающей линзы D положительна.",
+          "F подставляют строго в метрах: дптр = 1/м. У собирающей линзы D положительна, у рассеивающей — отрицательна.",
       },
       {
         id: "lens-image-height",
@@ -758,6 +1045,18 @@ export const formulaReference: FormulaReferenceGroup[] = [
         ],
         limitation:
           "Формула записана по модулю: у действительного изображения собирающей линзы оно перевёрнуто.",
+      },
+      {
+        id: "vision-correction",
+        relatedSkillIds: ["vision-correction"],
+        title: "Знак корректирующей линзы",
+        formula: "D<0\\;\\text{— рассеивающая},\\qquad D>0\\;\\text{— собирающая}",
+        caption: "положение фокуса относительно сетчатки задаёт направление коррекции",
+        symbols: [
+          { latex: "D", description: "оптическая сила линзы очков, дптр" },
+        ],
+        limitation:
+          "В школьной модели рассеивающая линза корректирует близорукость, а собирающая — дальнозоркость. Подбор очков требует обследования специалистом.",
       },
     ],
   },

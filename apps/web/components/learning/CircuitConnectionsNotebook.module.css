@@ -1,0 +1,103 @@
+.notebook {
+  display: grid;
+  gap: 20px;
+  padding: clamp(20px, 3.5vw, 36px);
+  border: 1px solid var(--border-strong);
+  background:
+    linear-gradient(90deg, transparent 42px, color-mix(in srgb, var(--feedback-danger) 18%, transparent) 43px, transparent 44px),
+    repeating-linear-gradient(0deg, transparent 0 31px, color-mix(in srgb, var(--action-primary) 9%, transparent) 31px 32px),
+    var(--surface-primary);
+  box-shadow: 0 18px 48px color-mix(in srgb, #000 10%, transparent);
+}
+
+.heading { padding-left: 30px; }
+.heading p,
+.sketchTitle span,
+.notes span {
+  margin: 0;
+  color: var(--action-primary);
+  font-size: 11px;
+  font-weight: 850;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.heading h2 { max-width: 25ch; margin: 6px 0 0; font-size: clamp(25px, 3.4vw, 38px); line-height: 1.08; letter-spacing: -.035em; }
+.heading > span { display: block; max-width: 62ch; margin-top: 10px; color: var(--text-secondary); font-size: 14px; line-height: 1.6; }
+
+.tabs { display: flex; gap: 8px; padding-left: 30px; }
+.tabs button,
+.switchButton {
+  min-height: 44px;
+  border: 1px solid var(--border-strong);
+  background: color-mix(in srgb, var(--surface-primary) 90%, transparent);
+  color: var(--text-primary);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 750;
+  cursor: pointer;
+}
+.tabs button { padding: 10px 14px; }
+.tabs button[aria-pressed="true"] { border-color: var(--action-primary); color: var(--action-primary); box-shadow: inset 0 -3px var(--action-primary); }
+.tabs button:focus-visible,
+.switchButton:focus-visible { outline: 3px solid var(--action-primary); outline-offset: 3px; }
+
+.sheet { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(230px, .72fr); gap: 0; margin-left: 30px; border-block: 1px solid var(--border-strong); }
+.sketch { min-width: 0; padding: 18px 24px 20px 0; }
+.sketchTitle { display: grid; gap: 4px; }
+.sketchTitle strong { font-size: 17px; line-height: 1.4; }
+.diagram { display: block; width: 100%; height: auto; margin: 8px 0 2px; overflow: visible; }
+.wire,
+.liveWire { fill: none; stroke-linecap: round; stroke-linejoin: round; stroke-width: 5; }
+.wire { stroke: var(--border-strong); }
+.liveWire { stroke: var(--action-primary); }
+.junction { fill: var(--action-primary); }
+.resistor rect,
+.resistorActive rect { stroke-width: 3; }
+.resistor rect { fill: var(--surface-secondary); stroke: var(--border-strong); }
+.resistorActive rect { fill: color-mix(in srgb, var(--action-primary) 10%, var(--surface-primary)); stroke: var(--action-primary); }
+.resistor text,
+.resistorActive text,
+.pathLabel,
+.current,
+.currentOff,
+.totalCurrent,
+.battery text { fill: var(--text-primary); font-family: var(--font-physics-numeric); font-size: 21px; }
+.pathLabel { fill: var(--text-secondary); font-size: 20px; }
+.current { fill: var(--action-primary); font-weight: 800; }
+.currentOff { fill: var(--text-secondary); font-weight: 800; }
+.totalCurrent { fill: var(--action-primary); font-weight: 800; }
+.battery line { stroke: var(--text-primary); stroke-linecap: round; stroke-width: 5; }
+.switchButton { width: 100%; padding: 10px 14px; }
+.switchButton[aria-pressed="true"] { border-color: var(--feedback-danger); color: var(--feedback-danger); }
+
+.notes { display: grid; align-content: center; border-left: 1px solid var(--border-strong); }
+.notes > div { display: grid; gap: 7px; padding: 18px 0 18px 24px; }
+.notes > div + div { border-top: 1px solid var(--border-subtle); }
+.notes p { margin: 0; font-size: 13px; line-height: 1.55; }
+.formula { display: block; overflow-x: auto; padding-block: 3px; font-size: 17px; }
+.openCircuit { color: var(--feedback-danger); font-size: 17px; }
+.result output { color: var(--action-primary); font-family: var(--font-physics-numeric); font-size: clamp(28px, 4vw, 44px); font-weight: 720; }
+.result small { display: block; min-height: 34px; padding-block: 5px; color: var(--text-secondary); font-size: 17px; line-height: 1.7; white-space: nowrap; }
+.conclusion { margin: 0 0 0 30px; padding-left: 15px; border-left: 3px solid var(--action-primary); font-size: 14px; line-height: 1.65; }
+
+@media (max-width: 760px) {
+  .notebook { gap: 16px; padding: 18px 12px; background-position: -16px 0, 0 0; }
+  .heading,
+  .tabs { padding-left: 12px; }
+  .tabs { display: grid; grid-template-columns: 1fr 1fr; }
+  .tabs button { padding-inline: 8px; }
+  .sheet { grid-template-columns: 1fr; margin-left: 12px; }
+  .sketch { padding: 16px 0; }
+  .notes { grid-template-columns: 1fr 1fr; border-top: 1px solid var(--border-strong); border-left: 0; }
+  .notes > div { padding: 14px 12px 14px 0; }
+  .notes > div + div { border-top: 0; border-left: 1px solid var(--border-subtle); padding-left: 12px; }
+  .notes .result { grid-column: 1 / -1; border-top: 1px solid var(--border-subtle); border-left: 0; padding-left: 0; }
+  .conclusion { margin-left: 12px; }
+}
+
+@media (max-width: 420px) {
+  .diagram { margin-inline: -8px; width: calc(100% + 16px); }
+  .notes { grid-template-columns: 1fr; }
+  .notes > div + div { border-top: 1px solid var(--border-subtle); border-left: 0; padding-left: 0; }
+  .notes .result { grid-column: auto; }
+}

@@ -1,15 +1,18 @@
 import { pathToFileURL } from "node:url";
 import { contactPressureBlueprint } from "./templates/contact-pressure.ts";
 import { archimedesForceBlueprint } from "./templates/archimedes-force.ts";
+import { shipPayloadBlueprint } from "./templates/ship-payload.ts";
 import { averageSpeedSegmentsBlueprint } from "./templates/average-speed-segments.ts";
 import { averageSpeedWithStopBlueprint } from "./templates/average-speed-with-stop.ts";
 import { capacitorEnergyBlueprint } from "./templates/capacitor-energy.ts";
 import { chargeSharingBlueprint } from "./templates/charge-sharing.ts";
+import { elementaryChargeCountBlueprint } from "./templates/elementary-charge-count.ts";
 import { densityVolumeRatioBlueprint } from "./templates/density-volume-ratio.ts";
 import { electricPowerBlueprint } from "./templates/electric-power.ts";
 import { frictionForceBlueprint } from "./templates/friction-force.ts";
 import { freeFallBlueprint } from "./templates/free-fall.ts";
 import { gravityForceBlueprint } from "./templates/gravity-force.ts";
+import { gravitationDistanceBlueprint } from "./templates/gravitation-distance.ts";
 import { gravitationalPotentialEnergyBlueprint } from "./templates/gravitational-potential-energy.ts";
 import { gasStateRatioBlueprint } from "./templates/gas-state-ratio.ts";
 import { heatBalanceSimpleBlueprint } from "./templates/heat-balance-simple.ts";
@@ -19,20 +22,35 @@ import { hydrostaticPressureBlueprint } from "./templates/hydrostatic-pressure.t
 import { mechanicalPowerBlueprint } from "./templates/mechanical-power.ts";
 import { mechanicalEfficiencyBlueprint } from "./templates/mechanical-efficiency.ts";
 import { mechanicalEnergyConservationBlueprint } from "./templates/mechanical-energy-conservation.ts";
+import { magneticFieldDirectionBlueprint } from "./templates/magnetic-field-direction.ts";
 import { idealGasStateBlueprint } from "./templates/ideal-gas-state.ts";
+import { idealGasIsoprocessBlueprint } from "./templates/ideal-gas-isoprocess.ts";
+import { solidStructurePropertiesBlueprint } from "./templates/solid-structure-properties.ts";
+import { liquidStructurePropertiesBlueprint } from "./templates/liquid-structure-properties.ts";
+import { vaporDynamicEquilibriumBlueprint } from "./templates/vapor-dynamic-equilibrium.ts";
+import { relativeHumidityPressureBlueprint } from "./templates/relative-humidity-pressure.ts";
+import { moleculeCountFromMassBlueprint } from "./templates/molecule-count-from-mass.ts";
+import { particleConcentrationBlueprint } from "./templates/particle-concentration.ts";
+import { molecularKineticEnergyBlueprint } from "./templates/molecular-kinetic-energy.ts";
 import { impulseMomentumBlueprint } from "./templates/impulse-momentum.ts";
 import { inclineForceBlueprint } from "./templates/incline-force.ts";
 import { inelasticCollisionSpeedBlueprint } from "./templates/inelastic-collision-speed.ts";
 import { kineticEnergyBlueprint } from "./templates/kinetic-energy.ts";
 import { lensImageHeightBlueprint } from "./templates/lens-image-height.ts";
+import { lensImagePropertiesBlueprint } from "./templates/lens-image-properties.ts";
 import { lensOpticalPowerBlueprint } from "./templates/lens-optical-power.ts";
 import { newtonSecondBlueprint } from "./templates/newton-second.ts";
 import { ohmLawBlueprint } from "./templates/ohm-law.ts";
 import { phaseChangeHeatBlueprint } from "./templates/phase-change-heat.ts";
 import { vaporizationHeatBlueprint } from "./templates/vaporization-heat.ts";
+import { visionCorrectionBlueprint } from "./templates/vision-correction.ts";
+import { conductorResistanceBlueprint } from "./templates/conductor-resistance.ts";
 import { planeMirrorSeparationBlueprint } from "./templates/plane-mirror-separation.ts";
+import { projectileComponentsBlueprint } from "./templates/projectile-components.ts";
 import { reflectionAngleBlueprint } from "./templates/reflection-angle.ts";
 import { refractiveIndexSpeedBlueprint } from "./templates/refractive-index-speed.ts";
+import { refractionDirectionBlueprint } from "./templates/refraction-direction.ts";
+import { shadowAndPenumbraBlueprint } from "./templates/shadow-and-penumbra.ts";
 import { snellIndexRatioBlueprint } from "./templates/snell-index-ratio.ts";
 import { thinLensImageDistanceBlueprint } from "./templates/thin-lens-image-distance.ts";
 import { relativeVelocityVectorsBlueprint } from "./templates/relative-velocity-vectors.ts";
@@ -41,12 +59,18 @@ import { resultantForceBlueprint } from "./templates/resultant-force.ts";
 import { resultantForce2dBlueprint } from "./templates/resultant-force-2d.ts";
 import { sourceInternalResistanceBlueprint } from "./templates/source-internal-resistance.ts";
 import { uniformMotionBasicBlueprint } from "./templates/uniform-motion-basic.ts";
+import { uniformCoordinateLawBlueprint } from "./templates/uniform-coordinate-law.ts";
 import { uniformMotionGraphsBlueprint } from "./templates/uniform-motion-graphs.ts";
 import { unitConversionSpeedBlueprint } from "./templates/unit-conversion-speed.ts";
 import { vtAreaBlueprint } from "./templates/vt-area.ts";
 import { vtSlopeBlueprint } from "./templates/vt-slope.ts";
 import { weightLiftBlueprint } from "./templates/weight-lift.ts";
+import { torqueBalanceBlueprint } from "./templates/torque-balance.ts";
+import { movablePulleyBlueprint } from "./templates/movable-pulley.ts";
 import { workForceDistanceBlueprint } from "./templates/work-force-distance.ts";
+import { workAtAngleBlueprint } from "./templates/work-at-angle.ts";
+import { rotationFrequencyBlueprint } from "./templates/rotation-frequency.ts";
+import { centripetalAccelerationBlueprint } from "./templates/centripetal-acceleration.ts";
 import type {
   GeneratedOption,
   GeneratedTask,
@@ -72,6 +96,7 @@ const difficultyCandidateCache = new Map<string, Params[]>();
 
 export const blueprints = {
   "archimedes-force": archimedesForceBlueprint,
+  "ship-payload": shipPayloadBlueprint,
   "contact-pressure": contactPressureBlueprint,
   "free-fall": freeFallBlueprint,
   "vt-slope": vtSlopeBlueprint,
@@ -80,23 +105,31 @@ export const blueprints = {
   "average-speed-segments": averageSpeedSegmentsBlueprint,
   "average-speed-with-stop": averageSpeedWithStopBlueprint,
   "uniform-motion-basic": uniformMotionBasicBlueprint,
+  "uniform-coordinate-law": uniformCoordinateLawBlueprint,
   "uniform-motion-graphs": uniformMotionGraphsBlueprint,
   "unit-conversion-speed": unitConversionSpeedBlueprint,
+  "rotation-frequency": rotationFrequencyBlueprint,
+  "centripetal-acceleration": centripetalAccelerationBlueprint,
   "gravity-force": gravityForceBlueprint,
+  "gravitation-distance": gravitationDistanceBlueprint,
   "gravitational-potential-energy": gravitationalPotentialEnergyBlueprint,
   "hydrostatic-pressure": hydrostaticPressureBlueprint,
   "mechanical-power": mechanicalPowerBlueprint,
   "mechanical-efficiency": mechanicalEfficiencyBlueprint,
   "mechanical-energy-conservation": mechanicalEnergyConservationBlueprint,
+  "magnetic-field-direction": magneticFieldDirectionBlueprint,
   "newton-second": newtonSecondBlueprint,
   "friction-force": frictionForceBlueprint,
   "incline-force": inclineForceBlueprint,
   "resultant-force": resultantForceBlueprint,
   "resultant-force-2d": resultantForce2dBlueprint,
   "weight-lift": weightLiftBlueprint,
+  "torque-balance": torqueBalanceBlueprint,
+  "movable-pulley": movablePulleyBlueprint,
   "inelastic-collision-speed": inelasticCollisionSpeedBlueprint,
   "kinetic-energy": kineticEnergyBlueprint,
   "work-force-distance": workForceDistanceBlueprint,
+  "work-at-angle": workAtAngleBlueprint,
   "ohm-law": ohmLawBlueprint,
   "resistor-network": resistorNetworkBlueprint,
   "source-internal-resistance": sourceInternalResistanceBlueprint,
@@ -104,8 +137,17 @@ export const blueprints = {
   "density-volume-ratio": densityVolumeRatioBlueprint,
   "impulse-momentum": impulseMomentumBlueprint,
   "charge-sharing": chargeSharingBlueprint,
+  "elementary-charge-count": elementaryChargeCountBlueprint,
   "electric-power": electricPowerBlueprint,
   "ideal-gas-state": idealGasStateBlueprint,
+  "ideal-gas-isoprocess": idealGasIsoprocessBlueprint,
+  "solid-structure-properties": solidStructurePropertiesBlueprint,
+  "liquid-structure-properties": liquidStructurePropertiesBlueprint,
+  "vapor-dynamic-equilibrium": vaporDynamicEquilibriumBlueprint,
+  "relative-humidity-pressure": relativeHumidityPressureBlueprint,
+  "molecule-count-from-mass": moleculeCountFromMassBlueprint,
+  "particle-concentration": particleConcentrationBlueprint,
+  "molecular-kinetic-energy": molecularKineticEnergyBlueprint,
   "heat-amount": heatAmountBlueprint,
   "fuel-combustion-heat": fuelCombustionHeatBlueprint,
   "phase-change-heat": phaseChangeHeatBlueprint,
@@ -114,11 +156,17 @@ export const blueprints = {
   "heat-balance-simple": heatBalanceSimpleBlueprint,
   "reflection-angle": reflectionAngleBlueprint,
   "plane-mirror-separation": planeMirrorSeparationBlueprint,
+  "projectile-components": projectileComponentsBlueprint,
+  "refraction-direction": refractionDirectionBlueprint,
+  "shadow-and-penumbra": shadowAndPenumbraBlueprint,
   "refractive-index-speed": refractiveIndexSpeedBlueprint,
   "snell-index-ratio": snellIndexRatioBlueprint,
   "thin-lens-image-distance": thinLensImageDistanceBlueprint,
   "lens-optical-power": lensOpticalPowerBlueprint,
   "lens-image-height": lensImageHeightBlueprint,
+  "lens-image-properties": lensImagePropertiesBlueprint,
+  "vision-correction": visionCorrectionBlueprint,
+  "conductor-resistance": conductorResistanceBlueprint,
 };
 
 export type TemplateId = keyof typeof blueprints;
@@ -274,7 +322,7 @@ function createOptions(blueprint: TaskBlueprint, params: Params, index: number):
 
   return seededShuffle(options, index + 1).map((option, optionIndex) => ({
     id: optionIds[optionIndex],
-    text: formatAnswerValue(option.value),
+    text: blueprint.optionText?.(option.value, params) ?? formatAnswerValue(option.value),
     value: option.value,
     misconception: option.misconception,
   }));

@@ -16,8 +16,8 @@ import { taskLearningMetadataByTemplateId } from "./task-metadata.ts";
 
 const catalog = getTaskCatalog();
 
-test("task catalog exactly covers the 36 generator templates", () => {
-  assert.equal(catalog.length, 36);
+test("task catalog exactly covers the generator templates", () => {
+  assert.equal(catalog.length, templateRegistry.length);
   assert.deepEqual(
     new Set(catalog.map((entry) => entry.id)),
     new Set(templateRegistry.map((entry) => entry.id)),
@@ -26,9 +26,10 @@ test("task catalog exactly covers the 36 generator templates", () => {
   assert.equal(getTaskCatalogEntry("not-a-family"), undefined);
 });
 
-test("task catalog keeps the 8 numeric / 28 choice contract", () => {
-  assert.equal(catalog.filter((entry) => entry.answerFormat === "numeric_input").length, 8);
-  assert.equal(catalog.filter((entry) => entry.answerFormat === "single_choice").length, 28);
+test("task catalog keeps the generator answer-format contract", () => {
+  const numericCount = templateRegistry.filter((entry) => getBlueprint(entry.id).answerFormat === "numeric_input").length;
+  assert.equal(catalog.filter((entry) => entry.answerFormat === "numeric_input").length, numericCount);
+  assert.equal(catalog.filter((entry) => entry.answerFormat === "single_choice").length, templateRegistry.length - numericCount);
 });
 
 test("task catalog entries have complete student-facing metadata and active topics", () => {
@@ -45,7 +46,7 @@ test("task catalog entries have complete student-facing metadata and active topi
   }
 });
 
-test("all 36 task families keep one semantic contract across generator, reference and catalog", () => {
+test("all task families keep one semantic contract across generator, reference and catalog", () => {
   const formulaEntriesBySkill = new Map(
     catalog.map((entry) => [
       entry.id,
@@ -112,6 +113,12 @@ test("catalog difficulty ranges and visual markers come from real blueprints", (
 });
 
 test("catalog topic counts match the active generator distribution", () => {
+  const expected = Object.fromEntries(
+    topics.map((topic) => [
+      topic.id,
+      templateRegistry.filter((entry) => taskLearningMetadataByTemplateId[entry.id]?.topicId === topic.id).length,
+    ]),
+  );
   assert.deepEqual(
     Object.fromEntries(
       topics.map((topic) => [
@@ -119,13 +126,7 @@ test("catalog topic counts match the active generator distribution", () => {
         catalog.filter((entry) => entry.topicId === topic.id).length,
       ]),
     ),
-    {
-      kinematics: 6,
-      dynamics: 11,
-      electrodynamics: 6,
-      thermodynamics: 6,
-      optics: 7,
-    },
+    expected,
   );
 });
 
@@ -145,7 +146,7 @@ test("catalog search handles names, formulas, graphs, aliases and ё/е", () => 
 });
 
 test("catalog filtering supports empty and combined topic queries", () => {
-  assert.equal(filterTaskCatalog(catalog, "").length, 36);
+  assert.equal(filterTaskCatalog(catalog, "").length, catalog.length);
   const electrodynamicsLawResults = filterTaskCatalog(
     catalog,
     "закон",

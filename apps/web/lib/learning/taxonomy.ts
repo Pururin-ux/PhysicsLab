@@ -15,17 +15,23 @@ export type TopicId =
 
 export type SkillId =
   | "archimedes-force"
+  | "ship-payload"
   | "contact-pressure"
   | "vt-slope"
   | "vt-area"
+  | "rotation-frequency"
+  | "centripetal-acceleration"
   | "relative-velocity-vectors"
   | "free-fall"
+  | "projectile-components"
   | "average-speed-segments"
   | "average-speed-with-stop"
   | "uniform-motion-basic"
+  | "uniform-coordinate-law"
   | "uniform-motion-graphs"
   | "unit-conversion-speed"
   | "gravity-force"
+  | "gravitation-distance"
   | "hydrostatic-pressure"
   | "newton-second"
   | "friction-force"
@@ -33,6 +39,8 @@ export type SkillId =
   | "resultant-force"
   | "resultant-force-2d"
   | "weight-lift"
+  | "torque-balance"
+  | "movable-pulley"
   | "density-volume-ratio"
   | "impulse-momentum"
   | "inelastic-collision-speed"
@@ -40,15 +48,27 @@ export type SkillId =
   | "gravitational-potential-energy"
   | "mechanical-energy-conservation"
   | "work-force-distance"
+  | "work-at-angle"
   | "mechanical-power"
   | "mechanical-efficiency"
   | "ohm-law"
+  | "conductor-resistance"
   | "resistor-network"
   | "source-internal-resistance"
   | "capacitor-energy"
   | "electric-power"
   | "charge-sharing"
+  | "elementary-charge-count"
+  | "magnetic-field-direction"
   | "ideal-gas-state"
+  | "ideal-gas-isoprocess"
+  | "solid-structure-properties"
+  | "liquid-structure-properties"
+  | "vapor-dynamic-equilibrium"
+  | "relative-humidity-pressure"
+  | "molecule-count-from-mass"
+  | "particle-concentration"
+  | "molecular-kinetic-energy"
   | "gas-state-ratio"
   | "heat-amount"
   | "heat-balance-simple"
@@ -57,11 +77,15 @@ export type SkillId =
   | "vaporization-heat"
   | "reflection-angle"
   | "plane-mirror-separation"
+  | "shadow-and-penumbra"
+  | "refraction-direction"
   | "refractive-index-speed"
   | "snell-index-ratio"
   | "thin-lens-image-distance"
   | "lens-optical-power"
-  | "lens-image-height";
+  | "lens-image-height"
+  | "lens-image-properties"
+  | "vision-correction";
 
 export type SkillMetadata = {
   id: SkillId;
@@ -80,6 +104,14 @@ export const skillMetadata: Record<SkillId, SkillMetadata> = {
     title: "Сила Архимеда",
     shortTitle: "Сила Архимеда",
     description: "Выталкивающая сила как произведение плотности среды, g и погружённого объёма.",
+  },
+  "ship-payload": {
+    id: "ship-payload",
+    topicId: "dynamics",
+    sectionId: "mechanics",
+    title: "Грузоподъёмность судна",
+    shortTitle: "Грузоподъёмность",
+    description: "Разность между водоизмещением при предельной осадке и массой судна без груза.",
   },
   "contact-pressure":{id:"contact-pressure",topicId:"dynamics",sectionId:"mechanics",title:"Давление на опору",shortTitle:"Давление на опору",description:"Связь перпендикулярной силы, общей площади контакта и давления; перевод см² в м² и Па в кПа."},
   "vt-slope": {
@@ -122,6 +154,30 @@ export const skillMetadata: Record<SkillId, SkillMetadata> = {
     shortTitle: "Средняя по пути",
     description: "Средняя путевая скорость как весь путь, делённый на всё время движения.",
   },
+  "projectile-components": {
+    id: "projectile-components",
+    topicId: "kinematics",
+    sectionId: "mechanics",
+    title: "Бросок под углом: движение по осям",
+    shortTitle: "Бросок под углом",
+    description: "Время, высота и дальность через горизонтальную и вертикальную составляющие начальной скорости.",
+  },
+  "rotation-frequency": {
+    id: "rotation-frequency",
+    topicId: "kinematics",
+    sectionId: "mechanics",
+    title: "Частота равномерного вращения",
+    shortTitle: "Частота вращения",
+    description: "Число полных оборотов за единицу времени и связь частоты с периодом.",
+  },
+  "centripetal-acceleration": {
+    id: "centripetal-acceleration",
+    topicId: "kinematics",
+    sectionId: "mechanics",
+    title: "Центростремительное ускорение",
+    shortTitle: "Ускорение к центру",
+    description: "Изменение направления скорости при движении по окружности и зависимость a = v²/R.",
+  },
   "uniform-motion-basic": {
     id: "uniform-motion-basic",
     topicId: "kinematics",
@@ -129,6 +185,14 @@ export const skillMetadata: Record<SkillId, SkillMetadata> = {
     title: "Равномерное движение: путь, скорость и время",
     shortTitle: "Путь, скорость и время",
     description: "Связь пути, постоянной скорости и времени при равномерном движении.",
+  },
+  "uniform-coordinate-law": {
+    id: "uniform-coordinate-law",
+    topicId: "kinematics",
+    sectionId: "mechanics",
+    title: "Координатный закон равномерного движения",
+    shortTitle: "Координата через время",
+    description: "Начальная координата, знаковая проекция скорости и положение тела в выбранный момент.",
   },
   "average-speed-with-stop": {
     id: "average-speed-with-stop",
@@ -161,6 +225,14 @@ export const skillMetadata: Record<SkillId, SkillMetadata> = {
     title: "Сила тяжести и масса",
     shortTitle: "Сила тяжести",
     description: "Сила притяжения тела Землёй и её прямая пропорциональность массе.",
+  },
+  "gravitation-distance": {
+    id: "gravitation-distance",
+    topicId: "dynamics",
+    sectionId: "mechanics",
+    title: "Закон всемирного тяготения: расстояние",
+    shortTitle: "Квадрат расстояния",
+    description: "Изменение силы тяготения при изменении расстояния между центрами тел.",
   },
   "hydrostatic-pressure": {
     id:"hydrostatic-pressure",topicId:"dynamics",sectionId:"mechanics",title:"Гидростатическое давление",shortTitle:"Давление жидкости",description:"Давление покоящейся жидкости на выбранной глубине.",
@@ -245,6 +317,22 @@ export const skillMetadata: Record<SkillId, SkillMetadata> = {
     shortTitle: "Кинетическая энергия",
     description: "Энергия движения как половина произведения массы на квадрат скорости.",
   },
+  "torque-balance": {
+    id: "torque-balance",
+    topicId: "dynamics",
+    sectionId: "mechanics",
+    title: "Равновесие моментов сил",
+    shortTitle: "Моменты сил",
+    description: "Равновесие тела с осью вращения через силы и их перпендикулярные плечи.",
+  },
+  "movable-pulley": {
+    id: "movable-pulley",
+    topicId: "dynamics",
+    sectionId: "mechanics",
+    title: "Выигрыш в силе подвижного блока",
+    shortTitle: "Подвижный блок",
+    description: "Сила для идеального подвижного блока через число ветвей, поддерживающих груз.",
+  },
   "gravitational-potential-energy": {
     id: "gravitational-potential-energy",
     topicId: "dynamics",
@@ -269,6 +357,14 @@ export const skillMetadata: Record<SkillId, SkillMetadata> = {
     shortTitle: "Работа силы",
     description: "Работа силы вдоль движения и её знак при противоположном направлении.",
   },
+  "work-at-angle": {
+    id: "work-at-angle",
+    topicId: "dynamics",
+    sectionId: "mechanics",
+    title: "Работа силы под углом",
+    shortTitle: "Работа под углом",
+    description: "Работа постоянной силы через её проекцию на направление перемещения.",
+  },
   "mechanical-power": {
     id: "mechanical-power",
     topicId: "dynamics",
@@ -292,6 +388,14 @@ export const skillMetadata: Record<SkillId, SkillMetadata> = {
     title: "Закон Ома для участка цепи",
     shortTitle: "Закон Ома",
     description: "Связь силы тока, напряжения и сопротивления участка цепи.",
+  },
+  "conductor-resistance": {
+    id: "conductor-resistance",
+    topicId: "electrodynamics",
+    sectionId: "electrodynamics",
+    title: "Сопротивление проводника",
+    shortTitle: "Сопротивление провода",
+    description: "Расчёт сопротивления по удельному сопротивлению, длине и площади поперечного сечения.",
   },
   "resistor-network": {
     id: "resistor-network",
@@ -365,6 +469,86 @@ export const skillMetadata: Record<SkillId, SkillMetadata> = {
     shortTitle: "Тепловой баланс",
     description: "Температура смеси из равенства отданной и полученной теплоты.",
   },
+  "ideal-gas-isoprocess": {
+    id: "ideal-gas-isoprocess",
+    topicId: "thermodynamics",
+    sectionId: "molecular",
+    title: "Законы изопроцессов",
+    shortTitle: "Изопроцессы",
+    description: "Прямая и обратная пропорциональность параметров газа при постоянных T, p или V.",
+  },
+  "solid-structure-properties": {
+    id: "solid-structure-properties",
+    topicId: "thermodynamics",
+    sectionId: "molecular",
+    title: "Строение и свойства твёрдых тел",
+    shortTitle: "Твёрдые тела",
+    description: "Связь дальнего порядка, ориентации кристаллов и аморфного состояния с наблюдаемыми свойствами.",
+  },
+  "liquid-structure-properties": {
+    id: "liquid-structure-properties",
+    topicId: "thermodynamics",
+    sectionId: "molecular",
+    title: "Строение и свойства жидкостей",
+    shortTitle: "Жидкости",
+    description: "Ближний порядок, переходы молекул и поверхностный слой как причины текучести и поверхностного натяжения.",
+  },
+  "vapor-dynamic-equilibrium": {
+    id: "vapor-dynamic-equilibrium",
+    topicId: "thermodynamics",
+    sectionId: "molecular",
+    title: "Испарение, конденсация и насыщенный пар",
+    shortTitle: "Насыщенный пар",
+    description: "Встречные потоки молекул, динамическое равновесие и границы модели насыщенного пара.",
+  },
+  "relative-humidity-pressure": {
+    id: "relative-humidity-pressure",
+    topicId: "thermodynamics",
+    sectionId: "molecular",
+    title: "Относительная влажность воздуха",
+    shortTitle: "Влажность воздуха",
+    description: "Сравнение фактического давления водяного пара с давлением насыщенного пара при той же температуре.",
+  },
+  "molecule-count-from-mass": {
+    id: "molecule-count-from-mass",
+    topicId: "thermodynamics",
+    sectionId: "molecular",
+    title: "Число молекул по массе вещества",
+    shortTitle: "Число молекул",
+    description: "Переход от массы образца через молярную массу и количество вещества к числу молекул.",
+  },
+  "particle-concentration": {
+    id: "particle-concentration",
+    topicId: "thermodynamics",
+    sectionId: "molecular",
+    title: "Концентрация частиц",
+    shortTitle: "Концентрация частиц",
+    description: "Число молекул в единице объёма газа с обязательным переводом объёма в СИ.",
+  },
+  "molecular-kinetic-energy": {
+    id: "molecular-kinetic-energy",
+    topicId: "thermodynamics",
+    sectionId: "molecular",
+    title: "Средняя кинетическая энергия молекул",
+    shortTitle: "Энергия молекул",
+    description: "Связь средней энергии поступательного движения с абсолютной температурой.",
+  },
+  "elementary-charge-count": {
+    id: "elementary-charge-count",
+    topicId: "electrodynamics",
+    sectionId: "electrodynamics",
+    title: "Дискретность электрического заряда",
+    shortTitle: "Элементарный заряд",
+    description: "Число переданных электронов связывает заряд тела с элементарным зарядом.",
+  },
+  "magnetic-field-direction": {
+    id: "magnetic-field-direction",
+    topicId: "electrodynamics",
+    sectionId: "electrodynamics",
+    title: "Направление магнитного поля",
+    shortTitle: "Магнитное поле",
+    description: "Направление поля постоянного магнита, проводника и катушки с током.",
+  },
   "fuel-combustion-heat": {
     id: "fuel-combustion-heat",
     topicId: "thermodynamics",
@@ -405,6 +589,22 @@ export const skillMetadata: Record<SkillId, SkillMetadata> = {
     shortTitle: "Плоское зеркало",
     description: "Мнимое изображение симметрично предмету: расстояние предмет—изображение равно 2d.",
   },
+  "shadow-and-penumbra": {
+    id: "shadow-and-penumbra",
+    topicId: "optics",
+    sectionId: "optics",
+    title: "Тень и полутень",
+    shortTitle: "Тень и полутень",
+    description: "Связь размера источника с резкой тенью или областью полутени за непрозрачным телом.",
+  },
+  "refraction-direction": {
+    id: "refraction-direction",
+    topicId: "optics",
+    sectionId: "optics",
+    title: "Направление преломлённого луча",
+    shortTitle: "Преломление",
+    description: "Качественное направление луча при переходе между воздухом и водой; углы отсчитываются от нормали.",
+  },
   "refractive-index-speed": {
     id: "refractive-index-speed",
     topicId: "optics",
@@ -444,5 +644,21 @@ export const skillMetadata: Record<SkillId, SkillMetadata> = {
     title: "Линейное увеличение линзы",
     shortTitle: "Увеличение линзы",
     description: "Модуль высоты изображения через |Γ| = dᵢ/dₒ и высоту предмета h.",
+  },
+  "lens-image-properties": {
+    id: "lens-image-properties",
+    topicId: "optics",
+    sectionId: "optics",
+    title: "Свойства изображения в линзе",
+    shortTitle: "Изображение в линзе",
+    description: "Действительное или мнимое, прямое или перевёрнутое изображение по типу линзы и положению предмета относительно F и 2F.",
+  },
+  "vision-correction": {
+    id: "vision-correction",
+    topicId: "optics",
+    sectionId: "optics",
+    title: "Коррекция зрения линзами",
+    shortTitle: "Очки и фокус",
+    description: "Знак и тип корректирующей линзы по положению фокуса относительно сетчатки.",
   },
 };

@@ -65,7 +65,7 @@ export function AccelerationFocusTask() {
                 <div>
                   <p className="font-bold text-white">Верно: скорость прибавляла по 2 м/с каждую секунду.</p>
                   <p className="mt-1 text-[14px] leading-[1.6] text-white/72">Именно эту мысль физики записывают короче:</p>
-                  <p className="mt-2 border-t border-white/[.12] pt-3 text-[19px] text-white"><MathText text="$a=\frac{\Delta v}{\Delta t}=\frac{8-2}{3}=2\ \text{м/с}^2$." /></p>
+                  <p className="mt-2 border-t border-white/[.12] pt-3 text-[19px] text-white"><MathText text={"$a=\\frac{\\Delta v}{\\Delta t}=\\frac{8-2}{3}=2\\ \\text{м/с}^2$."} /></p>
                   <Link href="/practice/kinematics-demo" className="mt-4 inline-flex min-h-11 items-center gap-2 font-bold text-nova-cyan focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-cyan">
                     Продолжить с другими задачами <ArrowRight size={17} weight="bold" />
                   </Link>

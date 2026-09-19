@@ -12,12 +12,30 @@ import type { OpticsDiagramSpec } from "../../physics/optics-diagram-spec.ts";
 const OPTICS_TEMPLATES = [
   "reflection-angle",
   "plane-mirror-separation",
+  "shadow-and-penumbra",
+  "refraction-direction",
   "refractive-index-speed",
   "snell-index-ratio",
   "thin-lens-image-distance",
   "lens-optical-power",
   "lens-image-height",
+  "lens-image-properties",
+  "vision-correction",
 ] as const;
+
+const MIN_UNIQUE_TEXTS: Partial<Record<(typeof OPTICS_TEMPLATES)[number], number>> = {
+  "shadow-and-penumbra": 4,
+  "refraction-direction": 4,
+  "lens-image-properties": 5,
+  "vision-correction": 4,
+};
+
+const MIN_UNIQUE_ANSWERS: Partial<Record<(typeof OPTICS_TEMPLATES)[number], number>> = {
+  "shadow-and-penumbra": 4,
+  "refraction-direction": 3,
+  "lens-image-properties": 4,
+  "vision-correction": 2,
+};
 
 function opticsSpec(task: GeneratedTask): OpticsDiagramSpec | null {
   if (!task.diagram) return null;
@@ -34,7 +52,7 @@ function hasOnlyFiniteNumbers(value: unknown): boolean {
   return true;
 }
 
-test("оптика: группа содержит ровно 7 шаблонов", () => {
+test("оптика: группа содержит все зарегистрированные шаблоны", () => {
   assert.deepEqual(new Set(getTemplateIdsByGroup("optics")), new Set(OPTICS_TEMPLATES));
 });
 
@@ -61,8 +79,8 @@ for (const templateId of OPTICS_TEMPLATES) {
     // Разнообразие измеряем по тексту условия, а не по id.
     const texts = new Set(tasks.map((task) => task.text));
     const answers = new Set(tasks.map((task) => task.answerValue));
-    assert.ok(texts.size >= 12, `${templateId}: слишком мало уникальных условий (${texts.size})`);
-    assert.ok(answers.size >= 4, `${templateId}: слишком мало уникальных ответов (${answers.size})`);
+    assert.ok(texts.size >= (MIN_UNIQUE_TEXTS[templateId] ?? 12), `${templateId}: слишком мало уникальных условий (${texts.size})`);
+    assert.ok(answers.size >= (MIN_UNIQUE_ANSWERS[templateId] ?? 4), `${templateId}: слишком мало уникальных ответов (${answers.size})`);
 
     // Самое частое условие не должно доминировать в выборке.
     const frequency = new Map<string, number>();
@@ -101,6 +119,26 @@ test("plane-mirror-separation: изображение симметрично, о
       assert.equal(spec.imageDistance, spec.objectDistance, "мнимое изображение симметрично");
       assert.equal(spec.objectDistance, task.params.d);
     }
+  }
+});
+
+test("shadow-and-penumbra: размер источника согласован с видом границы", () => {
+  const tasks = generateTasks("shadow-and-penumbra", 40);
+  assert.deepEqual(new Set(tasks.map(task => task.params.caseId)), new Set([1, 2, 3, 4]));
+  for (const task of tasks) {
+    assert.equal(task.answerValue, task.params.caseId);
+    assert.equal(task.answerFormat, "single_choice");
+    assert.equal(new Set(task.options.map(option => option.text)).size, 4);
+  }
+});
+
+test("refraction-direction: качественные выводы соответствуют переходу между средами", () => {
+  const tasks = generateTasks("refraction-direction", 40);
+  for (const task of tasks) {
+    const expected = task.params.caseId === 1 ? 1 : task.params.caseId === 2 ? 2 : 3;
+    assert.equal(task.answerValue, expected);
+    assert.equal(task.answerFormat, "single_choice");
+    assert.equal(new Set(task.options.map((option) => option.text)).size, 4);
   }
 });
 
@@ -175,6 +213,29 @@ test("lens-image-height: модуль увеличения и перевёрну
   }
 });
 
+test("lens-image-properties: пять положений дают свойства из § 38", () => {
+  const tasks = generateTasks("lens-image-properties", 50);
+  const expected: Record<number, number> = { 1: 1, 2: 2, 3: 3, 4: 4, 5: 1 };
+  assert.deepEqual(new Set(tasks.map(task => task.params.caseId)), new Set([1, 2, 3, 4, 5]));
+  for (const task of tasks) {
+    assert.equal(task.answerValue, expected[task.params.caseId]);
+    assert.equal(task.answerFormat, "single_choice");
+    assert.equal(new Set(task.options.map(option => option.text)).size, 4);
+  }
+});
+
+test("vision-correction: положение фокуса согласовано со знаком линзы", () => {
+  const tasks = generateTasks("vision-correction", 40);
+  assert.deepEqual(new Set(tasks.map(task => task.params.caseId)), new Set([1, 2, 3, 4]));
+  for (const task of tasks) {
+    const diverging = task.params.caseId === 1 || task.params.caseId === 3;
+    assert.equal(task.answerValue, diverging ? 1 : 2);
+    assert.equal(task.answerFormat, "single_choice");
+    assert.equal(new Set(task.options.map(option => option.text)).size, 4);
+    assert.match(task.explanation ?? "", diverging ? /рассеивающ/i : /собирающ/i);
+  }
+});
+
 // ===== API =====
 
 type ApiTask = {
@@ -218,10 +279,10 @@ test("API: каждый оптический шаблон отдаёт корр�
   }
 });
 
-test("API: optics-mixed покрывает все 7 навыков и сериализует диаграммы", async () => {
-  const tasks = await fetchTasks("template=optics-mixed&count=14&batch=3");
+test("API: optics-mixed покрывает все навыки и сериализует диаграммы", async () => {
+  const tasks = await fetchTasks("template=optics-mixed&count=16&batch=3");
 
-  assert.equal(tasks.length, 14);
+  assert.equal(tasks.length, 16);
   assert.deepEqual(
     new Set(tasks.map((task) => task.blueprint)),
     new Set(OPTICS_TEMPLATES),

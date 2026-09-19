@@ -13,19 +13,25 @@ import { validateGeneratedTask } from "./validator.ts";
 
 const kinematicsTemplateIds = [
   "free-fall",
+  "projectile-components",
   "vt-slope",
   "vt-area",
   "relative-velocity-vectors",
   "average-speed-segments",
   "average-speed-with-stop",
   "uniform-motion-basic",
+  "uniform-coordinate-law",
   "uniform-motion-graphs",
   "unit-conversion-speed",
+  "rotation-frequency",
+  "centripetal-acceleration",
 ] as const;
 const dynamicsTemplateIds = [
   "archimedes-force",
+  "ship-payload",
   "contact-pressure",
   "gravity-force",
+  "gravitation-distance",
   "gravitational-potential-energy",
   "hydrostatic-pressure",
   "mechanical-power",
@@ -37,10 +43,13 @@ const dynamicsTemplateIds = [
   "resultant-force",
   "resultant-force-2d",
   "weight-lift",
+  "torque-balance",
+  "movable-pulley",
   "impulse-momentum",
   "inelastic-collision-speed",
   "kinetic-energy",
   "work-force-distance",
+  "work-at-angle",
 ] as const;
 
 test("archimedes-force uses the immersed volume in cubic metres", () => {
@@ -61,8 +70,24 @@ test("archimedes-force uses the immersed volume in cubic metres", () => {
     assert.ok(!task.explanation?.includes("=0$ м³"));
   }
 });
+
+test("ship-payload subtracts the empty vessel mass from displacement", () => {
+  const tasks = generateTasks("ship-payload", 100);
+
+  assert.equal(tasks.length, 100);
+  for (const task of tasks) {
+    const emptyMass = task.params.displacement - task.params.payload;
+    assert.equal(task.answerValue, task.params.displacement - emptyMass);
+    assert.equal(task.answerUnit, "т");
+    assert.ok(task.text.includes(`${emptyMass} т`));
+    assert.ok(task.explanation?.includes(`${task.params.displacement}-${emptyMass}`));
+  }
+});
 const electrodynamicsTemplateIds = [
+  "elementary-charge-count",
+  "magnetic-field-direction",
   "ohm-law",
+  "conductor-resistance",
   "resistor-network",
   "source-internal-resistance",
   "capacitor-energy",
@@ -76,18 +101,30 @@ const uniqueTextPoolBySkill: Record<string, number> = {
   // Свободное падение: 4 времени × 8 правдоподобных сюжетов — контексты
   // намеренно привязаны к масштабу высоты, поэтому пул меньше дефолтных 50.
   "free-fall": 30,
+  "gravitation-distance": 50,
   "relative-velocity-vectors": 36,
   "resultant-force-2d": 24,
   // Оптика: кураторские наборы параметров имеют естественно меньший пул.
   "reflection-angle": 45,
   "plane-mirror-separation": 39,
+  "refraction-direction": 4,
   "refractive-index-speed": 15,
   "snell-index-ratio": 12,
   "lens-optical-power": 12,
+  "magnetic-field-direction": 4,
+  "conductor-resistance": 20,
 };
 const thermodynamicsTemplateIds = [
   "density-volume-ratio",
+  "molecule-count-from-mass",
+  "particle-concentration",
+  "molecular-kinetic-energy",
   "ideal-gas-state",
+  "ideal-gas-isoprocess",
+  "solid-structure-properties",
+  "liquid-structure-properties",
+  "vapor-dynamic-equilibrium",
+  "relative-humidity-pressure",
   "heat-amount",
   "fuel-combustion-heat",
   "phase-change-heat",
@@ -283,9 +320,21 @@ test("expanded task families encode the intended physical rule", () => {
   const unitConversion = getBlueprint("unit-conversion-speed");
   assert.equal(unitConversion.solver({ vKmh: 36, tMin: 5 }), 3000);
 
+  const rotationFrequency = getBlueprint("rotation-frequency");
+  assert.equal(rotationFrequency.solver({ N: 45, t: 6 }), 7.5);
+
+  const centripetalAcceleration = getBlueprint("centripetal-acceleration");
+  assert.equal(centripetalAcceleration.solver({ v: 6, R: 4 }), 9);
+
   const work = getBlueprint("work-force-distance");
   assert.equal(work.solver({ F: 20, s: 3, __variant: 0 }), 60);
   assert.equal(work.solver({ F: 20, s: 3, __variant: 1 }), -60);
+
+  const angledWork = getBlueprint("work-at-angle");
+  assert.deepEqual(
+    [0, 1, 2, 3, 4].map((variant) => angledWork.solver({ F: 20, s: 3, __variant: variant })),
+    [60, 30, 0, -30, -60],
+  );
 
   const power = getBlueprint("electric-power");
   assert.equal(power.solver({ I: 3, R: 4, __variant: 0 }), 36);
@@ -618,6 +667,49 @@ test("API route dynamics-mixed покрывает все навыки динам
     new Set(data.tasks.map((task) => task.blueprint)),
     new Set(dynamicsTemplateIds),
   );
+});
+
+test("conductor-resistance: R = rho l / S и согласованные единицы", () => {
+  const tasks = generateTasks("conductor-resistance", 80);
+  for (const task of tasks) {
+    const rho = task.params.materialId === 2 ? 1.1 : 0.1;
+    const expected = Math.round((rho * task.params.length / task.params.area) * 1000) / 1000;
+    assert.equal(task.answerValue, expected);
+    assert.equal(task.answerUnit, "Ом");
+    assert.equal(task.answerFormat, "numeric_input");
+    assert.ok(task.answerValue > 0);
+  }
+});
+
+test("gravitation-distance: сила меняется обратно квадрату расстояния", () => {
+  const tasks = generateTasks("gravitation-distance", 50);
+  assert.equal(new Set(tasks.map((task) => task.text)).size, 50);
+  for (const task of tasks) {
+    assert.equal(task.answerValue, task.params.k ** 2);
+    assert.equal(task.answerUnit, "раз");
+    assert.match(task.text, /между центрами/);
+  }
+});
+
+test("torque-balance: противоположные моменты равны", () => {
+  const tasks = generateTasks("torque-balance", 200);
+  assert.equal(new Set(tasks.map((task) => task.text)).size, 200);
+  for (const task of tasks) {
+    assert.equal(task.answerValue, (task.params.F1 * task.params.l1) / task.params.l2);
+    assert.equal(task.answerUnit, "Н");
+    assert.match(task.text, /перпендикулярно плечам/);
+  }
+});
+
+test("movable-pulley: две несущие ветви делят вес поровну", () => {
+  const tasks = generateTasks("movable-pulley", 120);
+  assert.equal(new Set(tasks.map((task) => task.text)).size, 120);
+  for (const task of tasks) {
+    assert.equal(task.answerValue, task.params.P / 2);
+    assert.equal(task.answerUnit, "Н");
+    assert.match(task.text, /идеальным подвижным блоком/);
+    assert.match(task.explanation ?? "", /две ветви/);
+  }
 });
 
 test("school checks rotate through available families between batches", async () => {

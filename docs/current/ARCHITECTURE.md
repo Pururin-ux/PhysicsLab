@@ -29,6 +29,21 @@ Scope: `apps/web` only.
 - `lib/server/task-generator/` generates deterministic practice tasks.
 - `lib/stores/` owns browser persistence and migrations.
 
+## PROVISIONAL interactive scene layer
+
+Interactive lesson scenes remain part of the current Next.js application. DOM
+owns text, mathematics, controls, focus and accessibility. SVG is preferred for
+small vectors, plots, scales and annotations; Canvas or WebGL is introduced only
+when a measured scene requirement cannot be met efficiently with DOM and SVG.
+The physical model must stay testable independently from its renderer.
+
+Scene code and assets load with the lesson that uses them. Avoid a shared heavy
+runtime, continuous background animation and duplicate layout systems. C++,
+WASM, CanvasKit or a general-purpose scene graph require a demonstrated visual
+or computational need, a bundle budget and evidence that the same abstraction
+serves more than one scene. Reduced-motion behaviour, responsive composition
+and stable keyboard interaction are part of the scene contract.
+
 ## Separate product boundary
 
 `apps/game` uses Godot and follows `docs/game-preproduction/`. It is not an

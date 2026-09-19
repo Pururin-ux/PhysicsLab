@@ -24,11 +24,33 @@ The personal notebook at `/profile/notebook` collects explicitly saved lesson
 explanations, supports text search, and links back to their lessons. It reads the
 same browser drafts included in progress backups; it does not grade personal text.
 
-The textbook at `/learn` currently connects thirty-eight chapters for
-selected grade 7, grade 8 and grade 9 topics. Grade 8 now connects internal
+The textbook at `/learn` currently connects eighty-seven chapters for
+selected grade 7, grade 8, grade 9 and grade 10 topics. Grade 8 now connects internal
 energy and the three heat-transfer mechanisms to heat amount, fuel combustion, melting,
-evaporation and boiling, then electric current and reflection of light; grade 9
-includes the second law of Newton. Chapters
+evaporation and boiling, then electrostatics, electric current, conductor resistance, circuit connections, electric work, power, safety and magnetic phenomena, followed by sources and straight-line propagation of light, shadows, reflection, the plane mirror, qualitative refraction, lenses, image construction, the eye and optical correction; grade 9
+starts by choosing a material-point or rigid-body model, then introduces reference frames, coordinates and vector projections. It connects acceleration to velocity and displacement for uniformly accelerated motion, then adds circular motion, angular and linear speeds, period, frequency and centripetal acceleration before presenting interaction, inertia, mass, the three Newton laws, elastic deformation, friction, motion under gravity, universal gravitation, weight, weightlessness and overload as one sequence. Statics continues with force moments, equilibrium, levers, pulleys, the inclined plane, efficiency, the centre of gravity, stability, buoyancy and ships. The sequence then connects momentum, collisions and reactive motion to work, power, potential, kinetic, mechanical, internal and conserved energy.
+The first ten grade 10 chapters separate the three statements of molecular-kinetic
+theory from the observations that support them, distinguish a tracked Brownian
+particle from the molecules of the surrounding medium, and connect sample mass,
+amount of substance and particle count through the Avogadro constant. They then
+connect gas pressure to concentration and average molecular kinetic energy, then
+distinguish thermal equilibrium from equality of every state variable and connect
+absolute temperature with average translational kinetic energy. They then connect
+pressure, volume, absolute temperature and amount of gas through the Clapeyron and
+Mendeleev-Clapeyron equations, including the fixed-gas condition and model limits.
+They continue with the three isoprocesses, their laws and exact graph distinctions.
+The next chapter connects crystalline order, grain orientation and amorphous
+structure with anisotropy, isotropy and the observed character of melting.
+Liquid structure then connects close molecular spacing and temporary equilibrium
+positions with flow, while the asymmetric surface layer explains the tendency to
+reduce free-surface area.
+The next chapter treats evaporation and condensation as simultaneous molecular
+flows, explains evaporative cooling, and distinguishes saturated vapor in dynamic
+equilibrium from unsaturated vapor and an ideal gas of fixed mass.
+The humidity chapter then separates absolute and relative humidity, compares
+water vapor with saturation at the same temperature, connects cooling with the
+dew point, and shows how a psychrometer turns evaporative cooling into a reading.
+This is the start of grade 10 coverage, not coverage of the full molecular-physics unit. Chapters
 include interactive models, worked examples and persistent self-checks; existing
 staged lessons keep their own drafts. The contents can filter unfinished or
 incorrect chapter checks. This is partial coverage, not a complete school textbook.

@@ -1,6 +1,7 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { useState } from "react";
 import { useLessonDraft } from "../../lib/learning/use-lesson-draft";
 import { MIO_SCENES, type MioScene } from "../../lib/learning/mio-assets";
@@ -38,7 +39,56 @@ import { FuelCombustionLab } from "./FuelCombustionLab";
 import { HeatTransferExplorer } from "./HeatTransferExplorer";
 import { IceMeltingModel } from "./IceMeltingModel";
 import { EvaporationBoilingLab } from "./EvaporationBoilingLab";
+import { ElectrostaticsEvidenceLab } from "./ElectrostaticsEvidenceLab";
+import { CircuitConnectionsNotebook } from "./CircuitConnectionsNotebook";
+import { ElectricPowerNotebook } from "./ElectricPowerNotebook";
+import { HouseholdLoadNotebook } from "./HouseholdLoadNotebook";
+import { MagneticFieldNotebook } from "./MagneticFieldNotebook";
+import { PlaneMirrorNotebook, RefractionMeasurementLens } from "./OpticsNotebook";
 import styles from "./TextbookScene.module.css";
+
+const LensFocusLab = dynamic(() => import("./LensNotebook").then(module => module.LensFocusLab));
+const ThinLensImageNotebook = dynamic(() => import("./LensNotebook").then(module => module.ThinLensImageNotebook));
+const EyeAccommodationNotebook = dynamic(() => import("./LensNotebook").then(module => module.EyeAccommodationNotebook));
+const VisionCorrectionNotebook = dynamic(() => import("./LensNotebook").then(module => module.VisionCorrectionNotebook));
+const LightShadowNotebook = dynamic(() => import("./LightShadowNotebook").then(module => module.LightShadowNotebook));
+const ConductorResistanceNotebook = dynamic(() => import("./ConductorResistanceNotebook").then(module => module.ConductorResistanceNotebook));
+const NewtonFirstLawNotebook = dynamic(() => import("./NewtonLawsNotebook").then(module => module.NewtonFirstLawNotebook));
+const NewtonThirdLawNotebook = dynamic(() => import("./NewtonLawsNotebook").then(module => module.NewtonThirdLawNotebook));
+const HookeLawNotebook = dynamic(() => import("./HookeLawNotebook").then(module => module.HookeLawNotebook));
+const FrictionResistanceNotebook = dynamic(() => import("./FrictionResistanceNotebook").then(module => module.FrictionResistanceNotebook));
+const GravityMotionNotebook = dynamic(() => import("./GravityMotionNotebook").then(module => module.GravityMotionNotebook));
+const ProjectileMotionNotebook = dynamic(() => import("./ProjectileMotionNotebook").then(module => module.ProjectileMotionNotebook));
+const UniversalGravitationNotebook = dynamic(() => import("./UniversalGravitationNotebook").then(module => module.UniversalGravitationNotebook));
+const ApparentWeightNotebook = dynamic(() => import("./ApparentWeightNotebook").then(module => module.ApparentWeightNotebook));
+const TorqueEquilibriumNotebook = dynamic(() => import("./TorqueEquilibriumNotebook").then(module => module.TorqueEquilibriumNotebook));
+const SimpleMachinesNotebook = dynamic(() => import("./SimpleMachinesNotebook").then(module => module.SimpleMachinesNotebook));
+const InclinedPlaneNotebook = dynamic(() => import("./InclinedPlaneNotebook").then(module => module.InclinedPlaneNotebook));
+const StabilityNotebook = dynamic(() => import("./StabilityNotebook").then(module => module.StabilityNotebook));
+const ShipsAndBalloonsNotebook = dynamic(() => import("./ShipsAndBalloonsNotebook").then(module => module.ShipsAndBalloonsNotebook));
+const MomentumSystemNotebook = dynamic(() => import("./MomentumNotebooks").then(module => module.MomentumSystemNotebook));
+const MomentumConservationNotebook = dynamic(() => import("./MomentumNotebooks").then(module => module.MomentumConservationNotebook));
+const WorkAndPowerNotebook = dynamic(() => import("./EnergyChapterNotebooks").then(module => module.WorkAndPowerNotebook));
+const PotentialEnergySystemNotebook = dynamic(() => import("./EnergyChapterNotebooks").then(module => module.PotentialEnergySystemNotebook));
+const KineticAndTotalEnergyNotebook = dynamic(() => import("./EnergyChapterNotebooks").then(module => module.KineticAndTotalEnergyNotebook));
+const EnergyConservationBoundaryNotebook = dynamic(() => import("./EnergyChapterNotebooks").then(module => module.EnergyConservationBoundaryNotebook));
+const AcceleratedMotionNotebook = dynamic(() => import("./AcceleratedMotionNotebook").then(module => module.AcceleratedMotionNotebook));
+const ReferenceFrameNotebook = dynamic(() => import("./ReferenceFrameNotebook").then(module => module.ReferenceFrameNotebook));
+const MotionModelNotebook = dynamic(() => import("./MotionModelNotebook").then(module => module.MotionModelNotebook));
+const UniformCoordinateNotebook = dynamic(() => import("./UniformMotionNotebook").then(module => module.UniformCoordinateNotebook));
+const UniformMotionGraphsNotebook = dynamic(() => import("./UniformMotionNotebook").then(module => module.UniformMotionGraphsNotebook));
+const CircularMotionNotebook = dynamic(() => import("./CircularMotionNotebook").then(module => module.CircularMotionNotebook));
+const CentripetalAccelerationNotebook = dynamic(() => import("./CircularMotionNotebook").then(module => module.CentripetalAccelerationNotebook));
+const MolecularTheoryEvidenceNotebook = dynamic(() => import("./MolecularTheoryEvidenceNotebook").then(module => module.MolecularTheoryEvidenceNotebook));
+const MolecularScaleNotebook = dynamic(() => import("./MolecularScaleNotebook").then(module => module.MolecularScaleNotebook));
+const GasParametersNotebook = dynamic(() => import("./GasParametersNotebook").then(module => module.GasParametersNotebook));
+const ThermalEquilibriumNotebook = dynamic(() => import("./ThermalEquilibriumNotebook").then(module => module.ThermalEquilibriumNotebook));
+const IdealGasStateNotebook = dynamic(() => import("./IdealGasStateNotebook").then(module => module.IdealGasStateNotebook));
+const IsoprocessNotebook = dynamic(() => import("./IsoprocessNotebook").then(module => module.IsoprocessNotebook));
+const SolidStructureNotebook = dynamic(() => import("./SolidStructureNotebook").then(module => module.SolidStructureNotebook));
+const LiquidStructureNotebook = dynamic(() => import("./LiquidStructureNotebook").then(module => module.LiquidStructureNotebook));
+const EvaporationEquilibriumNotebook = dynamic(() => import("./EvaporationEquilibriumNotebook").then(module => module.EvaporationEquilibriumNotebook));
+const HumidityNotebook = dynamic(() => import("./HumidityNotebook").then(module => module.HumidityNotebook));
 
 const stories = {
   "physical-body-phenomenon-quantity": { asset: "inertia", title: "Тележка, движение или скорость?", caption: "Мио разделяет предмет, происходящее с ним изменение и величину, которой это изменение описывают.", alt: "Мио наблюдает лабораторную тележку и записывает её скорость" },
@@ -153,6 +203,36 @@ export function TextbookScene({chapterId}:{chapterId:string}) {
   if (chapterId === "particle-model-and-diffusion") {
     return <section className={styles.scene} aria-label="Разбор наблюдений, подтверждающих частичное строение вещества"><ParticleEvidenceModel /></section>;
   }
+  if (chapterId === "molecular-kinetic-theory-evidence") {
+    return <section className={styles.scene} aria-label="Опытные основания молекулярно-кинетической теории"><MolecularTheoryEvidenceNotebook /></section>;
+  }
+  if (chapterId === "molecular-mass-and-amount") {
+    return <section className={styles.scene} aria-label="Переход от массы образца к количеству вещества и числу молекул"><MolecularScaleNotebook /></section>;
+  }
+  if (chapterId === "macro-micro-parameters-ideal-gas") {
+    return <section className={styles.scene} aria-label="Связь макроскопических и микроскопических параметров идеального газа"><GasParametersNotebook /></section>;
+  }
+  if (chapterId === "thermal-equilibrium-and-temperature") {
+    return <section className={styles.scene} aria-label="Тепловое равновесие и энергетический смысл абсолютной температуры"><ThermalEquilibriumNotebook /></section>;
+  }
+  if (chapterId === "ideal-gas-state-equation") {
+    return <section className={styles.scene} aria-label="Лабораторная проверка уравнения состояния идеального газа"><IdealGasStateNotebook /></section>;
+  }
+  if (chapterId === "isoprocesses-ideal-gas") {
+    return <section className={styles.scene} aria-label="Графический атлас изотермического, изобарного и изохорного процессов"><IsoprocessNotebook /></section>;
+  }
+  if (chapterId === "solid-structure-and-properties") {
+    return <section className={styles.scene} aria-label="Сравнение строения и наблюдаемых свойств кристаллических и аморфных тел"><SolidStructureNotebook /></section>;
+  }
+  if (chapterId === "liquid-structure-and-properties") {
+    return <section className={styles.scene} aria-label="Связь строения жидкости с текучестью и поверхностным натяжением"><LiquidStructureNotebook /></section>;
+  }
+  if (chapterId === "evaporation-condensation-saturated-vapor") {
+    return <section className={styles.scene} aria-label="Испарение, конденсация и динамическое равновесие насыщенного пара"><EvaporationEquilibriumNotebook /></section>;
+  }
+  if (chapterId === "air-humidity-and-dew-point") {
+    return <section className={styles.scene} aria-label="Измерение влажности воздуха, работа психрометра и точка росы"><HumidityNotebook /></section>;
+  }
   if (chapterId === "states-temperature-expansion") {
     return <section className={styles.scene} aria-label="Исследование состояний вещества, теплового расширения и температуры"><MatterStatesModel /></section>;
   }
@@ -168,11 +248,128 @@ export function TextbookScene({chapterId}:{chapterId:string}) {
   if (chapterId === "electric-current-and-ohms-law") {
     return <section className={styles.scene} aria-label="Опыт Мио с напряжением, сопротивлением и силой тока"><ElectroPredictionScene caption="Мио оставляет напряжение неизменным. Меняй сопротивление и сравнивай показание амперметра." /><ElectroResistanceExperiment /></section>;
   }
+  if (chapterId === "conductor-resistance") {
+    return <section className={styles.scene} aria-label="Зависимость сопротивления проводника от материала и размеров"><ConductorResistanceNotebook /></section>;
+  }
+  if (chapterId === "electric-charge-and-atom") {
+    return <section className={styles.scene} aria-label="Опыты об электризации и доказательствах по наблюдению"><ElectrostaticsEvidenceLab /></section>;
+  }
+  if (chapterId === "series-and-parallel-circuits") {
+    return <section className={styles.scene} aria-label="Сравнение последовательного и параллельного соединения"><CircuitConnectionsNotebook /></section>;
+  }
+  if (chapterId === "electric-work-and-power") {
+    return <section className={styles.scene} aria-label="Связь мощности, времени и работы электрического тока"><ElectricPowerNotebook /></section>;
+  }
+  if (chapterId === "electricity-use-and-safety") {
+    return <section className={styles.scene} aria-label="Суммарная нагрузка бытовой цепи и электрическая безопасность"><HouseholdLoadNotebook /></section>;
+  }
+  if (chapterId === "magnetic-field-and-electromagnet") {
+    return <section className={styles.scene} aria-label="Магнитное поле постоянного магнита и катушки с током"><MagneticFieldNotebook /></section>;
+  }
+  if (chapterId === "light-sources-and-shadows") {
+    return <section className={styles.scene} aria-label="Образование тени и полутени"><LightShadowNotebook /></section>;
+  }
   if (chapterId === "reflection-of-light") {
     return <section className={styles.scene} aria-label="Опыт с законом отражения света"><ReflectionTextbookExperiment /></section>;
   }
+  if (chapterId === "plane-mirror-image") {
+    return <section className={styles.scene} aria-label="Положение изображения в плоском зеркале"><PlaneMirrorNotebook /></section>;
+  }
+  if (chapterId === "refraction-of-light") {
+    return <section className={styles.scene} aria-label="Измерение углов при преломлении света"><RefractionMeasurementLens /></section>;
+  }
+  if (chapterId === "lenses-and-optical-power") {
+    return <section className={styles.scene} aria-label="Опыт с фокусом и оптической силой линзы"><LensFocusLab /></section>;
+  }
+  if (chapterId === "images-in-thin-lenses") {
+    return <section className={styles.scene} aria-label="Построение изображений в собирающей линзе"><ThinLensImageNotebook /></section>;
+  }
+  if (chapterId === "eye-optical-system") {
+    return <section className={styles.scene} aria-label="Модель аккомодации глаза"><EyeAccommodationNotebook /></section>;
+  }
+  if (chapterId === "vision-defects-and-correction") {
+    return <section className={styles.scene} aria-label="Коррекция близорукости и дальнозоркости"><VisionCorrectionNotebook /></section>;
+  }
   if (chapterId === "newton-second-law") {
     return <section className={styles.scene} aria-label="Опыт о связи силы, массы и ускорения"><NewtonSecondLawTextbookExperiment /></section>;
+  }
+  if (chapterId === "interaction-inertia-and-mass") {
+    return <section className={styles.scene} aria-label="Наблюдение о взаимодействии, инерции и массе"><NewtonFirstLawNotebook /></section>;
+  }
+  if (chapterId === "newton-third-law") {
+    return <section className={styles.scene} aria-label="Схема пар сил по третьему закону Ньютона"><NewtonThirdLawNotebook /></section>;
+  }
+  if (chapterId === "elastic-deformation-and-hooke-law") {
+    return <section className={styles.scene} aria-label="Опыт с упругой деформацией и законом Гука"><HookeLawNotebook /></section>;
+  }
+  if (chapterId === "friction-and-medium-resistance") {
+    return <section className={styles.scene} aria-label="Опыт с трением и сопротивлением движению"><FrictionResistanceNotebook /></section>;
+  }
+  if (chapterId === "motion-under-gravity") {
+    return <section className={styles.scene} aria-label="Свободное падение и движение тела, брошенного горизонтально"><GravityMotionNotebook /></section>;
+  }
+  if (chapterId === "projectile-motion-components") {
+    return <section className={styles.scene} aria-label="Бросок под углом и разложение движения по осям"><ProjectileMotionNotebook /></section>;
+  }
+  if (chapterId === "universal-gravitation") {
+    return <section className={styles.scene} aria-label="Закон всемирного тяготения и зависимость силы от расстояния"><UniversalGravitationNotebook /></section>;
+  }
+  if (chapterId === "weight-weightlessness-overload") {
+    return <section className={styles.scene} aria-label="Вес, невесомость и перегрузка в ускоряющемся лифте"><ApparentWeightNotebook /></section>;
+  }
+  if (chapterId === "force-moment-and-equilibrium") {
+    return <section className={styles.scene} aria-label="Условия равновесия и момент силы относительно оси"><TorqueEquilibriumNotebook /></section>;
+  }
+  if (chapterId === "simple-machines-levers-pulleys") {
+    return <section className={styles.scene} aria-label="Сравнение рычага, неподвижного и подвижного блоков"><SimpleMachinesNotebook /></section>;
+  }
+  if (chapterId === "inclined-plane-work-efficiency") {
+    return <section className={styles.scene} aria-label="Наклонная плоскость, золотое правило механики и коэффициент полезного действия"><InclinedPlaneNotebook /></section>;
+  }
+  if (chapterId === "center-of-gravity-and-stability") {
+    return <section className={styles.scene} aria-label="Определение центра тяжести и условия устойчивости"><StabilityNotebook /></section>;
+  }
+  if (chapterId === "ships-and-ballooning") {
+    return <section className={styles.scene} aria-label="Плавание судов, водоизмещение и воздухоплавание"><ShipsAndBalloonsNotebook /></section>;
+  }
+  if (chapterId === "momentum-and-systems") {
+    return <section className={styles.scene} aria-label="Импульс тела, импульс силы и граница механической системы"><MomentumSystemNotebook /></section>;
+  }
+  if (chapterId === "momentum-conservation-and-reactive-motion") {
+    return <section className={styles.scene} aria-label="Закон сохранения импульса, столкновения и реактивное движение"><MomentumConservationNotebook /></section>;
+  }
+  if (chapterId === "work-and-power-vectors") {
+    return <section className={styles.scene} aria-label="Работа силы под углом, работа переменной силы и мощность"><WorkAndPowerNotebook /></section>;
+  }
+  if (chapterId === "potential-energy-of-system") {
+    return <section className={styles.scene} aria-label="Потенциальная энергия системы, нулевой уровень и деформация пружины"><PotentialEnergySystemNotebook /></section>;
+  }
+  if (chapterId === "kinetic-and-total-energy") {
+    return <section className={styles.scene} aria-label="Кинетическая, механическая и внутренняя энергия системы"><KineticAndTotalEnergyNotebook /></section>;
+  }
+  if (chapterId === "energy-conservation-boundaries") {
+    return <section className={styles.scene} aria-label="Сохранение энергии, внешняя работа и выбор границы системы"><EnergyConservationBoundaryNotebook /></section>;
+  }
+  if (chapterId === "reference-frames-and-vectors") {
+    return <section className={styles.scene} aria-label="Система отсчёта, координаты и проекции вектора"><ReferenceFrameNotebook /></section>;
+  }
+  if (chapterId === "mechanical-motion-model") {
+    return <section className={styles.scene} aria-label="Выбор модели материальной точки и различие поступательного движения и вращения"><MotionModelNotebook /></section>;
+  }
+  if (chapterId === "uniform-rectilinear-motion") {
+    return <section className={styles.scene} aria-label="Координатный закон равномерного прямолинейного движения"><UniformCoordinateNotebook /></section>;
+  }
+  if (chapterId === "uniform-motion-coordinate-graphs") {
+    return <section className={styles.scene} aria-label="Графики координаты, перемещения, пути и скорости при равномерном движении"><UniformMotionGraphsNotebook /></section>;
+  }
+  if (chapterId === "uniformly-accelerated-motion") {
+    return <section className={styles.scene} aria-label="Графики скорости и перемещения при постоянном ускорении"><AcceleratedMotionNotebook /></section>;
+  }
+  if (chapterId === "circular-motion-kinematics") {
+    return <section className={styles.scene} aria-label="Линейная и угловая скорости, период и частота движения по окружности"><CircularMotionNotebook /></section>;
+  }
+  if (chapterId === "centripetal-acceleration") {
+    return <section className={styles.scene} aria-label="Направление и модуль центростремительного ускорения"><CentripetalAccelerationNotebook /></section>;
   }
   if (chapterId === "heat-amount-and-balance") {
     return <section className={styles.scene} aria-label="Графический опыт о количестве теплоты"><HeatAmountModel /></section>;

@@ -21,11 +21,10 @@ import {
   validateConceptGraph,
 } from "./concept-graph.ts";
 
-test("concept graph maps every one of the 46 task families exactly once", () => {
+test("concept graph maps every registered task family exactly once", () => {
   const templateIds = templateRegistry.map((entry) => entry.id).sort();
   const mappedFamilyIds = Object.keys(taskFamilyConceptNodeIds).sort();
 
-  assert.equal(templateIds.length, 46);
   assert.deepEqual(mappedFamilyIds, templateIds);
   assert.equal(new Set(mappedFamilyIds).size, templateIds.length);
 

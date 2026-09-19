@@ -14,6 +14,7 @@ import {
 } from "../../answer/numeric-answer.ts";
 
 const NUMERIC_PILOTS = [
+  "archimedes-force",
   "average-speed-segments",
   "work-force-distance",
   "electric-power",
@@ -41,7 +42,7 @@ async function fetchTasks(query: string): Promise<ApiJson> {
   return (await response.json()) as ApiJson;
 }
 
-test("ровно восемь семейств используют numeric_input, остальные — single_choice", () => {
+test("явно перечисленные семейства используют numeric_input, остальные — single_choice", () => {
   const numeric = templateRegistry
     .filter((entry) => blueprints[entry.id].answerFormat === "numeric_input")
     .map((entry) => entry.id);
@@ -52,11 +53,10 @@ test("ровно восемь семейств используют numeric_inpu
     (entry) => (blueprints[entry.id].answerFormat ?? "single_choice") === "single_choice",
   );
 
-  // The snapshot adds contact-pressure as a single-choice family.
-  assert.equal(templateRegistry.length, 36);
-  assert.equal(numeric.length, 8);
-  assert.equal(single.length, 28);
+  assert.equal(numeric.length, NUMERIC_PILOTS.length);
+  assert.equal(single.length, templateRegistry.length - NUMERIC_PILOTS.length);
   assert.ok(single.some(({ id }) => id === "contact-pressure"));
+  assert.ok(single.some(({ id }) => id === "refraction-direction"));
 });
 
 test("каждый шаблон имеет валидный answerFormat", () => {

@@ -59,6 +59,7 @@ export interface TaskBlueprint {
   formula: string;
   answerUnit: string | ((p: Params) => string);
   answerKind?: AnswerKind;
+  optionText?: (value: number, params: Params) => string;
   // Формат ввода ответа. Отсутствует => "single_choice" (обратная совместимость
   // со всеми существующими шаблонами). Числовая семантика — в answerKind.
   answerFormat?: AnswerFormat;

@@ -8,21 +8,26 @@ import { skillMetadata, type TopicId } from "./taxonomy.ts";
 
 export type HelpSectionId =
   | "archimedes-force"
+  | "ship-payload"
   | "contact-pressure"
   | "uniform-motion"
   | "uniform-motion-graphs"
   | "accelerated-motion"
+  | "circular-motion"
   | "motion-graphs"
   | "average-speed"
   | "units-conversion"
   | "vectors-relative-motion"
   | "gravity-force"
+  | "gravitation-distance"
   | "hydrostatic-pressure"
   | "newton-second-law"
   | "resultant-force"
   | "friction"
   | "incline"
   | "weight-lift"
+  | "torque-balance"
+  | "movable-pulley"
   | "impulse-force"
   | "momentum"
   | "density-volume"
@@ -31,22 +36,37 @@ export type HelpSectionId =
   | "energy-conservation"
   | "work-energy"
   | "ohms-law"
+  | "conductor-resistance"
+  | "elementary-charge"
   | "full-circuit"
   | "charge-sharing"
   | "capacitor-energy"
   | "electric-power"
+  | "magnetic-field"
   | "ideal-gas"
+  | "amount-of-substance"
+  | "particle-concentration"
+  | "molecular-kinetic-energy"
   | "gas-equation"
+  | "gas-isoprocesses"
+  | "solid-structure"
+  | "liquid-structure"
+  | "vapor-equilibrium"
+  | "air-humidity"
   | "heat-amount"
   | "heat-balance"
   | "fuel-combustion"
   | "heating-melting"
   | "vaporization"
+  | "shadow-and-penumbra"
   | "reflection"
   | "plane-mirror"
+  | "refraction-direction"
   | "refraction"
   | "refractive-index"
   | "thin-lens"
+  | "lens-image-properties"
+  | "vision-correction"
   | "optical-power"
   | "magnification";
 
@@ -131,6 +151,13 @@ export const topicHelpSections: Record<TopicId, TopicHelpSection[]> = {
       formula: "\\vec v_{A/C}=\\vec v_{A/B}+\\vec v_{B/C}",
       mistake: "Нельзя складывать скорости с неясными системами отсчёта. Для взаимно перпендикулярных векторов модуль находят по Пифагору.",
     },
+    {
+      id: "circular-motion",
+      label: "Движение по окружности",
+      shortHint: "Период — время одного оборота; частота — число оборотов за секунду; ускорение направлено к центру.",
+      formula: "\\nu=\\frac{N}{\\Delta t}=\\frac{1}{T},\\quad a=\\frac{v^2}{R}",
+      mistake: "Не называй постоянный модуль скорости постоянным вектором: направление скорости непрерывно меняется.",
+    },
   ],
   dynamics: [
     {
@@ -140,6 +167,13 @@ export const topicHelpSections: Record<TopicId, TopicHelpSection[]> = {
       formula: "F_A=\\rho_{\\text{ж}}gV_{\\text{погр}}",
       mistake: "В формулу входит объём погружённой части в м³, а не обязательно весь объём тела.",
     },
+    {
+      id: "ship-payload",
+      label: "Грузоподъёмность судна",
+      shortHint: "Водоизмещение включает и судно, и максимально допустимый груз.",
+      formula: "m_{\\text{гр}}=m_{\\text{в}}-m",
+      mistake: "Не принимай всё водоизмещение за груз: сначала вычти массу самого судна.",
+    },
     {id:"hydrostatic-pressure",label:"Давление жидкости",shortHint:"На глубине h давление покоящейся жидкости равно ρgh.",formula:"p=\\rho gh",mistake:"Глубину отсчитывают от свободной поверхности; форму и площадь сосуда в формулу не подставляют."},
     {
       id: "gravity-force",
@@ -147,6 +181,13 @@ export const topicHelpSections: Record<TopicId, TopicHelpSection[]> = {
       shortHint: "Земля действует на тело силой, прямо пропорциональной его массе.",
       formula: "F_{\\text{т}}=gm",
       mistake: "Сила тяжести приложена к телу и измеряется в ньютонах. Массу подставляй в килограммах.",
+    },
+    {
+      id: "gravitation-distance",
+      label: "Закон тяготения и расстояние",
+      shortHint: "При неизменных массах сила обратно пропорциональна квадрату расстояния между центрами.",
+      formula: "F\\sim\\frac{1}{r^2}",
+      mistake: "Если расстояние изменилось в k раз, сила меняется в k² раз, а не в k раз.",
     },
     {
       id: "newton-second-law",
@@ -182,6 +223,20 @@ export const topicHelpSections: Record<TopicId, TopicHelpSection[]> = {
       shortHint: "Вес P действует на опору, а реакция N — на тело; при контакте их модули равны.",
       formula: "P=N=m(g\\pm a)",
       mistake: "P и N приложены к разным телам. Формула предполагает, что по вертикали действуют только тяжесть и опора; знак задаёт ускорение.",
+    },
+    {
+      id: "torque-balance",
+      label: "Момент силы и равновесие",
+      shortHint: "Плечо — перпендикуляр от оси до линии действия силы; для равновесия сумма моментов равна нулю.",
+      formula: "M=\\pm Fl,\\quad \\sum M=0",
+      mistake: "Не подставляй расстояние до точки приложения автоматически: нужно кратчайшее расстояние до линии действия силы.",
+    },
+    {
+      id: "movable-pulley",
+      label: "Подвижный блок",
+      shortHint: "Сосчитай ветви одной нити, которые поддерживают движущийся блок вместе с грузом.",
+      formula: "P\\approx 2F",
+      mistake: "Неподвижный блок только меняет направление силы; выигрыш в два раза даёт подвижный блок с двумя несущими ветвями.",
     },
     {
       id: "impulse-force",
@@ -231,11 +286,25 @@ export const topicHelpSections: Record<TopicId, TopicHelpSection[]> = {
   ],
   electrodynamics: [
     {
+      id: "elementary-charge",
+      label: "Элементарный заряд",
+      shortHint: "Модуль заряда тела равен целому числу элементарных зарядов.",
+      formula: "N=\\frac{|q|}{e},\\quad e=1{,}6\\cdot10^{-19}\\,\\text{Кл}",
+      mistake: "Одинаковая степень 10⁻¹⁹ сокращается; результат N должен быть целым числом.",
+    },
+    {
       id: "ohms-law",
       label: "Закон Ома",
       shortHint: "Сначала определи, что дано: напряжение U и сопротивление R. Потом подставь в I = U/R.",
       formula: "I=\\frac{U}{R}",
       mistake: "Не умножай U на R: при большем сопротивлении ток меньше.",
+    },
+    {
+      id: "conductor-resistance",
+      label: "Сопротивление проводника",
+      shortHint: "Сопротивление растёт с длиной и удельным сопротивлением, но уменьшается при увеличении площади сечения.",
+      formula: "R=\\rho\\frac{l}{S}",
+      mistake: "Площадь поперечного сечения стоит в знаменателе: более толстый провод при прочих равных имеет меньшее сопротивление.",
     },
     {
       id: "full-circuit",
@@ -265,6 +334,13 @@ export const topicHelpSections: Record<TopicId, TopicHelpSection[]> = {
       formula: "P=UI=I^2R",
       mistake: "Не останавливайся на напряжении U=IR: для мощности нужен еще множитель I.",
     },
+    {
+      id: "magnetic-field",
+      label: "Направление магнитного поля",
+      shortHint: "Северный конец стрелки показывает направление поля. Для катушки пальцы правой руки идут по току, большой палец показывает северный торец.",
+      formula: "I\\;\\Longrightarrow\\;\\vec B",
+      mistake: "Не путай направление тока с направлением линии поля и не отделяй один магнитный полюс от другого.",
+    },
   ],
   thermodynamics: [
     {
@@ -273,6 +349,27 @@ export const topicHelpSections: Record<TopicId, TopicHelpSection[]> = {
       shortHint: "Масса зависит от плотности и объёма: m = ρV.",
       formula: "m=\\rho V",
       mistake: "Следи за единицами объёма: см³ и м³ дают разные масштабы.",
+    },
+    {
+      id: "amount-of-substance",
+      label: "Количество вещества и число частиц",
+      shortHint: "Сначала переведи массу образца в количество вещества, затем количество вещества — в число частиц.",
+      formula: "N=\\frac{m}{M}N_A",
+      mistake: "Постоянная Авогадро показывает число частиц в одном моле, поэтому массу нельзя умножать на Nₐ напрямую.",
+    },
+    {
+      id: "particle-concentration",
+      label: "Концентрация частиц",
+      shortHint: "Концентрация показывает, сколько частиц приходится на один кубический метр объёма.",
+      formula: "n=\\frac{N}{V}",
+      mistake: "Литры нужно перевести в кубические метры до деления: 1 л = 10⁻³ м³.",
+    },
+    {
+      id: "molecular-kinetic-energy",
+      label: "Температура и энергия молекул",
+      shortHint: "Абсолютная температура задаёт среднюю кинетическую энергию поступательного движения молекулы.",
+      formula: "\\overline{E_k}=\\frac32kT",
+      mistake: "В формулу подставляют температуру в кельвинах и сохраняют множитель 3/2.",
     },
     {
       id: "ideal-gas",
@@ -303,6 +400,41 @@ export const topicHelpSections: Record<TopicId, TopicHelpSection[]> = {
       mistake: "Не усредняй температуры без учета масс.",
     },
     {
+      id: "gas-isoprocesses",
+      label: "Изопроцессы идеального газа",
+      shortHint: "Название процесса указывает, какой параметр остаётся постоянным.",
+      formula: "T=\\mathrm{const}:\\ pV=\\mathrm{const};\\quad p=\\mathrm{const}:\\ \\frac VT=\\mathrm{const};\\quad V=\\mathrm{const}:\\ \\frac pT=\\mathrm{const}",
+      mistake: "Не выбирай закон по двум изменяющимся величинам: сначала найди параметр, который зафиксирован.",
+    },
+    {
+      id: "solid-structure",
+      label: "Строение твёрдых тел",
+      shortHint: "Связывай дальний порядок и ориентацию кристаллов с наблюдаемыми свойствами.",
+      formula: "\\text{строение}\\;\\Longrightarrow\\;\\text{свойство}",
+      mistake: "Внешний вид образца даёт гипотезу, но тип строения подтверждают анизотропия и характер плавления.",
+    },
+    {
+      id: "liquid-structure",
+      label: "Строение жидкостей",
+      shortHint: "Ближний порядок допускает перестройку соседей, а у поверхности силы притяжения не компенсируются.",
+      formula: "\\text{временные положения}\\to\\text{текучесть};\\quad \\sum\\vec F_{\\text{пов}}\\ne0",
+      mistake: "Не объясняй текучесть отсутствием взаимодействия: частицы жидкости близки и взаимодействуют, но меняют временные положения.",
+    },
+    {
+      id: "vapor-equilibrium",
+      label: "Испарение и насыщенный пар",
+      shortHint: "Сравни встречные потоки молекул и проверь температуру и границу системы.",
+      formula: "N_{\\text{исп}}=N_{\\text{конд}}\\;\\Longleftrightarrow\\;\\text{динамическое равновесие}",
+      mistake: "Не принимай постоянный уровень за остановку молекул и не применяй закон Бойля — Мариотта к насыщенному пару с жидкостью.",
+    },
+    {
+      id: "air-humidity",
+      label: "Влажность воздуха",
+      shortHint: "Относительная влажность показывает, какую долю от насыщения составляет водяной пар при данной температуре.",
+      formula: "\\varphi=\\frac{p_{\\text{п}}}{p_{\\text{н}}}\\cdot100\\%=\\frac{\\rho_{\\text{п}}}{\\rho_{\\text{н}}}\\cdot100\\%",
+      mistake: "Не сравнивай значения, относящиеся к разным температурам: предел насыщения меняется при нагревании и охлаждении.",
+    },
+    {
       id: "fuel-combustion",
       label: "Горение топлива",
       shortHint: "Удельная теплота сгорания относится к одному килограмму; при полном сгорании Q=qm.",
@@ -326,6 +458,13 @@ export const topicHelpSections: Record<TopicId, TopicHelpSection[]> = {
   ],
   optics: [
     {
+      id: "shadow-and-penumbra",
+      label: "Тень и полутень",
+      shortHint: "Точечный источник даёт резкую границу тени; протяжённый источник создаёт ещё и полутень.",
+      formula: "\\text{источник}\\;\\to\\;\\text{препятствие}\\;\\to\\;\\text{экран}",
+      mistake: "Сначала определи размер источника в условиях задачи: полутень связана с тем, что разные его части видны с экрана по-разному.",
+    },
+    {
       id: "reflection",
       label: "Отражение",
       shortHint: "Угол отражения равен углу падения; оба отсчитываются от нормали.",
@@ -338,6 +477,12 @@ export const topicHelpSections: Record<TopicId, TopicHelpSection[]> = {
       shortHint: "Мнимое изображение находится за зеркалом на том же расстоянии, что предмет перед ним.",
       formula: "L=2d",
       mistake: "Расстояние между предметом и изображением — это 2d, а не расстояние до зеркала.",
+    },
+    {
+      id: "refraction-direction",
+      label: "Куда поворачивает луч",
+      shortHint: "В оптически более плотную среду луч отклоняется к нормали; в менее плотную — от нормали.",
+      mistake: "Сначала определи направление перехода и отсчитывай оба угла от нормали. При падении по нормали поворота нет.",
     },
     {
       id: "refraction",
@@ -361,6 +506,20 @@ export const topicHelpSections: Record<TopicId, TopicHelpSection[]> = {
       mistake: "Выражая f, следи за знаменателем: там разность d − F, а не сумма.",
     },
     {
+      id: "lens-image-properties",
+      label: "Изображение в линзе",
+      shortHint: "Положение предмета относительно F и 2F определяет место, размер и вид изображения.",
+      formula: "d>2F;\\quad d=2F;\\quad F<d<2F;\\quad d<F",
+      mistake: "Экран показывает только действительное изображение, где пересекаются сами лучи. Для мнимого пересекаются их продолжения.",
+    },
+    {
+      id: "vision-correction",
+      label: "Коррекция зрения",
+      shortHint: "Положение фокуса относительно сетчатки определяет, нужно ослабить или усилить сходимость лучей.",
+      formula: "D<0\\;\\text{— рассеивающая};\\quad D>0\\;\\text{— собирающая}",
+      mistake: "Перед сетчаткой — рассеивающая линза с D < 0; за сетчаткой — собирающая с D > 0.",
+    },
+    {
       id: "optical-power",
       label: "Оптическая сила",
       shortHint: "Оптическая сила — обратная величина фокусного расстояния в метрах.",
@@ -382,11 +541,15 @@ const blueprintTargets: Partial<
 > = {
   "formula-substitution": { topicId: "kinematics", sectionId: "accelerated-motion" },
   "free-fall": { topicId: "kinematics", sectionId: "accelerated-motion" },
+  "projectile-components": { topicId: "kinematics", sectionId: "accelerated-motion" },
   "average-speed-segments": { topicId: "kinematics", sectionId: "average-speed" },
   "average-speed-with-stop": { topicId: "kinematics", sectionId: "average-speed" },
   "uniform-motion-basic": { topicId: "kinematics", sectionId: "uniform-motion" },
+  "uniform-coordinate-law": { topicId: "kinematics", sectionId: "uniform-motion-graphs" },
   "uniform-motion-graphs": { topicId: "kinematics", sectionId: "uniform-motion-graphs" },
   "unit-conversion-speed": { topicId: "kinematics", sectionId: "units-conversion" },
+  "rotation-frequency": { topicId: "kinematics", sectionId: "circular-motion" },
+  "centripetal-acceleration": { topicId: "kinematics", sectionId: "circular-motion" },
   "nth-second-displacement": { topicId: "kinematics", sectionId: "accelerated-motion" },
   "graph-area": { topicId: "kinematics", sectionId: "motion-graphs" },
   "graph-recognition": { topicId: "kinematics", sectionId: "motion-graphs" },
@@ -396,7 +559,9 @@ const blueprintTargets: Partial<
   "relative-motion-overtake": { topicId: "kinematics", sectionId: "vectors-relative-motion" },
   "relative-velocity-vectors": { topicId: "kinematics", sectionId: "vectors-relative-motion" },
   "gravity-force": { topicId: "dynamics", sectionId: "gravity-force" },
+  "gravitation-distance": { topicId: "dynamics", sectionId: "gravitation-distance" },
   "archimedes-force": { topicId: "dynamics", sectionId: "archimedes-force" },
+  "ship-payload": { topicId: "dynamics", sectionId: "ship-payload" },
   "hydrostatic-pressure": { topicId: "dynamics", sectionId: "hydrostatic-pressure" },
   "newton-second": { topicId: "dynamics", sectionId: "newton-second-law" },
   "resultant-force": { topicId: "dynamics", sectionId: "resultant-force" },
@@ -404,32 +569,50 @@ const blueprintTargets: Partial<
   "friction-force": { topicId: "dynamics", sectionId: "friction" },
   "incline-force": { topicId: "dynamics", sectionId: "incline" },
   "weight-lift": { topicId: "dynamics", sectionId: "weight-lift" },
+  "torque-balance": { topicId: "dynamics", sectionId: "torque-balance" },
+  "movable-pulley": { topicId: "dynamics", sectionId: "movable-pulley" },
   "impulse-momentum": { topicId: "dynamics", sectionId: "impulse-force" },
   "inelastic-collision-speed": { topicId: "dynamics", sectionId: "momentum" },
   "kinetic-energy": { topicId: "dynamics", sectionId: "kinetic-energy" },
   "gravitational-potential-energy": { topicId: "dynamics", sectionId: "potential-energy" },
   "mechanical-energy-conservation": { topicId: "dynamics", sectionId: "energy-conservation" },
   "work-force-distance": { topicId: "dynamics", sectionId: "work-energy" },
+  "work-at-angle": { topicId: "dynamics", sectionId: "work-energy" },
   "ohm-law": { topicId: "electrodynamics", sectionId: "ohms-law" },
+  "conductor-resistance": { topicId: "electrodynamics", sectionId: "conductor-resistance" },
+  "elementary-charge-count": { topicId: "electrodynamics", sectionId: "elementary-charge" },
+  "magnetic-field-direction": { topicId: "electrodynamics", sectionId: "magnetic-field" },
   "resistor-network": { topicId: "electrodynamics", sectionId: "ohms-law" },
   "source-internal-resistance": { topicId: "electrodynamics", sectionId: "full-circuit" },
   "charge-sharing": { topicId: "electrodynamics", sectionId: "charge-sharing" },
   "capacitor-energy": { topicId: "electrodynamics", sectionId: "capacitor-energy" },
   "electric-power": { topicId: "electrodynamics", sectionId: "electric-power" },
   "ideal-gas-state": { topicId: "thermodynamics", sectionId: "gas-equation" },
+  "ideal-gas-isoprocess": { topicId: "thermodynamics", sectionId: "gas-isoprocesses" },
+  "solid-structure-properties": { topicId: "thermodynamics", sectionId: "solid-structure" },
+  "liquid-structure-properties": { topicId: "thermodynamics", sectionId: "liquid-structure" },
+  "vapor-dynamic-equilibrium": { topicId: "thermodynamics", sectionId: "vapor-equilibrium" },
+  "relative-humidity-pressure": { topicId: "thermodynamics", sectionId: "air-humidity" },
+  "molecule-count-from-mass": { topicId: "thermodynamics", sectionId: "amount-of-substance" },
+  "particle-concentration": { topicId: "thermodynamics", sectionId: "particle-concentration" },
+  "molecular-kinetic-energy": { topicId: "thermodynamics", sectionId: "molecular-kinetic-energy" },
   "gas-state-ratio": { topicId: "thermodynamics", sectionId: "gas-equation" },
   "heat-amount": { topicId: "thermodynamics", sectionId: "heat-amount" },
   "heat-balance-simple": { topicId: "thermodynamics", sectionId: "heat-balance" },
   "fuel-combustion-heat": { topicId: "thermodynamics", sectionId: "fuel-combustion" },
   "phase-change-heat": { topicId: "thermodynamics", sectionId: "heating-melting" },
   "vaporization-heat": { topicId: "thermodynamics", sectionId: "vaporization" },
+  "shadow-and-penumbra": { topicId: "optics", sectionId: "shadow-and-penumbra" },
   "reflection-angle": { topicId: "optics", sectionId: "reflection" },
   "plane-mirror-separation": { topicId: "optics", sectionId: "plane-mirror" },
+  "refraction-direction": { topicId: "optics", sectionId: "refraction-direction" },
   "refractive-index-speed": { topicId: "optics", sectionId: "refractive-index" },
   "snell-index-ratio": { topicId: "optics", sectionId: "refraction" },
   "thin-lens-image-distance": { topicId: "optics", sectionId: "thin-lens" },
   "lens-optical-power": { topicId: "optics", sectionId: "optical-power" },
   "lens-image-height": { topicId: "optics", sectionId: "magnification" },
+  "lens-image-properties": { topicId: "optics", sectionId: "lens-image-properties" },
+  "vision-correction": { topicId: "optics", sectionId: "vision-correction" },
 };
 
 function normalize(value: string | undefined) {
@@ -559,6 +742,7 @@ function inferSection(task: HelpableQuizTask, topicId: TopicId): HelpSectionId {
   }
 
   if (topicId === "electrodynamics") {
+    if (/элементар|10⁻¹⁹|10\^?-?19|электрон|\|q\|\/?e/.test(text)) return "elementary-charge";
     if (/заряд|поровну|дели|усредн/.test(text)) return "charge-sharing";
     if (/конденс|cu\^?2|u\^?2|микрофарад/.test(text)) return "capacitor-energy";
     if (/эдс|внутрен|полная цеп|r \+ r|r\+r/.test(text)) return "full-circuit";
@@ -649,6 +833,9 @@ export function getHelpTargetForMistake(
   }
 
   if (topicId === "electrodynamics") {
+    if (/элементар|10⁻¹⁹|10\^?-?19|электрон|целое число/.test(mistakeText)) {
+      return createTarget(topicId, "elementary-charge", "mistake");
+    }
     if (/заряд|поровну|дели|усредн/.test(mistakeText)) {
       return createTarget(topicId, "charge-sharing", "mistake");
     }
