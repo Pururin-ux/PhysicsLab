@@ -403,6 +403,12 @@ export const misconceptionMetadataById: Record<string, MisconceptionMetadata> = 
     helpSectionId: "transmission-line-loss",
     shortHint: "Сначала вычисли ток P/U; мощность нагрева того же провода равна I²R.",
   },
+  "em-wavelength-forgets-mega": {
+    id: "em-wavelength-forgets-mega",
+    label: "считает мегагерцы герцами",
+    helpSectionId: "em-wavelength-vacuum",
+    shortHint: "1 МГц — это миллион герц. Переведи частоту перед делением скорости на неё.",
+  },
   "induction-missing-turns": {
     id: "induction-missing-turns",
     label: "забывает число витков",
@@ -1079,6 +1085,15 @@ export const taskLearningMetadataByTemplateId: Record<string, TaskLearningMetada
     focusLabel: "Мощность нагрева линии",
     shortHint: "При прежней мощности на входе найди ток P/U, затем возведи его в квадрат и умножь на сопротивление линии.",
     misconceptionIds: ["line-loss-missing-square"],
+  },
+  "em-wavelength-vacuum": {
+    templateId: "em-wavelength-vacuum",
+    topicId: "electrodynamics",
+    helpSectionId: "em-wavelength-vacuum",
+    skillId: "em-wavelength-vacuum",
+    focusLabel: "Длина радиоволны в вакууме",
+    shortHint: "Переведи частоту из МГц в Гц и найди длину волны по λ = c/ν.",
+    misconceptionIds: ["em-wavelength-forgets-mega"],
   },
   "induced-emf-magnitude": {
     templateId: "induced-emf-magnitude",

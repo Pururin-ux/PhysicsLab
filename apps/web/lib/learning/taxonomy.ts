@@ -74,6 +74,7 @@ export type SkillId =
   | "ac-oscillogram-frequency"
   | "transformer-voltage-ratio"
   | "transmission-line-loss"
+  | "em-wavelength-vacuum"
   | "induced-emf-magnitude"
   | "ampere-force-magnitude"
   | "lorentz-force-magnitude"
@@ -660,6 +661,14 @@ export const skillMetadata: Record<SkillId, SkillMetadata> = {
     title: "Нагрев линии передачи",
     shortTitle: "Потери в линии",
     description: "Мощность нагрева провода при заданной мощности на входе, напряжении и активном сопротивлении линии.",
+  },
+  "em-wavelength-vacuum": {
+    id: "em-wavelength-vacuum",
+    topicId: "electrodynamics",
+    sectionId: "electrodynamics",
+    title: "Длина электромагнитной волны в вакууме",
+    shortTitle: "Длина радиоволны",
+    description: "Длина волны по частоте источника и скорости распространения в вакууме.",
   },
   "induced-emf-magnitude": {
     id: "induced-emf-magnitude",

@@ -126,6 +126,7 @@ export const textbookChapterIds = [
   "transformer",
   "electric-energy-transmission",
   "energy-sources-and-environment",
+  "electromagnetic-waves",
   "photoelectric-effect",
   "light-pressure-and-duality",
   "rutherford-scattering",

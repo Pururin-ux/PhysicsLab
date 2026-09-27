@@ -44,6 +44,12 @@ Scope: current behaviour implemented in `apps/web`.
   line loss from unmeasured production impacts; this is neither an impact
   ranking nor proof of mastery
   ([decision 0016](../decisions/0016-provisional-environment-after-transmission.md)).
+- A separate Grade XI electromagnetic-wave question compares field repetition
+  at two frequencies on one fixed distance in vacuum. The graph represents
+  one electric-field component, and the numeric family practices c = λν with
+  an explicit MHz conversion. It neither assumes completion of the energy
+  sequence nor covers all radiation effects
+  ([decision 0017](../decisions/0017-provisional-electromagnetic-wave-question.md)).
 - The Grade X magnetic-force chapter starts from the Grade VIII observation of
   a field and distinguishes the prescribed external induction B from the force
   on a straight current-carrying segment. Its angle graph shows the magnitude

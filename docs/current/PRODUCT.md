@@ -43,7 +43,7 @@ and fuel respectively.
 Repeat and explanation remain available. This is a provisional connection,
 not a required sequence or a mastery claim.
 
-The textbook at `/learn` currently connects 128 chapters for
+The textbook at `/learn` currently connects 129 chapters for
 selected grade 7, grade 8, grade 9, grade 10 and grade 11 topics. Grade 11 now has
 seven connected but partial chapters on mechanical oscillations and waves, with
 focused practice for cycle frequency, spring-pendulum period,
@@ -84,8 +84,13 @@ thermal, hydro, nuclear and wind energy paths and their different environmental
 questions. Mio compares contextual photographs, while the DOM explanation
 and exact self-check reject the inference that lower line loss erases every
 production impact. The photos are not measurements or Belarus-specific sites.
-Real-grid effects, quantitative ecological assessment, electromagnetic waves,
-reactive loads and broader energy/graph practice remain open.
+An independent partial § 12 question now compares two frequencies over the
+same 6 m in vacuum. A graph of one electric-field component makes the
+frequency–wavelength relationship visible; focused practice converts MHz to Hz
+and finds the wavelength with c = λν. The graph is not the path of a particle
+or a complete picture of both fields. Effects of electromagnetic radiation,
+real-grid effects, quantitative ecological assessment, reactive loads and
+broader energy/graph practice remain open.
 Two further partial grade 11 chapters connect photoelectric effect (§§ 27–28)
 with light pressure and wave-particle duality (§ 29). Their explanations and
 models are linked; light-pressure comparison is qualitative and does not add a

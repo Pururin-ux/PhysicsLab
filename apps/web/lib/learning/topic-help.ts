@@ -57,6 +57,7 @@ export type HelpSectionId =
   | "ac-oscillogram-frequency"
   | "transformer-voltage-ratio"
   | "transmission-line-loss"
+  | "em-wavelength-vacuum"
   | "induced-emf-magnitude"
   | "ampere-force-magnitude"
   | "lorentz-force-magnitude"
@@ -479,6 +480,13 @@ export const topicHelpSections: Record<TopicId, TopicHelpSection[]> = {
       mistake: "Потеря в ваттах — это часть мощности источника, ушедшая в нагрев; ток в формуле нужно возвести в квадрат.",
     },
     {
+      id: "em-wavelength-vacuum",
+      label: "Длина радиоволны в вакууме",
+      shortHint: "При прежней скорости большая частота означает меньшую длину волны.",
+      formula: "\\lambda=\\frac{c}{\\nu}",
+      mistake: "МГц означает миллионы колебаний за секунду. Переведи частоту в Гц, затем дели скорость на частоту.",
+    },
+    {
       id: "induced-emf-magnitude",
       label: "Модуль ЭДС индукции катушки",
       shortHint: "При одинаковом изменении потока через каждый виток умножь изменение одного витка на N и раздели на время.",
@@ -861,6 +869,7 @@ const blueprintTargets: Partial<
   "ac-oscillogram-frequency": { topicId: "electrodynamics", sectionId: "ac-oscillogram-frequency" },
   "transformer-voltage-ratio": { topicId: "electrodynamics", sectionId: "transformer-voltage-ratio" },
   "transmission-line-loss": { topicId: "electrodynamics", sectionId: "transmission-line-loss" },
+  "em-wavelength-vacuum": { topicId: "electrodynamics", sectionId: "em-wavelength-vacuum" },
   "induced-emf-magnitude": { topicId: "electrodynamics", sectionId: "induced-emf-magnitude" },
   "ampere-force-magnitude": { topicId: "electrodynamics", sectionId: "ampere-force-magnitude" },
   "lorentz-force-magnitude": { topicId: "electrodynamics", sectionId: "lorentz-force-magnitude" },

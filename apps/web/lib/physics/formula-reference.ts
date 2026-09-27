@@ -1140,6 +1140,19 @@ export const formulaReference: FormulaReferenceGroup[] = [
         ],
         limitation: "Упрощённая цепь с активной нагрузкой и сопротивлением линии. Не учитывает реактивную мощность, потери трансформаторов и прочие эффекты реальной сети.",
       },
+      {
+        id: "em-wavelength-vacuum",
+        relatedSkillIds: ["em-wavelength-vacuum"],
+        title: "Длина электромагнитной волны в вакууме",
+        formula: "\\lambda=\\frac{c}{\\nu}",
+        caption: "за один период волна проходит одну длину",
+        symbols: [
+          { latex: "\\lambda", description: "длина волны в вакууме, м" },
+          { latex: "c", description: "скорость электромагнитной волны в вакууме, м/с" },
+          { latex: "\\nu", description: "частота источника, Гц" },
+        ],
+        limitation: "Для распространения в вакууме: c ≈ 3·10⁸ м/с. В веществе скорость и длина волны могут отличаться.",
+      },
     ],
   },
   {

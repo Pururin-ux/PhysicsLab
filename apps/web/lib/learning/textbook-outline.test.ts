@@ -152,6 +152,19 @@ test("XI electricity questions reach transmission and its environmental context 
   assert.equal(environment.connection, undefined);
 });
 
+test("XI electromagnetic wave question has a direct practice entry without a false sequence", () => {
+  const chapter = textbookChapters.find(item => item.id === "electromagnetic-waves");
+  const entry = learningEntries.find(item => item.id === "electromagnetic-waves");
+  assert.ok(chapter);
+  assert.ok(entry);
+  assert.equal(chapter.grade, 11);
+  assert.equal(chapter.source.section, "§ 12");
+  assert.equal(chapter.practice.href, "/practice/family/em-wavelength-vacuum");
+  assert.ok(entry.resources.some(resource => resource.href === chapter.practice.href));
+  assert.ok(entry.resources.some(resource => resource.href === "/learn/mechanical-waves"));
+  assert.equal(entry.connection, undefined);
+});
+
 test("Grade X magnetic force, induction and self-induction connect to exact practice and optional XI foundations", () => {
   const magneticChapter = textbookChapters.find(item => item.id === "magnetic-field-and-ampere-force");
   const magnetic = learningEntries.find(item => item.id === "magnetic-field-and-ampere-force");

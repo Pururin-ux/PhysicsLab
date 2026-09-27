@@ -39,6 +39,9 @@ export default async function TextbookChapterPage({ params, searchParams }: Prop
   const EnergySourcesNotebook = chapter.id === "energy-sources-and-environment"
     ? (await import("../../../components/learning/EnergySourcesNotebook")).EnergySourcesNotebook
     : null;
+  const ElectromagneticWaveNotebook = chapter.id === "electromagnetic-waves"
+    ? (await import("../../../components/learning/ElectromagneticWaveNotebook")).ElectromagneticWaveNotebook
+    : null;
   const InductionNotebook = chapter.id === "electromagnetic-induction"
     ? (await import("../../../components/learning/InductionNotebook")).InductionNotebook
     : null;
@@ -89,7 +92,7 @@ export default async function TextbookChapterPage({ params, searchParams }: Prop
       <h1 className="type-h1 mt-3">{chapter.title}</h1>
       <p className="mt-5 text-lg leading-relaxed">{chapter.lead}</p>
     </header>
-    {chapter.id === "mechanical-oscillations" ? <TextbookStaticStory /> : LcNotebook ? <LcNotebook /> : AcNotebook ? <AcNotebook /> : TransformerNotebook ? <TransformerNotebook /> : EnergyTransmissionNotebook ? <EnergyTransmissionNotebook /> : EnergySourcesNotebook ? <EnergySourcesNotebook /> : AmpereForceNotebook ? <AmpereForceNotebook /> : LorentzTrackNotebook ? <LorentzTrackNotebook /> : InductionNotebook ? <InductionNotebook /> : SelfInductionNotebook ? <SelfInductionNotebook /> : MetalTemperatureNotebook ? <MetalTemperatureNotebook /> : ElectrolyteEvidenceNotebook ? <ElectrolyteEvidenceNotebook /> : GasDischargeNotebook ? <GasDischargeNotebook /> : SemiconductorLightNotebook ? <SemiconductorLightNotebook /> : modernPhysicsChapterIds.has(chapter.id) ? <ModernPhysicsScene chapterId={chapter.id} /> : <TextbookScene chapterId={chapter.id} />}
+    {chapter.id === "mechanical-oscillations" ? <TextbookStaticStory /> : LcNotebook ? <LcNotebook /> : AcNotebook ? <AcNotebook /> : TransformerNotebook ? <TransformerNotebook /> : EnergyTransmissionNotebook ? <EnergyTransmissionNotebook /> : EnergySourcesNotebook ? <EnergySourcesNotebook /> : ElectromagneticWaveNotebook ? <ElectromagneticWaveNotebook /> : AmpereForceNotebook ? <AmpereForceNotebook /> : LorentzTrackNotebook ? <LorentzTrackNotebook /> : InductionNotebook ? <InductionNotebook /> : SelfInductionNotebook ? <SelfInductionNotebook /> : MetalTemperatureNotebook ? <MetalTemperatureNotebook /> : ElectrolyteEvidenceNotebook ? <ElectrolyteEvidenceNotebook /> : GasDischargeNotebook ? <GasDischargeNotebook /> : SemiconductorLightNotebook ? <SemiconductorLightNotebook /> : modernPhysicsChapterIds.has(chapter.id) ? <ModernPhysicsScene chapterId={chapter.id} /> : <TextbookScene chapterId={chapter.id} />}
     {isSpeed ? <details className="border-y border-[var(--border-strong)] py-2"><summary className="min-h-11 cursor-pointer py-3 font-bold">Объяснение, формулы и разобранный пример</summary><div className="flex flex-col gap-8 py-5">{explanation}</div></details> : <>
       <details className="text-sm text-[var(--text-secondary)]"><summary className="min-h-11 cursor-pointer py-3">В этой теме</summary><nav aria-label="В этом объяснении" className="flex flex-wrap gap-x-5 gap-y-3 py-3 text-[var(--action-primary)]">{chapter.sections.map((section, i) => <Link key={section.title} href={`#idea-${i}`}>{section.title}</Link>)}<Link href="#self-check">Самопроверка</Link></nav></details>
       {explanation}

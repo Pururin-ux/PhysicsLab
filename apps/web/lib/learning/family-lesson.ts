@@ -10,6 +10,7 @@ const lessons:Partial<Record<TemplateId,{href:string;label:string}>>={
   "ac-oscillogram-frequency":{href:"/learn/alternating-current",label:"Учебник: частота тока по двум максимумам"},
   "transformer-voltage-ratio":{href:"/learn/transformer",label:"Учебник: напряжение трансформатора"},
   "transmission-line-loss":{href:"/learn/electric-energy-transmission",label:"Учебник: нагрев линии передачи"},
+  "em-wavelength-vacuum":{href:"/learn/electromagnetic-waves",label:"Учебник: длина радиоволны в вакууме"},
   "induced-emf-magnitude":{href:"/learn/electromagnetic-induction",label:"Учебник: изменение потока и ЭДС индукции"},
   "ampere-force-magnitude":{href:"/learn/magnetic-field-and-ampere-force",label:"Учебник: индукция поля и сила Ампера"},
   "lorentz-force-magnitude":{href:"/learn/lorentz-force-and-charge-motion",label:"Учебник: движение заряда в магнитном поле"},

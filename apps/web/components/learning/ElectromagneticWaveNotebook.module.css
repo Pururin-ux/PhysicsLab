@@ -1,0 +1,44 @@
+.notebook {
+  border-block: 1px solid var(--border-strong);
+  color: var(--text-primary);
+}
+.header { padding: clamp(1.2rem, 3vw, 2rem); }
+.header p, .header h2 { margin: 0; }
+.eyebrow {
+  color: var(--action-primary);
+  font-size: .78rem;
+  font-weight: 800;
+  letter-spacing: .045em;
+  text-transform: uppercase;
+}
+.header h2 {
+  max-width: 630px;
+  margin-block: .6rem .9rem;
+  font-size: clamp(1.55rem, 3vw, 2rem);
+  line-height: 1.2;
+  letter-spacing: -.025em;
+}
+.header > p:last-child { max-width: 65ch; color: var(--text-secondary); line-height: 1.6; }
+.graphs { padding: 0 clamp(1.2rem, 3vw, 2rem) 1rem; }
+.record { padding-block: .55rem 1rem; }
+.record + .record { border-top: 1px solid var(--border-strong); }
+.recordHeading { display: flex; justify-content: space-between; gap: 1rem; align-items: baseline; margin-bottom: .35rem; }
+.recordHeading strong { font-size: 1.15rem; }
+.recordHeading span { color: var(--text-secondary); font-size: .9rem; }
+.plot { display: block; width: 100%; height: 92px; overflow: visible; }
+.grid { stroke: var(--border-strong); stroke-dasharray: 2 3; stroke-width: .8; }
+.zero { stroke: var(--border-strong); stroke-width: 1; }
+.trace { fill: none; stroke: var(--action-primary); stroke-width: 2.3; stroke-linejoin: round; stroke-linecap: round; vector-effect: non-scaling-stroke; }
+.record + .record .trace { stroke: var(--text-primary); }
+.axis { display: flex; justify-content: space-between; color: var(--text-secondary); font-size: .82rem; font-variant-numeric: tabular-nums; }
+.answer { border-top: 1px solid var(--border-strong); padding: .25rem clamp(1.2rem, 3vw, 2rem); }
+.answer summary { min-height: 48px; padding: .85rem 0; cursor: pointer; font-weight: 750; line-height: 1.4; }
+.answer summary:focus-visible { outline: 3px solid var(--action-primary); outline-offset: 3px; }
+.answerBody { max-width: 68ch; padding: .1rem 0 1rem; line-height: 1.65; }
+.answerBody p { margin: .5rem 0; }
+.boundary { margin: 0; padding: 1rem clamp(1.2rem, 3vw, 2rem) 1.4rem; color: var(--text-secondary); font-size: .88rem; line-height: 1.55; }
+@media (max-width: 500px) {
+  .recordHeading { align-items: start; }
+  .recordHeading span { max-width: 12ch; text-align: right; }
+  .plot { height: 78px; }
+}
