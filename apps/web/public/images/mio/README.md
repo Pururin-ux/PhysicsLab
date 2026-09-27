@@ -154,3 +154,15 @@ exec-8cdce50d-4476-410d-9b9d-8de97c832357.png с исходным портрет
 - Runtime: `textbook-gas-discharge-v1.webp` (1280×853, 103 KB), optimized from preserved built-in imagegen source `exec-9a77ce83-56c5-406e-83d4-d7d1bde3370a.png`.
 - Identity reference: `mio-thinking-v1.png`; style reference: `textbook-electrolytes-v1.webp`. Mio records a skeptical observation while looking toward the plate gap, behind a demonstration shield. Her turquoise forelock and gold star remain on their established sides.
 - Artwork shows the externally heated moment of a teacher-led demonstration, with no spark or drawn ions. The electrometer is only partly visible; DOM observations state what it showed. The plate gap and the modest flame are legible, but image geometry is not a calibrated diagram or a procedure for repeating the experiment.
+
+## Semiconductor light response · 2026-09-27
+
+- Runtime: textbook-semiconductor-light-v1.webp (1280×853, 114 KB), optimized from preserved built-in imagegen source exec-a3b9eee1-927b-42a7-aa02-14f6153ed1a7.png.
+- Identity reference: mio-thinking-v1.png; context/style reference: textbook-electrolytes-v1.webp. Mio has the established navy bob, viewer-left turquoise forelock, viewer-right gold star and turquoise jacket; her closed-mouth focus suits a surprising observation.
+- Mio lifts an opaque shade from a photoresistor beneath a desk lamp. The meter face is uncalibrated contextual art: its painted needle is not a result. DOM comparison states the qualitative resistance/current change at unchanged voltage; no numerical data or carrier diagram is encoded in the image.
+
+## Transformer · 2026-09-27
+
+- Runtime: textbook-transformer-v1.webp (1280×853, 112 KB), optimized from preserved built-in imagegen source exec-117b6245-c833-4646-907e-2cbe47846c59.png.
+- Identity reference: mio-thinking-v1.png; style/context reference: textbook-semiconductor-light-v1.webp. Mio keeps the viewer-left cyan forelock and viewer-right star, with a closed-mouth skeptical expression.
+- Mio compares two electrically separate windings on one closed teaching core, with a low-voltage AC source nearby. The voltmeter leads are visibly disconnected. The artwork is contextual: the exact number of turns, output voltage and power are conveyed only by DOM text and calculation.

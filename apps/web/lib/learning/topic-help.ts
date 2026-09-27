@@ -55,12 +55,14 @@ export type HelpSectionId =
   | "capacitor-energy"
   | "lc-period"
   | "ac-oscillogram-frequency"
+  | "transformer-voltage-ratio"
   | "induced-emf-magnitude"
   | "ampere-force-magnitude"
   | "lorentz-force-magnitude"
   | "metal-temperature-current"
   | "electrolyte-ion-transport"
   | "gas-discharge-conditions"
+  | "semiconductor-carriers"
   | "self-induction-emf"
   | "electric-power"
   | "household-load-current"
@@ -462,6 +464,13 @@ export const topicHelpSections: Record<TopicId, TopicHelpSection[]> = {
       mistake: "Соседние максимумы одного знака разделены целым периодом, а не половиной; частота выражается в герцах.",
     },
     {
+      id: "transformer-voltage-ratio",
+      label: "Напряжение вторичной обмотки",
+      shortHint: "Для идеального трансформатора отношение напряжений равно отношению числа витков.",
+      formula: "U_2=U_1\\frac{N_2}{N_1}",
+      mistake: "Проверь порядок обмоток: первичная получает заданное U₁, вторичная даёт искомое U₂.",
+    },
+    {
       id: "induced-emf-magnitude",
       label: "Модуль ЭДС индукции катушки",
       shortHint: "При одинаковом изменении потока через каждый виток умножь изменение одного витка на N и раздели на время.",
@@ -502,6 +511,13 @@ export const topicHelpSections: Record<TopicId, TopicHelpSection[]> = {
       shortHint: "Найди внешний ионизатор и проверь, сохраняется ли разряд после его удаления.",
       formula: "\\mathrm{A}+\\text{энергия}\\rightarrow\\mathrm{A}^{+}+e^{-}",
       mistake: "Нагревание создаёт свободные носители в газе. В слабом поле разряд без него прекращается; при других условиях поле может поддерживать самостоятельный разряд.",
+    },
+    {
+      id: "semiconductor-carriers",
+      label: "Свет и носители в полупроводнике",
+      shortHint: "Уточни, что осталось постоянным. В чистом кристалле различи электрон и дырку; примесь меняет основных носителей.",
+      formula: "I=\\frac{U}{R}",
+      mistake: "При том же U освещение фоторезистора уменьшает R и увеличивает I. Дырка не является подвижным ионом; n/p не означает заряд всего кристалла.",
     },
     {
       id: "self-induction-emf",
@@ -835,12 +851,14 @@ const blueprintTargets: Partial<
   "capacitor-energy": { topicId: "electrodynamics", sectionId: "capacitor-energy" },
   "lc-period": { topicId: "electrodynamics", sectionId: "lc-period" },
   "ac-oscillogram-frequency": { topicId: "electrodynamics", sectionId: "ac-oscillogram-frequency" },
+  "transformer-voltage-ratio": { topicId: "electrodynamics", sectionId: "transformer-voltage-ratio" },
   "induced-emf-magnitude": { topicId: "electrodynamics", sectionId: "induced-emf-magnitude" },
   "ampere-force-magnitude": { topicId: "electrodynamics", sectionId: "ampere-force-magnitude" },
   "lorentz-force-magnitude": { topicId: "electrodynamics", sectionId: "lorentz-force-magnitude" },
   "metal-temperature-current": { topicId: "electrodynamics", sectionId: "metal-temperature-current" },
   "electrolyte-ion-transport": { topicId: "electrodynamics", sectionId: "electrolyte-ion-transport" },
   "gas-discharge-conditions": { topicId: "electrodynamics", sectionId: "gas-discharge-conditions" },
+  "semiconductor-carriers": { topicId: "electrodynamics", sectionId: "semiconductor-carriers" },
   "self-induction-emf": { topicId: "electrodynamics", sectionId: "self-induction-emf" },
   "electric-power": { topicId: "electrodynamics", sectionId: "electric-power" },
   "household-load-current": { topicId: "electrodynamics", sectionId: "household-load-current" },

@@ -43,7 +43,7 @@ and fuel respectively.
 Repeat and explanation remain available. This is a provisional connection,
 not a required sequence or a mastery claim.
 
-The textbook at `/learn` currently connects one hundred and nineteen chapters for
+The textbook at `/learn` currently connects 126 chapters for
 selected grade 7, grade 8, grade 9, grade 10 and grade 11 topics. Grade 11 now has
 seven connected but partial chapters on mechanical oscillations and waves, with
 focused practice for cycle frequency, spring-pendulum period,
@@ -66,8 +66,15 @@ bounded case are current and voltage shown in phase. Focused practice
 `ac-oscillogram-frequency` gives the times of two neighbouring positive
 maxima in words and asks for the period and frequency; its task does not
 display a graph. The Grade X induction chapter is an optional foundation,
-not an assumed completed prerequisite. Transformers, electromagnetic waves, reactive
-loads and broader energy/graph practice remain open.
+not an assumed completed prerequisite. The optional next question now reaches
+the transformer in § 9: Mio compares two separate windings on one closed core,
+while the page gives the ideal turn and voltage ratios in text. The result is
+initially hidden for prediction. A focused numeric family checks the
+secondary-to-primary ratio with effective AC voltages; the worked example
+treats power only with an active load and explicit ideal-loss assumption.
+The contextual illustration is not a calibrated winding diagram. Power
+transmission, electromagnetic waves, reactive loads and broader energy/graph
+practice remain open.
 Two further partial grade 11 chapters connect photoelectric effect (§§ 27–28)
 with light pressure and wave-particle duality (§ 29). Their explanations and
 models are linked; light-pressure comparison is qualitative and does not add a
@@ -234,7 +241,17 @@ ionization from a discharge that can sustain itself under other field conditions
 Mio records the changed electrometer reading; the image does not depict visible
 ions, a spark, measured current or a safe home experiment. Its qualitative
 `gas-discharge-conditions` practice checks carriers, ionizer removal and plasma.
-Semiconductors and real laboratory demonstrations remain open.
+The linked /learn/electric-current-in-semiconductors chapter covers § 37
+through a qualitative photoresistor observation at unchanged voltage, then
+distinguishes intrinsic electrons and holes from impurity n- and p-type
+conductivity using the textbook's Ge–As and Ge–In examples. Its separate
+semiconductor-carriers family checks the light/temperature conditions, the
+hole model and majority carriers. Mio lifts the shade in contextual artwork;
+the image supplies neither a numerical reading nor a lattice diagram.
+The end of this chapter compares carriers in the four media in concise rows,
+with direct returns to the metal, electrolyte and gas explanations. It replaces
+a repeated prose list; it is not a new required course gate.
+Real laboratory demonstrations and broader grade 10 coverage remain open.
 This remains partial grade 10 coverage. Chapters
 include interactive models, worked examples and persistent self-checks; existing
 staged lessons keep their own drafts. The contents can filter unfinished or

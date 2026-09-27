@@ -72,12 +72,14 @@ export type SkillId =
   | "capacitor-energy"
   | "lc-period"
   | "ac-oscillogram-frequency"
+  | "transformer-voltage-ratio"
   | "induced-emf-magnitude"
   | "ampere-force-magnitude"
   | "lorentz-force-magnitude"
   | "metal-temperature-current"
   | "electrolyte-ion-transport"
   | "gas-discharge-conditions"
+  | "semiconductor-carriers"
   | "self-induction-emf"
   | "electric-power"
   | "household-load-current"
@@ -642,6 +644,14 @@ export const skillMetadata: Record<SkillId, SkillMetadata> = {
     shortTitle: "Частота переменного тока",
     description: "Период между соседними максимумами одного знака и частота переменного тока с переводом миллисекунд в секунды.",
   },
+  "transformer-voltage-ratio": {
+    id: "transformer-voltage-ratio",
+    topicId: "electrodynamics",
+    sectionId: "electrodynamics",
+    title: "Напряжение трансформатора по числу витков",
+    shortTitle: "Напряжение трансформатора",
+    description: "Напряжение вторичной обмотки идеального трансформатора при известном отношении числа витков.",
+  },
   "induced-emf-magnitude": {
     id: "induced-emf-magnitude",
     topicId: "electrodynamics",
@@ -689,6 +699,14 @@ export const skillMetadata: Record<SkillId, SkillMetadata> = {
     title: "Ток в газе",
     shortTitle: "Газовый разряд",
     description: "Когда воздух получает свободные носители и чем самостоятельный разряд отличается от несамостоятельного.",
+  },
+  "semiconductor-carriers": {
+    id: "semiconductor-carriers",
+    topicId: "electrodynamics",
+    sectionId: "electrodynamics",
+    title: "Ток в полупроводнике",
+    shortTitle: "Электроны и дырки",
+    description: "Как свет, нагрев и примесь меняют проводимость полупроводника и кто переносит заряд.",
   },
   "self-induction-emf": {
     id: "self-induction-emf",

@@ -94,12 +94,14 @@ import { springOscillationPeriodBlueprint } from "./templates/spring-oscillation
 import { mathematicalPendulumPeriodBlueprint } from "./templates/mathematical-pendulum-period.ts";
 import { lcPeriodBlueprint } from "./templates/lc-period.ts";
 import { acOscillogramFrequencyBlueprint } from "./templates/ac-oscillogram-frequency.ts";
+import { transformerVoltageRatioBlueprint } from "./templates/transformer-voltage-ratio.ts";
 import { inducedEmfMagnitudeBlueprint } from "./templates/induced-emf-magnitude.ts";
 import { ampereForceMagnitudeBlueprint } from "./templates/ampere-force-magnitude.ts";
 import { lorentzForceMagnitudeBlueprint } from "./templates/lorentz-force-magnitude.ts";
 import { metalTemperatureCurrentBlueprint } from "./templates/metal-temperature-current.ts";
 import { electrolyteIonTransportBlueprint } from "./templates/electrolyte-ion-transport.ts";
 import { gasDischargeConditionsBlueprint } from "./templates/gas-discharge-conditions.ts";
+import { semiconductorCarriersBlueprint } from "./templates/semiconductor-carriers.ts";
 import { selfInductionEmfBlueprint } from "./templates/self-induction-emf.ts";
 import { oscillationEnergyBlueprint } from "./templates/oscillation-energy.ts";
 import { mechanicalWaveSpeedBlueprint } from "./templates/mechanical-wave-speed.ts";
@@ -154,12 +156,14 @@ export const blueprints = {
   "mathematical-pendulum-period": mathematicalPendulumPeriodBlueprint,
   "lc-period": lcPeriodBlueprint,
   "ac-oscillogram-frequency": acOscillogramFrequencyBlueprint,
+  "transformer-voltage-ratio": transformerVoltageRatioBlueprint,
   "induced-emf-magnitude": inducedEmfMagnitudeBlueprint,
   "ampere-force-magnitude": ampereForceMagnitudeBlueprint,
   "lorentz-force-magnitude": lorentzForceMagnitudeBlueprint,
   "metal-temperature-current": metalTemperatureCurrentBlueprint,
   "electrolyte-ion-transport": electrolyteIonTransportBlueprint,
   "gas-discharge-conditions": gasDischargeConditionsBlueprint,
+  "semiconductor-carriers": semiconductorCarriersBlueprint,
   "self-induction-emf": selfInductionEmfBlueprint,
   "oscillation-energy": oscillationEnergyBlueprint,
   "mechanical-wave-speed": mechanicalWaveSpeedBlueprint,

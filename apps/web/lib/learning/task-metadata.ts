@@ -391,6 +391,12 @@ export const misconceptionMetadataById: Record<string, MisconceptionMetadata> = 
     helpSectionId: "ac-oscillogram-frequency",
     shortHint: "Соседние максимумы одного знака дают полный период; переведи разность времён из мс в с перед расчётом частоты.",
   },
+  "transformer-inverts-turns": {
+    id: "transformer-inverts-turns",
+    label: "переворачивает отношение числа витков",
+    helpSectionId: "transformer-voltage-ratio",
+    shortHint: "Для напряжения вторичной обмотки умножай U₁ на N₂/N₁, а не на N₁/N₂.",
+  },
   "induction-missing-turns": {
     id: "induction-missing-turns",
     label: "забывает число витков",
@@ -426,6 +432,12 @@ export const misconceptionMetadataById: Record<string, MisconceptionMetadata> = 
     label: "не различает внешний и самостоятельный газовый разряд",
     helpSectionId: "gas-discharge-conditions",
     shortHint: "Смотри, продолжится ли разряд после удаления внешнего ионизатора при заданных условиях поля.",
+  },
+  "semiconductor-carrier-model": {
+    id: "semiconductor-carrier-model",
+    label: "смешивает дырки, ионы и суммарный заряд кристалла",
+    helpSectionId: "semiconductor-carriers",
+    shortHint: "Дырка — модель пустого места в связи. Тип n или p показывает основных носителей, но кристалл остаётся нейтральным.",
   },
   "self-induction-missing-time": {
     id: "self-induction-missing-time",
@@ -1044,6 +1056,15 @@ export const taskLearningMetadataByTemplateId: Record<string, TaskLearningMetada
     shortHint: "Найди полный период между соседними положительными максимумами и переведи мс в с.",
     misconceptionIds: ["ac-oscillogram-milliseconds"],
   },
+  "transformer-voltage-ratio": {
+    templateId: "transformer-voltage-ratio",
+    topicId: "electrodynamics",
+    helpSectionId: "transformer-voltage-ratio",
+    skillId: "transformer-voltage-ratio",
+    focusLabel: "Напряжение вторичной обмотки",
+    shortHint: "Сравни витки первичной и вторичной обмоток, затем найди U₂ по отношению N₂/N₁.",
+    misconceptionIds: ["transformer-inverts-turns"],
+  },
   "induced-emf-magnitude": {
     templateId: "induced-emf-magnitude",
     topicId: "electrodynamics",
@@ -1097,6 +1118,15 @@ export const taskLearningMetadataByTemplateId: Record<string, TaskLearningMetada
     focusLabel: "Условия и носители тока в газе",
     shortHint: "В обычном воздухе мало свободных зарядов. Различи внешнюю ионизацию и разряд, сохраняющийся после её удаления.",
     misconceptionIds: ["gas-ionizer-condition"],
+  },
+  "semiconductor-carriers": {
+    templateId: "semiconductor-carriers",
+    topicId: "electrodynamics",
+    helpSectionId: "semiconductor-carriers",
+    skillId: "semiconductor-carriers",
+    focusLabel: "Свет, нагрев и носители в полупроводнике",
+    shortHint: "При прежнем U сравни R и I; в чистом образце различи электроны и дырки, в примесном — основных носителей.",
+    misconceptionIds: ["semiconductor-carrier-model"],
   },
   "self-induction-emf": {
     templateId: "self-induction-emf",

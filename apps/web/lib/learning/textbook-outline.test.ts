@@ -115,17 +115,25 @@ test("topic entries keep direct chapter practice beside the explanation", () => 
   assert.equal(firstEntry.resources.some(resource => resource.href === "/learn/scientific-method"), false);
 });
 
-test("XI oscillations lead to alternating current without treating recaps as the next question", () => {
+test("XI oscillations, alternating current and transformer offer optional exact next questions", () => {
   const lc = learningEntries.find(entry => entry.id === "lc-oscillations");
   const ac = learningEntries.find(entry => entry.id === "alternating-current");
+  const transformer = learningEntries.find(entry => entry.id === "transformer");
+  const transformerChapter = textbookChapters.find(chapter => chapter.id === "transformer");
   assert.ok(lc);
   assert.ok(ac);
+  assert.ok(transformer);
+  assert.ok(transformerChapter);
   assert.equal(lc.connection?.href, "/learn/alternating-current");
   assert.equal(ac.question, "Почему ток меняет направление при вращении рамки?");
-  assert.equal(ac.connection, undefined);
+  assert.equal(ac.connection?.href, "/learn/transformer");
   assert.ok(ac.resources.some(resource => resource.href === "/practice/family/ac-oscillogram-frequency"));
   assert.ok(ac.resources.some(resource => resource.href === "/learn/lc-oscillations"));
   assert.equal(ac.resources.filter(resource => resource.href === "/practice/family/ac-oscillogram-frequency").length, 1);
+  assert.equal(transformerChapter.source.section, "§ 9");
+  assert.equal(transformerChapter.practice.href, "/practice/family/transformer-voltage-ratio");
+  assert.ok(transformer.resources.some(resource => resource.href === transformerChapter.practice.href));
+  assert.equal(transformer.connection, undefined);
 });
 
 test("Grade X magnetic force, induction and self-induction connect to exact practice and optional XI foundations", () => {
@@ -210,4 +218,17 @@ test("Grade X gas lesson distinguishes the external ionizer from a self-sustaine
   assert.equal(chapter.practice.href, "/practice/family/gas-discharge-conditions");
   assert.equal(entry.resources.filter(item => item.href === chapter.practice.href).length, 1);
   assert.ok(chapter.sections.some(section => section.paragraphs.some(paragraph => paragraph.includes("рекомбинировать"))));
+  assert.equal(entry.connection?.href, "/learn/electric-current-in-semiconductors");
+});
+
+test("Grade X semiconductor lesson links light, carrier models, and exact-family practice", () => {
+  const chapter = textbookChapters.find(item => item.id === "electric-current-in-semiconductors");
+  const entry = learningEntries.find(item => item.id === "electric-current-in-semiconductors");
+  assert.ok(chapter);
+  assert.ok(entry);
+  assert.equal(chapter.grade, 10);
+  assert.equal(chapter.source.section, "§ 37");
+  assert.equal(chapter.practice.href, "/practice/family/semiconductor-carriers");
+  assert.equal(entry.resources.filter(item => item.href === chapter.practice.href).length, 1);
+  assert.ok(chapter.sections.some(section => section.paragraphs.some(paragraph => paragraph.includes("Дырка — удобная модель"))));
 });
