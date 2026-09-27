@@ -83,9 +83,11 @@ function formatExportDate(iso: string) {
 export function DataTransfer({
   suggestBackup = false,
   backupFingerprint = "",
+  onImported,
 }: {
   suggestBackup?: boolean;
   backupFingerprint?: string;
+  onImported?: () => void;
 }) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [pending, setPending] = useState<PendingImport | null>(null);
@@ -154,6 +156,7 @@ export function DataTransfer({
     }
 
     setDone("Прогресс восстановлен из файла.");
+    onImported?.();
   }
 
   return (

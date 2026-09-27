@@ -1,15 +1,16 @@
 "use client";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { learningGroupDefinitions, type LearningEntry } from "../../lib/learning/learning-entry";
-import { schoolGrades, type SchoolGrade } from "../../lib/learning/textbook";
+import { learningGroupDefinitions } from "../../lib/learning/learning-groups";
+import type { LearningEntry } from "../../lib/learning/learning-entry";
+import { schoolGrades, type SchoolGrade } from "../../lib/learning/textbook-index";
 import styles from "./LearningEntryBrowser.module.css";
 
 const normalize = (text: string) => text.toLocaleLowerCase("ru").replace(/ё/g, "е");
 
-export function LearningEntryBrowser({ entries }: { entries: LearningEntry[] }) {
-  const [query, setQuery] = useState("");
-  const [grade, setGrade] = useState<SchoolGrade | null>(null);
+export function LearningEntryBrowser({ entries, initialQuery, initialGrade }: { entries: LearningEntry[]; initialQuery: string; initialGrade: SchoolGrade | null }) {
+  const [query, setQuery] = useState(initialQuery);
+  const [grade, setGrade] = useState<SchoolGrade | null>(initialGrade);
   useEffect(() => {
     const readFilters = () => {
       const params = new URLSearchParams(window.location.search);

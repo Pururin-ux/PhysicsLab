@@ -33,7 +33,7 @@ export const EXAM_PROGRAM_SOURCE = {
   organization: "Республиканский институт контроля знаний",
   url: "https://rikc.by/ru/specification/2026/03.pdf",
   verificationStatus: "verified",
-  verifiedAt: "2026-09-13",
+  verifiedAt: "2026-09-26",
   sha256: "CC99C84E84637CDBF4A20C22E64C21F94B281A168C453294CFE35151A6E0F865",
 } as const;
 
@@ -47,11 +47,13 @@ const catalogDestinationDefinitions: Record<
   TopicId,
   { label: string; href: string }
 > = {
+  measurements: { label: "Измерения", href: "/tasks?topic=measurements" },
   kinematics: { label: "Кинематика", href: "/tasks?topic=kinematics" },
   dynamics: { label: "Динамика и законы сохранения", href: "/tasks?topic=dynamics" },
   thermodynamics: { label: "Молекулярная физика и теплота", href: "/tasks?topic=thermodynamics" },
   electrodynamics: { label: "Электричество и цепи", href: "/tasks?topic=electrodynamics" },
   optics: { label: "Геометрическая оптика", href: "/tasks?topic=optics" },
+  quantum: { label: "Физика атома", href: "/tasks?topic=quantum" },
 } as const;
 
 const coverageDefinitions: readonly CoverageDefinition[] = [
@@ -60,11 +62,10 @@ const coverageDefinitions: readonly CoverageDefinition[] = [
     title: "Механика",
     officialTaskCount: 10,
     summary:
-      "Сейчас есть прямолинейное движение и движение по окружности, силы, тяготение, равновесие, импульс, работа, КПД, мощность, кинетическая и потенциальная энергия, плотность, давление на опору и давление жидкости.",
+      "Есть задачи на движение, силы, равновесие, работу и энергию. Также можно потренировать плотность, давление, колебания и волны.",
     knownGaps: [
       "Есть базовая практика броска под углом при одинаковых высотах старта и финиша; нет широкого набора задач для разных уровней и с сопротивлением воздуха.",
       "Нет отдельного семейства задач на закон Гука и широкого набора задач на равновесие.",
-      "Нет задач на колебания и волны.",
     ],
   },
   {
@@ -72,11 +73,11 @@ const coverageDefinitions: readonly CoverageDefinition[] = [
     title: "Основы МКТ и термодинамики",
     officialTaskCount: 7,
     summary:
-      "Сейчас есть МКТ, идеальный газ и изопроцессы, строение жидкостей и пара, влажность, нагревание, плавление, парообразование и простой тепловой баланс.",
+      "Есть задачи о строении вещества, газах и теплоте: от влажности и фазовых переходов до первого закона термодинамики и КПД двигателя.",
     knownGaps: [
       "Нет задач на основное уравнение МКТ и среднюю квадратичную скорость молекул.",
-      "Нет широкого набора задач на влажность и тепловые двигатели.",
-      "Первый закон термодинамики и изопроцессы представлены не полностью.",
+      "Нет широкого набора задач на влажность и тепловые двигатели: по двигателям пока проверяется только энергетический счёт одного цикла.",
+      "Для первого закона есть вводный баланс энергии; нужны более широкий набор процессов, графических и качественных задач.",
     ],
   },
   {
@@ -84,10 +85,10 @@ const coverageDefinitions: readonly CoverageDefinition[] = [
     title: "Электродинамика",
     officialTaskCount: 9,
     summary:
-      "Сейчас есть заряд, постоянный ток, соединения резисторов, полная цепь, мощность и конденсатор.",
+      "Есть задачи о зарядах и электрическом поле, конденсаторах, постоянном токе и направлении магнитного поля.",
     knownGaps: [
-      "Нет задач на закон Кулона, напряжённость и потенциал электрического поля.",
-      "Нет задач на магнитное поле, индукцию и электромагнитные колебания.",
+      "Сложение электрических полей от нескольких источников пока ограничено задачами на одной прямой.",
+      "Задач по электромагнитной индукции и электромагнитным колебаниям пока нет.",
       "Расчёты электрических цепей представлены не полностью.",
     ],
   },
@@ -106,9 +107,9 @@ const coverageDefinitions: readonly CoverageDefinition[] = [
     id: "quantum",
     title: "Основы квантовой физики",
     officialTaskCount: 1,
-    summary: "В каталоге пока нет задач этого раздела.",
+    summary: "Есть вводный расчёт энергии, частоты и длины волны фотона при переходе атома водорода между уровнями.",
     knownGaps: [
-      "Нет задач на фотоэффект, фотоны, постулаты Бора, излучение и поглощение света атомом.",
+      "Нет задач по фотоэффекту, лазерам и другим расчётным или качественным случаям переходов между уровнями.",
     ],
   },
   {
@@ -133,8 +134,15 @@ export function buildCoverageSections(
       throw new Error(`Catalog family "${familyId}" has no learning destination.`);
     }
 
+    const skill = skillMetadata[destination.skillId];
+    // A Grade 7 measurement skill has a school-program link, but no verified
+    // CE/CT section. Keep it in practice without counting it as exam coverage.
+    if (skill.topicId === "measurements") {
+      continue;
+    }
+
     const sectionId =
-      examSectionOverrides[familyId] ?? skillMetadata[destination.skillId].sectionId;
+      examSectionOverrides[familyId] ?? skill.sectionId;
     const families = idsBySection.get(sectionId) ?? [];
     families.push(familyId);
     idsBySection.set(sectionId, families);

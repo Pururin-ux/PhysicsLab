@@ -2,7 +2,7 @@
 
 import { useStore } from "@nanostores/react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   $examLog,
   getBestAttempt,
@@ -16,7 +16,9 @@ import {
   toDayKey,
 } from "../../lib/stores/practice-log-store";
 import { getLearningNextStep } from "../../lib/learning/next-step";
+import { useTextbookCheckActivity } from "../../lib/learning/use-textbook-check-activity";
 import { buildReviewPlan, countDueReviews } from "../../lib/learning/review-plan";
+import { readReviewResumeCandidates, type ReviewResumeCandidate } from "../../lib/learning/review-resume";
 import {
   $appProgress,
   resetProgress,
@@ -199,33 +201,38 @@ export function ProfileOverview() {
   const xp = useStore($xp);
   const practiceLog = useStore($practiceLog);
   const examLog = useStore($examLog);
+  const textbookChecks = useTextbookCheckActivity();
   const [mounted, setMounted] = useState(false);
+  const [resumeCandidates, setResumeCandidates] = useState<ReviewResumeCandidate[]>([]);
   const [notebookInfo, setNotebookInfo] = useState({
     notes: 0,
     investigations: [] as InvestigationRecord[],
     unavailable: 0,
   });
 
-  useEffect(() => {
-    const refreshNotebook = () => {
-      const notebook = readNotebook();
-      setNotebookInfo({
-        notes: notebook.notes.length,
-        investigations: notebook.investigations,
-        unavailable: notebook.unavailable,
-      });
-    };
+  const refreshStoredLearning = useCallback(() => {
+    setResumeCandidates(readReviewResumeCandidates());
+    const notebook = readNotebook();
+    setNotebookInfo({
+      notes: notebook.notes.length,
+      investigations: notebook.investigations,
+      unavailable: notebook.unavailable,
+    });
+  }, []);
 
-    refreshNotebook();
+  useEffect(() => {
+    refreshStoredLearning();
     setMounted(true);
-    window.addEventListener("storage", refreshNotebook);
-    window.addEventListener("focus", refreshNotebook);
+    window.addEventListener("storage", refreshStoredLearning);
+    window.addEventListener("focus", refreshStoredLearning);
+    window.addEventListener("pageshow", refreshStoredLearning);
 
     return () => {
-      window.removeEventListener("storage", refreshNotebook);
-      window.removeEventListener("focus", refreshNotebook);
+      window.removeEventListener("storage", refreshStoredLearning);
+      window.removeEventListener("focus", refreshStoredLearning);
+      window.removeEventListener("pageshow", refreshStoredLearning);
     };
-  }, []);
+  }, [refreshStoredLearning]);
 
   if (!mounted) {
     return <ProfileLoadingState />;
@@ -264,15 +271,23 @@ export function ProfileOverview() {
   ).size;
   const streak = calcStreak(practiceLog, toDayKey(new Date()));
   const bestExam = getBestAttempt(examLog);
-  const reviewPlan = buildReviewPlan(progress, 3);
+  const reviewPlan = buildReviewPlan(progress, 3, new Date(), resumeCandidates);
   const dueReviews = countDueReviews(progress);
   const hasPendingMistakes = Object.keys(progress.pendingMistakes).length > 0;
+  const hasResumablePendingMistake = reviewPlan.some((item) => item.isPending);
+  const hasTextbookWork = textbookChecks.items.some(
+    (item) => item.status === "draft" || item.status === "retry" || item.status === "correct",
+  );
+  const hasTextbookReturn = textbookChecks.items.some(
+    (item) => item.status === "draft" || item.status === "retry",
+  );
   const hasOnlyNotebookEvidence =
     notebookInfo.notes > 0 &&
     totalSolved === 0 &&
     totalSessions === 0 &&
     examLog.length === 0 &&
-    !hasPendingMistakes;
+    !hasPendingMistakes &&
+    !hasTextbookReturn;
   const nextStep = hasOnlyNotebookEvidence
     ? {
         label: "Блокнот",
@@ -284,13 +299,14 @@ export function ProfileOverview() {
         tone: "cyan" as const,
         mode: "learn" as const,
       }
-    : getLearningNextStep(progress, Boolean(bestExam));
+    : getLearningNextStep(progress, Boolean(bestExam), new Date(), resumeCandidates, textbookChecks.items);
   const isFirstVisit =
     totalSolved === 0 &&
     totalSessions === 0 &&
     examLog.length === 0 &&
     notebookInfo.notes === 0 &&
-    !hasPendingMistakes;
+    !hasPendingMistakes &&
+    !hasTextbookWork;
 
   const handleReset = () => {
     if (
@@ -305,12 +321,18 @@ export function ProfileOverview() {
       resetLessonDrafts();
       resetSavedMotionPractice();
       clearActiveQuizSnapshot();
+      refreshStoredLearning();
+      textbookChecks.refresh();
     }
   };
 
   return (
     <div className="flex flex-col gap-6">
-      {isFirstVisit ? (
+      {!textbookChecks.ready && isFirstVisit ? (
+        <p role="status" className="text-sm text-[var(--text-default)]">
+          Проверяем сохранённые ответы учебника…
+        </p>
+      ) : isFirstVisit ? (
         <EmptyProgress />
       ) : (
       <>
@@ -377,8 +399,10 @@ export function ProfileOverview() {
                 </Badge>
               ) : null}
               <p className="min-w-0 text-[12px] leading-[1.5] text-[var(--text-default)]">
-                {hasPendingMistakes
-                  ? "Ошибка уже сохранена — можно продолжить с места, где ответ сбился."
+                {hasResumablePendingMistake
+                  ? "Ответ есть в черновике — открой попытку, чтобы продолжить."
+                  : hasPendingMistakes
+                  ? "Ошибка сохранена для повторения. Можно вернуться к объяснению и похожим задачам."
                   : notebookInfo.notes > 0 && totalSolved === 0
                   ? "Твоя запись сохранена. Её можно перечитать в блокноте и проверить на задачах."
                   : totalSolved === 0
@@ -496,11 +520,11 @@ export function ProfileOverview() {
           <div>
             <p className="type-meta">К трудному</p>
             <h2 className="mt-1 text-[18px] font-[800] text-[var(--text-strong)]">
-              {hasPendingMistakes ? "Продолжить незаконченный ответ" : reviewPlan[0].skillTitle}
+              {hasResumablePendingMistake ? "Открыть незаконченный ответ" : reviewPlan[0].skillTitle}
             </h2>
             <p className="mt-1 text-[12px] leading-[1.55] text-[var(--text-default)]">
-              {hasPendingMistakes
-                ? "Условие и ответ сохранены. Можно вернуться с того же места."
+              {hasResumablePendingMistake
+                ? "Ответ есть в черновике. Открой попытку, чтобы продолжить."
                 : dueReviews > 0
                   ? "Сегодня есть короткое повторение."
                   : "Можно вспомнить объяснение или решить похожие задачи."}
@@ -559,6 +583,11 @@ export function ProfileOverview() {
                     </Link>
                   </Button>
                 </div>
+                {topic.id === "kinematics" && progress.legacyKinematicsTotalsMayIncludeMeasurements ? (
+                  <p className="text-[12px] leading-[1.5] text-[var(--text-quiet)]">
+                    Часть старых задач на измерения могла войти в этот счёт. Новые результаты считаются отдельно.
+                  </p>
+                ) : null}
               </Card>
             );
           })}
@@ -591,6 +620,10 @@ export function ProfileOverview() {
         <DataTransfer
           suggestBackup={!isFirstVisit}
           backupFingerprint={`${totalSolved}:${totalSessions}:${examLog.length}:${practiceLog.length}:${notebookInfo.notes}:${notebookInfo.unavailable}`}
+          onImported={() => {
+            refreshStoredLearning();
+            textbookChecks.refresh();
+          }}
         />
         <div className="flex flex-col items-start gap-2 border-t border-[var(--border-muted)] pt-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
           <p className="text-[11px] leading-[1.5] text-[var(--text-default)]">

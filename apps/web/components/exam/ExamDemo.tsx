@@ -67,7 +67,7 @@ function ExamTools() {
 export function ExamDemo() {
   const [started, setStarted] = useState<"normal" | "resume" | "fresh" | null>(null);
   const [resumeCandidate, setResumeCandidate] = useState<ExamResumeCandidate | null>();
-  const [discardedAttemptId, setDiscardedAttemptId] = useState<string | undefined>();
+  const [discardError, setDiscardError] = useState(false);
 
   useEffect(() => {
     setResumeCandidate(readExamResumeCandidate());
@@ -91,7 +91,6 @@ export function ExamDemo() {
               summaryVariant="exam"
               preAnswerGuidance="unlabelled"
               recoveryMode={started === "fresh" ? "fresh" : "auto"}
-              freshAttemptId={discardedAttemptId}
             />
           </div>
           <ExamTools />
@@ -118,24 +117,30 @@ export function ExamDemo() {
               <section aria-labelledby="exam-resume-title" data-testid="exam-resume-candidate">
                 <h3 id="exam-resume-title" className="text-[16px] font-bold text-white">Незавершённая диагностика</h3>
                 <p className="mt-1 text-[14px] leading-[1.6] text-white/72">
-                  {resumeCandidate.phase === "answered"
+                  {!resumeCandidate.hasTaskFingerprint
+                    ? "После обновления сайта нельзя надёжно проверить прежние ответы. Чтобы начать заново, удали этот черновик."
+                    : resumeCandidate.phase === "answered"
                     ? `Ответ на задание ${resumeCandidate.currentTaskNumber} уже сохранён — можно продолжить с разбора.`
                     : `Можно продолжить с задания ${resumeCandidate.currentTaskNumber} из ${resumeCandidate.total}.`}
                 </p>
-                <div className="mt-3 grid gap-2.5 sm:grid-cols-2">
-                  <Button size="lg" onClick={() => setStarted("resume")}>Продолжить диагностику</Button>
+                <div className={resumeCandidate.hasTaskFingerprint ? "mt-3 grid gap-2.5 sm:grid-cols-2" : "mt-3"}>
+                  {resumeCandidate.hasTaskFingerprint && <Button size="lg" onClick={() => setStarted("resume")}>Продолжить диагностику</Button>}
                   <Button
                     size="lg"
                     variant="ghost"
                     onClick={() => {
-                      setDiscardedAttemptId(resumeCandidate.attemptId);
-                      clearExamResumeCandidate(resumeCandidate.attemptId);
+                      if (!clearExamResumeCandidate(resumeCandidate.attemptId)) {
+                        setResumeCandidate(readExamResumeCandidate() ?? resumeCandidate);
+                        setDiscardError(true);
+                        return;
+                      }
                       setStarted("fresh");
                     }}
                   >
-                    Начать новую диагностику
+                    {resumeCandidate.hasTaskFingerprint ? "Начать новую диагностику" : "Удалить черновик и начать заново"}
                   </Button>
                 </div>
+                {discardError && <p role="alert" className="mt-2 text-[13px] text-white/72">Черновик изменился или недоступен. Он не удалён; проверь сохранённую попытку ещё раз.</p>}
               </section>
             ) : (
               <Button size="lg" className="sm:w-auto" onClick={() => setStarted("normal")}>

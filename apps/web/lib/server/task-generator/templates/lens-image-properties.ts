@@ -30,7 +30,7 @@ function answerFor(params: Params): number {
 
 function otherAnswer(offset: number): DistractorRule {
   return {
-    label: `выбран неверный тип изображения ${offset}`,
+    label: `выбираешь неверный тип изображения (${offset})`,
     compute: params => ((answerFor(params) - 1 + offset) % 4) + 1,
   };
 }

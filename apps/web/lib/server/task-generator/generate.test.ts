@@ -4,12 +4,13 @@ import test from "node:test";
 import { GET } from "../../../app/api/tasks/route.ts";
 import {
   generateTasks,
+  getCandidateParams,
   getBlueprint,
   getTemplateIdsByGroup,
   templateRegistry,
 } from "./generate.ts";
 import type { GeneratedTask, TaskBlueprint } from "./types.ts";
-import { validateGeneratedTask } from "./validator.ts";
+import { formatAnswerValue, validateGeneratedTask } from "./validator.ts";
 
 const kinematicsTemplateIds = [
   "free-fall",
@@ -26,10 +27,23 @@ const kinematicsTemplateIds = [
   "rotation-frequency",
   "centripetal-acceleration",
 ] as const;
+const measurementTemplateIds = [
+  "length-unit-conversion",
+  "graduated-scale-reading",
+  "rectangular-block-volume",
+  "irregular-body-volume",
+] as const;
 const dynamicsTemplateIds = [
   "archimedes-force",
   "ship-payload",
   "contact-pressure",
+  "oscillation-frequency",
+  "spring-oscillation-period",
+  "mathematical-pendulum-period",
+  "oscillation-energy",
+  "mechanical-wave-speed",
+  "echo-ranging",
+  "resonance-frequency-match",
   "gravity-force",
   "gravitation-distance",
   "gravitational-potential-energy",
@@ -90,9 +104,22 @@ const electrodynamicsTemplateIds = [
   "conductor-resistance",
   "resistor-network",
   "source-internal-resistance",
+  "source-efficiency",
   "capacitor-energy",
+  "lc-period",
+  "ac-oscillogram-frequency",
+  "induced-emf-magnitude",
   "charge-sharing",
+  "coulomb-force",
+  "electric-field-strength",
+  "electric-field-superposition",
+  "electrostatic-field-work",
+  "point-charge-potential",
+  "multi-source-potential",
+  "uniform-field-voltage",
+  "parallel-plate-capacitance",
   "electric-power",
+  "household-load-current",
 ] as const;
 
 // Шаблоны на пифагоровых тройках имеют естественно малый пул параметров:
@@ -113,6 +140,8 @@ const uniqueTextPoolBySkill: Record<string, number> = {
   "lens-optical-power": 12,
   "magnetic-field-direction": 4,
   "conductor-resistance": 20,
+  "lc-period": 5,
+  "ac-oscillogram-frequency": 5,
 };
 const thermodynamicsTemplateIds = [
   "density-volume-ratio",
@@ -125,6 +154,10 @@ const thermodynamicsTemplateIds = [
   "liquid-structure-properties",
   "vapor-dynamic-equilibrium",
   "relative-humidity-pressure",
+  "monoatomic-internal-energy",
+  "isobaric-gas-work",
+  "first-law-energy-balance",
+  "heat-engine-efficiency",
   "heat-amount",
   "fuel-combustion-heat",
   "phase-change-heat",
@@ -265,6 +298,279 @@ test("mechanical-energy-conservation turns launch speed into maximum height", ()
     assert.equal(task.answerValue, task.params.v ** 2 / 20);
     assert.ok(task.text.includes("Сопротивлением воздуха пренебречь"));
     assert.ok(task.explanation?.includes("Масса сокращается"));
+  }
+});
+
+test("monoatomic-internal-energy uses absolute temperature and returns kilojoules", () => {
+  const tasks = generateTasks("monoatomic-internal-energy", 24);
+  const blueprint = getBlueprint("monoatomic-internal-energy");
+
+  for (const task of tasks) {
+    const expected = Number((1.5 * task.params.nu * 8.31 * task.params.T / 1000).toFixed(3));
+    assert.equal(task.answerValue, expected);
+    assert.equal(task.answerUnit, "кДж");
+    assert.equal(task.answerFormat, "numeric_input");
+    assert.ok(task.text.includes(String(task.params.T) + " К"));
+    assert.deepEqual(validateGeneratedTask(task, blueprint).issues, []);
+  }
+});
+
+test("isobaric-gas-work uses volume change and returns joules", () => {
+  const tasks = generateTasks("isobaric-gas-work", 30);
+  const blueprint = getBlueprint("isobaric-gas-work");
+
+  for (const task of tasks) {
+    assert.equal(task.answerValue, task.params.pressure * task.params.volumeChange);
+    assert.equal(task.answerUnit, "Дж");
+    assert.equal(task.answerFormat, "numeric_input");
+    assert.ok(task.text.includes(String(task.params.volumeStart + task.params.volumeChange) + " л"));
+    assert.deepEqual(validateGeneratedTask(task, blueprint).issues, []);
+  }
+});
+
+test("first-law-energy-balance keeps heat and gas-work signs distinct", () => {
+  const blueprint = getBlueprint("first-law-energy-balance");
+  const expected = [360, -360, 0, 600];
+
+  for (let caseId = 1; caseId <= 4; caseId += 1) {
+    for (let scale = 1; scale <= 3; scale += 1) {
+      const params = { caseId, scale };
+      const answer = blueprint.solver(params);
+      assert.equal(answer, expected[caseId - 1] * scale);
+      assert.equal(blueprint.answerKind, "signed");
+      assert.equal(blueprint.answerFormat, "numeric_input");
+      assert.ok(blueprint.textTemplate(params, answer).includes("укажите минус"));
+      const wrongValues = blueprint.distractors.map(rule => rule.compute(params));
+      assert.equal(new Set([answer, ...wrongValues]).size, 4);
+    }
+  }
+
+  const tasks = generateTasks("first-law-energy-balance", 12);
+  for (const task of tasks) {
+    assert.equal(task.answerValue, blueprint.solver(task.params));
+    assert.equal(task.answerUnit, "Дж");
+    assert.deepEqual(validateGeneratedTask(task, blueprint).issues, []);
+  }
+});
+
+test("heat-engine-efficiency conserves energy over a cycle and reports percent", () => {
+  const blueprint = getBlueprint("heat-engine-efficiency");
+  for (const heatInput of [5, 7, 10, 13, 16, 20]) {
+    for (const coolerPercent of [55, 60, 70, 80]) {
+      const params = { heatInput, coolerPercent };
+      const coolerHeat = heatInput * coolerPercent / 100;
+      const cycleWork = heatInput - coolerHeat;
+      const answer = blueprint.solver(params);
+      assert.equal(cycleWork + coolerHeat, heatInput);
+      assert.ok(Math.abs(answer - 100 * cycleWork / heatInput) < 1e-9);
+      assert.equal(blueprint.answerUnit, "%");
+      assert.equal(blueprint.answerFormat, "numeric_input");
+      assert.ok(blueprint.textTemplate(params, answer).includes(formatAnswerValue(coolerHeat)));
+      const wrongValues = blueprint.distractors.map(rule => rule.compute(params));
+      assert.equal(new Set([answer, ...wrongValues]).size, 4);
+    }
+  }
+
+  const tasks = generateTasks("heat-engine-efficiency", 12);
+  for (const task of tasks) {
+    assert.equal(task.answerValue, blueprint.solver(task.params));
+    assert.deepEqual(validateGeneratedTask(task, blueprint).issues, []);
+  }
+});
+
+test("coulomb-force keeps magnitude separate from sign and follows the inverse square", () => {
+  const blueprint = getBlueprint("coulomb-force");
+  for (const q1 of [2, 4, 6, 8]) {
+    for (const q2 of [2, 4, 6, 8]) {
+      for (const rCm of [10, 20, 30, 40]) {
+        for (const epsilon of [1, 2]) {
+          const attraction = { q1, q2, rCm, epsilon, sign: 2 };
+          const repulsion = { ...attraction, sign: 1 };
+          const force = blueprint.solver(attraction);
+          assert.equal(force, blueprint.solver(repulsion));
+          assert.equal(force, Number((90 * q1 * q2 / (epsilon * rCm ** 2)).toFixed(1)));
+          assert.ok(blueprint.textTemplate(attraction, force).includes("−" + q2 + " нКл"));
+          assert.ok(blueprint.textTemplate(repulsion, force).includes("+" + q2 + " нКл"));
+          assert.equal(new Set([force, ...blueprint.distractors.map(rule => rule.compute(attraction))]).size, 4);
+        }
+      }
+    }
+  }
+
+  for (const task of generateTasks("coulomb-force", 12)) {
+    assert.equal(task.answerUnit, "мкН");
+    assert.equal(task.answerFormat, "numeric_input");
+    assert.deepEqual(validateGeneratedTask(task, blueprint).issues, []);
+  }
+});
+
+test("electric-field-strength depends on the source and distance, not source sign", () => {
+  const blueprint = getBlueprint("electric-field-strength");
+  for (const sourceCharge of [2, 4, 6, 8]) {
+    for (const distanceCm of [10, 20, 30, 40]) {
+      for (const epsilon of [1, 2]) {
+        const positive = { sourceCharge, distanceCm, epsilon, sourceSign: 1 };
+        const negative = { ...positive, sourceSign: 2 };
+        const answer = blueprint.solver(positive);
+        assert.equal(answer, blueprint.solver(negative));
+        assert.equal(answer, Number((90_000 * sourceCharge / (epsilon * distanceCm ** 2)).toFixed(1)));
+        assert.ok(blueprint.textTemplate(positive, answer).includes("+" + sourceCharge + " нКл"));
+        assert.ok(blueprint.textTemplate(negative, answer).includes("−" + sourceCharge + " нКл"));
+        assert.equal(new Set([answer, ...blueprint.distractors.map(rule => rule.compute(positive))]).size, 4);
+      }
+    }
+  }
+
+  for (const task of generateTasks("electric-field-strength", 12)) {
+    assert.equal(task.answerUnit, "Н/Кл");
+    assert.equal(task.answerFormat, "numeric_input");
+    assert.deepEqual(validateGeneratedTask(task, blueprint).issues, []);
+  }
+});
+
+test("electric-field-superposition adds signed field components at a point between two sources", () => {
+  const blueprint = getBlueprint("electric-field-superposition");
+  const params = {
+    leftCharge: 2,
+    leftSign: 1,
+    leftDistanceCm: 10,
+    rightCharge: 8,
+    rightSign: 1,
+    rightDistanceCm: 20,
+  };
+  // The fields oppose: 1800 N/C rightward and 1800 N/C leftward would
+  // cancel, so choose unequal magnitudes to retain a signed result.
+  const unbalanced = { ...params, rightCharge: 4 };
+  assert.equal(blueprint.solver(unbalanced), 900);
+  assert.equal(blueprint.solver({ ...unbalanced, leftSign: 2 }), -2700);
+  assert.equal(blueprint.solver({ ...unbalanced, rightSign: 2 }), 2700);
+  assert.equal(blueprint.solver({ ...unbalanced, leftSign: 2, rightSign: 2 }), -900);
+
+  for (const task of generateTasks("electric-field-superposition", 40)) {
+    assert.equal(task.answerUnit, "Н/Кл");
+    assert.equal(task.answerFormat, "numeric_input");
+    assert.equal(task.answerValue, blueprint.solver(task.params));
+    assert.deepEqual(validateGeneratedTask(task, blueprint).issues, []);
+  }
+});
+
+test("electrostatic-field-work keeps charge, displacement and energy signs distinct", () => {
+  const blueprint = getBlueprint("electrostatic-field-work");
+  for (const chargeSign of [1, 2]) {
+    for (const direction of [1, 2]) {
+      for (const asked of [1, 2]) {
+        const params = { chargeMicroC: 2, chargeSign, fieldNPerC: 200, distanceCm: 20, direction, asked };
+        const charge = chargeSign === 1 ? 2 : -2;
+        const dx = direction === 1 ? 0.2 : -0.2;
+        const work = charge * 200 * dx;
+        assert.equal(blueprint.solver(params), asked === 1 ? work : -work);
+        assert.equal(blueprint.solver({ ...params, asked: 1 }), -blueprint.solver({ ...params, asked: 2 }));
+        assert.equal(new Set([blueprint.solver(params), ...blueprint.distractors.map(rule => rule.compute(params))]).size, 4);
+        assert.ok(blueprint.textTemplate(params, blueprint.solver(params)).includes(direction === 1 ? "правее" : "левее"));
+      }
+    }
+  }
+
+  for (const task of generateTasks("electrostatic-field-work", 24)) {
+    assert.equal(task.answerUnit, "мкДж");
+    assert.equal(task.answerFormat, "numeric_input");
+    assert.deepEqual(validateGeneratedTask(task, blueprint).issues, []);
+  }
+});
+
+test("point-charge-potential keeps the source sign and inverse-distance law", () => {
+  const blueprint = getBlueprint("point-charge-potential");
+  for (const sourceCharge of [2, 4, 6, 8, 10]) {
+    for (const distanceCm of [10, 20, 30, 40, 50]) {
+      const positive = { sourceCharge, distanceCm, sourceSign: 1 };
+      const negative = { ...positive, sourceSign: 2 };
+      const answer = 900 * sourceCharge / distanceCm;
+      assert.equal(blueprint.solver(positive), answer);
+      assert.equal(blueprint.solver(negative), -answer);
+      assert.equal(blueprint.solver({ ...positive, distanceCm: distanceCm * 2 }), answer / 2);
+      assert.equal(new Set([answer, ...blueprint.distractors.map(rule => rule.compute(positive))]).size, 4);
+      assert.ok(blueprint.textTemplate(negative, -answer).includes("−" + sourceCharge + " нКл"));
+    }
+  }
+
+  for (const task of generateTasks("point-charge-potential", 24)) {
+    assert.equal(task.answerUnit, "В");
+    assert.equal(task.answerFormat, "numeric_input");
+    assert.deepEqual(validateGeneratedTask(task, blueprint).issues, []);
+  }
+});
+
+test("multi-source-potential adds signed scalar potentials independently of source position", () => {
+  const blueprint = getBlueprint("multi-source-potential");
+  const params = {
+    leftCharge: 2,
+    leftSign: 1,
+    leftDistanceCm: 20,
+    rightCharge: 4,
+    rightSign: 2,
+    rightDistanceCm: 20,
+  };
+  assert.equal(blueprint.solver(params), -90);
+  assert.equal(blueprint.solver({ ...params, rightSign: 1 }), 270);
+  assert.equal(blueprint.solver({ ...params, leftSign: 2 }), -270);
+  assert.equal(blueprint.solver({ ...params, leftSign: 2, rightSign: 1 }), 90);
+  assert.equal(blueprint.solver({ ...params, rightCharge: 2 }), 0);
+  const validCandidates = getCandidateParams("multi-source-potential");
+  const zeroOffset = validCandidates.findIndex(candidate => blueprint.solver(candidate) === 0);
+  assert.ok(zeroOffset >= 0, "zero potential remains a valid generated case");
+  const zeroTask = generateTasks("multi-source-potential", 1, { offset: zeroOffset })[0];
+  assert.equal(zeroTask.answerValue, 0);
+  assert.deepEqual(validateGeneratedTask(zeroTask, blueprint).issues, []);
+  assert.ok(blueprint.textTemplate(params, -90).includes("A = +2 нКл"));
+  assert.ok(blueprint.textTemplate(params, -90).includes("B = −4 нКл"));
+
+  for (const task of generateTasks("multi-source-potential", 40)) {
+    assert.equal(task.answerUnit, "В");
+    assert.equal(task.answerFormat, "numeric_input");
+    assert.equal(task.answerValue, blueprint.solver(task.params));
+    assert.deepEqual(validateGeneratedTask(task, blueprint).issues, []);
+  }
+});
+
+test("uniform-field-voltage uses oriented separation and does not depend on an absolute potential", () => {
+  const blueprint = getBlueprint("uniform-field-voltage");
+  for (const fieldVPerM of [100, 200, 500]) {
+    for (const distanceCm of [10, 20, 40, 60]) {
+      const along = { fieldVPerM, distanceCm, direction: 1 };
+      const against = { ...along, direction: 2 };
+      const voltage = fieldVPerM * distanceCm / 100;
+      assert.equal(blueprint.solver(along), voltage);
+      assert.equal(blueprint.solver(against), -voltage);
+      assert.equal(blueprint.solver({ ...along, distanceCm: distanceCm * 2 }), 2 * voltage);
+      assert.equal(new Set([voltage, ...blueprint.distractors.map(rule => rule.compute(along))]).size, 4);
+      assert.ok(blueprint.textTemplate(against, -voltage).includes("левее"));
+    }
+  }
+
+  for (const task of generateTasks("uniform-field-voltage", 24)) {
+    assert.equal(task.answerUnit, "В");
+    assert.equal(task.answerFormat, "numeric_input");
+    assert.deepEqual(validateGeneratedTask(task, blueprint).issues, []);
+  }
+});
+
+test("parallel-plate-capacitance applies direct and inverse scaling without unit ambiguity", () => {
+  const blueprint = getBlueprint("parallel-plate-capacitance");
+  for (const initialCapacitancePf of [24, 30, 36, 42, 48, 54, 60]) {
+    for (const factor of [2, 3]) {
+      for (const changeKind of [1, 2, 3]) {
+        const params = { initialCapacitancePf, factor, changeKind };
+        const expected = changeKind === 2 ? initialCapacitancePf / factor : initialCapacitancePf * factor;
+        assert.equal(blueprint.solver(params), expected);
+        assert.equal(new Set([expected, ...blueprint.distractors.map(rule => rule.compute(params))]).size, 4);
+      }
+    }
+  }
+
+  for (const task of generateTasks("parallel-plate-capacitance", 24)) {
+    assert.equal(task.answerUnit, "пФ");
+    assert.equal(task.answerFormat, "numeric_input");
+    assert.deepEqual(validateGeneratedTask(task, blueprint).issues, []);
   }
 });
 
@@ -428,6 +734,7 @@ test("newton-second: uses units for all three target quantities", () => {
 
 test("registry groups every template exactly once", () => {
   assert.equal(new Set(templateRegistry.map((entry) => entry.id)).size, templateRegistry.length);
+  assert.deepEqual(new Set(getTemplateIdsByGroup("measurements")), new Set(measurementTemplateIds));
   assert.deepEqual(new Set(getTemplateIdsByGroup("kinematics")), new Set(kinematicsTemplateIds));
   assert.deepEqual(new Set(getTemplateIdsByGroup("dynamics")), new Set(dynamicsTemplateIds));
   assert.deepEqual(
@@ -750,12 +1057,12 @@ test("API route mixed покрывает все навыки кинематик�
 
 test("API route electro-mixed покрывает все навыки электродинамики", async () => {
   const response = await GET(
-    new Request("http://localhost/api/tasks?template=electro-mixed&count=10&batch=7"),
+    new Request(`http://localhost/api/tasks?template=electro-mixed&count=${electrodynamicsTemplateIds.length}&batch=7`),
   );
   const data = (await response.json()) as ApiTaskResponse;
 
   assert.equal(response.status, 200);
-  assert.equal(data.tasks.length, 10);
+  assert.equal(data.tasks.length, electrodynamicsTemplateIds.length);
   assert.deepEqual(
     new Set(data.tasks.map((task) => task.blueprint)),
     new Set(electrodynamicsTemplateIds),
@@ -786,6 +1093,11 @@ test("API route exam собирает сбалансированную смеш�
   assert.equal(firstResponse.status, 200);
   assert.equal(first.tasks.length, 10);
   assert.deepEqual(first.tasks, repeat.tasks);
+  assert.equal(
+    first.tasks.some((task) => (measurementTemplateIds as readonly string[]).includes(task.blueprint)),
+    false,
+    "измерения VII класса не занимают неподтверждённые экзаменационные слоты",
+  );
 
   // Квоты на 10 задач: 4 механики (2 кинематика + 2 динамика),
   // 3 электродинамики, 3 термодинамики — как в route.ts.

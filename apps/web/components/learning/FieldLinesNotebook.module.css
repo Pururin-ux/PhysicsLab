@@ -1,0 +1,48 @@
+.notebook {
+  --ink: #172d39;
+  --paper: #f3eee2;
+  --field: #087f96;
+  display: grid;
+  gap: clamp(1rem, 2.4vw, 1.5rem);
+  padding: clamp(1rem, 3vw, 2rem);
+  border: 1px solid color-mix(in srgb, var(--ink) 18%, transparent);
+  border-radius: 1.5rem;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-manrope), system-ui, sans-serif;
+}
+.heading { display: grid; gap: .35rem; }
+.heading > span { color: var(--field); font-size: .75rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+.heading h2 { margin: 0; font-size: clamp(1.2rem, 2.6vw, 1.7rem); font-weight: 800; line-height: 1.3; }
+.heading p { margin: 0; max-width: 68ch; font-size: .88rem; line-height: 1.55; }
+.controls { display: flex; flex-wrap: wrap; gap: .4rem; }
+.controls button { min-height: 2.5rem; padding: .45rem .75rem; border: 1px solid color-mix(in srgb, var(--ink) 26%, transparent); border-radius: .65rem; background: transparent; color: var(--ink); font: inherit; font-size: .84rem; font-weight: 740; cursor: pointer; }
+.controls button[aria-pressed="true"] { border-color: var(--field); background: color-mix(in srgb, var(--field) 13%, var(--paper)); }
+.controls button:focus-visible { outline: 3px solid var(--field); outline-offset: 3px; }
+.figure { margin: 0; border-block: 1px solid color-mix(in srgb, var(--ink) 17%, transparent); padding-block: .65rem; }
+.figure svg { display: block; width: 100%; height: auto; }
+.fieldLine { fill: none; stroke: var(--field); stroke-width: 4; stroke-linecap: round; }
+.arrowhead { fill: var(--field); }
+.sourceLabel { fill: var(--ink); font: 850 31px var(--font-physics-numeric), system-ui, sans-serif; }
+.pointLabel { fill: var(--ink); font: 800 24px var(--font-physics-numeric), system-ui, sans-serif; }
+.directionLabel { fill: var(--field); font: 800 25px var(--font-physics-numeric), system-ui, sans-serif; }
+.plate { fill: none; stroke: var(--ink); stroke-width: 7; }
+.plateSign { fill: var(--ink); font: 800 30px var(--font-physics-numeric), system-ui, sans-serif; dominant-baseline: central; }
+.figure figcaption { max-width: 70ch; font-size: .74rem; line-height: 1.5; color: color-mix(in srgb, var(--ink) 75%, transparent); }
+.reading { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+.reading > div { display: grid; align-content: start; gap: .4rem; border-top: 3px solid var(--field); padding-top: .6rem; }
+.reading span { font-size: .73rem; font-weight: 800; letter-spacing: .05em; }
+.reading strong { font-size: .95rem; line-height: 1.4; }
+.rule { max-width: 70ch; margin: 0; padding-top: .8rem; border-top: 1px solid color-mix(in srgb, var(--ink) 17%, transparent); font-size: .85rem; line-height: 1.55; }
+:global([data-theme="dark"]) .notebook { --ink: #e8f1f2; --paper: #111d26; --field: #66d5e7; }
+@media (max-width: 760px) {
+  .notebook { margin-inline: -.4rem; border-radius: 1rem; }
+  .controls { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .controls button:last-child { grid-column: 1 / -1; }
+  .sourceLabel { font-size: 38px; }
+  .pointLabel { font-size: 30px; }
+  .directionLabel { font-size: 30px; }
+  .plateSign { font-size: 36px; }
+  .fieldLine { stroke-width: 5; }
+  .reading { grid-template-columns: 1fr; }
+}

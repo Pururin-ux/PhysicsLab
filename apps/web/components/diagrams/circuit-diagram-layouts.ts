@@ -78,3 +78,5 @@ export const SWITCH_SLOT = { xLeft: 118, xRight: 148, y: 140, labelX: 133, label
 export const AMMETER_SLOT = { x: 195, y: 140, r: 10 };
 // Слот для вольтметра — над резистором R (первым в списке), с отводами вниз.
 export const VOLTMETER_SLOT = { x: 262, y: 46, r: 11 };
+// Отдельный слот для измерения напряжения на клеммах источника.
+export const SOURCE_VOLTMETER_SLOT = { x: 20, y: 82, r: 11 };

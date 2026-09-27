@@ -7,6 +7,7 @@ import {
 import { skillMetadata, type SkillId, type TopicId } from "./taxonomy.ts";
 import { getTopWeaknesses, type WeaknessDisplay } from "./weakness-labels.ts";
 import { getLearningDestination } from "./learning-links.ts";
+import type { ReviewResumeCandidate } from "./review-resume.ts";
 import type { TemplateId } from "../server/task-generator/generate.ts";
 
 export type ReviewUrgency = "today" | "next-session" | "later";
@@ -101,14 +102,23 @@ export function buildReviewPlan(
   progress: AppProgress,
   limit = 5,
   now = new Date(),
+  resumeCandidates: readonly ReviewResumeCandidate[] = [],
 ): ReviewPlanItem[] {
   if (limit <= 0) {
     return [];
   }
 
   const lastSeenByWeakTrap = combineWeakTrapLastSeenAt(progress);
-  const latestPendingByWeakTrap = Object.values(progress.pendingMistakes).reduce(
+  // A pending mistake can outlive its tab snapshot. Keep it in the ordinary
+  // weakness list, but offer resume only for the answer currently in a draft.
+  const resumablePendingByWeakTrap = Object.values(progress.pendingMistakes).reduce(
     (latest, pending) => {
+      if (!pending.resumeHref || !resumeCandidates.some((candidate) =>
+        candidate.sessionId === pending.sessionId &&
+        candidate.taskId === pending.taskId &&
+        candidate.blueprint === pending.blueprint
+      )) return latest;
+
       const key = `${pending.blueprint}:${pending.misconception}`;
       if (!latest[key] || pending.recordedAt > latest[key].recordedAt) {
         latest[key] = pending;
@@ -118,11 +128,18 @@ export function buildReviewPlan(
     {} as Record<string, AppProgress["pendingMistakes"][string]>,
   );
 
-  return getTopWeaknesses(combineWeakTraps(progress), limit)
+  // Select the ordinary top items, plus any answer that can really be resumed.
+  // Sorting only the top `limit` would discard a saved attempt before the
+  // pending-first ordering below has a chance to bring it back.
+  const allWeaknesses = getTopWeaknesses(combineWeakTraps(progress), Number.MAX_SAFE_INTEGER);
+  const topKeys = new Set(allWeaknesses.slice(0, limit).map((weakness) => weakness.key));
+
+  return allWeaknesses
+    .filter((weakness) => topKeys.has(weakness.key) || weakness.key in resumablePendingByWeakTrap)
     .map((weakness) => {
-      const pending = latestPendingByWeakTrap[weakness.key] ?? null;
+      const pending = resumablePendingByWeakTrap[weakness.key] ?? null;
+      const isPending = pending !== null;
       const pendingRecordedAt = pending?.recordedAt ?? null;
-      const isPending = pendingRecordedAt !== null;
       const topicId = getTopicIdForWeakness(weakness);
       const topic = topicId ? topicById[topicId] : null;
       const destination = getLearningDestination(weakness.skillId);
@@ -133,8 +150,8 @@ export function buildReviewPlan(
       const urgency = getUrgency(weakness.count, ageDays);
       const copy = isPending
         ? {
-            dueLabel: "Сейчас в задаче",
-            reason: "ответ сохранён — можно продолжить с этого места",
+            dueLabel: "Есть черновик задачи",
+            reason: "ответ найден в черновике — попытку можно открыть",
           }
         : getDueCopy(urgency, ageDays);
 
@@ -148,7 +165,7 @@ export function buildReviewPlan(
         topicTitle: topic?.title ?? null,
         familyId: destination?.familyId ?? null,
         taskHref: destination?.taskHref ?? null,
-        practiceHref: pending?.resumeHref ?? destination?.practiceHref ?? null,
+        practiceHref: isPending ? pending?.resumeHref ?? null : destination?.practiceHref ?? null,
         fallbackHref: destination?.taskHref ?? "/tasks",
         hasReferenceSolution: destination?.hasReferenceSolution ?? false,
       };
@@ -165,7 +182,8 @@ export function buildReviewPlan(
       if (byUrgency !== 0) return byUrgency;
       if (right.count !== left.count) return right.count - left.count;
       return left.skillTitle.localeCompare(right.skillTitle, "ru");
-    });
+    })
+    .slice(0, limit);
 }
 
 export function countDueReviews(progress: AppProgress) {

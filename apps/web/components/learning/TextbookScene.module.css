@@ -1,4 +1,18 @@
 .scene { min-width:0; }
+.uniformComposition { display:grid; grid-template-columns:minmax(0,.75fr) minmax(0,1.25fr); min-width:0; overflow:hidden; border:1px solid var(--border-strong); border-radius:24px; }
+.illustration.uniformStory { display:grid; grid-template-columns:minmax(0,1fr); grid-template-rows:minmax(0,1fr) auto; gap:0; min-width:0; margin:0; background:var(--surface-secondary); }
+.uniformStory .uniformArt { width:100%; height:100%; min-height:260px; max-height:440px; object-fit:cover; object-position:40% center; mask-image:none; border-radius:0; }
+.uniformStory .caption { padding:14px 20px 18px; }
+.uniformStory .caption h2 { font-size:20px; }
+.uniformStory .caption p { margin-top:7px; font-size:13px; line-height:1.5; }
+@media (max-width:760px) { .uniformComposition { grid-template-columns:minmax(0,1fr); } .illustration.uniformStory { grid-template-columns:minmax(0,1fr) minmax(140px,.8fr); grid-template-rows:auto; align-items:center; } .uniformStory .uniformArt { height:190px; min-height:0; max-height:none; object-position:52% 49%; } .uniformStory .caption { padding:12px 16px; margin:0; } .uniformStory .caption p { display:block; font-size:14px; line-height:1.55; } }
+@media (max-width:450px) { .illustration.uniformStory { grid-template-columns:minmax(0,1fr); } .uniformStory .uniformArt { height:160px; object-position:50% 34%; } .uniformStory .caption { padding:11px 16px 14px; } .uniformStory .caption h2 { font-size:19px; } }
+.soundComposition { display:grid; grid-template-columns:minmax(0,1.4fr) minmax(220px,.8fr); align-items:center; gap:clamp(16px,2vw,30px); }
+.illustration.soundStory { grid-template-columns:minmax(0,1fr); align-content:start; gap:0; margin:0; }
+.soundStory .art { border-radius:24px 8px 24px 8px; mask-image:none; }
+.soundStory .caption { padding:10px 2px 0; }
+@media (max-width:760px) { .soundComposition { grid-template-columns:minmax(0,1fr); } .illustration.soundStory { grid-template-columns:minmax(0,1fr) minmax(130px,.75fr); align-items:center; gap:12px; } .soundStory .caption { padding:0; } }
+@media (max-width:420px) { .illustration.soundStory { grid-template-columns:minmax(0,1fr); } }
 .illustration { display:grid; grid-template-columns:1.4fr 1fr; align-items:center; gap:14px; margin:0 -18px 12px; }
 .art { width:100%; height:auto; mask-image:linear-gradient(to bottom,#000 65%,transparent 100%); border-radius:38% 8% 0 0 / 12% 5% 0 0; }
 .caption { padding:12px 18px 24px 4px; }
@@ -43,6 +57,6 @@
 .bridge h3 { font-size:21px; font-weight:750; margin-bottom:8px; }
 .bridge a { display:inline-flex; align-items:center; min-height:44px; margin-top:10px; color:var(--action-primary); font-weight:700; }
 .bridge a:focus-visible { outline:3px solid var(--action-primary); outline-offset:4px; }
-@media (max-width:640px) { .illustration { grid-template-columns:1fr; gap:0; margin:0 -10px; } .art { max-height:240px; object-fit:cover; object-position:center 42%; } .caption { padding:0 10px 16px; margin-top:-12px; position:relative; } .caption h2 { font-size:21px; } .caption p { display:none; } .experiment { padding:16px 0; } .graphControls { grid-template-columns:1fr; gap:0; } .graphPanel { margin-inline:-4px; padding:6px; } .readout, .journeyReadout { grid-template-columns:1fr; gap:8px; } .readout p { padding:10px; font-size:14px; } }
+@media (max-width:640px) { .illustration { grid-template-columns:1fr; gap:0; margin:0 -10px; } .art { max-height:240px; object-fit:cover; object-position:center 42%; } .caption { padding:0 10px 16px; margin-top:-12px; position:relative; } .caption h2 { font-size:21px; } .caption p { margin-top:6px; line-height:1.5; } .experiment { padding:16px 0; } .graphControls { grid-template-columns:1fr; gap:0; } .graphPanel { margin-inline:-4px; padding:6px; } .readout, .journeyReadout { grid-template-columns:1fr; gap:8px; } .readout p { padding:10px; font-size:14px; } }
 @media(prefers-reduced-motion:no-preference) { .scene { animation: enter-scene 300ms ease-out; } @keyframes enter-scene { from { opacity:0; transform:translateY(5px); } to { opacity:1; transform:translateY(0); } } }
 @media(prefers-reduced-motion:reduce) { .walker, .distanceBars span { transition:none; } .routeTrace { animation:none; } }

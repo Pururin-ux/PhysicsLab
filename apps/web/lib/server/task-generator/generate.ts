@@ -6,9 +6,18 @@ import { averageSpeedSegmentsBlueprint } from "./templates/average-speed-segment
 import { averageSpeedWithStopBlueprint } from "./templates/average-speed-with-stop.ts";
 import { capacitorEnergyBlueprint } from "./templates/capacitor-energy.ts";
 import { chargeSharingBlueprint } from "./templates/charge-sharing.ts";
+import { coulombForceBlueprint } from "./templates/coulomb-force.ts";
+import { electricFieldStrengthBlueprint } from "./templates/electric-field-strength.ts";
+import { electricFieldSuperpositionBlueprint } from "./templates/electric-field-superposition.ts";
+import { electrostaticFieldWorkBlueprint } from "./templates/electrostatic-field-work.ts";
+import { pointChargePotentialBlueprint } from "./templates/point-charge-potential.ts";
+import { multiSourcePotentialBlueprint } from "./templates/multi-source-potential.ts";
+import { uniformFieldVoltageBlueprint } from "./templates/uniform-field-voltage.ts";
+import { parallelPlateCapacitanceBlueprint } from "./templates/parallel-plate-capacitance.ts";
 import { elementaryChargeCountBlueprint } from "./templates/elementary-charge-count.ts";
 import { densityVolumeRatioBlueprint } from "./templates/density-volume-ratio.ts";
 import { electricPowerBlueprint } from "./templates/electric-power.ts";
+import { householdLoadCurrentBlueprint } from "./templates/household-load-current.ts";
 import { frictionForceBlueprint } from "./templates/friction-force.ts";
 import { freeFallBlueprint } from "./templates/free-fall.ts";
 import { gravityForceBlueprint } from "./templates/gravity-force.ts";
@@ -29,6 +38,10 @@ import { solidStructurePropertiesBlueprint } from "./templates/solid-structure-p
 import { liquidStructurePropertiesBlueprint } from "./templates/liquid-structure-properties.ts";
 import { vaporDynamicEquilibriumBlueprint } from "./templates/vapor-dynamic-equilibrium.ts";
 import { relativeHumidityPressureBlueprint } from "./templates/relative-humidity-pressure.ts";
+import { monoatomicInternalEnergyBlueprint } from "./templates/monoatomic-internal-energy.ts";
+import { isobaricGasWorkBlueprint } from "./templates/isobaric-gas-work.ts";
+import { firstLawEnergyBalanceBlueprint } from "./templates/first-law-energy-balance.ts";
+import { heatEngineEfficiencyBlueprint } from "./templates/heat-engine-efficiency.ts";
 import { moleculeCountFromMassBlueprint } from "./templates/molecule-count-from-mass.ts";
 import { particleConcentrationBlueprint } from "./templates/particle-concentration.ts";
 import { molecularKineticEnergyBlueprint } from "./templates/molecular-kinetic-energy.ts";
@@ -58,10 +71,15 @@ import { resistorNetworkBlueprint } from "./templates/resistor-network.ts";
 import { resultantForceBlueprint } from "./templates/resultant-force.ts";
 import { resultantForce2dBlueprint } from "./templates/resultant-force-2d.ts";
 import { sourceInternalResistanceBlueprint } from "./templates/source-internal-resistance.ts";
+import { sourceEfficiencyBlueprint } from "./templates/source-efficiency.ts";
 import { uniformMotionBasicBlueprint } from "./templates/uniform-motion-basic.ts";
 import { uniformCoordinateLawBlueprint } from "./templates/uniform-coordinate-law.ts";
 import { uniformMotionGraphsBlueprint } from "./templates/uniform-motion-graphs.ts";
 import { unitConversionSpeedBlueprint } from "./templates/unit-conversion-speed.ts";
+import { lengthUnitConversionBlueprint } from "./templates/length-unit-conversion.ts";
+import { graduatedScaleReadingBlueprint } from "./templates/graduated-scale-reading.ts";
+import { rectangularBlockVolumeBlueprint } from "./templates/rectangular-block-volume.ts";
+import { irregularBodyVolumeBlueprint } from "./templates/irregular-body-volume.ts";
 import { vtAreaBlueprint } from "./templates/vt-area.ts";
 import { vtSlopeBlueprint } from "./templates/vt-slope.ts";
 import { weightLiftBlueprint } from "./templates/weight-lift.ts";
@@ -71,6 +89,22 @@ import { workForceDistanceBlueprint } from "./templates/work-force-distance.ts";
 import { workAtAngleBlueprint } from "./templates/work-at-angle.ts";
 import { rotationFrequencyBlueprint } from "./templates/rotation-frequency.ts";
 import { centripetalAccelerationBlueprint } from "./templates/centripetal-acceleration.ts";
+import { oscillationFrequencyBlueprint } from "./templates/oscillation-frequency.ts";
+import { springOscillationPeriodBlueprint } from "./templates/spring-oscillation-period.ts";
+import { mathematicalPendulumPeriodBlueprint } from "./templates/mathematical-pendulum-period.ts";
+import { lcPeriodBlueprint } from "./templates/lc-period.ts";
+import { acOscillogramFrequencyBlueprint } from "./templates/ac-oscillogram-frequency.ts";
+import { inducedEmfMagnitudeBlueprint } from "./templates/induced-emf-magnitude.ts";
+import { ampereForceMagnitudeBlueprint } from "./templates/ampere-force-magnitude.ts";
+import { lorentzForceMagnitudeBlueprint } from "./templates/lorentz-force-magnitude.ts";
+import { metalTemperatureCurrentBlueprint } from "./templates/metal-temperature-current.ts";
+import { electrolyteIonTransportBlueprint } from "./templates/electrolyte-ion-transport.ts";
+import { selfInductionEmfBlueprint } from "./templates/self-induction-emf.ts";
+import { oscillationEnergyBlueprint } from "./templates/oscillation-energy.ts";
+import { mechanicalWaveSpeedBlueprint } from "./templates/mechanical-wave-speed.ts";
+import { echoRangingBlueprint } from "./templates/echo-ranging.ts";
+import { resonanceFrequencyMatchBlueprint } from "./templates/resonance-frequency-match.ts";
+import { bohrTransitionRadiationBlueprint } from "./templates/bohr-transition-radiation.ts";
 import type {
   GeneratedOption,
   GeneratedTask,
@@ -108,8 +142,28 @@ export const blueprints = {
   "uniform-coordinate-law": uniformCoordinateLawBlueprint,
   "uniform-motion-graphs": uniformMotionGraphsBlueprint,
   "unit-conversion-speed": unitConversionSpeedBlueprint,
+  "length-unit-conversion": lengthUnitConversionBlueprint,
+  "graduated-scale-reading": graduatedScaleReadingBlueprint,
+  "rectangular-block-volume": rectangularBlockVolumeBlueprint,
+  "irregular-body-volume": irregularBodyVolumeBlueprint,
   "rotation-frequency": rotationFrequencyBlueprint,
   "centripetal-acceleration": centripetalAccelerationBlueprint,
+  "oscillation-frequency": oscillationFrequencyBlueprint,
+  "spring-oscillation-period": springOscillationPeriodBlueprint,
+  "mathematical-pendulum-period": mathematicalPendulumPeriodBlueprint,
+  "lc-period": lcPeriodBlueprint,
+  "ac-oscillogram-frequency": acOscillogramFrequencyBlueprint,
+  "induced-emf-magnitude": inducedEmfMagnitudeBlueprint,
+  "ampere-force-magnitude": ampereForceMagnitudeBlueprint,
+  "lorentz-force-magnitude": lorentzForceMagnitudeBlueprint,
+  "metal-temperature-current": metalTemperatureCurrentBlueprint,
+  "electrolyte-ion-transport": electrolyteIonTransportBlueprint,
+  "self-induction-emf": selfInductionEmfBlueprint,
+  "oscillation-energy": oscillationEnergyBlueprint,
+  "mechanical-wave-speed": mechanicalWaveSpeedBlueprint,
+  "echo-ranging": echoRangingBlueprint,
+  "resonance-frequency-match": resonanceFrequencyMatchBlueprint,
+  "bohr-transition-radiation": bohrTransitionRadiationBlueprint,
   "gravity-force": gravityForceBlueprint,
   "gravitation-distance": gravitationDistanceBlueprint,
   "gravitational-potential-energy": gravitationalPotentialEnergyBlueprint,
@@ -133,18 +187,32 @@ export const blueprints = {
   "ohm-law": ohmLawBlueprint,
   "resistor-network": resistorNetworkBlueprint,
   "source-internal-resistance": sourceInternalResistanceBlueprint,
+  "source-efficiency": sourceEfficiencyBlueprint,
   "capacitor-energy": capacitorEnergyBlueprint,
   "density-volume-ratio": densityVolumeRatioBlueprint,
   "impulse-momentum": impulseMomentumBlueprint,
   "charge-sharing": chargeSharingBlueprint,
+  "coulomb-force": coulombForceBlueprint,
+  "electric-field-strength": electricFieldStrengthBlueprint,
+  "electric-field-superposition": electricFieldSuperpositionBlueprint,
+  "electrostatic-field-work": electrostaticFieldWorkBlueprint,
+  "point-charge-potential": pointChargePotentialBlueprint,
+  "multi-source-potential": multiSourcePotentialBlueprint,
+  "uniform-field-voltage": uniformFieldVoltageBlueprint,
+  "parallel-plate-capacitance": parallelPlateCapacitanceBlueprint,
   "elementary-charge-count": elementaryChargeCountBlueprint,
   "electric-power": electricPowerBlueprint,
+  "household-load-current": householdLoadCurrentBlueprint,
   "ideal-gas-state": idealGasStateBlueprint,
   "ideal-gas-isoprocess": idealGasIsoprocessBlueprint,
   "solid-structure-properties": solidStructurePropertiesBlueprint,
   "liquid-structure-properties": liquidStructurePropertiesBlueprint,
   "vapor-dynamic-equilibrium": vaporDynamicEquilibriumBlueprint,
   "relative-humidity-pressure": relativeHumidityPressureBlueprint,
+  "monoatomic-internal-energy": monoatomicInternalEnergyBlueprint,
+  "isobaric-gas-work": isobaricGasWorkBlueprint,
+  "first-law-energy-balance": firstLawEnergyBalanceBlueprint,
+  "heat-engine-efficiency": heatEngineEfficiencyBlueprint,
   "molecule-count-from-mass": moleculeCountFromMassBlueprint,
   "particle-concentration": particleConcentrationBlueprint,
   "molecular-kinetic-energy": molecularKineticEnergyBlueprint,

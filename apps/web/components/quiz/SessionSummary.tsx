@@ -1,7 +1,8 @@
 "use client";
 
-import { motion } from "motion/react";
+import { motion, useReducedMotion } from "motion/react";
 import Link from "next/link";
+import type { Ref } from "react";
 import { getLearningDestination } from "../../lib/learning/learning-links";
 import { formatWeakness } from "../../lib/learning/weakness-labels";
 import { Badge } from "../ui/Badge";
@@ -19,12 +20,15 @@ interface SessionSummaryProps {
   topic?: string;
   nextHref?: string;
   nextLabel?: string;
+  nextConcept?: { href: string; label: string } | null;
   variant?: "diagnostic" | "exam";
   focus?: { focusLabel: string; shortHint: string } | null;
+  headingRef?: Ref<HTMLHeadingElement>;
 }
 
 type ResultVariant =
   | "general"
+  | "measurements"
   | "kinematics"
   | "dynamics"
   | "electro"
@@ -35,6 +39,7 @@ type ResultVariant =
 
 function resultVariantFor(topic?: string, variant?: "diagnostic" | "exam"): ResultVariant {
   if (variant) return variant;
+  if (topic === "Измерения") return "measurements";
   if (topic === "Динамика") return "dynamics";
   if (topic === "Электродинамика") return "electro";
   if (topic === "Термодинамика") return "thermo";
@@ -50,6 +55,12 @@ const resultBodies: Record<ResultVariant, [string, string, string, string]> = {
     "Посмотри отмеченные ошибки и выбери одну связь, которую стоит повторить.",
     "Сравни своё решение с разбором: на каком шаге изменился результат?",
     "Начни с одной задачи и восстанови решение по шагам. Затем попробуй новый пример.",
+  ],
+  measurements: [
+    "В этой попытке показания, единицы и вычисления сошлись. Позже проверь себя на новом приборе или новых размерах бруска.",
+    "Посмотри, где возникла ошибка: в выборе единицы, подсчёте промежутков или вычислении объёма.",
+    "Сначала подпиши величину и единицу, затем проверь каждый шаг измерения.",
+    "Вернись к разбору прибора и попробуй снять показание или вычислить объём ещё раз.",
   ],
   kinematics: [
     "В этом наборе сошлись ответы про скорость, ускорение и графики. Это результат одной попытки, а не статус освоения темы: дальше проверь перенос без подсказки и вернись к теме позже.",
@@ -194,7 +205,7 @@ function formatSummaryWeakness(value: string): SummaryWeakness | null {
   return {
     key: trimmed,
     dedupeKey: trimmed,
-    title: "Типовая ошибка",
+    title: "Что проверить",
     hint: trimmed,
     explanation: null,
     practiceHref: null,
@@ -228,14 +239,17 @@ export function SessionSummary({
   topic,
   nextHref,
   nextLabel,
+  nextConcept,
   variant,
   focus,
+  headingRef,
 }: SessionSummaryProps) {
+  const reduceMotion = useReducedMotion();
   const copy = getResultCopy(score, total, topic, variant);
   const focusedBody = focus && !variant
     ? score === total
-      ? `В этом наборе все первые ответы верны. Навык: «${focus.focusLabel}». Это результат одной тренировки; проверь его ещё раз после перерыва.`
-      : `В этом наборе тренировали «${focus.focusLabel}». Разбери отмеченные ошибки и проверь эту связь: ${focus.shortHint}`
+      ? `Все первые ответы про «${focus.focusLabel}» верны. Это хороший результат; попробуй такие задачи ещё раз позже.`
+      : `Разбери отмеченные ответы про «${focus.focusLabel}». Здесь пригодится: ${focus.shortHint}`
     : null;
   const summaryWeaknesses = getUniqueSummaryWeaknesses(weakTraps);
   const showWeaknessActions = Boolean(variant) || summaryWeaknesses.length > 1;
@@ -245,9 +259,9 @@ export function SessionSummary({
   return (
     <motion.section
       className="relative mx-auto flex max-w-[580px] flex-col gap-4 pb-8"
-      initial={{ opacity: 0, y: 24 }}
+      initial={reduceMotion ? false : { opacity: 0, y: 24 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, ease: "easeOut" }}
+      transition={reduceMotion ? { duration: 0 } : { duration: 0.5, ease: "easeOut" }}
     >
       <Card className="flex flex-col items-center gap-6 text-center">
         <Badge tone={copy.tone}>
@@ -275,7 +289,7 @@ export function SessionSummary({
               {copy.marker} {score} / {total} {copy.marker}
             </p>
             <div className="flex flex-col gap-2">
-              <h2 className="text-xl font-bold text-white">{copy.title}</h2>
+              <h2 ref={headingRef} tabIndex={-1} className="text-xl font-bold text-white">{copy.title}</h2>
               <p className="text-[14px] font-normal leading-[1.7] text-white/70">
                 <MathText text={focusedBody ?? copy.body} />
               </p>
@@ -283,9 +297,9 @@ export function SessionSummary({
             <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-white/10">
               <motion.div
                 className="h-full rounded-full bg-nova-cyan"
-                initial={{ width: 0 }}
+                initial={reduceMotion ? false : { width: 0 }}
                 animate={{ width: `${Math.round(ratio * 100)}%` }}
-                transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
+                transition={reduceMotion ? { duration: 0 } : { duration: 0.8, delay: 0.3, ease: "easeOut" }}
               />
             </div>
           </div>
@@ -336,7 +350,7 @@ export function SessionSummary({
               href="/mistakes"
               className="mt-4 inline-flex items-center gap-1 rounded-option text-[13px] font-semibold text-nova-cyan/85 transition-colors hover:text-nova-cyan focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-blue/50"
             >
-              Все мои слабые места →
+              Посмотреть, что повторить →
             </Link>
           </div>
         ) : null}
@@ -357,6 +371,20 @@ export function SessionSummary({
             </Button>
           ) : null}
         </div>
+        {nextConcept && !variant ? (
+          <div className="w-full border-t border-white/[.08] pt-4 text-left">
+            <h3 className="text-[11px] font-bold uppercase tracking-[.14em] text-white/60">
+              Следующий вопрос
+            </h3>
+            <Link
+              href={nextConcept.href}
+              className="mt-2 inline-flex min-h-11 max-w-full items-center gap-2 rounded-option text-[14px] font-semibold leading-[1.5] text-nova-cyan/90 underline underline-offset-4 hover:text-nova-cyan focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nova-blue/50"
+            >
+              <span className="min-w-0">{nextConcept.label}</span>
+              <span aria-hidden="true">→</span>
+            </Link>
+          </div>
+        ) : null}
       </Card>
     </motion.section>
   );

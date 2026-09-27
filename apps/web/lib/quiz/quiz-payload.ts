@@ -8,6 +8,7 @@ import type {
   QuizTask,
   SingleChoiceQuizTask,
 } from "../../components/quiz/quiz-session-store";
+import { isDisplacementVolumeDiagramSpec } from "../physics/displacement-volume-diagram.ts";
 
 export type QuizPayloadIssue = {
   code:
@@ -63,6 +64,9 @@ function hasValidVisuals(task: Record<string, unknown>): boolean {
 
   if (diagram !== undefined && diagram !== null) {
     if (!isRecord(diagram)) return false;
+    if (diagram.kind === "displacement-volume") {
+      return isDisplacementVolumeDiagramSpec(diagram.spec);
+    }
     if (!["vector", "circuit", "optics"].includes(diagram.kind as string)) return false;
     if (!isRecord(diagram.spec)) return false;
   }

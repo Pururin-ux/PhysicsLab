@@ -8,7 +8,7 @@ function centripetalAcceleration(p: Params): number {
 const distractors: DistractorRule[] = [
   { label: "забыл квадрат скорости", compute: (p) => p.v / p.R },
   { label: "умножил на радиус", compute: (p) => p.v ** 2 * p.R },
-  { label: "лишний коэффициент два", compute: (p) => p.v ** 2 / (2 * p.R) },
+  { label: "добавляешь лишний множитель 2 в знаменатель", compute: (p) => p.v ** 2 / (2 * p.R) },
 ];
 
 export const centripetalAccelerationBlueprint: TaskBlueprint = {

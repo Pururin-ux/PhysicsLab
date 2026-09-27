@@ -7,6 +7,13 @@ export type TopicCurator = {
 };
 
 const curators = {
+  measurements: {
+    src: "/images/mio/textbook-measurement-v1.png",
+    alt: "Мио читает мениск в мензурке на уровне глаз",
+    sectionLabel: "Измерения",
+    note: "Для воды смотри на нижнюю точку мениска на уровне глаз; считай промежутки между штрихами.",
+    imageClassName: "",
+  },
   mechanics: {
     src: "/art/production/curator-mechanics.webp",
     alt: "Кот-куратор механики",
@@ -38,6 +45,7 @@ const curators = {
 } satisfies Record<string, TopicCurator>;
 
 export const formulaCuratorByGroup = {
+  measurements: curators.measurements,
   kinematics: curators.mechanics,
   dynamics: {
     ...curators.mechanics,

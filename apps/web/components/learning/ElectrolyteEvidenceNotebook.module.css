@@ -1,0 +1,26 @@
+.notebook { overflow: hidden; border-block: 1px solid var(--border-strong); background: var(--surface-primary); color: var(--text-primary); }
+.heading { padding: clamp(1.1rem, 3vw, 1.8rem) clamp(1rem, 3vw, 1.8rem) 1.3rem; }
+.heading span { color: var(--action-primary); font-size: .74rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
+.heading h2 { margin: .4rem 0 .7rem; font-size: clamp(1.55rem, 3.2vw, 2.3rem); line-height: 1.14; letter-spacing: -.035em; }
+.heading p { margin: 0; max-width: 56ch; color: var(--text-secondary); line-height: 1.6; }
+.scene { position: relative; margin: 0; aspect-ratio: 2 / 1; overflow: hidden; background: var(--surface-secondary); }
+.scene img { width: 100%; height: 100%; object-fit: cover; object-position: center 58%; }
+.scene figcaption { position: absolute; inset: auto 0 0; padding: 2.2rem clamp(1rem, 3vw, 1.8rem) .8rem; background: linear-gradient(transparent, rgba(8, 24, 42, .86)); color: white; font-size: .8rem; line-height: 1.45; }
+.records { padding: 1.15rem clamp(1rem, 3vw, 1.8rem) 1.4rem; }
+.records h3 { margin: 0 0 .6rem; font-size: .95rem; }
+.samples { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin: 0; padding: 0; list-style: none; border-block: 1px solid var(--border-strong); }
+.samples li { min-width: 0; }
+.samples li + li { border-left: 1px solid var(--border-subtle); }
+.samples details { height: 100%; padding: .85rem .8rem 1rem; }
+.samples summary { cursor: pointer; min-height: 44px; font-weight: 750; line-height: 1.4; }
+.samples summary:focus-visible { outline: 3px solid var(--action-primary); outline-offset: 3px; }
+.sampleNumber { display: inline-block; margin-right: .4rem; color: var(--action-primary); font-family: var(--font-physics-numeric), system-ui, sans-serif; font-size: .74rem; font-weight: 800; }
+.samples p { margin: .7rem 0 0; color: var(--text-secondary); font-size: .86rem; line-height: 1.55; }
+.boundary { margin: .9rem 0 0; color: var(--text-secondary); font-size: .78rem; line-height: 1.55; }
+@media (max-width: 640px) {
+  .scene { aspect-ratio: 1.45 / 1; }
+  .scene img { object-position: center; }
+  .samples { grid-template-columns: minmax(0, 1fr); }
+  .samples li + li { border-left: 0; border-top: 1px solid var(--border-subtle); }
+  .samples details { padding: .75rem .1rem; }
+}

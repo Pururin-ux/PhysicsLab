@@ -20,6 +20,16 @@ function getSkillsCount(topicId: TopicId) {
 
 export const topics = [
   {
+    id: "measurements",
+    title: "Измерения",
+    description: "Как читать шкалу прибора, согласовать единицы и найти объём.",
+    learnHref: "/learn/reading-scales",
+    practiceHref: "/practice/family/graduated-scale-reading",
+    href: "/learn/reading-scales",
+    skillsCount: getSkillsCount("measurements"),
+    modeLabel: "приборы и единицы",
+  },
+  {
     id: "kinematics",
     title: "Кинематика",
     description: "Как график скорости показывает ускорение движения.",
@@ -70,14 +80,17 @@ export const topics = [
     skillsCount: getSkillsCount("optics"),
     modeLabel: "лучи и линзы",
   },
-] as const satisfies readonly ProductTopic[];
-
-// Отдельный список: эти темы не попадают в progress-store и не имеют задач.
-export const upcomingTopics = [
   {
     id: "quantum",
-    title: "Атомная и квантовая физика",
-    description: "Фотоэффект, спектры и ядерные превращения.",
-    reviewStatus: "needs-physics-review",
+    title: "Физика атома",
+    description: "Почему атом водорода излучает свет отдельных частот.",
+    learnHref: "/learn/bohr-transitions",
+    learnLabel: "Разобраться в спектре",
+    practiceHref: "/practice/family/bohr-transition-radiation",
+    href: "/learn/bohr-transitions",
+    skillsCount: getSkillsCount("quantum"),
+    modeLabel: "уровни и спектры",
   },
-] as const;
+] as const satisfies readonly ProductTopic[];
+
+export const upcomingTopics = [] as const;

@@ -6,46 +6,52 @@ import { useState } from "react";
 import { useLessonDraft } from "../../lib/learning/use-lesson-draft";
 import { MIO_SCENES, type MioScene } from "../../lib/learning/mio-assets";
 import { roundTripInitial, roundTripReading, walkInitial } from "../../lib/learning/round-trip";
-import { MeasurementModel } from "./MeasurementModel";
-import { PhysicsLanguageModel } from "./PhysicsLanguageModel";
-import { ScientificMethodModel } from "./ScientificMethodModel";
-import { SIUnitsModel } from "./SIUnitsModel";
-import { ParticleEvidenceModel } from "./ParticleEvidenceModel";
-import { MatterStatesModel } from "./MatterStatesModel";
-import { GasPressurePascalModel } from "./GasPressurePascalModel";
-import { AtmosphericPressureModel } from "./AtmosphericPressureModel";
-import { ArchimedesForceModel } from "./ArchimedesForceModel";
-import { ElectroPredictionScene, ElectroResistanceExperiment } from "./ElectroResistanceExperiment";
-import { DensityModel } from "./DensityModel";
-import { InertiaModel } from "./InertiaModel";
-import { PressureModel } from "./PressureModel";
-import { ForceModel } from "./ForceModel";
-import {RelativeMotionModel} from "./RelativeMotionModel";
-import { UniformMotionGraphModel } from "./UniformMotionGraphModel";
-import { UnevenMotionModel } from "./UnevenMotionModel";
-import { GravityWeightModel } from "./GravityWeightModel";
-import { ResultantFrictionModel } from "./ResultantFrictionModel";
-import { HydrostaticPressureModel } from "./HydrostaticPressureModel";
-import { MechanicalWorkModel } from "./MechanicalWorkModel";
-import { MechanicalEfficiencyModel } from "./MechanicalEfficiencyModel";
-import { MechanicalPowerModel } from "./MechanicalPowerModel";
-import { KineticEnergyModel } from "./KineticEnergyModel";
-import { PotentialEnergyModel } from "./PotentialEnergyModel";
-import { MechanicalEnergyModel } from "./MechanicalEnergyModel";
-import { ReflectionTextbookExperiment } from "./ReflectionContentLesson";
-import { NewtonSecondLawTextbookExperiment } from "./DynamicsLesson";
-import { HeatAmountModel } from "./HeatAmountModel";
-import { FuelCombustionLab } from "./FuelCombustionLab";
-import { HeatTransferExplorer } from "./HeatTransferExplorer";
-import { IceMeltingModel } from "./IceMeltingModel";
-import { EvaporationBoilingLab } from "./EvaporationBoilingLab";
-import { ElectrostaticsEvidenceLab } from "./ElectrostaticsEvidenceLab";
-import { CircuitConnectionsNotebook } from "./CircuitConnectionsNotebook";
-import { ElectricPowerNotebook } from "./ElectricPowerNotebook";
-import { HouseholdLoadNotebook } from "./HouseholdLoadNotebook";
-import { MagneticFieldNotebook } from "./MagneticFieldNotebook";
-import { PlaneMirrorNotebook, RefractionMeasurementLens } from "./OpticsNotebook";
 import styles from "./TextbookScene.module.css";
+
+const MeasurementModel = dynamic(() => import("./MeasurementModel").then(module => module.MeasurementModel));
+const DisplacementVolumeNotebook = dynamic(() => import("./DisplacementVolumeNotebook").then(module => module.DisplacementVolumeNotebook));
+const VolumeObservation = dynamic(() => import("./VolumeObservation").then(module => module.VolumeObservation));
+const PhysicsLanguageModel = dynamic(() => import("./PhysicsLanguageModel").then(module => module.PhysicsLanguageModel));
+const ScientificMethodModel = dynamic(() => import("./ScientificMethodModel").then(module => module.ScientificMethodModel));
+const SIUnitsModel = dynamic(() => import("./SIUnitsModel").then(module => module.SIUnitsModel));
+const ParticleEvidenceModel = dynamic(() => import("./ParticleEvidenceModel").then(module => module.ParticleEvidenceModel));
+const MatterStatesModel = dynamic(() => import("./MatterStatesModel").then(module => module.MatterStatesModel));
+const GasPressurePascalModel = dynamic(() => import("./GasPressurePascalModel").then(module => module.GasPressurePascalModel));
+const AtmosphericPressureModel = dynamic(() => import("./AtmosphericPressureModel").then(module => module.AtmosphericPressureModel));
+const ArchimedesForceModel = dynamic(() => import("./ArchimedesForceModel").then(module => module.ArchimedesForceModel));
+const ElectroPredictionScene = dynamic(() => import("./ElectroResistanceExperiment").then(module => module.ElectroPredictionScene));
+const ElectroResistanceExperiment = dynamic(() => import("./ElectroResistanceExperiment").then(module => module.ElectroResistanceExperiment));
+const DensityModel = dynamic(() => import("./DensityModel").then(module => module.DensityModel));
+const InertiaModel = dynamic(() => import("./InertiaModel").then(module => module.InertiaModel));
+const PressureModel = dynamic(() => import("./PressureModel").then(module => module.PressureModel));
+const ForceModel = dynamic(() => import("./ForceModel").then(module => module.ForceModel));
+const RelativeMotionModel = dynamic(() => import("./RelativeMotionModel").then(module => module.RelativeMotionModel));
+const UniformMotionGraphModel = dynamic(() => import("./UniformMotionGraphModel").then(module => module.UniformMotionGraphModel));
+const UniformMotionObservation = dynamic(() => import("./UniformMotionObservation").then(module => module.UniformMotionObservation));
+const UnevenMotionModel = dynamic(() => import("./UnevenMotionModel").then(module => module.UnevenMotionModel));
+const GravityWeightModel = dynamic(() => import("./GravityWeightModel").then(module => module.GravityWeightModel));
+const ResultantFrictionModel = dynamic(() => import("./ResultantFrictionModel").then(module => module.ResultantFrictionModel));
+const HydrostaticPressureModel = dynamic(() => import("./HydrostaticPressureModel").then(module => module.HydrostaticPressureModel));
+const MechanicalWorkModel = dynamic(() => import("./MechanicalWorkModel").then(module => module.MechanicalWorkModel));
+const MechanicalEfficiencyModel = dynamic(() => import("./MechanicalEfficiencyModel").then(module => module.MechanicalEfficiencyModel));
+const MechanicalPowerModel = dynamic(() => import("./MechanicalPowerModel").then(module => module.MechanicalPowerModel));
+const KineticEnergyModel = dynamic(() => import("./KineticEnergyModel").then(module => module.KineticEnergyModel));
+const PotentialEnergyModel = dynamic(() => import("./PotentialEnergyModel").then(module => module.PotentialEnergyModel));
+const MechanicalEnergyModel = dynamic(() => import("./MechanicalEnergyModel").then(module => module.MechanicalEnergyModel));
+const ReflectionTextbookExperiment = dynamic(() => import("./ReflectionContentLesson").then(module => module.ReflectionTextbookExperiment));
+const NewtonSecondLawTextbookExperiment = dynamic(() => import("./DynamicsLesson").then(module => module.NewtonSecondLawTextbookExperiment));
+const HeatAmountModel = dynamic(() => import("./HeatAmountModel").then(module => module.HeatAmountModel));
+const FuelCombustionLab = dynamic(() => import("./FuelCombustionLab").then(module => module.FuelCombustionLab));
+const HeatTransferExplorer = dynamic(() => import("./HeatTransferExplorer").then(module => module.HeatTransferExplorer));
+const IceMeltingModel = dynamic(() => import("./IceMeltingModel").then(module => module.IceMeltingModel));
+const EvaporationBoilingLab = dynamic(() => import("./EvaporationBoilingLab").then(module => module.EvaporationBoilingLab));
+const ElectrostaticsEvidenceLab = dynamic(() => import("./ElectrostaticsEvidenceLab").then(module => module.ElectrostaticsEvidenceLab));
+const CircuitConnectionsNotebook = dynamic(() => import("./CircuitConnectionsNotebook").then(module => module.CircuitConnectionsNotebook));
+const ElectricPowerNotebook = dynamic(() => import("./ElectricPowerNotebook").then(module => module.ElectricPowerNotebook));
+const HouseholdLoadNotebook = dynamic(() => import("./HouseholdLoadNotebook").then(module => module.HouseholdLoadNotebook));
+const MagneticFieldNotebook = dynamic(() => import("./MagneticFieldNotebook").then(module => module.MagneticFieldNotebook));
+const PlaneMirrorNotebook = dynamic(() => import("./OpticsNotebook").then(module => module.PlaneMirrorNotebook));
+const RefractionMeasurementLens = dynamic(() => import("./OpticsNotebook").then(module => module.RefractionMeasurementLens));
 
 const LensFocusLab = dynamic(() => import("./LensNotebook").then(module => module.LensFocusLab));
 const ThinLensImageNotebook = dynamic(() => import("./LensNotebook").then(module => module.ThinLensImageNotebook));
@@ -89,12 +95,38 @@ const SolidStructureNotebook = dynamic(() => import("./SolidStructureNotebook").
 const LiquidStructureNotebook = dynamic(() => import("./LiquidStructureNotebook").then(module => module.LiquidStructureNotebook));
 const EvaporationEquilibriumNotebook = dynamic(() => import("./EvaporationEquilibriumNotebook").then(module => module.EvaporationEquilibriumNotebook));
 const HumidityNotebook = dynamic(() => import("./HumidityNotebook").then(module => module.HumidityNotebook));
+const InternalEnergyNotebook = dynamic(() => import("./InternalEnergyNotebook").then(module => module.InternalEnergyNotebook));
+const GasWorkNotebook = dynamic(() => import("./GasWorkNotebook").then(module => module.GasWorkNotebook));
+const HeatTransferNotebook = dynamic(() => import("./HeatTransferNotebook").then(module => module.HeatTransferNotebook));
+const FirstLawNotebook = dynamic(() => import("./FirstLawNotebook").then(module => module.FirstLawNotebook));
+const HeatEngineNotebook = dynamic(() => import("./HeatEngineNotebook").then(module => module.HeatEngineNotebook));
+const ChargeConservationNotebook = dynamic(() => import("./ChargeConservationNotebook").then(module => module.ChargeConservationNotebook));
+const CoulombNotebook = dynamic(() => import("./CoulombNotebook").then(module => module.CoulombNotebook));
+const ElectricFieldNotebook = dynamic(() => import("./ElectricFieldNotebook").then(module => module.ElectricFieldNotebook));
+const FieldLinesNotebook = dynamic(() => import("./FieldLinesNotebook").then(module => module.FieldLinesNotebook));
+const ElectrostaticWorkNotebook = dynamic(() => import("./ElectrostaticWorkNotebook").then(module => module.ElectrostaticWorkNotebook));
+const VoltageDifferenceNotebook = dynamic(() => import("./VoltageDifferenceNotebook").then(module => module.VoltageDifferenceNotebook));
+const CapacitorNotebook = dynamic(() => import("./CapacitorNotebook").then(module => module.CapacitorNotebook));
+const CapacitorEnergyNotebook = dynamic(() => import("./CapacitorEnergyNotebook").then(module => module.CapacitorEnergyNotebook));
+const FullCircuitNotebook = dynamic(() => import("./FullCircuitNotebook").then(module => module.FullCircuitNotebook));
+const SpringPeriodNotebook = dynamic(() => import("./SpringPeriodNotebook").then(module => module.SpringPeriodNotebook));
+const PendulumMeasurementNotebook = dynamic(() => import("./PendulumMeasurementNotebook").then(module => module.PendulumMeasurementNotebook));
+const OscillationEnergyNotebook = dynamic(() => import("./OscillationEnergyNotebook").then(module => module.OscillationEnergyNotebook));
+const MechanicalWaveNotebook = dynamic(() => import("./MechanicalWaveNotebook").then(module => module.MechanicalWaveNotebook));
+const ResonanceNotebook = dynamic(() => import("./ResonanceNotebook").then(module => module.ResonanceNotebook));
+const SoundWaveNotebook = dynamic(() => import("./SoundWaveNotebook").then(module => module.SoundWaveNotebook));
 
 const stories = {
+  "mechanical-spring-period": {asset:"oscillations",title:"Мио проверяет период на пружинном маятнике",caption:"Она меняет массу груза или жёсткость пружины по очереди и записывает, как это меняет период.",alt:"Мио наблюдает за грузом на пружине и записывает результат опыта"},
+  "mathematical-pendulum": {asset:"pendulum",title:"Мио считает колебания груза на нити",caption:"Она отмечает десять полных циклов, чтобы измеренное время одного колебания было точнее отсчёта одного цикла.",alt:"Мио секундомером и блокнотом измеряет десять колебаний груза на нити в школьной лаборатории"},
+  "mechanical-oscillation-energy": {asset:"oscillations",title:"Мио сверяет крайнее положение и равновесие",caption:"Она отмечает, где груз на миг останавливается, а где движется быстрее всего, и сравнивает эти состояния.",alt:"Мио сосредоточенно записывает наблюдение за грузом на пружине"},
+  "mechanical-forced-oscillations": {asset:"resonance",title:"Мио проверяет ритм маятника",caption:"Она задаёт движение одному маятнику и наблюдает за соседом: важен ли ритм воздействия для силы отклика?",alt:"Мио отклоняет один из двух маятников на общем штативе и записывает наблюдение"},
+  "mechanical-waves": {asset:"mechanicalWaves",title:"Мио следит за сжатым участком пружины",caption:"Она создаёт короткое возмущение и замечает: витки колеблются возле своих мест, а сжатие передаётся дальше.",alt:"Мио наблюдает, как сжатие распространяется по горизонтальной пружине, и записывает наблюдение в блокнот"},
+  "sound-waves": {asset:"soundWaves",title:"Источник звука",caption:"Колебания камертона создают звуковую волну; график показывает расчётную модель, а не запись измерения.",alt:"Мио прислушивается к камертону над резонатором и собирается записать наблюдение"},
+  "capacitor-energy": {asset:"capacitorEnergy",title:"Куда уходит вспышка лампы?",caption:"Мио сопоставляет заряд конденсатора и короткую вспышку после его разрядки.",alt:"Мио наблюдает за плоским конденсатором; лампа видна в глубине лаборатории"},
   "physical-body-phenomenon-quantity": { asset: "inertia", title: "Тележка, движение или скорость?", caption: "Мио разделяет предмет, происходящее с ним изменение и величину, которой это изменение описывают.", alt: "Мио наблюдает лабораторную тележку и записывает её скорость" },
   "scientific-method": { asset: "measurement", title: "Два отсчёта. Какой проверять?", caption: "Мио фиксирует расхождение, выдвигает гипотезу и меняет только положение глаз.", alt: "Мио проверяет уровень воды в мензурке на уровне глаз" },
   "si-units-and-operations": { asset: "measurement", title: "Величина та же. Почему число другое?", caption: "Мио переводит один результат в разные единицы и проверяет физический смысл равенства.", alt: "Мио записывает результат измерения в разных единицах" },
-  "measuring-volume": { asset: "measurement", title: "Вода или линейка — что измеряем прямо?", caption: "Мио снимает объём воды по мензурке. Для бруска она сначала измерит три ребра, а затем вычислит объём — сравним эти два действия.", alt: "Мио смотрит на уровень воды в мензурке на уровне глаз и готовится записать измерение" },
   "relative-motion":{asset:"relative",title:"Лодка идёт. А берег приближается?",caption:"Мио наблюдает за лодкой с берега. Сменим точку отсчёта и сравним два описания одного движения.",alt:"Мио с блокнотом наблюдает за моторной лодкой с берега реки"},
   "force-and-dynamometer":{asset:"force",title:"Пружина говорит на языке ньютонов",caption:"Мио записывает показание динамометра. Груз неподвижен, но пружина растянута. Проверим, что показывает прибор и как изменится показание со второй нагрузкой.",alt:"Мио с карандашом наблюдает динамометр на штативе; груз свободно висит на нижнем крючке"},
   "gravity-elasticity-weight":{asset:"force",title:"Один груз. А силы — разные",caption:"Мио не меняет установку, а меняет вопрос: Земля действует на груз, пружина — на груз, груз — на подвес.",alt:"Мио наблюдает за грузом, подвешенным к пружинному динамометру"},
@@ -110,7 +142,7 @@ const stories = {
   inertia: {asset:"inertia",title:"Тележку остановили. А шайбу?",caption:"Мио придержала тележку и заметила, что незакреплённый предмет продолжает движение. Разберём, какое тело тормозят и относительно чего оно движется.",alt:"Мио останавливает лабораторную тележку и наблюдает за свободной шайбой на платформе"},
   density: { asset: "density", title: "Больше — значит тяжелее? Проверим", caption: "Мио сравнивает два образца. Одного взгляда на размер мало: нужно сопоставить массу и объём, а затем проверить своё объяснение.", alt: "Мио внимательно взвешивает небольшой металлический образец; рядом лежит более крупный образец" },
   "reading-scales": { asset: "measurement", title: "Шкала мельче. А воды больше?", caption: "Мио смотрит на уровень воды сбоку. Проверим один и тот же объём по двум шкалам: что изменится в записи измерения?", alt: "Мио наклонилась к мензурке и смотрит на мениск на уровне глаз" },
-  "uniform-motion": { asset: "inertia", title: "Тележка проходит равные участки?", caption: "Мио запускает тележку. Будем отмечать её положение через равные промежутки времени, сравним расстояния и опишем движение числом.", alt: "Мио запускает лабораторную тележку для наблюдения за её движением" },
+  "uniform-motion": { asset: "inertia", title: "Тележка проходит равные участки?", caption: "Мио готовит тележку к двум пробегам. Сравним отметки её положения через каждую секунду.", alt: "Мио придерживает лабораторную тележку перед наблюдением за её движением" },
   "uniform-motion-graphs": { asset: "average", title: "Секундомер готов. Что записывать?", caption: "Мио измеряет время движения велосипеда. Одни и те же наблюдения запишем двумя графиками: пройденного пути и постоянной скорости.", alt: "Мио держит секундомер и блокнот рядом с велосипедом перед измерением движения" },
   "uneven-motion": { asset: "acceleration", title: "Автобус стоит. Время идёт?", caption: "Мио засекла путь до остановки, ожидание и путь после неё. Остановка не добавляет пути, но часы продолжают идти.", alt: "Мио в автобусе держится за поручень и наблюдает поездку с остановкой" },
   "path-and-displacement": { asset: "path", title: "Забыла блокнот. Вернулась. Никуда не ходила?", caption: "Мио дошла от кабинета до скамейки и вернулась за блокнотом. Конечная точка та же — но прогулка всё-таки была.", alt: "Мио возвращается к двери лаборатории за забытым блокнотом" },
@@ -191,6 +223,9 @@ function DirectionArrow({left,label,gold=false}:{left:boolean;label:string;gold?
 }
 
 export function TextbookScene({chapterId}:{chapterId:string}) {
+  if (chapterId === "measuring-volume") {
+    return <section className={styles.scene} aria-label="Журнал наблюдения прямого и косвенного определения объёма"><VolumeObservation /></section>;
+  }
   if (chapterId === "physical-body-phenomenon-quantity") {
     return <section className={styles.scene} aria-label="Наблюдение с Мио о языке физики"><PhysicsLanguageModel /></section>;
   }
@@ -232,6 +267,58 @@ export function TextbookScene({chapterId}:{chapterId:string}) {
   }
   if (chapterId === "air-humidity-and-dew-point") {
     return <section className={styles.scene} aria-label="Измерение влажности воздуха, работа психрометра и точка росы"><HumidityNotebook /></section>;
+  }
+  if (chapterId === "thermodynamic-system-internal-energy") {
+    return <section className={styles.scene} aria-label="Термодинамическая система и внутренняя энергия одноатомного идеального газа"><InternalEnergyNotebook /></section>;
+  }
+  if (chapterId === "gas-work-and-process-path") {
+    return <section className={styles.scene} aria-label="Работа газа и площадь под графиком давления от объёма"><GasWorkNotebook /></section>;
+  }
+  if (chapterId === "heat-transfer-and-heat-capacity") {
+    return <section className={styles.scene} aria-label="Сравнение нагревания веществ при одинаковом количестве теплоты"><HeatTransferNotebook /></section>;
+  }
+  if (chapterId === "first-law-thermodynamics") {
+    return <section className={styles.scene} aria-label="Первый закон термодинамики и распределение энергии между работой и внутренней энергией"><FirstLawNotebook /></section>;
+  }
+  if (chapterId === "heat-engine-cycle-and-efficiency") {
+    return <section className={styles.scene} aria-label="Распределение энергии за цикл теплового двигателя"><HeatEngineNotebook /></section>;
+  }
+  if (chapterId === "charge-conservation-and-electrization") {
+    return <section className={styles.scene} aria-label="Перенос электронов и сохранение заряда пары тел"><ChargeConservationNotebook /></section>;
+  }
+  if (chapterId === "coulomb-law-point-charges") {
+    return <section className={styles.scene} aria-label="Зависимость силы взаимодействия точечных зарядов от расстояния и знаков зарядов"><CoulombNotebook /></section>;
+  }
+  if (chapterId === "electrostatic-field") {
+    return <section className={styles.scene} aria-label="Источник электростатического поля и пробный заряд"><ElectricFieldNotebook mode="presence" /></section>;
+  }
+  if (chapterId === "electric-field-strength-and-superposition") {
+    return <section className={styles.scene} aria-label="Напряжённость поля источника и сила на пробный заряд"><ElectricFieldNotebook mode="strength" /></section>;
+  }
+  if (chapterId === "electrostatic-field-lines") {
+    return <section className={styles.scene} aria-label="Линии напряжённости для одиночного заряда и между пластинами"><FieldLinesNotebook /></section>;
+  }
+  if (chapterId === "electrostatic-field-work-and-potential") {
+    return <section className={styles.scene} aria-label="Сравнение работы электростатического поля на двух путях между теми же точками"><ElectrostaticWorkNotebook /></section>;
+  }
+  if (chapterId === "electrostatic-potential-difference") {
+    return <section className={styles.scene} aria-label="Разность потенциалов между двумя точками однородного поля"><VoltageDifferenceNotebook /></section>;
+  }
+  if (chapterId === "capacitors-and-capacitance") {
+    return <section className={styles.scene} aria-label="Изменение ёмкости плоского конденсатора при постоянном заряде"><CapacitorNotebook /></section>;
+  }
+  if (chapterId === "capacitor-energy") {
+    const story = stories["capacitor-energy"];
+    return <section className={styles.scene} aria-label="Сравнение энергии конденсатора при подключённом и отключённом источнике">
+      <CapacitorEnergyNotebook />
+      <figure className={styles.illustration}>
+        <Image className={styles.art} src={MIO_SCENES[story.asset]} alt={story.alt} width={1536} height={1024} sizes="(max-width:640px) 100vw, 450px" priority />
+        <figcaption className={styles.caption}><p>{story.caption}</p></figcaption>
+      </figure>
+    </section>;
+  }
+  if (chapterId === "full-circuit-ohms-law") {
+    return <section className={styles.scene} aria-label="Измерительная модель полной электрической цепи"><FullCircuitNotebook /></section>;
   }
   if (chapterId === "states-temperature-expansion") {
     return <section className={styles.scene} aria-label="Исследование состояний вещества, теплового расширения и температуры"><MatterStatesModel /></section>;
@@ -387,6 +474,9 @@ export function TextbookScene({chapterId}:{chapterId:string}) {
   if (chapterId === "evaporation-and-boiling") {
     return <section className={styles.scene} aria-label="Исследование испарения и кипения воды"><EvaporationBoilingLab /></section>;
   }
+  if (chapterId === "irregular-body-volume") {
+    return <section className={styles.scene} aria-label="Опыт с Мио по измерению объёма камешка"><DisplacementVolumeNotebook /></section>;
+  }
   if (!(chapterId in stories)) return null;
   if (chapterId === "force-and-dynamometer") {
     return <section className={styles.scene} aria-label="Наблюдение с Мио и динамометром"><ForceModel /></section>;
@@ -430,10 +520,30 @@ export function TextbookScene({chapterId}:{chapterId:string}) {
   if (chapterId === "density") {
     return <section className={styles.scene} aria-label="Наблюдение с Мио и опытом о плотности"><DensityModel /></section>;
   }
+  if (chapterId === "sound-waves") {
+    const story = stories["sound-waves"];
+    return <section className={`${styles.scene} ${styles.soundComposition}`} aria-label="Исследование звуковой волны">
+      <SoundWaveNotebook />
+      <figure className={`${styles.illustration} ${styles.soundStory}`}>
+        <Image className={styles.art} src={MIO_SCENES[story.asset]} alt={story.alt} width={1280} height={853} sizes="(max-width:760px) 100vw, 36vw" priority />
+        <figcaption className={styles.caption}><h2>{story.title}</h2><p>{story.caption}</p></figcaption>
+      </figure>
+    </section>;
+  }
+  if (chapterId === "uniform-motion") {
+    const story = stories["uniform-motion"];
+    return <section className={`${styles.scene} ${styles.uniformComposition}`} aria-label="Сравнение двух пробегов тележки через равные промежутки времени">
+      <figure className={`${styles.illustration} ${styles.uniformStory}`}>
+        <Image className={`${styles.art} ${styles.uniformArt}`} src={MIO_SCENES[story.asset]} alt={story.alt} width={1536} height={1024} sizes="(max-width:760px) 100vw, 34vw" priority />
+        <figcaption className={styles.caption}><h2>{story.title}</h2><p>{story.caption}</p></figcaption>
+      </figure>
+      <UniformMotionObservation />
+    </section>;
+  }
   const story=stories[chapterId as keyof typeof stories];
   return <section className={styles.scene} aria-label="История и модель с Мио">
     <figure className={styles.illustration}><Image className={styles.art} src={MIO_SCENES[story.asset]} alt={story.alt} width={1536} height={1024} sizes="(max-width:640px) 100vw, 450px" priority /><figcaption className={styles.caption}><h2>{story.title}</h2><p>{story.caption}</p></figcaption></figure>
-    {chapterId==="relative-motion"?<RelativeMotionModel/>:chapterId==="path-and-displacement"?<WalkModel/>:chapterId==="average-speed"?<SpeedModel/>:chapterId==="acceleration"?<AccelerationModel/>:chapterId==="uniform-motion-graphs"?<UniformMotionGraphModel/>:chapterId==="uneven-motion"?<UnevenMotionModel/>:null}
+    {chapterId==="mechanical-spring-period"?<SpringPeriodNotebook/>:chapterId==="mathematical-pendulum"?<PendulumMeasurementNotebook/>:chapterId==="mechanical-oscillation-energy"?<OscillationEnergyNotebook/>:chapterId==="mechanical-forced-oscillations"?<ResonanceNotebook/>:chapterId==="mechanical-waves"?<MechanicalWaveNotebook/>:chapterId==="relative-motion"?<RelativeMotionModel/>:chapterId==="path-and-displacement"?<WalkModel/>:chapterId==="average-speed"?<SpeedModel/>:chapterId==="acceleration"?<AccelerationModel/>:chapterId==="uniform-motion-graphs"?<UniformMotionGraphModel/>:chapterId==="uneven-motion"?<UnevenMotionModel/>:null}
   </section>;
 }
 

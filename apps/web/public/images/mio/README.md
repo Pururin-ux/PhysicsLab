@@ -93,6 +93,29 @@ exec-8cdce50d-4476-410d-9b9d-8de97c832357.png с исходным портрет
 - Review: navy bob, cyan right forelock, left gold star, cyan/cream/navy outfit retained. Closed focused mouth, apparatus connected to stand, load clear of table, hands not supporting load. Narrative art only; calibrated diagram supplied separately.
 - Production prompt recorded in docs/design/mio/force-prompt.md.
 
+## Mechanical oscillations · 2026-09-23
+- Runtime: `textbook-mechanical-oscillations-v2.webp` (1536×1024, about 118 KB).
+- First draft: `textbook-mechanical-oscillations-v1.webp`, built-in imagegen `exec-eaf60d78-5ffb-47c0-b98d-915c7c42d394.png`; rejected after the first rendered check showed the spring and bob too small.
+- Selected original: built-in imagegen `exec-f2b969d6-cf56-4ebf-82ff-f9f571012438.png`, preserved in the Codex generated-images directory; WebP is a delivery conversion, not an edit to the original.
+- Identity reference: `mio-thinking-v1.png`. Mio records an observation while watching a spring oscillator; closed focused mouth, eyes on the apparatus. The spring and bob are contextual art, not a measured model or source of values.
+- The selected frame makes the spring and single attached bob legible beside Mio at lesson size.
+- Reviewed for the navy bob, turquoise forelock, gold star, jacket, attached spring and load, and distinct observing action. Text, period counting and formulas remain separate and readable in the lesson.
+
+## Mathematical pendulum · 2026-09-23
+- Runtime: `textbook-mathematical-pendulum-v1.webp` (1536×1024, 121 KB), converted from the preserved built-in imagegen source `exec-d3490dc5-744a-4a78-a0f0-85927136f41b.png`.
+- Identity reference: `mio-thinking-v1.png`. Mio times the bob on a thread and records complete cycles; this is a distinct observing action from her spring-pendulum scene.
+- The illustration shows a small metal bob, thread and fixed support. It carries no scale or numerical claims; length, period and g are calculated in the DOM notebook.
+
+## Mechanical waves · 2026-09-23
+- Runtime: `textbook-mechanical-waves-v1.webp` (1280×853, about 81 KB), converted from the preserved built-in imagegen source `exec-f3da80a0-fbf0-4619-8fbb-290f74f1a5a4.png`.
+- Identity reference: `mio-thinking-v1.png`; style reference: `textbook-mechanical-oscillations-v2.webp`.
+- Mio compresses one section of a horizontal slinky and records what happens. This is contextual illustration only: there are no labels, scales or measured values in the art. The notebook model and task data are separate.
+
+## Forced oscillations and resonance · 2026-09-23
+- Runtime: `textbook-mechanical-resonance-v1.webp` (1280×853, about 91 KB), converted from the preserved built-in imagegen source `exec-636bca85-e87f-4cca-b622-51fef34a001d.png`.
+- Identity reference: `mio-thinking-v1.png`; style reference: `textbook-mechanical-oscillations-v2.webp`.
+- Mio studies a two-pendulum setup, displacing one bob while noting the response. The illustration contains no frequency markings or measurements; the separate notebook graph computes the model response.
+
 ## Skeptical state and hypothesis revision · 2026-09-08
 - Runtime: mio-skeptical-v2.png; original imagegen exec-4459a0e6-d2eb-4535-b709-9ba588e49aa9.png.
 - First generated RGB image had a painted checkerboard. First Adobe cutout (request 00785f1b-db71-4adf-b133-602b00e8b6bf, output 247528a2-467d-43f5-be12-16a5c20e5171) retained checkerboard pixels in hair gaps: mio-skeptical-v1.png is a rejected intermediate, not referenced by UI.
@@ -106,3 +129,23 @@ exec-8cdce50d-4476-410d-9b9d-8de97c832357.png с исходным портрет
 - Reference: mio-thinking-v1.png. Mio observes a passing boat from the bank, holding a notebook and pencil; focused closed mouth.
 - Identity reviewed: navy bob, cyan right forelock, left gold star and cyan/cream/navy jacket. No generated labels or formulae. The boat scene supplies context; RelativeMotionModel supplies coordinates and measurements.
 - Original and route reviewed visually. Mobile crop retains both Mio and boat; bottom fade checked against light and dark surfaces. No Adobe edits were needed for this image.
+
+## Sound waves · 2026-09-23
+- Runtime: `textbook-sound-waves-v1.webp` (1280×853, about 102 KB), converted from the preserved built-in imagegen source `exec-86dcd34f-c84c-418a-bce3-4dbd43edffef.png`.
+- Identity reference: `mio-thinking-v1.png`; style reference: `textbook-mechanical-waves-v1.webp`.
+- Mio listens to a tuning fork with her notebook open. The fork is contextual artwork only; the separate pressure-time graph carries the comparison and no data are painted into the illustration.
+
+## Hydrogen spectrum · 2026-09-26
+- Runtime: `textbook-bohr-spectra-v1.webp` (1536×1024 source converted to WebP).
+- Source imagegen result: `exec-623a8e07-a42d-4cc8-9ce6-dd4efcc5f1c0.png`.
+- Mio records the discrete hydrogen spectrum at a spectroscope. The scene is contextual artwork; task values and the Hα transition are supplied by the deterministic model and chapter text, not painted into the image.
+
+## Laser amplification · 2026-09-26
+- Runtime: `textbook-laser-v2.webp` (1440×960, 97 KB WebP).
+- Source imagegen result: `exec-42679f9a-df79-4a27-8808-33ba6b54f567.png`; identity reference: `mio-thinking-v1.png`.
+- Mio records an observation at an enclosed laser setup while wearing protective eyewear. The free-space beam is not drawn as visible; only the resonator interior and target spot are lit. The scene is contextual; pumping, stimulated emission and resonator behavior are explained in the lesson text and interaction, not encoded as measured values in the artwork.
+
+## Electrolytes · 2026-09-27
+- Runtime: `textbook-electrolytes-v1.webp` (1280×853, 103 KB), optimized from preserved built-in imagegen source `exec-ca107511-ca7e-4326-b6cd-be559efb130f.png`.
+- Identity reference: `mio-thinking-v1.png`; style reference: `textbook-bohr-spectra-v1.webp`. Mio records a calm, skeptical observation at a transparent vessel with two graphite electrodes; her forelock, star, face and jacket match the approved identity. The two leads leave frame, so the image does not assign polarity.
+- Artwork shows the apparatus before any result: no visible ions, deposit, gas, lamp or numeric reading. DOM text and disclosures carry the three observations, electrode signs and safety limit. The source stays in Codex generated images; this WebP is the reviewed runtime derivative.

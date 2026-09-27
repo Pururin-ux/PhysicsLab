@@ -101,6 +101,21 @@ test("невалидный diagram discriminant отклоняется", () => {
   assert.equal(parseQuizTasksPayload({ tasks: [task] }).ok, false);
 });
 
+test("диаграмма вытеснения принимает измеримые отсчёты и отклоняет невозможные", () => {
+  const task = {
+    ...validNumericTask(),
+    diagram: {
+      kind: "displacement-volume",
+      spec: { initialReadingMl: 20, finalReadingMl: 32, divisionMl: 2 },
+    },
+  };
+  assert.equal(parseQuizTasksPayload({ tasks: [task] }).ok, true);
+  assert.equal(parseQuizTasksPayload({ tasks: [{
+    ...task,
+    diagram: { ...task.diagram, spec: { ...task.diagram.spec, finalReadingMl: 18 } },
+  }] }).ok, false);
+});
+
 test("choice: не 4 варианта / ноль или два correct / дубли id и value", () => {
   const three = validChoiceTask();
   three.options = three.options.slice(0, 3);

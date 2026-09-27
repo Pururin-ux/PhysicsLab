@@ -4,6 +4,21 @@ import { decodeStoredValue, type StoreCodec } from "../stores/storage-envelope.t
 export const SAVED_MOTION_PRACTICE_KEY = "physicslab-saved-motion-practice-v1";
 export const isMotionPractice = (template: string, kind: string) => template === "average-speed-segments" && kind === "practice";
 
+// Validate a newer tab draft first, whether the older durable draft has a
+// fingerprint or not. Keep the durable record untouched until an explicit
+// decision; actual task-content compatibility is checked after loading.
+export function preferNewerTabSnapshotOverSaved(
+  tab: ActiveQuizSnapshot,
+  saved: ActiveQuizSnapshot,
+  template: string,
+  sessionKind: string,
+): boolean {
+  return !!tab.taskFingerprint &&
+    tab.savedAt > saved.savedAt &&
+    tab.template === template && tab.sessionKind === sessionKind &&
+    saved.template === template && saved.sessionKind === sessionKind;
+}
+
 export const savedMotionPracticeCodec: StoreCodec<ActiveQuizSnapshot> = {
   key: SAVED_MOTION_PRACTICE_KEY,
   currentVersion: 1,

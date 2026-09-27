@@ -34,6 +34,7 @@ const headerClassByTone: Record<FormulaReferenceViewGroup["badgeTone"], string> 
 };
 
 const compactGroupTitle: Record<string, string> = {
+  measurements: "Измерения",
   kinematics: "Кинематика",
   dynamics: "Динамика",
   electrodynamics: "Ток и цепи",

@@ -1,0 +1,396 @@
+.notebook {
+  --field: var(--action-primary);
+  --signal: #146d72;
+  --copper: #a75f34;
+  display: grid;
+  gap: clamp(1.1rem, 2.6vw, 1.8rem);
+  padding: clamp(1rem, 3vw, 2.1rem);
+  border: 1px solid var(--border-strong);
+  background: var(--surface-primary);
+  color: var(--text-primary);
+  font-family: var(--font-manrope), system-ui, sans-serif;
+}
+
+.heading {
+  max-width: 72ch;
+  padding-left: clamp(.7rem, 2vw, 1.4rem);
+  border-left: 3px solid var(--field);
+}
+.eyebrow,
+.panelHeading span {
+  color: var(--field);
+  font-size: .72rem;
+  font-weight: 850;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+}
+.heading h2 {
+  max-width: 30ch;
+  margin: .5rem 0 .7rem;
+  font-size: clamp(1.5rem, 3vw, 2.25rem);
+  line-height: 1.13;
+  letter-spacing: -.035em;
+}
+.heading p {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: .9rem;
+  line-height: 1.6;
+}
+
+.controls {
+  display: grid;
+  gap: 1rem;
+}
+.frequencyGroup,
+.phaseGroup {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .45rem;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.frequencyGroup legend,
+.phaseGroup legend {
+  width: 100%;
+  margin-bottom: .45rem;
+  padding: 0;
+  font-size: .83rem;
+  font-weight: 800;
+}
+.controls button {
+  min-height: 44px;
+  padding: .5rem .85rem;
+  border: 1px solid var(--border-strong);
+  background: var(--surface-primary);
+  color: var(--text-primary);
+  font: inherit;
+  font-size: .86rem;
+  font-weight: 760;
+  cursor: pointer;
+}
+.controls button:hover { background: var(--surface-secondary); }
+.controls button[aria-pressed="true"] {
+  border-color: var(--field);
+  background: color-mix(in srgb, var(--field) 10%, var(--surface-primary));
+  box-shadow: inset 0 -3px var(--field);
+}
+.controls button:focus-visible {
+  outline: 3px solid var(--field);
+  outline-offset: 3px;
+}
+.phaseGroup button {
+  display: grid;
+  align-content: center;
+  gap: .13rem;
+  min-width: 7rem;
+  min-height: 56px;
+  text-align: left;
+}
+.phaseGroup button strong {
+  font-family: var(--font-physics-numeric), system-ui, sans-serif;
+  font-size: 1rem;
+  font-weight: 800;
+}
+.phaseGroup button small {
+  color: var(--text-secondary);
+  font-size: .68rem;
+  line-height: 1.25;
+}
+
+.observation {
+  display: grid;
+  grid-template-columns: minmax(0, 1.08fr) minmax(0, .92fr);
+  border-block: 1px solid var(--border-strong);
+}
+.apparatus {
+  min-width: 0;
+  margin: 0;
+  padding: 1rem clamp(.7rem, 2vw, 1.4rem) 1rem 0;
+}
+.readings {
+  display: grid;
+  align-content: start;
+  gap: .7rem;
+  min-width: 0;
+  padding: 1rem 0 1rem clamp(1rem, 2.5vw, 1.8rem);
+  border-left: 1px solid var(--border-strong);
+}
+.panelHeading { display: grid; gap: .25rem; }
+.panelHeading strong {
+  font-size: clamp(.94rem, 1.6vw, 1.1rem);
+  line-height: 1.35;
+}
+.frameDiagram {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-width: 560px;
+  margin: .25rem auto 0;
+}
+.apparatus figcaption,
+.traceFigure figcaption {
+  color: var(--text-secondary);
+  font-size: .77rem;
+  line-height: 1.55;
+}
+.pole path {
+  fill: color-mix(in srgb, var(--field) 6%, var(--surface-secondary));
+  stroke: var(--text-secondary);
+  stroke-width: 2;
+  stroke-linejoin: round;
+}
+.pole .poleFace { fill: none; stroke-width: 1.3; }
+.pole text {
+  fill: var(--text-primary);
+  font: 850 27px var(--font-physics-numeric), system-ui, sans-serif;
+}
+.fieldVectors path {
+  fill: none;
+  stroke: var(--field);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  opacity: .8;
+}
+.fieldArrowhead { fill: var(--field); }
+.fieldLabel {
+  fill: var(--field);
+  font: 800 19px var(--font-physics-numeric), system-ui, sans-serif;
+}
+.shaft {
+  fill: none;
+  stroke: var(--text-secondary);
+  stroke-width: 5;
+  stroke-linecap: round;
+}
+.frameShadow,
+.frameWire {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.frameShadow { stroke: var(--surface-primary); stroke-width: 13; }
+.frameWire { stroke: var(--copper); stroke-width: 7; }
+.frameMark {
+  fill: var(--surface-primary);
+  stroke: var(--copper);
+  stroke-width: 4;
+}
+.axle {
+  fill: var(--surface-primary);
+  stroke: var(--text-secondary);
+  stroke-width: 2;
+}
+.dimensionLine {
+  fill: none;
+  stroke: var(--border-strong);
+  stroke-width: 1.5;
+}
+.diagramNote,
+.turnCount {
+  fill: var(--text-secondary);
+  font: 700 15px var(--font-manrope), system-ui, sans-serif;
+}
+.turnCount { font-size: 13px; }
+.readingList { margin: .2rem 0 0; }
+.readingList > div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: .8rem;
+  padding: .72rem 0;
+  border-top: 1px solid var(--border-subtle);
+}
+.readingList dt {
+  color: var(--text-secondary);
+  font-size: .8rem;
+  line-height: 1.4;
+}
+.readingList dd {
+  flex: none;
+  margin: 0;
+  font-family: var(--font-physics-numeric), system-ui, sans-serif;
+  font-size: clamp(.95rem, 1.8vw, 1.14rem);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+.readingList dd small {
+  color: var(--text-secondary);
+  font-family: var(--font-manrope), system-ui, sans-serif;
+  font-size: .65em;
+  font-weight: 700;
+}
+.readingList > div:last-child dd { color: var(--signal); }
+.directionScale {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: .65rem .8rem;
+  border: 1px solid var(--border-subtle);
+  font-size: .78rem;
+  font-weight: 750;
+}
+.directionScale strong {
+  min-width: 2rem;
+  color: var(--signal);
+  font-family: var(--font-physics-numeric), system-ui, sans-serif;
+  font-size: 1.3rem;
+  line-height: 1;
+  text-align: center;
+}
+.momentNote {
+  margin: .1rem 0 0;
+  padding-left: .8rem;
+  border-left: 3px solid var(--signal);
+  font-size: .84rem;
+  font-weight: 650;
+  line-height: 1.55;
+}
+
+.traceFigure { min-width: 0; margin: 0; }
+.traceHeading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.traceLegend {
+  flex: none;
+  color: var(--signal);
+  font-family: var(--font-physics-numeric), system-ui, sans-serif;
+  font-size: .85rem;
+  font-weight: 800;
+}
+.traceLegend::before {
+  display: inline-block;
+  width: 1.15rem;
+  height: 3px;
+  margin: 0 .45rem .25rem 0;
+  background: var(--signal);
+  content: "";
+}
+.regularTrace,
+.compactTrace {
+  width: 100%;
+  height: auto;
+  margin: .5rem auto .2rem;
+  overflow: visible;
+}
+.regularTrace { display: block; max-height: 320px; }
+.compactTrace { display: none; }
+.graphGrid path {
+  fill: none;
+  stroke: var(--border-subtle);
+  stroke-width: 1;
+}
+.zeroAxis {
+  fill: none;
+  stroke: var(--text-secondary);
+  stroke-width: 1.5;
+}
+.periodBracket {
+  fill: none;
+  stroke: var(--text-secondary);
+  stroke-width: 1.5;
+}
+.bracketLabel {
+  fill: var(--text-primary);
+  font: 800 15px var(--font-physics-numeric), system-ui, sans-serif;
+}
+.currentCurve {
+  fill: none;
+  stroke: var(--signal);
+  stroke-width: 3.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.cursor {
+  fill: none;
+  stroke: var(--text-primary);
+  stroke-width: 1.5;
+  stroke-dasharray: 4 5;
+}
+.currentPoint {
+  fill: var(--signal);
+  stroke: var(--surface-primary);
+  stroke-width: 2;
+}
+.graphLabels text {
+  fill: var(--text-secondary);
+  font: 700 13px var(--font-physics-numeric), system-ui, sans-serif;
+}
+.traceFigure figcaption { max-width: 90ch; }
+.conclusion {
+  display: grid;
+  grid-template-columns: minmax(11rem, .5fr) minmax(0, 1.5fr);
+  gap: clamp(1rem, 3vw, 2rem);
+  align-items: center;
+  padding-block: 1rem;
+  border-block: 1px solid var(--border-strong);
+}
+.conclusion > div { display: grid; gap: .25rem; }
+.conclusion output {
+  color: var(--signal);
+  font-family: var(--font-physics-numeric), system-ui, sans-serif;
+  font-size: clamp(1.5rem, 3vw, 2.2rem);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.conclusion p {
+  margin: 0;
+  padding-left: clamp(1rem, 3vw, 2rem);
+  border-left: 1px solid var(--border-subtle);
+  font-size: .86rem;
+  line-height: 1.65;
+}
+.formula {
+  white-space: nowrap;
+  font-family: var(--font-physics-numeric), system-ui, sans-serif;
+  font-weight: 800;
+}
+.modelLimit {
+  margin: -.25rem 0 0;
+  color: var(--text-secondary);
+  font-size: .77rem;
+  line-height: 1.55;
+}
+
+:global([data-theme="dark"]) .notebook {
+  --signal: #65d3d5;
+  --copper: #f0b07a;
+}
+
+@media (max-width: 760px) {
+  .observation { grid-template-columns: 1fr; }
+  .apparatus { padding: 1rem 0; }
+  .readings {
+    padding: 1rem 0;
+    border-top: 1px solid var(--border-strong);
+    border-left: 0;
+  }
+}
+
+@media (max-width: 600px) {
+  .notebook { gap: 1.1rem; padding: 1rem .85rem; }
+  .phaseGroup { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .phaseGroup legend { grid-column: 1 / -1; }
+  .phaseGroup button { min-width: 0; padding: .5rem; }
+  .phaseGroup button small { font-size: .64rem; }
+  .traceHeading { display: grid; gap: .55rem; }
+  .regularTrace { display: none; }
+  .compactTrace { display: block; max-height: none; }
+  .conclusion { grid-template-columns: 1fr; gap: .7rem; }
+  .conclusion p { padding-left: 0; border-left: 0; }
+}
+
+@media (max-width: 360px) {
+  .phaseGroup { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .notebook * { scroll-behavior: auto !important; transition: none !important; }
+}

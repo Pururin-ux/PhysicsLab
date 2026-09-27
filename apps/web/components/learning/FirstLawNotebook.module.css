@@ -1,0 +1,58 @@
+.notebook {
+  --ink: #172736;
+  --paper: #f3eee2;
+  --cyan: #087f96;
+  --coral: #b75049;
+  --notebook-sans: var(--font-manrope), system-ui, sans-serif;
+  display: grid;
+  gap: 1.25rem;
+  padding: clamp(1rem, 3vw, 2rem);
+  border: 1px solid color-mix(in srgb, var(--ink) 18%, transparent);
+  border-radius: 1.6rem;
+  color: var(--ink);
+  background: var(--paper);
+  font-family: var(--notebook-sans);
+}
+.heading { display: grid; gap: .65rem; }
+.heading p, .reading > span { margin: 0; color: var(--cyan); font-size: .75rem; font-weight: 800; letter-spacing: .08em; }
+.heading h2 { max-width: 28ch; margin: 0; font-size: clamp(1.8rem, 3.5vw, 2.8rem); font-weight: 760; line-height: 1.08; letter-spacing: -.04em; text-wrap: balance; }
+.heading > span { max-width: 70ch; color: color-mix(in srgb, var(--ink) 78%, transparent); font-size: 1rem; line-height: 1.6; }
+.processPicker { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; border-block: 1px solid color-mix(in srgb, var(--ink) 23%, transparent); background: color-mix(in srgb, var(--ink) 18%, transparent); }
+.processPicker button { display: grid; align-content: center; gap: .3rem; min-height: 5.2rem; padding: .9rem; border: 0; color: var(--ink); background: var(--paper); text-align: left; font-family: inherit; cursor: pointer; }
+.processPicker button:hover { background: color-mix(in srgb, var(--cyan) 9%, var(--paper)); }
+.processPicker button.selected { background: color-mix(in srgb, var(--cyan) 15%, var(--paper)); box-shadow: inset 0 -4px var(--cyan); }
+.processPicker button:focus-visible { position: relative; outline: 3px solid var(--coral); outline-offset: -4px; }
+.processPicker span { font-size: .83rem; font-weight: 750; line-height: 1.3; }
+.processPicker strong { color: var(--cyan); font: 800 .95rem/1.2 var(--font-physics-numeric); }
+.workspace { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(15rem, .65fr); border-bottom: 1px solid color-mix(in srgb, var(--ink) 22%, transparent); }
+.balance { display: grid; align-content: center; gap: 1.1rem; min-width: 0; padding: 1.2rem 1.5rem 1.2rem 0; }
+.input { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: .35rem 1rem; }
+.input span { font-size: .85rem; }
+.input strong { color: var(--ink); font: 800 clamp(1.2rem, 2vw, 1.6rem)/1.2 var(--font-physics-numeric); }
+.energyTrack { display: flex; height: clamp(3.5rem, 6vw, 5rem); overflow: hidden; background: color-mix(in srgb, var(--ink) 7%, var(--paper)); border: 1px solid color-mix(in srgb, var(--ink) 23%, transparent); }
+.internalFill { background: color-mix(in srgb, var(--cyan) 65%, var(--paper)); border-right: 2px solid var(--cyan); }
+.workFill { background: color-mix(in srgb, var(--coral) 62%, var(--paper)); border-right: 2px solid var(--coral); }
+.ledger { display: grid; grid-template-columns: 1fr 1fr; }
+.ledger p { display: grid; align-content: start; gap: .5rem; margin: 0; padding: .65rem .6rem 0 0; border-top: 3px solid var(--cyan); }
+.ledger p + p { padding-left: .8rem; border-color: var(--coral); }
+.ledger span { font-size: .78rem; line-height: 1.4; }
+.ledger strong { color: var(--cyan); font: 800 clamp(1rem, 2vw, 1.3rem)/1.2 var(--font-physics-numeric); white-space: nowrap; }
+.ledger p + p strong { color: var(--coral); }
+.reading { display: grid; align-content: center; gap: .7rem; padding: 1.2rem 0 1.2rem 1.5rem; border-left: 1px solid color-mix(in srgb, var(--ink) 20%, transparent); }
+.reading h3 { margin: 0; font-size: 1.35rem; line-height: 1.2; }
+.reading p { margin: 0; font-size: .86rem; line-height: 1.55; }
+.equation { display: block; padding-block: .25rem; color: var(--cyan); font-size: 1.2rem; overflow-x: auto; overflow-y: hidden; }
+.signRecord { display: grid; gap: .4rem; }
+.signRecord strong { font-size: .95rem; }
+.signRecord p, .boundary { margin: 0; font-size: .86rem; line-height: 1.6; }
+.boundary { padding-left: 1rem; border-left: 3px solid var(--coral); }
+:global([data-theme="dark"]) .notebook { --ink: #e8f1f2; --paper: #111d26; --cyan: #66d5e7; --coral: #ff8882; }
+@media (max-width: 760px) {
+  .notebook { margin-inline: -.4rem; border-radius: 1rem; }
+  .processPicker { gap: 0; }
+  .processPicker button { min-height: 6.1rem; padding: .7rem .5rem; }
+  .processPicker span { font-size: .78rem; }
+  .workspace { grid-template-columns: minmax(0, 1fr); }
+  .balance { padding: 1rem 0; }
+  .reading { padding: 1rem 0; border-top: 1px solid color-mix(in srgb, var(--ink) 20%, transparent); border-left: 0; }
+}

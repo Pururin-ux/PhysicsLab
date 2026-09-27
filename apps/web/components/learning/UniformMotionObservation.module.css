@@ -1,0 +1,76 @@
+.notebook {
+  --ink: #25333c;
+  --paper: #f4f0e6;
+  --signal: #087f96;
+  display: grid;
+  align-content: start;
+  gap: 17px;
+  min-width: 0;
+  padding: clamp(18px, 2.4vw, 30px);
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-manrope), system-ui, sans-serif;
+}
+
+.heading { display: grid; gap: 5px; }
+.heading > span { color: var(--signal); font-size: 12px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+.heading h2 { margin: 0; font-size: clamp(21px, 2.5vw, 29px); line-height: 1.18; letter-spacing: -.025em; }
+.heading p { margin: 0; max-width: 48ch; font-size: 14px; line-height: 1.5; }
+.choices { display: flex; gap: 0; border-bottom: 1px solid color-mix(in srgb, var(--ink) 23%, transparent); }
+.choices button {
+  min-height: 44px;
+  padding: 9px 16px;
+  border: 0;
+  border-bottom: 3px solid transparent;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 730;
+  cursor: pointer;
+}
+.choices button[aria-pressed="true"] { border-color: var(--signal); color: var(--signal); }
+.choices button:focus-visible { outline: 3px solid var(--signal); outline-offset: 2px; }
+.record { position: relative; min-width: 0; padding: 5px 18px 0; }
+.track { min-width: 0; }
+.scale {
+  position: relative;
+  height: 79px;
+  border-bottom: 3px solid var(--signal);
+  background: repeating-linear-gradient(90deg, color-mix(in srgb, var(--ink) 13%, transparent) 0 1px, transparent 1px calc(100% / 9));
+  background-position: left bottom;
+  background-size: 100% 11px;
+  background-repeat: no-repeat;
+}
+.mark { position: absolute; top: 0; bottom: -6px; width: 0; border-left: 2px solid var(--signal); }
+.mark::after { content: ""; position: absolute; bottom: -5px; left: -5px; width: 8px; height: 8px; border-radius: 50%; background: var(--signal); }
+.mark span { position: absolute; left: 0; white-space: nowrap; font-family: var(--font-physics-numeric), system-ui, sans-serif; font-variant-numeric: tabular-nums; transform: translateX(-50%); }
+.time { top: 0; font-size: 13px; font-weight: 700; }
+.position { top: 22px; font-size: 17px; font-weight: 800; }
+.firstMark span { transform: translateX(0); }
+.lastMark span { transform: translateX(-100%); }
+.intervals { display: flex; width: 100%; min-height: 38px; }
+.interval { display: flex; flex-basis: 0; min-width: 0; justify-content: center; align-items: end; padding: 8px 0 0; border-right: 1px solid color-mix(in srgb, var(--ink) 16%, transparent); }
+.interval:first-child { border-left: 1px solid color-mix(in srgb, var(--ink) 16%, transparent); }
+.interval span { font-family: var(--font-physics-numeric), system-ui, sans-serif; font-size: 14px; font-weight: 750; white-space: nowrap; }
+.screenReaderTable { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+.readout { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; border-top: 1px solid color-mix(in srgb, var(--ink) 18%, transparent); padding-top: 13px; }
+.readout p { display: grid; gap: 3px; margin: 0; }
+.readout span { color: color-mix(in srgb, var(--ink) 72%, transparent); font-size: 12px; line-height: 1.3; }
+.readout strong { font-family: var(--font-physics-numeric), system-ui, sans-serif; font-size: clamp(17px, 2vw, 22px); line-height: 1.25; font-variant-numeric: tabular-nums; }
+.verdict { border-top: 1px solid color-mix(in srgb, var(--ink) 18%, transparent); }
+.verdict summary { width: fit-content; min-height: 44px; display: flex; align-items: center; color: var(--signal); font-size: 14px; font-weight: 800; cursor: pointer; }
+.verdict summary::before { content: "+"; display: inline-block; width: 20px; font-size: 19px; font-weight: 500; }
+.verdict[open] summary::before { content: "−"; }
+.verdict summary:focus-visible { outline: 3px solid var(--signal); outline-offset: 3px; }
+.conclusion { margin: 2px 0 0; padding-left: 12px; border-left: 3px solid var(--signal); color: var(--ink); font-size: 14px; font-weight: 750; line-height: 1.5; }
+.boundary { margin: -6px 0 0; color: color-mix(in srgb, var(--ink) 71%, transparent); font-size: 12px; line-height: 1.45; }
+:global([data-theme="dark"]) .notebook { --ink: #e8f1f2; --paper: #111d26; --signal: #66d5e7; }
+
+@media (max-width: 650px) {
+  .notebook { gap: 15px; padding: 18px 16px 20px; }
+  .heading h2 { font-size: 22px; }
+  .record { padding-inline: 10px; }
+  .position { font-size: 15px; }
+  .readout strong { font-size: 17px; }
+}

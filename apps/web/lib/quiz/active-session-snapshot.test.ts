@@ -7,13 +7,15 @@ import {
   buildSnapshot,
   clearExamResumeCandidate,
   clearActiveQuizSnapshot,
+  clearActiveQuizSnapshotIfUnchanged,
+  fingerprintTasks,
   readActiveQuizSnapshot,
   readExamResumeCandidate,
   snapshotMatches,
   writeActiveQuizSnapshot,
   type ActiveQuizSnapshot,
 } from "./active-session-snapshot.ts";
-import type { QuizSessionState } from "../../components/quiz/quiz-session-store.ts";
+import type { QuizSessionState, QuizTask } from "../../components/quiz/quiz-session-store.ts";
 
 // sessionStorage-стаб для node-тестов.
 function installSessionStorage(overrides: Partial<Storage> = {}) {
@@ -84,6 +86,7 @@ const activeSession: QuizSessionState = {
 };
 
 const taskIds = ["t-1", "t-2", "t-3", "t-4", "t-5", "t-6", "t-7", "t-8", "t-9", "t-10"];
+const taskFingerprint = "v1:unchanged-tasks";
 
 function makeSnapshot(now = Date.now()): ActiveQuizSnapshot {
   const snapshot = buildSnapshot({
@@ -94,6 +97,7 @@ function makeSnapshot(now = Date.now()): ActiveQuizSnapshot {
     sessionKind: "practice",
     batch: 2,
     taskIds,
+    taskFingerprint,
     session: activeSession,
     now,
   });
@@ -113,6 +117,7 @@ function makeExamSnapshot(
     sessionKind: "exam",
     batch: 4,
     taskIds,
+    taskFingerprint,
     session: {
       ...activeSession,
       phase,
@@ -135,6 +140,7 @@ test("exam resume candidate: active and answered snapshots expose compact metada
       total: 10,
       phase: "active",
       savedAt: readExamResumeCandidate()?.savedAt,
+      hasTaskFingerprint: true,
     });
 
     writeActiveQuizSnapshot(makeExamSnapshot("answered"));
@@ -242,6 +248,7 @@ test("focused five-task practice snapshot remains strictly recoverable", () => {
     sessionKind: "practice",
     batch: 3,
     taskIds: focusedTaskIds,
+    taskFingerprint,
     session: focusedSession,
   });
 
@@ -255,6 +262,7 @@ test("focused five-task practice snapshot remains strictly recoverable", () => {
       topicId: "electrodynamics",
       sessionKind: "practice",
       taskIds: focusedTaskIds,
+      taskFingerprint,
     }),
     true,
   );
@@ -266,11 +274,158 @@ test("focused five-task practice snapshot remains strictly recoverable", () => {
       topicId: "electrodynamics",
       sessionKind: "practice",
       taskIds: [...focusedTaskIds, "ohm-6"],
+      taskFingerprint,
     }),
     false,
   );
 });
 
+test("focused answers require unchanged task content, even when task IDs match", () => {
+  const task: QuizTask = {
+    id: "fixed-1",
+    type: "single_choice",
+    blueprint: "ohm-law",
+    difficulty: 1,
+    text: "Найди силу тока при 4 В и 2 Ом.",
+    options: [{ id: "a", text: "2 А" }, { id: "b", text: "4 А" }],
+    answer: "a",
+    explanation: "I = U / R",
+    trap: "",
+    coach_lines: { correct: "Верно", wrong: "Проверь сопротивление", hint: "Раздели напряжение на сопротивление" },
+  };
+  const originalFingerprint = fingerprintTasks([task]);
+  const snapshot = buildSnapshot({
+    attemptId: "focused-attempt-0002",
+    template: "ohm-law",
+    topic: "Электродинамика",
+    title: "Закон Ома",
+    topicId: "electrodynamics",
+    sessionKind: "practice",
+    batch: 0,
+    taskIds: [task.id],
+    taskFingerprint: originalFingerprint,
+    session: {
+      phase: "answered",
+      currentIndex: 0,
+      selectedOptionId: "a",
+      answers: [{ ...activeSession.answers[0], taskId: task.id, blueprint: "ohm-law" }],
+      score: 1,
+      streak: 1,
+      total: 1,
+    },
+  });
+  assert.ok(snapshot);
+  const context = {
+    attemptId: snapshot.attemptId,
+    template: snapshot.template,
+    topic: snapshot.topic,
+    topicId: snapshot.topicId,
+    sessionKind: snapshot.sessionKind,
+    taskIds: snapshot.taskIds,
+    taskFingerprint: originalFingerprint,
+  };
+  assert.equal(snapshotMatches(snapshot, context), true);
+  assert.equal(snapshotMatches(snapshot, { ...context, taskFingerprint: fingerprintTasks([{ ...task, text: "Найди силу тока при 8 В и 2 Ом." }]) }), false);
+  assert.equal(snapshotMatches(snapshot, { ...context, taskFingerprint: fingerprintTasks([{ ...task, answer: "b" }]) }), false);
+});
+
+test("legacy snapshots without task fingerprint are preserved but not restored", () => {
+  const data = installSessionStorage();
+  try {
+    const { taskFingerprint: _fingerprint, ...legacy } = makeSnapshot();
+    const raw = JSON.stringify(legacy);
+    data.set(ACTIVE_QUIZ_SNAPSHOT_KEY, raw);
+    const result = readActiveQuizSnapshot();
+    assert.equal(result.ok, true, "legacy shape stays readable without schema migration");
+    if (result.ok) {
+      assert.equal(snapshotMatches(result.snapshot, {
+        attemptId: result.snapshot.attemptId,
+        template: result.snapshot.template,
+        topic: result.snapshot.topic,
+        topicId: result.snapshot.topicId,
+        sessionKind: result.snapshot.sessionKind,
+        taskIds: result.snapshot.taskIds,
+        taskFingerprint,
+      }), false);
+    }
+    assert.equal(data.get(ACTIVE_QUIZ_SNAPSHOT_KEY), raw, "incompatible record remains intact");
+
+    const { taskFingerprint: _examFingerprint, ...legacyExam } = makeExamSnapshot();
+    const rawExam = JSON.stringify(legacyExam);
+    data.set(ACTIVE_QUIZ_SNAPSHOT_KEY, rawExam);
+    assert.equal(readExamResumeCandidate()?.hasTaskFingerprint, false, "gate can offer an explicit fresh start");
+    assert.equal(readExamResumeCandidate()?.attemptId, legacyExam.attemptId);
+    assert.equal(data.get(ACTIVE_QUIZ_SNAPSHOT_KEY), rawExam);
+    assert.equal(clearExamResumeCandidate("another-attempt"), false);
+    assert.equal(data.get(ACTIVE_QUIZ_SNAPSHOT_KEY), rawExam);
+    assert.equal(clearExamResumeCandidate(legacyExam.attemptId), true, "explicit discard remains available");
+    assert.equal(data.has(ACTIVE_QUIZ_SNAPSHOT_KEY), false);
+  } finally {
+    uninstall();
+  }
+});
+
+test("explicit discard removes only the exact incompatible tab snapshot", () => {
+  const data = installSessionStorage();
+  try {
+    const { taskFingerprint: _fingerprint, ...legacy } = makeSnapshot();
+    const original = JSON.stringify(legacy);
+    data.set(ACTIVE_QUIZ_SNAPSHOT_KEY, original);
+    const changed = { ...legacy, title: "Другая попытка" };
+    data.set(ACTIVE_QUIZ_SNAPSHOT_KEY, JSON.stringify(changed));
+    assert.equal(clearActiveQuizSnapshotIfUnchanged(legacy), false);
+    assert.equal(data.get(ACTIVE_QUIZ_SNAPSHOT_KEY), JSON.stringify(changed));
+    data.set(ACTIVE_QUIZ_SNAPSHOT_KEY, original);
+    assert.equal(clearActiveQuizSnapshotIfUnchanged(legacy), true);
+    assert.equal(data.has(ACTIVE_QUIZ_SNAPSHOT_KEY), false);
+  } finally {
+    uninstall();
+  }
+});
+
+
+test("старые focused-снимки трёх измерительных семейств переживают смену темы", () => {
+  const familyTaskIds = ["measure-1", "measure-2", "measure-3", "measure-4", "measure-5"];
+  for (const template of ["length-unit-conversion", "graduated-scale-reading", "rectangular-block-volume"]) {
+    const snapshot = buildSnapshot({
+      attemptId: "measurement-attempt-0001",
+      template,
+      topic: "Кинематика",
+      title: "Измерение",
+      topicId: "kinematics",
+      sessionKind: "practice",
+      batch: 1,
+      taskIds: familyTaskIds,
+      taskFingerprint: "v1:unchanged",
+      session: {
+        ...activeSession,
+        currentIndex: 2,
+        answers: activeSession.answers.slice(0, 2).map((answer, index) => ({
+          ...answer,
+          taskId: familyTaskIds[index],
+          blueprint: template,
+        })),
+        total: 5,
+      },
+    });
+    assert.ok(snapshot);
+    const context = {
+      attemptId: "measurement-attempt-0001",
+      template,
+      topic: "Измерения",
+      topicId: "measurements",
+      sessionKind: "practice" as const,
+      taskIds: familyTaskIds,
+      taskFingerprint: "v1:unchanged",
+    };
+    assert.equal(snapshotMatches(snapshot, context), true, template);
+    assert.equal(snapshotMatches(snapshot, { ...context, taskIds: [...familyTaskIds.slice(0, 4), "other"] }), false);
+    assert.equal(snapshotMatches(snapshot, { ...context, taskFingerprint: "v1:changed" }), false);
+    assert.equal(snapshotMatches(snapshot, { ...context, topicId: "dynamics" }), false);
+    assert.equal(snapshotMatches(snapshot, { ...context, topic: "Другой раздел" }), false);
+    assert.equal(snapshotMatches(snapshot, { ...context, template: "unit-conversion-speed" }), false);
+  }
+});
 
 test("round-trip: снапшот пишется и читается", () => {
   installSessionStorage();
@@ -394,15 +549,15 @@ test("future-version не используется и НЕ удаляется", 
 test("snapshotMatches: другой template/набор задач не совпадает", () => {
   const snapshot = makeSnapshot();
   assert.equal(
-    snapshotMatches(snapshot, { attemptId: "attempt-test-0001", template: "mixed", topic: "Кинематика", sessionKind: "practice", taskIds }),
+    snapshotMatches(snapshot, { attemptId: "attempt-test-0001", template: "mixed", topic: "Кинематика", sessionKind: "practice", taskIds, taskFingerprint }),
     true,
   );
   assert.equal(
-    snapshotMatches(snapshot, { attemptId: "attempt-test-0001", template: "exam", topic: "Кинематика", sessionKind: "practice", taskIds }),
+    snapshotMatches(snapshot, { attemptId: "attempt-test-0001", template: "exam", topic: "Кинематика", sessionKind: "practice", taskIds, taskFingerprint }),
     false,
   );
   assert.equal(
-    snapshotMatches(snapshot, { attemptId: "attempt-test-0001", template: "mixed", topic: "Кинематика", sessionKind: "exam", taskIds }),
+    snapshotMatches(snapshot, { attemptId: "attempt-test-0001", template: "mixed", topic: "Кинематика", sessionKind: "exam", taskIds, taskFingerprint }),
     false,
   );
   assert.equal(
@@ -412,6 +567,7 @@ test("snapshotMatches: другой template/набор задач не совп
       topic: "Кинематика",
       sessionKind: "practice",
       taskIds: [...taskIds.slice(0, 9), "other"],
+      taskFingerprint,
     }),
     false,
   );
@@ -479,6 +635,7 @@ test("snapshotMatches: чужой attemptId не совпадает", () => {
       topic: "Кинематика",
       sessionKind: "practice",
       taskIds,
+      taskFingerprint,
     }),
     false,
   );

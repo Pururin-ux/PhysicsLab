@@ -59,6 +59,7 @@ export type ExamResumeCandidate = {
   total: number;
   phase: "active" | "retrying" | "answered";
   savedAt: number;
+  hasTaskFingerprint: boolean;
 };
 
 function storage(): Storage | null {
@@ -247,6 +248,7 @@ export function readExamResumeCandidate(now = Date.now()): ExamResumeCandidate |
     total: result.snapshot.session.total,
     phase: result.snapshot.session.phase,
     savedAt: result.snapshot.savedAt,
+    hasTaskFingerprint: !!result.snapshot.taskFingerprint,
   };
 }
 
@@ -263,13 +265,19 @@ export function clearExamResumeCandidate(attemptId: string): boolean {
     return false;
   }
 
-  clearActiveQuizSnapshot();
-  return true;
+  return clearActiveQuizSnapshotIfUnchanged(result.snapshot);
 }
 
 // Снапшот применим к текущему экрану и загруженному набору задач?
-// taskIds сверяются поштучно — это строгая проверка recovery; attemptId
-// сверяется с принятым компонентом идентификатором попытки.
+// taskIds сверяются поштучно, а fingerprint защищает от изменившихся условий
+// и ответов при прежних ID. Старые снимки без fingerprint нельзя проверить.
+// attemptId сверяется с принятым компонентом идентификатором попытки.
+const legacyMeasurementTemplates = new Set([
+  "length-unit-conversion",
+  "graduated-scale-reading",
+  "rectangular-block-volume",
+]);
+
 export function snapshotMatches(
   snapshot: ActiveQuizSnapshot,
   context: {
@@ -282,13 +290,22 @@ export function snapshotMatches(
     taskFingerprint?: string;
   },
 ): boolean {
+  const topicMatches =
+    (snapshot.topic === context.topic && snapshot.topicId === context.topicId) ||
+    (snapshot.sessionKind === "practice" &&
+      snapshot.topic === "Кинематика" &&
+      snapshot.topicId === "kinematics" &&
+      context.topicId === "measurements" &&
+      context.topic === "Измерения" &&
+      legacyMeasurementTemplates.has(snapshot.template));
+
   return (
     snapshot.template === context.template &&
     snapshot.attemptId === context.attemptId &&
-    snapshot.topic === context.topic &&
-    snapshot.topicId === context.topicId &&
+    topicMatches &&
     snapshot.sessionKind === context.sessionKind &&
-    (!snapshot.taskFingerprint || snapshot.taskFingerprint === context.taskFingerprint) &&
+    !!snapshot.taskFingerprint &&
+    snapshot.taskFingerprint === context.taskFingerprint &&
     snapshot.taskIds.length === context.taskIds.length &&
     snapshot.taskIds.every((id, index) => id === context.taskIds[index])
   );
@@ -344,6 +361,26 @@ export function buildSnapshot(input: {
       total: session.total,
     },
   };
+}
+
+// A learner may explicitly discard an incompatible tab draft. Check the full
+// original record, not just the attempt ID, so a replacement stays untouched.
+export function clearActiveQuizSnapshotIfUnchanged(expected: ActiveQuizSnapshot): boolean {
+  const store = storage();
+  if (!store) return false;
+  try {
+    const raw = store.getItem(ACTIVE_QUIZ_SNAPSHOT_KEY);
+    if (!raw) return false;
+    const current: unknown = JSON.parse(raw);
+    if (!isValidSnapshotShape(current) ||
+      current.version !== expected.version ||
+      current.attemptId !== expected.attemptId ||
+      JSON.stringify(current) !== JSON.stringify(expected)) return false;
+    store.removeItem(ACTIVE_QUIZ_SNAPSHOT_KEY);
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 // Detect updated conditions/answers even when deterministic task IDs stay the same.

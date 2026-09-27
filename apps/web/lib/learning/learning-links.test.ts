@@ -85,9 +85,17 @@ test("families keep their current exact explanation routes", () => {
     href: "/learn/newton-second-law?practice=newton-second",
     label: "Как сила и масса определяют ускорение",
   });
+  assert.deepEqual(getLearningDestinationForFamily("unit-conversion-speed")?.explanation, {
+    href: "/learn/uniform-motion?practice=unit-conversion-speed",
+    label: "Как согласовать км/ч и минуты перед расчётом пути",
+  });
   assert.deepEqual(getLearningDestinationForFamily("ohm-law")?.explanation, {
     href: "/learn/electric-current-and-ohms-law?practice=ohm-law",
     label: "Как связаны ток, напряжение и сопротивление",
+  });
+  assert.deepEqual(getLearningDestinationForFamily("source-internal-resistance")?.explanation, {
+    href: "/learn/full-circuit-ohms-law?practice=source-internal-resistance",
+    label: "Почему напряжение источника падает под нагрузкой",
   });
   assert.deepEqual(getLearningDestinationForFamily("reflection-angle")?.explanation, {
     href: "/learn/reflection-of-light?practice=reflection-angle",
@@ -96,6 +104,10 @@ test("families keep their current exact explanation routes", () => {
   assert.equal(getChapterPracticeReturn("newton-second-law", "newton-second")?.href, "/practice/family/newton-second");
   assert.equal(getChapterPracticeReturn("electric-current-and-ohms-law", "ohm-law")?.href, "/practice/family/ohm-law");
   assert.equal(getChapterPracticeReturn("reflection-of-light", "reflection-angle")?.href, "/practice/family/reflection-angle");
+  assert.deepEqual(getLearningDestinationForFamily("graduated-scale-reading")?.explanation, {
+    href: "/learn/reading-scales?practice=graduated-scale-reading",
+    label: "Как снять показание с мензурки",
+  });
 });
 
 test("chapter return ignores foreign, unrelated and missing task origins", () => {
@@ -104,4 +116,31 @@ test("chapter return ignores foreign, unrelated and missing task origins", () =>
   assert.equal(getChapterPracticeReturn("density", ""), null);
   assert.equal(getChapterPracticeReturn("unknown", "density-volume-ratio"), null);
   assert.equal(getChapterPracticeReturn("density", "density-volume-ratio")?.href, "/practice/family/density-volume-ratio");
+});
+
+test("the household load chapter opens its own practice and returns from its explanation", () => {
+  const chapter = getTextbookChapter("electricity-use-and-safety");
+  const destination = getLearningDestinationForFamily("household-load-current");
+
+  assert.equal(chapter?.practice.href, "/practice/family/household-load-current");
+  assert.equal(chapter?.relatedPractice?.href, "/practice/family/electric-power");
+  assert.equal(destination?.explanation?.href, "/learn/electricity-use-and-safety?practice=household-load-current");
+  assert.equal(getChapterPracticeReturn("electricity-use-and-safety", "household-load-current")?.href, chapter?.practice.href);
+  assert.equal(getChapterPracticeReturn("electric-work-and-power", "household-load-current"), null);
+});
+
+test("irregular body volume opens its own lesson and returns to the same practice", () => {
+  const chapter = getTextbookChapter("irregular-body-volume");
+  const destination = getLearningDestinationForFamily("irregular-body-volume");
+
+  assert.equal(chapter?.practice.href, "/practice/family/irregular-body-volume");
+  assert.deepEqual(destination?.explanation, {
+    href: "/learn/irregular-body-volume?practice=irregular-body-volume",
+    label: "Как измерить объём тела по двум отсчётам",
+  });
+  assert.equal(
+    getChapterPracticeReturn("irregular-body-volume", "irregular-body-volume")?.href,
+    chapter?.practice.href,
+  );
+  assert.equal(getChapterPracticeReturn("measuring-volume", "irregular-body-volume"), null);
 });

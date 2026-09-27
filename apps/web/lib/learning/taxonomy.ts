@@ -7,11 +7,13 @@ export type PhysicsSectionId =
   | "atomic";
 
 export type TopicId =
+  | "measurements"
   | "kinematics"
   | "dynamics"
   | "electrodynamics"
   | "thermodynamics"
-  | "optics";
+  | "optics"
+  | "quantum";
 
 export type SkillId =
   | "archimedes-force"
@@ -20,6 +22,13 @@ export type SkillId =
   | "vt-slope"
   | "vt-area"
   | "rotation-frequency"
+  | "oscillation-frequency"
+  | "spring-oscillation-period"
+  | "mathematical-pendulum-period"
+  | "oscillation-energy"
+  | "resonance-frequency-match"
+  | "mechanical-wave-speed"
+  | "echo-ranging"
   | "centripetal-acceleration"
   | "relative-velocity-vectors"
   | "free-fall"
@@ -30,6 +39,10 @@ export type SkillId =
   | "uniform-coordinate-law"
   | "uniform-motion-graphs"
   | "unit-conversion-speed"
+  | "length-unit-conversion"
+  | "graduated-scale-reading"
+  | "rectangular-block-volume"
+  | "irregular-body-volume"
   | "gravity-force"
   | "gravitation-distance"
   | "hydrostatic-pressure"
@@ -55,9 +68,27 @@ export type SkillId =
   | "conductor-resistance"
   | "resistor-network"
   | "source-internal-resistance"
+  | "source-efficiency"
   | "capacitor-energy"
+  | "lc-period"
+  | "ac-oscillogram-frequency"
+  | "induced-emf-magnitude"
+  | "ampere-force-magnitude"
+  | "lorentz-force-magnitude"
+  | "metal-temperature-current"
+  | "electrolyte-ion-transport"
+  | "self-induction-emf"
   | "electric-power"
+  | "household-load-current"
   | "charge-sharing"
+  | "coulomb-force"
+  | "electric-field-strength"
+  | "electric-field-superposition"
+  | "electrostatic-field-work"
+  | "point-charge-potential"
+  | "multi-source-potential"
+  | "uniform-field-voltage"
+  | "parallel-plate-capacitance"
   | "elementary-charge-count"
   | "magnetic-field-direction"
   | "ideal-gas-state"
@@ -66,6 +97,10 @@ export type SkillId =
   | "liquid-structure-properties"
   | "vapor-dynamic-equilibrium"
   | "relative-humidity-pressure"
+  | "monoatomic-internal-energy"
+  | "isobaric-gas-work"
+  | "first-law-energy-balance"
+  | "heat-engine-efficiency"
   | "molecule-count-from-mass"
   | "particle-concentration"
   | "molecular-kinetic-energy"
@@ -85,7 +120,8 @@ export type SkillId =
   | "lens-optical-power"
   | "lens-image-height"
   | "lens-image-properties"
-  | "vision-correction";
+  | "vision-correction"
+  | "bohr-transition-radiation";
 
 export type SkillMetadata = {
   id: SkillId;
@@ -170,6 +206,62 @@ export const skillMetadata: Record<SkillId, SkillMetadata> = {
     shortTitle: "Частота вращения",
     description: "Число полных оборотов за единицу времени и связь частоты с периодом.",
   },
+  "oscillation-frequency": {
+    id: "oscillation-frequency",
+    topicId: "dynamics",
+    sectionId: "mechanics",
+    title: "Частота механических колебаний",
+    shortTitle: "Частота колебаний",
+    description: "Число полных механических колебаний за единицу времени и связь с периодом.",
+  },
+  "spring-oscillation-period": {
+    id: "spring-oscillation-period",
+    topicId: "dynamics",
+    sectionId: "mechanics",
+    title: "Период пружинного маятника",
+    shortTitle: "Период пружины",
+    description: "Расчёт периода по массе груза и жёсткости пружины в идеальной модели.",
+  },
+  "mathematical-pendulum-period": {
+    id: "mathematical-pendulum-period",
+    topicId: "dynamics",
+    sectionId: "mechanics",
+    title: "Период математического маятника",
+    shortTitle: "Период маятника",
+    description: "Расчёт периода по длине нити для малых колебаний.",
+  },
+  "oscillation-energy": {
+    id: "oscillation-energy",
+    topicId: "dynamics",
+    sectionId: "mechanics",
+    title: "Энергия гармонических колебаний",
+    shortTitle: "Энергия колебаний",
+    description: "Превращение энергии пружины в кинетическую энергию и обратно при постоянной полной энергии идеальной системы.",
+  },
+  "mechanical-wave-speed": {
+    id: "mechanical-wave-speed",
+    topicId: "dynamics",
+    sectionId: "mechanics",
+    title: "Скорость механической волны",
+    shortTitle: "Скорость волны",
+    description: "Связь скорости, длины волны и частоты источника: v = λν.",
+  },
+  "echo-ranging": {
+    id: "echo-ranging",
+    topicId: "dynamics",
+    sectionId: "mechanics",
+    title: "Глубина по эхосигналу",
+    shortTitle: "Глубина по эху",
+    description: "Расстояние до отражателя по времени возврата звукового импульса с учётом пути туда и обратно.",
+  },
+  "resonance-frequency-match": {
+    id: "resonance-frequency-match",
+    topicId: "dynamics",
+    sectionId: "mechanics",
+    title: "Условие резонанса",
+    shortTitle: "Частота резонанса",
+    description: "Сопоставление частоты внешнего воздействия с собственной частотой механической системы.",
+  },
   "centripetal-acceleration": {
     id: "centripetal-acceleration",
     topicId: "kinematics",
@@ -217,6 +309,38 @@ export const skillMetadata: Record<SkillId, SkillMetadata> = {
     title: "Перевод скорости км/ч в м/с",
     shortTitle: "Единицы скорости",
     description: "Перевод скорости и времени к согласованным единицам перед расчетом пути.",
+  },
+  "length-unit-conversion": {
+    id: "length-unit-conversion",
+    topicId: "measurements",
+    sectionId: "mechanics",
+    title: "Перевод длины в метры",
+    shortTitle: "Длина в метрах",
+    description: "Перевод километров, дециметров, сантиметров и миллиметров в метры.",
+  },
+  "graduated-scale-reading": {
+    id: "graduated-scale-reading",
+    topicId: "measurements",
+    sectionId: "mechanics",
+    title: "Отсчёт объёма по шкале мензурки",
+    shortTitle: "Показание мензурки",
+    description: "Цена деления, положение нижней точки мениска и отсчёт от подписанной отметки.",
+  },
+  "rectangular-block-volume": {
+    id: "rectangular-block-volume",
+    topicId: "measurements",
+    sectionId: "mechanics",
+    title: "Объём прямоугольного бруска",
+    shortTitle: "Объём бруска",
+    description: "Косвенное определение объёма по трём измеренным рёбрам с согласованием единиц длины.",
+  },
+  "irregular-body-volume": {
+    id: "irregular-body-volume",
+    topicId: "measurements",
+    sectionId: "mechanics",
+    title: "Объём тела неправильной формы",
+    shortTitle: "Объём по вытеснению",
+    description: "Косвенное определение объёма полностью погружённого тела по двум показаниям мензурки.",
   },
   "gravity-force": {
     id: "gravity-force",
@@ -413,6 +537,14 @@ export const skillMetadata: Record<SkillId, SkillMetadata> = {
     shortTitle: "Полная цепь",
     description: "Ток в цепи ограничен суммой внешнего и внутреннего сопротивлений.",
   },
+  "source-efficiency": {
+    id: "source-efficiency",
+    topicId: "electrodynamics",
+    sectionId: "electrodynamics",
+    title: "КПД источника тока",
+    shortTitle: "КПД источника",
+    description: "Доля мощности источника, которая поступает во внешнюю нагрузку.",
+  },
   "charge-sharing": {
     id: "charge-sharing",
     topicId: "electrodynamics",
@@ -420,6 +552,70 @@ export const skillMetadata: Record<SkillId, SkillMetadata> = {
     title: "Деление заряда при контакте",
     shortTitle: "Деление заряда",
     description: "Заряд одинаковых проводников после контакта усредняется.",
+  },
+  "coulomb-force": {
+    id: "coulomb-force",
+    topicId: "electrodynamics",
+    sectionId: "electrodynamics",
+    title: "Закон Кулона для точечных зарядов",
+    shortTitle: "Закон Кулона",
+    description: "Модуль силы зависит от произведения модулей зарядов и квадрата расстояния.",
+  },
+  "electric-field-strength": {
+    id: "electric-field-strength",
+    topicId: "electrodynamics",
+    sectionId: "electrodynamics",
+    title: "Напряжённость поля точечного заряда",
+    shortTitle: "Напряжённость поля",
+    description: "Характеристика поля источника в выбранной точке, не зависящая от пробного заряда.",
+  },
+  "electric-field-superposition": {
+    id: "electric-field-superposition",
+    topicId: "electrodynamics",
+    sectionId: "electrodynamics",
+    title: "Суперпозиция электрических полей",
+    shortTitle: "Поля нескольких зарядов",
+    description: "Проекции напряжённостей нескольких источников складываются с учётом их направлений.",
+  },
+  "electrostatic-field-work": {
+    id: "electrostatic-field-work",
+    topicId: "electrodynamics",
+    sectionId: "electrodynamics",
+    title: "Работа электростатического поля",
+    shortTitle: "Работа поля",
+    description: "Знак работы поля и изменение потенциальной энергии в однородном поле.",
+  },
+  "point-charge-potential": {
+    id: "point-charge-potential",
+    topicId: "electrodynamics",
+    sectionId: "electrodynamics",
+    title: "Потенциал точечного заряда",
+    shortTitle: "Потенциал",
+    description: "Скалярный потенциал точки поля с учётом знака заряда-источника.",
+  },
+  "multi-source-potential": {
+    id: "multi-source-potential",
+    topicId: "electrodynamics",
+    sectionId: "electrodynamics",
+    title: "Потенциал поля нескольких зарядов",
+    shortTitle: "Потенциалы источников",
+    description: "Алгебраическая сумма потенциалов точечных источников в одной точке.",
+  },
+  "uniform-field-voltage": {
+    id: "uniform-field-voltage",
+    topicId: "electrodynamics",
+    sectionId: "electrodynamics",
+    title: "Напряжение между точками однородного поля",
+    shortTitle: "Напряжение поля",
+    description: "Разность потенциалов со знаком при заданном порядке точек и расстоянии вдоль поля.",
+  },
+  "parallel-plate-capacitance": {
+    id: "parallel-plate-capacitance",
+    topicId: "electrodynamics",
+    sectionId: "electrodynamics",
+    title: "Ёмкость плоского конденсатора",
+    shortTitle: "Ёмкость конденсатора",
+    description: "Как площадь перекрытия, расстояние между обкладками и диэлектрик меняют ёмкость.",
   },
   "capacitor-energy": {
     id: "capacitor-energy",
@@ -429,6 +625,70 @@ export const skillMetadata: Record<SkillId, SkillMetadata> = {
     shortTitle: "Энергия конденсатора",
     description: "Энергия электрического поля конденсатора пропорциональна квадрату напряжения.",
   },
+  "lc-period": {
+    id: "lc-period",
+    topicId: "electrodynamics",
+    sectionId: "electrodynamics",
+    title: "Период колебаний в LC-контуре",
+    shortTitle: "Период LC-контура",
+    description: "Период свободных электромагнитных колебаний идеального контура по индуктивности и электроёмкости.",
+  },
+  "ac-oscillogram-frequency": {
+    id: "ac-oscillogram-frequency",
+    topicId: "electrodynamics",
+    sectionId: "electrodynamics",
+    title: "Частота переменного тока по двум максимумам",
+    shortTitle: "Частота переменного тока",
+    description: "Период между соседними максимумами одного знака и частота переменного тока с переводом миллисекунд в секунды.",
+  },
+  "induced-emf-magnitude": {
+    id: "induced-emf-magnitude",
+    topicId: "electrodynamics",
+    sectionId: "electrodynamics",
+    title: "Модуль ЭДС индукции",
+    shortTitle: "ЭДС индукции",
+    description: "Модуль ЭДС катушки по изменению магнитного потока через один виток, числу витков и времени изменения.",
+  },
+  "ampere-force-magnitude": {
+    id: "ampere-force-magnitude",
+    topicId: "electrodynamics",
+    sectionId: "electrodynamics",
+    title: "Модуль силы Ампера",
+    shortTitle: "Сила Ампера",
+    description: "Сила на прямой участок с током в однородном магнитном поле с учётом угла между током и полем.",
+  },
+  "lorentz-force-magnitude": {
+    id: "lorentz-force-magnitude",
+    topicId: "electrodynamics",
+    sectionId: "electrodynamics",
+    title: "Модуль силы Лоренца",
+    shortTitle: "Сила Лоренца",
+    description: "Магнитная сила на заряд, который движется перпендикулярно однородному полю.",
+  },
+  "metal-temperature-current": {
+    id: "metal-temperature-current",
+    topicId: "electrodynamics",
+    sectionId: "electrodynamics",
+    title: "Нагрев металлического проводника",
+    shortTitle: "Ток в металле",
+    description: "Как связаны температура обычного металла, сопротивление и ток при разных условиях источника.",
+  },
+  "electrolyte-ion-transport": {
+    id: "electrolyte-ion-transport",
+    topicId: "electrodynamics",
+    sectionId: "electrodynamics",
+    title: "Ток в электролите",
+    shortTitle: "Ток в растворе",
+    description: "Почему раствор соли проводит ток и к каким электродам движутся ионы.",
+  },
+  "self-induction-emf": {
+    id: "self-induction-emf",
+    topicId: "electrodynamics",
+    sectionId: "electrodynamics",
+    title: "Модуль ЭДС самоиндукции",
+    shortTitle: "ЭДС самоиндукции",
+    description: "Модуль средней ЭДС при заданном равномерном изменении тока в катушке постоянной индуктивности.",
+  },
   "electric-power": {
     id: "electric-power",
     topicId: "electrodynamics",
@@ -436,6 +696,14 @@ export const skillMetadata: Record<SkillId, SkillMetadata> = {
     title: "Мощность электрического тока",
     shortTitle: "Мощность тока",
     description: "Мощность участка цепи через ток, напряжение и сопротивление.",
+  },
+  "household-load-current": {
+    id: "household-load-current",
+    topicId: "electrodynamics",
+    sectionId: "electrodynamics",
+    title: "Общий ток параллельных приборов",
+    shortTitle: "Общий ток приборов",
+    description: "Сумма мощностей двух параллельных приборов и ток в общем проводе при заданном напряжении.",
   },
   "ideal-gas-state": {
     id: "ideal-gas-state",
@@ -508,6 +776,38 @@ export const skillMetadata: Record<SkillId, SkillMetadata> = {
     title: "Относительная влажность воздуха",
     shortTitle: "Влажность воздуха",
     description: "Сравнение фактического давления водяного пара с давлением насыщенного пара при той же температуре.",
+  },
+  "monoatomic-internal-energy": {
+    id: "monoatomic-internal-energy",
+    topicId: "thermodynamics",
+    sectionId: "molecular",
+    title: "Внутренняя энергия одноатомного идеального газа",
+    shortTitle: "Внутренняя энергия газа",
+    description: "Связь внутренней энергии одноатомного идеального газа с количеством вещества и абсолютной температурой.",
+  },
+  "isobaric-gas-work": {
+    id: "isobaric-gas-work",
+    topicId: "thermodynamics",
+    sectionId: "molecular",
+    title: "Работа газа при изобарном расширении",
+    shortTitle: "Работа газа",
+    description: "Работа силы давления газа равна давлению, умноженному на изменение объёма.",
+  },
+  "first-law-energy-balance": {
+    id: "first-law-energy-balance",
+    topicId: "thermodynamics",
+    sectionId: "molecular",
+    title: "Первый закон термодинамики и знаки работы",
+    shortTitle: "Энергетический баланс газа",
+    description: "Связь полученной теплоты, изменения внутренней энергии и работы газа с учётом знаков.",
+  },
+  "heat-engine-efficiency": {
+    id: "heat-engine-efficiency",
+    topicId: "thermodynamics",
+    sectionId: "molecular",
+    title: "Термический КПД теплового двигателя",
+    shortTitle: "КПД теплового двигателя",
+    description: "Доля теплоты нагревателя, превращённая в работу рабочего тела за цикл.",
   },
   "molecule-count-from-mass": {
     id: "molecule-count-from-mass",
@@ -660,5 +960,13 @@ export const skillMetadata: Record<SkillId, SkillMetadata> = {
     title: "Коррекция зрения линзами",
     shortTitle: "Очки и фокус",
     description: "Знак и тип корректирующей линзы по положению фокуса относительно сетчатки.",
+  },
+  "bohr-transition-radiation": {
+    id: "bohr-transition-radiation",
+    topicId: "quantum",
+    sectionId: "quantum",
+    title: "Частота и длина волны при переходе атома",
+    shortTitle: "Переходы атома",
+    description: "Частота и длина волны фотона через разность дискретных энергий уровней атома водорода.",
   },
 };

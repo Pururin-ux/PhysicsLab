@@ -7,6 +7,7 @@ import { cn } from "../../lib/utils";
 import {
   AMMETER_SLOT,
   CIRCUIT_LAYOUTS,
+  SOURCE_VOLTMETER_SLOT,
   SWITCH_SLOT,
   VOLTMETER_SLOT,
 } from "./circuit-diagram-layouts";
@@ -37,6 +38,7 @@ const TOPOLOGY_DESCRIPTION: Record<CircuitTopology, string> = {
 };
 
 function describeCircuit(spec: CircuitDiagramSpec) {
+  const meters = spec.meters ?? (spec.meter ? [spec.meter] : []);
   const source = `Источник ${spec.sourceLabel ?? "ε"}.`;
   const resistors = spec.resistorLabels.length
     ? `Резисторы: ${spec.resistorLabels.join(", ")}.`
@@ -47,13 +49,13 @@ function describeCircuit(spec: CircuitDiagramSpec) {
   const switchState = spec.switch
     ? `Ключ ${spec.switch.label ?? "K"} ${spec.switch.state === "closed" ? "замкнут" : "разомкнут"}.`
     : null;
-  const meter = spec.meter
-    ? spec.meter.kind === "ammeter"
-      ? `Амперметр ${spec.meter.label ?? "A"} включён последовательно в цепь.`
-      : `Вольтметр ${spec.meter.label ?? "V"} подключён параллельно первому резистору.`
-    : null;
+  const meterDescriptions = meters.map(meter => meter.kind === "ammeter"
+    ? `Амперметр ${meter.label ?? "A"} включён последовательно в цепь.`
+    : meter.across === "source"
+      ? `Вольтметр ${meter.label ?? "V"} подключён к клеммам источника.`
+      : `Вольтметр ${meter.label ?? "V"} подключён параллельно первому резистору.`);
 
-  return ["Электрическая схема.", TOPOLOGY_DESCRIPTION[spec.topology], source, internalResistance, resistors, switchState, meter]
+  return ["Электрическая схема.", TOPOLOGY_DESCRIPTION[spec.topology], source, internalResistance, resistors, switchState, ...meterDescriptions]
     .filter(Boolean)
     .join(" ");
 }
@@ -61,6 +63,11 @@ function describeCircuit(spec: CircuitDiagramSpec) {
 export function CircuitDiagram({ spec, className, ariaLabel }: CircuitDiagramProps) {
   const layout = CIRCUIT_LAYOUTS[spec.topology];
   const tone = TONE_COLOR[spec.tone ?? "gold"];
+  const meters = spec.meters ?? (spec.meter ? [spec.meter] : []);
+  const ammeter = meters.find(meter => meter.kind === "ammeter");
+  const voltmeter = meters.find(meter => meter.kind === "voltmeter");
+  const measuresSource = voltmeter?.across === "source";
+  const voltmeterSlot = measuresSource ? SOURCE_VOLTMETER_SLOT : VOLTMETER_SLOT;
   const [longX1, longY1, longX2, longY2] = layout.sourcePlates.long;
   const [shortX1, shortY1, shortX2, shortY2] = layout.sourcePlates.short;
   const firstResistor = layout.resistors[0];
@@ -103,8 +110,8 @@ export function CircuitDiagram({ spec, className, ariaLabel }: CircuitDiagramPro
           <line x1={shortX1} y1={shortY1} x2={shortX2} y2={shortY2} />
         </g>
         <text
-          x={layout.sourceLabelPos.x}
-          y={layout.sourceLabelPos.y}
+          x={measuresSource ? 82 : layout.sourceLabelPos.x}
+          y={measuresSource ? 86 : layout.sourceLabelPos.y}
           fill={LABEL_COLOR}
           fontSize="12"
           textAnchor="middle"
@@ -219,7 +226,7 @@ export function CircuitDiagram({ spec, className, ariaLabel }: CircuitDiagramPro
           </g>
         ) : null}
 
-        {spec.meter?.kind === "ammeter" ? (
+        {ammeter ? (
           <g>
             <circle
               cx={AMMETER_SLOT.x}
@@ -237,55 +244,59 @@ export function CircuitDiagram({ spec, className, ariaLabel }: CircuitDiagramPro
               textAnchor="middle"
               className="physics-math"
             >
-              {spec.meter.label ?? "A"}
+              {ammeter.label ?? "A"}
             </text>
           </g>
         ) : null}
 
-        {/* Отводы вольтметра рассчитаны на резистор R у правого края контура
-            (топологии "single" и "source-internal"): у "series"/"parallel"
-            первый резистор стоит в другом месте, и отводы разъедутся. */}
-        {spec.meter?.kind === "voltmeter" &&
-        firstResistor &&
-        (spec.topology === "single" || spec.topology === "source-internal") ? (
+        {voltmeter && (measuresSource || (firstResistor && (spec.topology === "single" || spec.topology === "source-internal"))) ? (
           <g>
-            {/* Два пунктирных отвода от вольтметра к выводам резистора —
-                к точкам, где провод входит в резистор сверху и снизу. */}
-            <line
-              x1={VOLTMETER_SLOT.x - 6}
-              y1={VOLTMETER_SLOT.y + VOLTMETER_SLOT.r - 3}
-              x2={firstResistor.x + firstResistor.width / 2 - 6}
-              y2={firstResistor.y - 2}
-              stroke={tone.stroke}
-              strokeWidth="1.25"
-              strokeDasharray="3 3"
-            />
-            <line
-              x1={VOLTMETER_SLOT.x + 8}
-              y1={VOLTMETER_SLOT.y + VOLTMETER_SLOT.r - 2}
-              x2={firstResistor.x + firstResistor.width + 6}
-              y2={firstResistor.y + firstResistor.height + 2}
-              stroke={tone.stroke}
-              strokeWidth="1.25"
-              strokeDasharray="3 3"
-            />
+            {measuresSource ? (
+              <>
+                {/* Измерительные провода подключены к обоим выводам источника. */}
+                <path d={`M ${longX1} ${longY1} H 38 L 28.5 75`} fill="none" stroke={tone.stroke} strokeWidth="1.25" strokeDasharray="3 3" />
+                <path d={`M ${shortX1} ${shortY1} H 38 L 28.5 89`} fill="none" stroke={tone.stroke} strokeWidth="1.25" strokeDasharray="3 3" />
+              </>
+            ) : firstResistor ? (
+              <>
+                {/* Отводы подключены к концам внешнего резистора. */}
+                <line
+                  x1={voltmeterSlot.x - 6}
+                  y1={voltmeterSlot.y + voltmeterSlot.r - 3}
+                  x2={firstResistor.x + firstResistor.width / 2 - 6}
+                  y2={firstResistor.y - 2}
+                  stroke={tone.stroke}
+                  strokeWidth="1.25"
+                  strokeDasharray="3 3"
+                />
+                <line
+                  x1={voltmeterSlot.x + 8}
+                  y1={voltmeterSlot.y + voltmeterSlot.r - 2}
+                  x2={firstResistor.x + firstResistor.width + 6}
+                  y2={firstResistor.y + firstResistor.height + 2}
+                  stroke={tone.stroke}
+                  strokeWidth="1.25"
+                  strokeDasharray="3 3"
+                />
+              </>
+            ) : null}
             <circle
-              cx={VOLTMETER_SLOT.x}
-              cy={VOLTMETER_SLOT.y}
-              r={VOLTMETER_SLOT.r}
+              cx={voltmeterSlot.x}
+              cy={voltmeterSlot.y}
+              r={voltmeterSlot.r}
               fill={SURFACE}
               stroke={tone.stroke}
               strokeWidth="2"
             />
             <text
-              x={VOLTMETER_SLOT.x}
-              y={VOLTMETER_SLOT.y + 4}
+              x={voltmeterSlot.x}
+              y={voltmeterSlot.y + 4}
               fill={LABEL_COLOR}
               fontSize="11"
               textAnchor="middle"
               className="physics-math"
             >
-              {spec.meter.label ?? "V"}
+              {voltmeter.label ?? "V"}
             </text>
           </g>
         ) : null}

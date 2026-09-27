@@ -13,6 +13,8 @@ export type CircuitSwitchSpec = {
 export type CircuitMeterSpec = {
   kind: "ammeter" | "voltmeter";
   label?: string;
+  /** A voltmeter measures across the source terminals or the external load. */
+  across?: "source" | "load";
 };
 
 export type CircuitDiagramSpec = {
@@ -22,6 +24,8 @@ export type CircuitDiagramSpec = {
   internalResistanceLabel?: string;
   resistorLabels: string[];
   switch?: CircuitSwitchSpec;
+  meters?: CircuitMeterSpec[];
+  /** @deprecated Prefer meters when a schematic needs more than one instrument. */
   meter?: CircuitMeterSpec;
   tone?: CircuitTone;
 };

@@ -32,7 +32,20 @@ export const PROGRESS_STORAGE_KEY = "physicslab-v3-progress-v1";
 // сессии, чтобы «Продолжить задачу» не подменяло её пятью похожими.
 // v5 → v6: first-try ответ в unlabelled-сессии хранит отдельные доказательства
 // переноса и повторного воспроизведения после паузы.
-export const PROGRESS_VERSION = 6;
+// v6 → v7: измерения стали отдельной темой; переносим только записи с точным
+// blueprint, оставляя общие исторические счётчики кинематики без изменений.
+export const PROGRESS_VERSION = 7;
+
+const measurementBlueprints = new Set([
+  "length-unit-conversion",
+  "graduated-scale-reading",
+  "rectangular-block-volume",
+]);
+
+function isMeasurementTrapKey(key: string): boolean {
+  const separatorIndex = key.indexOf(":");
+  return separatorIndex > 0 && measurementBlueprints.has(key.slice(0, separatorIndex));
+}
 
 export const DELAYED_RECALL_MIN_MS = 24 * 60 * 60 * 1000;
 
@@ -65,6 +78,8 @@ export type AppProgress = {
   version: typeof PROGRESS_VERSION;
   topics: Record<TopicId, TopicProgress>;
   pendingMistakes: Record<string, PendingMistake>;
+  /** Old kinematics totals could contain measurement tasks and cannot be split exactly. */
+  legacyKinematicsTotalsMayIncludeMeasurements?: true;
 };
 
 type CompletedSessionInput = {
@@ -239,6 +254,32 @@ function normalizePendingMistakes(value: unknown): Record<string, PendingMistake
   );
 }
 
+function moveLegacyMeasurementRecords(progress: AppProgress): void {
+  const kinematics = progress.topics.kinematics;
+  const measurements = progress.topics.measurements;
+
+  for (const [key, count] of Object.entries(kinematics.weakTraps)) {
+    if (!isMeasurementTrapKey(key)) continue;
+    measurements.weakTraps[key] = count;
+    delete kinematics.weakTraps[key];
+  }
+  for (const [key, seenAt] of Object.entries(kinematics.weakTrapLastSeenAt)) {
+    if (!isMeasurementTrapKey(key)) continue;
+    measurements.weakTrapLastSeenAt[key] = seenAt;
+    delete kinematics.weakTrapLastSeenAt[key];
+  }
+  for (const [blueprint, evidence] of Object.entries(kinematics.skillEvidence)) {
+    if (!measurementBlueprints.has(blueprint)) continue;
+    measurements.skillEvidence[blueprint] = evidence;
+    delete kinematics.skillEvidence[blueprint];
+  }
+  for (const pending of Object.values(progress.pendingMistakes)) {
+    if (pending.topicId === "kinematics" && measurementBlueprints.has(pending.blueprint)) {
+      pending.topicId = "measurements";
+    }
+  }
+}
+
 // Понимает текущую и все прошлые версии; незнакомая версия -> null (сброс).
 // Экспортирована ради тестов миграции — в UI используйте hydrateProgressFromStorage.
 export function migrateStoredProgress(value: unknown): AppProgress | null {
@@ -252,12 +293,14 @@ export function migrateStoredProgress(value: unknown): AppProgress | null {
   // v1–v3 не содержали pendingMistakes и получают пустую очередь. v4 pending
   // записи не содержали resumeHref — normalizer добавляет null. v1–v5 не
   // содержали skillEvidence — normalizeTopicProgress добавляет пустую карту.
+  // v1–v6 хранили измерительные семейства внутри кинематики.
   if (
     value.version !== 1 &&
     value.version !== 2 &&
     value.version !== 3 &&
     value.version !== 4 &&
     value.version !== 5 &&
+    value.version !== 6 &&
     value.version !== PROGRESS_VERSION
   ) {
     return null;
@@ -269,6 +312,14 @@ export function migrateStoredProgress(value: unknown): AppProgress | null {
     progress.topics[topic.id] = normalizeTopicProgress(value.topics[topic.id]);
   }
   progress.pendingMistakes = normalizePendingMistakes(value.pendingMistakes);
+  if (value.version !== PROGRESS_VERSION) {
+    moveLegacyMeasurementRecords(progress);
+    if (progress.topics.kinematics.solved > 0) {
+      progress.legacyKinematicsTotalsMayIncludeMeasurements = true;
+    }
+  } else if (value.legacyKinematicsTotalsMayIncludeMeasurements === true) {
+    progress.legacyKinematicsTotalsMayIncludeMeasurements = true;
+  }
 
   return progress;
 }
@@ -456,6 +507,7 @@ export function recordCompletedSession({
 
   const nextProgress: AppProgress = {
     version: PROGRESS_VERSION,
+    ...(current.legacyKinematicsTotalsMayIncludeMeasurements ? { legacyKinematicsTotalsMayIncludeMeasurements: true as const } : {}),
     topics: {
       ...current.topics,
       [topicId]: {
@@ -540,6 +592,7 @@ export function recordCrossTopicSession(answers: AnswerRecord[], sessionId?: str
 
   const nextProgress: AppProgress = {
     version: PROGRESS_VERSION,
+    ...(current.legacyKinematicsTotalsMayIncludeMeasurements ? { legacyKinematicsTotalsMayIncludeMeasurements: true as const } : {}),
     topics: nextTopics,
     pendingMistakes,
   };

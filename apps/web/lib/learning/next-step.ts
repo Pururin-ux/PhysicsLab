@@ -4,6 +4,8 @@ import {
   type AppProgress,
 } from "../stores/progress-store.ts";
 import { buildReviewPlan } from "./review-plan.ts";
+import type { ReviewResumeCandidate } from "./review-resume.ts";
+import type { TextbookCheckActivityItem } from "./use-textbook-check-activity.ts";
 import { skillMetadata, type SkillId } from "./taxonomy.ts";
 import { mixedPracticeHrefByTopic } from "./topic-practice-routes.ts";
 
@@ -55,7 +57,9 @@ export function getDueDelayedRecall(
         skillTitle: skill.shortTitle,
         description: skill.description,
         topicId: topic.id,
-        href: mixedPracticeHrefByTopic[topic.id],
+        href: topic.id === "measurements"
+          ? `/practice/family/${skill.id}`
+          : mixedPracticeHrefByTopic[topic.id],
         transferPassedAt: evidence.transferPassedAt,
       });
     }
@@ -70,14 +74,14 @@ export function getLearningNextStep(
   progress: AppProgress,
   hasBestExam: boolean,
   now = new Date(),
+  resumeCandidates: readonly ReviewResumeCandidate[] = [],
+  textbookChecks: readonly TextbookCheckActivityItem[] = [],
 ): LearningNextStep {
-  const reviewPlan = buildReviewPlan(progress, 3, now);
+  const reviewPlan = buildReviewPlan(progress, 3, now, resumeCandidates);
   const pendingReview = reviewPlan.find((item) => item.isPending) ?? null;
   const topReview = reviewPlan.find((item) => !item.isPending) ?? null;
-  const hasPendingMistake = Object.keys(progress.pendingMistakes).length > 0;
 
   if (
-    hasPendingMistake &&
     pendingReview?.familyId &&
     pendingReview.practiceHref
   ) {
@@ -85,9 +89,9 @@ export function getLearningNextStep(
       label: "Повторение",
       title: `Вернуться к ошибке: ${pendingReview.skillTitle}`,
       body: pendingReview.hint,
-      reason: "Ответ уже сохранён — можно продолжить с места, где он сбился.",
+      reason: "Ответ есть в черновике. Открой сохранённую попытку, чтобы продолжить.",
       href: pendingReview.practiceHref,
-      cta: "Продолжить задачу",
+      cta: "Открыть попытку",
       tone: "gold",
       mode: "learn",
     };
@@ -124,6 +128,34 @@ export function getLearningNextStep(
     };
   }
 
+  const textbookRetry = textbookChecks.find((item) => item.status === "retry" && item.title);
+  if (textbookRetry) {
+    return {
+      label: "Самопроверка",
+      title: `Вернуться к вопросу: ${textbookRetry.title}`,
+      body: "Ты проверил ответ. Разбери объяснение и попробуй тот же вопрос ещё раз.",
+      reason: "Это возможность вернуться к трудному месту, а не оценка всей темы.",
+      href: textbookRetry.href,
+      cta: "Открыть вопрос",
+      tone: "gold",
+      mode: "learn",
+    };
+  }
+
+  const textbookDraft = textbookChecks.find((item) => item.status === "draft" && item.title);
+  if (textbookDraft) {
+    return {
+      label: "Незаконченная самопроверка",
+      title: `Продолжить: ${textbookDraft.title}`,
+      body: "Ответ выбран, но ещё не проверен.",
+      reason: "Вернись к этому вопросу, когда будешь готов проверить свой выбор.",
+      href: textbookDraft.href,
+      cta: "Вернуться к вопросу",
+      tone: "cyan",
+      mode: "learn",
+    };
+  }
+
   // Новому ученику даём короткую выборку разных тем без служебного языка.
   const nothingStarted =
     !hasBestExam &&
@@ -135,6 +167,20 @@ export function getLearningNextStep(
       );
     });
 
+  const textbookCorrect = textbookChecks.find((item) => item.status === "correct" && item.grade);
+  if (nothingStarted && textbookCorrect) {
+    return {
+      label: "После самопроверки",
+      title: "Выбрать следующий вопрос",
+      body: `Ты проверил ответ в учебнике ${textbookCorrect.grade} класса. Что разберёшь дальше?`,
+      reason: "Один верный ответ не означает, что вся тема уже освоена.",
+      href: `/topics?grade=${textbookCorrect.grade}`,
+      cta: "Выбрать вопрос",
+      tone: "cyan",
+      mode: "learn",
+    };
+  }
+
   if (nothingStarted) {
     return {
       label: "Первый урок",
@@ -143,6 +189,31 @@ export function getLearningNextStep(
       reason: "Для начала понадобятся только скорость, время и простой график.",
       href: "/practice/kinematics-lesson",
       cta: "Открыть тему",
+      tone: "cyan",
+      mode: "learn",
+    };
+  }
+
+  // A measurement-only start does not establish a grade or mastery. Offer a
+  // choice within the same school material instead of jumping to acceleration.
+  const measurements = progress.topics.measurements;
+  const onlyMeasurementsStarted =
+    !hasBestExam &&
+    Boolean(measurements && (measurements.solved > 0 || measurements.completedSessions > 0)) &&
+    topics.every((topic) => {
+      if (topic.id === "measurements") return true;
+      const topicProgress = progress.topics[topic.id];
+      return !topicProgress || (topicProgress.solved === 0 && topicProgress.completedSessions === 0);
+    });
+
+  if (onlyMeasurementsStarted) {
+    return {
+      label: "Следующий вопрос",
+      title: "Что ещё разобрать в 7 классе?",
+      body: "Ты начал с измерений. Рядом — другие вопросы о веществах и движении.",
+      reason: "Выбери интересный вопрос; решённые задачи не означают, что всю тему ты уже освоил.",
+      href: "/topics?grade=7",
+      cta: "Выбрать вопрос",
       tone: "cyan",
       mode: "learn",
     };

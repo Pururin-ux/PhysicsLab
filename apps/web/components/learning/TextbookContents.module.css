@@ -48,7 +48,7 @@
 }
 
 .notice,
-.empty {
+.resultsStatus {
   color: var(--text-secondary);
   font-size: 14px;
   line-height: 1.6;
@@ -185,6 +185,15 @@
   min-height: 44px;
   padding: 10px 0;
   color: var(--action-primary);
+}
+
+.connection {
+  display: block;
+  min-height: 44px;
+  padding: 10px 0;
+  color: var(--action-primary);
+  font-size: 14px;
+  line-height: 1.6;
 }
 
 .toolbar :is(button, input):focus-visible,

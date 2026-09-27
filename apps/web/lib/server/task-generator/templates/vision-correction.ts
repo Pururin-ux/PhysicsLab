@@ -20,7 +20,7 @@ function answerFor(params: Params): number {
 
 function otherAnswer(offset: number): DistractorRule {
   return {
-    label: `перепутан тип или знак корректирующей линзы ${offset}`,
+    label: `путаешь тип или знак корректирующей линзы (${offset})`,
     compute: params => ((answerFor(params) - 1 + offset) % 4) + 1,
   };
 }

@@ -15,6 +15,7 @@ interface FormulasEditorialBrowserProps {
 }
 
 const shortGroupTitle: Record<string, string> = {
+  measurements: "Измерения",
   kinematics: "Движение",
   dynamics: "Силы",
   electrodynamics: "Электричество",
@@ -209,7 +210,7 @@ export function FormulasEditorialBrowser({ groups }: FormulasEditorialBrowserPro
                 ? `Открыта формула «${selectedEntry.title}»`
                 : isFiltering
                   ? `Совпадений: ${resultCount}`
-                  : `${resultCount} формул в пяти разделах`}
+                  : `${resultCount} формул в ${groups.length} разделах`}
             </p>
           </section>
         </div>

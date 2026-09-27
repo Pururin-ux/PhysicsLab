@@ -1,0 +1,41 @@
+.notebook {
+  --ink: #25333c;
+  --paper: #f4f0e6;
+  --signal: #087f96;
+  display: grid;
+  gap: clamp(.9rem, 2.2vw, 1.35rem);
+  min-width: 0;
+  padding: clamp(1rem, 3vw, 1.75rem);
+  border: 1px solid color-mix(in srgb, var(--ink) 17%, transparent);
+  border-radius: 1.35rem;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-manrope), system-ui, sans-serif;
+}
+
+.heading { display: grid; gap: .35rem; }
+.heading > span { color: var(--signal); font-size: .75rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+.heading h2 { margin: 0; font-size: clamp(1.2rem, 2.6vw, 1.7rem); line-height: 1.3; }
+.heading p { max-width: 62ch; margin: 0; font-size: .9rem; line-height: 1.55; }
+
+.frequencies { display: flex; flex-wrap: wrap; gap: .55rem; min-width: 0; margin: 0; padding: 0; border: 0; }
+.frequencies legend { width: 100%; margin-bottom: .35rem; font-size: .82rem; font-weight: 800; }
+.frequencies button { min-width: 4.7rem; min-height: 2.8rem; padding: .45rem .8rem; border: 1px solid color-mix(in srgb, var(--ink) 28%, transparent); border-radius: .7rem; background: transparent; color: inherit; font: 750 .95rem var(--font-physics-numeric), system-ui, sans-serif; cursor: pointer; }
+.frequencies button[aria-pressed="true"] { border-color: var(--signal); background: color-mix(in srgb, var(--signal) 13%, var(--paper)); }
+.frequencies button:focus-visible, .formula summary:focus-visible { outline: 3px solid var(--signal); outline-offset: 3px; }
+
+.state { margin: 0; color: var(--signal); font-size: .9rem; font-weight: 800; line-height: 1.45; }
+.readings { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); margin: 0; border-top: 1px solid color-mix(in srgb, var(--ink) 18%, transparent); }
+.readings > div { display: flex; justify-content: space-between; align-items: baseline; gap: .75rem; min-width: 0; padding: .7rem .3rem; border-bottom: 1px solid color-mix(in srgb, var(--ink) 15%, transparent); }
+.readings dt { font-size: .82rem; line-height: 1.4; }
+.readings dd { flex: none; margin: 0; font: 750 .95rem var(--font-physics-numeric), system-ui, sans-serif; font-variant-numeric: tabular-nums; }
+.readings .speed { color: var(--signal); font-weight: 850; }
+.conclusion { margin: 0; font-size: .92rem; font-weight: 750; line-height: 1.55; }
+.formula { padding-top: .65rem; border-top: 1px solid color-mix(in srgb, var(--ink) 18%, transparent); }
+.formula summary { width: fit-content; min-height: 2.5rem; color: var(--signal); font-size: .84rem; font-weight: 800; cursor: pointer; }
+.formula p { margin: .35rem 0 0; font-size: .9rem; line-height: 1.6; }
+.boundary { margin: 0; color: color-mix(in srgb, var(--ink) 70%, transparent); font-size: .78rem; line-height: 1.55; }
+
+@media (max-width: 560px) {
+  .readings { grid-template-columns: minmax(0, 1fr); }
+}

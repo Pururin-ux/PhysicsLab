@@ -13,8 +13,28 @@ export type TextbookReviewItem = {
   practice: TextbookChapter["practice"] | null;
 };
 
+export type TextbookReviewChapter = Pick<TextbookChapter, "id" | "grade" | "unit" | "title" | "practice"> & {
+  check: Pick<TextbookChapter["check"], "question" | "options" | "correct" | "feedback">;
+};
+
+export function projectTextbookReviewChapter(chapter: TextbookChapter): TextbookReviewChapter {
+  return {
+    id: chapter.id,
+    grade: chapter.grade,
+    unit: chapter.unit,
+    title: chapter.title,
+    check: {
+      question: chapter.check.question,
+      options: chapter.check.options,
+      correct: chapter.check.correct,
+      feedback: chapter.check.feedback,
+    },
+    practice: { href: chapter.practice.href, label: chapter.practice.label },
+  };
+}
+
 export function buildTextbookReviewItem(
-  chapter: TextbookChapter,
+  chapter: TextbookReviewChapter,
   data: Record<string, unknown> | null,
 ): TextbookReviewItem | null {
   if (classifyTextbookCheck(chapter.check, data) !== "retry") return null;

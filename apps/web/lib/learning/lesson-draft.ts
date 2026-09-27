@@ -1,11 +1,11 @@
 import { clearStore, decodeStoredValue, writeStore, type StoreCodec, type StoredEnvelope } from "../stores/storage-envelope.ts";
-import { textbookChapters } from "./textbook.ts";
+import { textbookChapterIds } from "./textbook-index.ts";
 
 export type DraftValue = string | number | boolean | null | { [key: string]: DraftValue };
 export type LessonDraft = Record<string, DraftValue>;
 
 const liveDrafts = new Map<string, LessonDraft>();
-const draftIds = ["acceleration", "dynamics", "electro", "density", "optics", "average-speed", "textbook-walk", "textbook-round-trip-speed", "textbook-matter-states", "textbook-gas-pressure-pascal", "textbook-atmospheric-pressure", "textbook-archimedes-force", ...textbookChapters.map(chapter=>`textbook-check-${chapter.id}`)];
+const draftIds = ["acceleration", "dynamics", "electro", "density", "optics", "average-speed", "textbook-walk", "textbook-round-trip-speed", "textbook-matter-states", "textbook-gas-pressure-pascal", "textbook-atmospheric-pressure", "textbook-archimedes-force", ...textbookChapterIds.map(id=>`textbook-check-${id}`)];
 
 function isDraftValue(value: unknown, depth = 0): value is DraftValue {
   if (value === null || typeof value === "boolean") return true;

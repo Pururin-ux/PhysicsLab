@@ -1,11 +1,9 @@
-"use client";
-
 import {
   ArrowRight,
   Books,
   GraduationCap,
   ListChecks,
-} from "@phosphor-icons/react";
+} from "@phosphor-icons/react/dist/ssr";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -13,7 +11,7 @@ import {
   PRODUCT_DESTINATIONS,
 } from "../../lib/product-routes";
 import { MIO_PORTRAITS } from "../../lib/learning/mio-assets";
-import { useHomeLearningState } from "../landing/HomeLearningState";
+import { HomeActivity } from "./HomeActivity";
 import styles from "./HomeEditorial.module.css";
 
 const taskTool = CONTEXTUAL_TOOLS.find((tool) => tool.id === "tasks")!;
@@ -44,8 +42,6 @@ const homeActions = [
 ] as const;
 
 export function HomeEditorial() {
-  const learningState = useHomeLearningState();
-
   return (
     <div className={styles.page}>
       <section
@@ -72,38 +68,12 @@ export function HomeEditorial() {
 
         <div className={styles.heroInner}>
           <div className={styles.heroCopy}>
-            <p className={styles.eyebrow}>
-              {learningState.hasActivity ? "С возвращением" : "PhysicsLab"}
-            </p>
-            <h1 id="home-title">Физика с Мио</h1>
-            <p className={styles.heroLead}>
-              Уроки, опыты и задачи — в одном месте.
-            </p>
-            {learningState.hasActivity && (
-                <aside
-                  className={styles.todayStep}
-                  data-tone={learningState.nextStep.tone}
-                  aria-label="Твоя работа"
-                >
-                  <div className={styles.todayCopy}>
-                    <p>{learningState.nextStep.label}</p>
-                    <h2>{learningState.nextStep.title}</h2>
-                    {learningState.quizResume || learningState.lessonResume ? (
-                      <p className={styles.resumeDetail}>{learningState.nextStep.body}</p>
-                    ) : null}
-                  </div>
-                  <Link href={learningState.nextStep.href}>
-                    {learningState.nextStep.cta}
-                    <ArrowRight size={18} weight="bold" aria-hidden="true" />
-                  </Link>
-                  {learningState.lessonResumes.filter(lesson => lesson.href !== learningState.nextStep.href).map(lesson => (
-                    <Link key={lesson.href} className={styles.secondaryResume} href={lesson.href}>
-                      {lesson.title}
-                      <ArrowRight size={16} aria-hidden="true" />
-                    </Link>
-                  ))}
-                </aside>
-            )}
+            <HomeActivity>
+              <h1 id="home-title">Физика с Мио</h1>
+              <p className={styles.heroLead}>
+                Уроки, опыты и задачи — в одном месте.
+              </p>
+            </HomeActivity>
 
             <nav className={styles.quickActions} aria-label="С чего начать">
               {homeActions.map(({ id, href, label, description, icon: Icon }) => (

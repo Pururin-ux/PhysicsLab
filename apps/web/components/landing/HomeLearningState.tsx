@@ -7,6 +7,7 @@ import { useEffect, useMemo, useState } from "react";
 import { getLearningNextStep } from "../../lib/learning/next-step";
 import { getQuizResumeStep } from "../../lib/learning/home-quiz-resume";
 import { readMotionLessonResumes } from "../../lib/learning/motion-lesson-resume";
+import { useTextbookCheckActivity } from "../../lib/learning/use-textbook-check-activity";
 import { readSavedMotionPractice } from "../../lib/quiz/saved-motion-practice";
 import { readActiveQuizSnapshot } from "../../lib/quiz/active-session-snapshot";
 import { topics } from "../../lib/topics";
@@ -18,6 +19,7 @@ import { MathText } from "../ui/MathText";
 export function useHomeLearningState() {
   const progress = useStore($appProgress);
   const examLog = useStore($examLog);
+  const textbookChecks = useTextbookCheckActivity();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => setMounted(true), []);
@@ -34,8 +36,11 @@ export function useHomeLearningState() {
     const lessonResumes = mounted ? readMotionLessonResumes() : [];
     const lessonResume = lessonResumes[0] ?? null;
     const resumeStep = quizResume ?? lessonResume;
-    const hasActivity = hasProgress || Boolean(bestExam) || Boolean(resumeStep);
-    const nextStep = resumeStep ?? getLearningNextStep(progress, Boolean(bestExam));
+    const hasTextbookWork = textbookChecks.items.some(
+      (item) => item.status === "draft" || item.status === "retry" || item.status === "correct",
+    );
+    const hasActivity = hasProgress || Boolean(bestExam) || Boolean(resumeStep) || hasTextbookWork;
+    const nextStep = resumeStep ?? getLearningNextStep(progress, Boolean(bestExam), new Date(), [], textbookChecks.items);
     const targetTopic = topics.find((topic) => topic.href === nextStep.href);
     const solved = mounted
       ? Object.values(progress.topics).reduce((sum, topic) => sum + topic.solved, 0)
@@ -64,7 +69,7 @@ export function useHomeLearningState() {
         : nextStep.cta,
       primaryHref: nextStep.href,
     };
-  }, [examLog, mounted, progress]);
+  }, [examLog, mounted, progress, textbookChecks.items]);
 }
 
 export function HomePrimaryAction() {

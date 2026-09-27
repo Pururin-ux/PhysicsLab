@@ -27,6 +27,7 @@ interface PracticeWithHelpProps {
   restartLabel?: string;
   nextHref?: string;
   nextLabel?: string;
+  nextConcept?: { href: string; label: string } | null;
   preAnswerGuidance?: "guided" | "unlabelled";
 }
 
@@ -52,6 +53,7 @@ export function PracticeWithHelp({
   restartLabel,
   nextHref,
   nextLabel,
+  nextConcept,
   preAnswerGuidance = "guided",
 }: PracticeWithHelpProps) {
   const defaultTarget = useMemo(() => getDefaultHelpTarget(topicId), [topicId]);
@@ -107,6 +109,7 @@ export function PracticeWithHelp({
         restartLabel={restartLabel}
         nextHref={nextHref}
         nextLabel={nextLabel}
+        nextConcept={nextConcept}
         preAnswerGuidance={preAnswerGuidance}
       />
 

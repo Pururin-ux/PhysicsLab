@@ -39,7 +39,7 @@ function answerFor(): number {
 }
 
 function shiftedAnswer(offset: number): DistractorRule {
-  return { label: `выбран неверный вывод о жидкости ${offset}`, compute: () => offset + 1 };
+  return { label: `делаешь неверный вывод о жидкости (${offset})`, compute: () => offset + 1 };
 }
 
 function explanation(params: Params): string {

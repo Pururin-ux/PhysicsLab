@@ -1,0 +1,57 @@
+.notebook {
+  --ink: #172736;
+  --paper: #f3eee2;
+  --cyan: #087f96;
+  --coral: #b75049;
+  --gold: #a46a14;
+  --notebook-sans: var(--font-manrope), system-ui, sans-serif;
+  display: grid;
+  gap: 1.2rem;
+  padding: clamp(1rem, 3vw, 2rem);
+  border: 1px solid color-mix(in srgb, var(--ink) 18%, transparent);
+  border-radius: 1.6rem;
+  color: var(--ink);
+  background: var(--paper);
+  font-family: var(--notebook-sans);
+}
+.flow span:first-child, .reading > span { margin: 0; color: var(--cyan); font-size: .75rem; font-weight: 800; letter-spacing: .08em; }
+.workspace { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(15rem, .75fr); border-block: 1px solid color-mix(in srgb, var(--ink) 22%, transparent); }
+.flow { display: grid; justify-items: center; gap: .7rem; min-width: 0; padding: 1.3rem 1.5rem 1.3rem 0; }
+.heater, .workingBody { display: grid; gap: .15rem; width: min(100%, 23rem); padding: .8rem 1rem; border-inline: 3px solid var(--gold); background: color-mix(in srgb, var(--gold) 10%, var(--paper)); text-align: center; }
+.workingBody { border-color: var(--ink); background: color-mix(in srgb, var(--ink) 5%, var(--paper)); }
+.heater span:first-child { color: var(--gold); }
+.workingBody span:first-child { color: var(--cyan); }
+.heater strong, .workingBody strong { font-size: 1.2rem; line-height: 1.2; }
+.heater small, .workingBody small { color: color-mix(in srgb, var(--ink) 75%, transparent); font-size: .75rem; line-height: 1.45; }
+.inputFlow { display: grid; gap: .15rem; justify-items: center; color: var(--gold); font-family: var(--font-physics-numeric); }
+.inputFlow span { color: var(--gold); font-size: .9rem; font-weight: 800; }
+.inputFlow b { font-size: 1.4rem; line-height: 1; }
+.sliderLabel { display: flex; flex-wrap: wrap; justify-content: space-between; gap: .3rem .7rem; width: 100%; margin-top: .4rem; font-size: .82rem; font-weight: 750; line-height: 1.4; }
+.sliderLabel output { color: var(--coral); font: 800 1rem/1.2 var(--font-physics-numeric); white-space: nowrap; }
+.slider { width: 100%; min-height: 2rem; margin: 0; accent-color: var(--coral); cursor: pointer; }
+.slider:focus-visible { outline: 3px solid var(--cyan); outline-offset: 4px; }
+.sliderNote { width: 100%; margin: -.3rem 0 .4rem; color: color-mix(in srgb, var(--ink) 72%, transparent); font-size: .76rem; line-height: 1.5; }
+.split { display: flex; width: 100%; height: 2.5rem; border: 1px solid color-mix(in srgb, var(--ink) 24%, transparent); background: color-mix(in srgb, var(--ink) 7%, var(--paper)); }
+.workShare { background: color-mix(in srgb, var(--cyan) 70%, var(--paper)); border-right: 2px solid var(--cyan); }
+.coolerShare { background: color-mix(in srgb, var(--coral) 63%, var(--paper)); }
+.outputs { display: grid; grid-template-columns: 1fr 1fr; width: 100%; }
+.outputs > div { display: grid; gap: .4rem; align-content: start; padding: .6rem .5rem 0 0; border-top: 3px solid var(--cyan); }
+.outputs > div + div { padding-left: .7rem; border-color: var(--coral); }
+.outputs span:first-child { color: var(--ink); font-size: .78rem; letter-spacing: 0; line-height: 1.35; }
+.outputs strong { color: var(--cyan); font: 800 clamp(.95rem, 2vw, 1.2rem)/1.2 var(--font-physics-numeric); white-space: nowrap; }
+.outputs > div + div strong { color: var(--coral); }
+.reading { display: grid; align-content: center; gap: .9rem; padding: 1.2rem 0 1.2rem 1.5rem; border-left: 1px solid color-mix(in srgb, var(--ink) 20%, transparent); }
+.reading output { color: var(--cyan); font: 820 clamp(2.3rem, 4vw, 3.2rem)/1 var(--font-physics-numeric); }
+.reading p { margin: 0; font-size: .87rem; line-height: 1.6; }
+.reading p:first-of-type { overflow-x: auto; overflow-y: hidden; padding-block: .3rem; font-size: 1.02rem; }
+.distinction { display: grid; gap: .4rem; }
+.distinction strong { font-size: .95rem; }
+.distinction p, .boundary { margin: 0; font-size: .86rem; line-height: 1.6; }
+.boundary { padding-left: 1rem; border-left: 3px solid var(--coral); }
+:global([data-theme="dark"]) .notebook { --ink: #e8f1f2; --paper: #111d26; --cyan: #66d5e7; --coral: #ff8882; --gold: #f2be61; }
+@media (max-width: 760px) {
+  .notebook { margin-inline: -.4rem; border-radius: 1rem; }
+  .workspace { grid-template-columns: minmax(0, 1fr); }
+  .flow { padding: 1rem 0; }
+  .reading { padding: 1rem 0; border-top: 1px solid color-mix(in srgb, var(--ink) 20%, transparent); border-left: 0; }
+}

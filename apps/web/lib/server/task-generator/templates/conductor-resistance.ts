@@ -21,8 +21,8 @@ function rounded(value: number) {
 
 const distractors: DistractorRule[] = [
   { label: "умножил на площадь вместо деления", compute: p => rounded(materialFor(p).rho * p.length * p.area) },
-  { label: "ошибка масштаба удельного сопротивления", compute: p => rounded(resistance(p) * 10) },
-  { label: "ошибка масштаба площади сечения", compute: p => rounded(resistance(p) / 10) },
+  { label: "ошибаешься в масштабе удельного сопротивления", compute: p => rounded(resistance(p) * 10) },
+  { label: "ошибаешься в масштабе площади сечения", compute: p => rounded(resistance(p) / 10) },
 ];
 
 export const conductorResistanceBlueprint: TaskBlueprint = {

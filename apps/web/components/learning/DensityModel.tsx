@@ -8,9 +8,9 @@ import shared from "./TextbookScene.module.css";
 import styles from "./DensityModel.module.css";
 
 const predictions = [
-  { id: "a", label: "A — он занимает больше места" },
+  { id: "a", label: "Образец A плотнее" },
   { id: "same", label: "Плотность одинаковая" },
-  { id: "b", label: "B — в каждом см³ больше массы" },
+  { id: "b", label: "Образец B плотнее" },
 ] as const;
 
 type PredictionId = (typeof predictions)[number]["id"];
@@ -27,28 +27,47 @@ export function DensityModel() {
   return (
     <div className={shared.experiment}>
       <div className={styles.study}>
-        <figure className={styles.observation}>
-          <Image
-            className={styles.observationImage}
-            src={MIO_SCENES.density}
-            alt="Мио взвешивает небольшой тёмный образец; рядом лежит более крупный светлый образец и стоит мензурка"
-            fill
-            sizes="(max-width: 640px) 100vw, 440px"
-            priority
-          />
-          <figcaption>
-            Мио записывает массу и объём каждого образца. Размер на глаз не отвечает,
-            сколько массы приходится на 1 см³.
-          </figcaption>
-        </figure>
-
-        <div className={styles.question}>
+        <div className={styles.questionIntro}>
           <p className={styles.kicker}>Два образца · одно сравнение</p>
           <h2>Какой образец плотнее?</h2>
           <p>
-            Образец A: 54 г и 20 см³. Образец B: 78 г и 10 см³. Оба сплошные,
-            однородные и находятся при одной температуре.
+            Мио измерила массу и объём двух сплошных однородных образцов при одной
+            температуре. Сравни, сколько массы приходится на 1 см³ каждого.
           </p>
+        </div>
+
+        <figure className={styles.observation}>
+          <div className={styles.observationFrame}>
+            <Image
+              className={styles.observationImage}
+              src={MIO_SCENES.density}
+              alt="Мио ставит маленький тёмный образец на весы; большой светлый лежит рядом"
+              fill
+              sizes="(max-width: 640px) 100vw, 440px"
+              priority
+            />
+          </div>
+          <figcaption>
+            <table className={styles.measurements}>
+              <caption>Измерения Мио</caption>
+              <thead>
+                <tr><th scope="col">Образец</th><th scope="col">Масса</th><th scope="col">Объём</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <th scope="row">A <span>крупный, светлый</span></th>
+                  <td>54 г</td><td>20 см³</td>
+                </tr>
+                <tr>
+                  <th scope="row">B <span>маленький, тёмный</span></th>
+                  <td>78 г</td><td>10 см³</td>
+                </tr>
+              </tbody>
+            </table>
+          </figcaption>
+        </figure>
+
+        <div className={styles.questionControls}>
           <div className={styles.predictions} role="group" aria-label="Прогноз о плотности образцов">
             {predictions.map((option) => (
               <button
@@ -82,20 +101,18 @@ export function DensityModel() {
           <div className={styles.comparison} aria-label="Расчёт плотности двух образцов">
             <article>
               <p>Образец A · крупнее</p>
-              <dl>
-                <div><dt>Масса</dt><dd>54 г</dd></div>
-                <div><dt>Объём</dt><dd>20 см³</dd></div>
-                <div><dt>Плотность</dt><dd>2,7 г/см³</dd></div>
-              </dl>
+              <div className={styles.unitMass}>
+                <span>В 1 см³</span>
+                <strong>2,7 г</strong>
+              </div>
               <MathText text={String.raw`$\rho_A=\frac{54\ \text{г}}{20\ \text{см}^3}=2{,}7\ \text{г/см}^3$`} />
             </article>
             <article className={styles.denserSample}>
               <p>Образец B · меньше</p>
-              <dl>
-                <div><dt>Масса</dt><dd>78 г</dd></div>
-                <div><dt>Объём</dt><dd>10 см³</dd></div>
-                <div><dt>Плотность</dt><dd>7,8 г/см³</dd></div>
-              </dl>
+              <div className={styles.unitMass}>
+                <span>В 1 см³</span>
+                <strong>7,8 г</strong>
+              </div>
               <MathText text={String.raw`$\rho_B=\frac{78\ \text{г}}{10\ \text{см}^3}=7{,}8\ \text{г/см}^3$`} />
             </article>
           </div>
@@ -107,9 +124,8 @@ export function DensityModel() {
                 : "Плотнее образец B, хотя он занимает меньше места."}
             </strong>
             <p>
-              Каждый кубический сантиметр B имеет массу 7,8 г, а каждый кубический
-              сантиметр A — 2,7 г. Размер тела и плотность вещества отвечают на разные
-              вопросы.
+              В одинаковом объёме масса B больше: 7,8 г против 2,7 г. Размер
+              тела и плотность вещества отвечают на разные вопросы.
             </p>
           </div>
         </section>

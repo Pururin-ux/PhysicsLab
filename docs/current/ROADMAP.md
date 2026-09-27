@@ -11,3 +11,4 @@ This file contains unresolved questions only. It is not a feature backlog.
 | `OPEN` | Is the optional Sites/Vinext adapter needed as a maintained deployment path? | A deployment owner and an exercised deployment workflow |
 | `OPEN` | Is design-sync still needed for active component-preview work? | A maintainer decision and a recent successful use case |
 | `HYPOTHESIS` | Which additional exam task families are justified by official source evidence and pedagogical review? | Source contract, deterministic solver review, and content acceptance |
+| `OPEN` | Do any of the four Grade VII measurement task families belong to an official ЦЭ/ЦТ section? | A source that maps these specific skills to the exam specification; until then they remain available for practice outside the six exam sections |

@@ -22,7 +22,7 @@ function answerFor(params: Params): number {
 
 function otherAnswer(offset: number): DistractorRule {
   return {
-    label: `выбран неверный вывод ${offset}`,
+    label: `делаешь неверный вывод (${offset})`,
     compute: params => ((answerFor(params) - 1 + offset) % 4) + 1,
   };
 }

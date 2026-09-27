@@ -27,9 +27,9 @@ export const heatBalanceSimpleBlueprint: TaskBlueprint = {
   solver: heatBalanceFinalTemperature,
   distractors: heatBalanceSimpleDistractors,
   textTemplate: (p) =>
-    `Смешали ${p.mHot} кг воды при температуре ${p.tempHot} °C и ${p.mCold} кг воды при температуре ${p.tempCold} °C. Потерями тепла пренебречь. Найдите установившуюся температуру смеси.`,
+    `Смешали ${p.mHot} кг воды при температуре ${p.tempHot} °C и ${p.mCold} кг воды при температуре ${p.tempCold} °C в теплоизолированном сосуде. Теплоёмкостью сосуда пренебречь. Найдите установившуюся температуру смеси.`,
   explanationTemplate: (p, answer) =>
-    `Для одинакового вещества теплоёмкость сокращается: $m_1(T_1-T)=m_2(T-T_2)$. Поэтому $T=\\frac{m_1T_1+m_2T_2}{m_1+m_2}=\\frac{${p.mHot}\\cdot${p.tempHot}+${p.mCold}\\cdot${p.tempCold}}{${p.mHot}+${p.mCold}}=${formatMathValue(answer)}^\\circ C$.`,
+    `Сосуд теплоизолирован, его теплоёмкостью пренебрегаем: горячая вода отдаёт столько энергии, сколько получает холодная. Для одинакового вещества удельная теплоёмкость сокращается: $m_1(T_1-T)=m_2(T-T_2)$. Поэтому $T=\\frac{m_1T_1+m_2T_2}{m_1+m_2}=\\frac{${p.mHot}\\cdot${p.tempHot}+${p.mCold}\\cdot${p.tempCold}}{${p.mHot}+${p.mCold}}=${formatMathValue(answer)}^\\circ C$.`,
   trap: "Температуру смеси нельзя находить простым средним, если массы воды разные.",
   coachLines: {
     correct: () =>

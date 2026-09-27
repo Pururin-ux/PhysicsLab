@@ -14,7 +14,7 @@ export function InclinedPlaneNotebook() {
       <figure className={styles.apparatus}>
         <svg viewBox="0 0 940 560" role="img" aria-labelledby="incline-title incline-desc">
           <title id="incline-title">Груз на наклонной плоскости с длиной l и высотой h</title>
-          <desc id="incline-desc">Груз перемещают равномерно вверх вдоль наклонной плоскости. Сила F направлена вдоль плоскости, вес P вертикально вниз. Длина плоскости l больше высоты h.</desc>
+          <desc id="incline-desc">Груз перемещают равномерно вверх вдоль наклонной плоскости без трения. Сила тяги F направлена вверх по плоскости, сила тяжести mg — вертикально вниз. Красная стрелка вниз вдоль доски показывает составляющую той же силы тяжести mg sin α, а не отдельную силу. Угол α отсчитывают от горизонта; длина плоскости l больше высоты h.</desc>
           <defs>
             <marker id="incline-cyan-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
               <path className={styles.cyanHead} d="M0 0 10 5 0 10Z" />
@@ -32,6 +32,8 @@ export function InclinedPlaneNotebook() {
           <path className={styles.rampBody} d="M98 450L726 128L801 450Z" filter="url(#incline-shadow)" />
           <path className={styles.rampEdge} d="M98 450L726 128" />
           <path className={styles.rampTicks} d="M161 418l-13-25m76-7-13-25m76-7-13-25m76-7-13-25m76-7-13-25m76-7-13-25m76-7-13-25m76-7-13-25" />
+          <path className={styles.angleArc} d="M151 450A53 53 0 0 0 145 426" />
+          <text className={styles.angleLabel} x="159" y="454">α</text>
 
           <g className={styles.crate} transform="translate(442 286) rotate(-27)">
             <path d="M-58-52H58V52H-58Z" />
@@ -41,8 +43,10 @@ export function InclinedPlaneNotebook() {
 
           <path className={styles.pullForce} d="M470 244L632 161" markerEnd="url(#incline-cyan-arrow)" />
           <text className={styles.pullLabel} x="565" y="172">F</text>
-          <path className={styles.weightForce} d="M442 286V422" markerEnd="url(#incline-red-arrow)" />
-          <text className={styles.weightLabel} x="459" y="391">P</text>
+          <path className={styles.gravityForce} d="M442 286V422" markerEnd="url(#incline-red-arrow)" />
+          <text className={styles.gravityLabel} x="459" y="391">mg</text>
+          <path className={styles.slopeComponent} d="M424 298L297 363" markerEnd="url(#incline-red-arrow)" />
+          <text className={styles.componentLabel} x="176" y="333">mg sin α</text>
 
           <path className={styles.lengthMeasure} d="M115 486L745 164" markerStart="url(#incline-measure-arrow)" markerEnd="url(#incline-measure-arrow)" />
           <text className={styles.measureLabel} x="420" y="499">путь l</text>
@@ -53,10 +57,20 @@ export function InclinedPlaneNotebook() {
           <g className={styles.resultPlate}>
             <path d="M74 70H388V172H74Z" />
             <text x="96" y="104">без трения · равномерно</text>
-            <text x="96" y="142">F / P = h / l</text>
+            <text x="96" y="142">F / mg = h / l</text>
           </g>
         </svg>
-        <figcaption>На рисунке сила тяги направлена вдоль плоскости. Для реальной доски трение увеличивает требуемую силу по сравнению с идеальным значением <MathText text={String.raw`$F=P\dfrac{h}{l}$`} />.</figcaption>
+        <figcaption className={styles.apparatusCaption}>
+          <p>Наклонная красная стрелка — часть силы тяжести вдоль доски, а не ещё одна сила. Угол α отсчитываем от горизонта.</p>
+          <div className={styles.projectionRows}>
+            <p><strong>Вдоль доски</strong><MathText className={styles.projectionFormula} text={String.raw`$F_{\parallel}=mg\sin\alpha=mg\dfrac{h}{l}$`} /><span className={styles.projectionCopy}>Эта составляющая тянет груз вниз. Без трения при равномерном подъёме сила тяги вверх равна ей по модулю.</span></p>
+            <p><strong>Поперёк доски</strong><MathText className={styles.projectionFormula} text={String.raw`$F_{\perp}=mg\cos\alpha=N$`} /><span className={styles.projectionCopy}>Реакция опоры направлена перпендикулярно доске и уравновешивает эту составляющую.</span></p>
+          </div>
+          <p className={styles.projectionExample}>Например, при массе 2 кг, угле 30° и g = 10 Н/кг:
+            <MathText className={styles.projectionExampleFormula} text={String.raw`$F_{\parallel}=2\cdot10\cdot\sin30^\circ=10\,\text{Н}$`} />
+            Трение увеличило бы нужную для подъёма силу тяги.
+          </p>
+        </figcaption>
       </figure>
 
       <section className={styles.measurementLens} aria-label="Измерительная линза для силы и пути">
@@ -65,9 +79,9 @@ export function InclinedPlaneNotebook() {
           <div><span>Измерительная линза</span><s>Сравнить только силы</s><strong>Мио записывает силу вместе с путём.</strong></div>
         </div>
         <div className={styles.workLedger}>
-          <article><span>Поднять прямо</span><MathText text={String.raw`$P\cdot h$`} /><small>большая сила · короткий путь</small></article>
+          <article><span>Поднять прямо</span><MathText text={String.raw`$mg\cdot h$`} /><small>большая сила · короткий путь</small></article>
           <article><span>Поднять по плоскости</span><MathText text={String.raw`$F\cdot l$`} /><small>меньшая сила · длинный путь</small></article>
-          <p><strong>Идеально</strong><MathText text={String.raw`$Fl=Ph$`} /><span>выигрыша в работе нет</span></p>
+          <p><strong>Идеально</strong><MathText text={String.raw`$Fl=mgh$`} /><span>выигрыша в работе нет</span></p>
         </div>
       </section>
 
@@ -84,7 +98,7 @@ export function InclinedPlaneNotebook() {
 
       <div className={styles.distinctions}>
         <section><span>Выигрыш в силе</span><h3>Оплачивается путём</h3><p>Во сколько раз идеальный механизм уменьшает силу, не менее чем во столько же раз возрастает путь.</p></section>
-        <section><span>Полезная работа</span><h3>Только нужный результат</h3><p>Для подъёма груза это увеличение его потенциальной энергии: <MathText text={String.raw`$A_{\text{пол}}=Ph=mgh$`} />.</p></section>
+        <section><span>Полезная работа</span><h3>Только нужный результат</h3><p>Для подъёма груза это увеличение его потенциальной энергии: <MathText text={String.raw`$A_{\text{пол}}=mgh$`} />.</p></section>
         <section><span>Совершённая работа</span><h3>Всё, что мы затратили</h3><p>Если тянем вдоль доски постоянной силой, <MathText text={String.raw`$A_{\text{сов}}=Fl$`} />. Разность работ связана с потерями.</p></section>
       </div>
     </div>

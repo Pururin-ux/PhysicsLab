@@ -1,0 +1,63 @@
+.notebook {
+  --ink: #22333e;
+  --paper: #f2eee3;
+  --metal: #84939b;
+  --metal-edge: #354e5c;
+  --signal: #087f96;
+  --charge: #ad6734;
+  display: grid;
+  gap: clamp(1rem, 2.5vw, 1.5rem);
+  padding: clamp(1rem, 3vw, 2rem);
+  border: 1px solid color-mix(in srgb, var(--ink) 18%, transparent);
+  border-radius: 1.5rem;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-manrope), system-ui, sans-serif;
+}
+.heading { display: grid; gap: .35rem; }
+.heading > span { color: var(--signal); font-size: .75rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+.heading h2 { margin: 0; font-size: clamp(1.2rem, 2.6vw, 1.7rem); line-height: 1.3; }
+.heading p { margin: 0; max-width: 65ch; font-size: .88rem; line-height: 1.55; }
+.controls { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .65rem; }
+.control { display: flex; flex-wrap: wrap; align-content: start; gap: .4rem; }
+.control > span { flex-basis: 100%; font-size: .76rem; font-weight: 800; }
+.control button { min-height: 2.5rem; padding: .4rem .55rem; border: 1px solid color-mix(in srgb, var(--ink) 28%, transparent); border-radius: .65rem; background: transparent; color: var(--ink); font: inherit; font-size: .78rem; font-weight: 780; cursor: pointer; }
+.control button[aria-pressed="true"] { border-color: var(--signal); background: color-mix(in srgb, var(--signal) 14%, var(--paper)); }
+.control button:focus-visible { outline: 3px solid var(--signal); outline-offset: 3px; }
+.observation { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(14rem, .65fr); gap: clamp(.75rem, 2vw, 1.5rem); border-block: 1px solid color-mix(in srgb, var(--ink) 17%, transparent); padding-block: .8rem; }
+.figure { min-width: 0; margin: 0; }
+.figure svg { display: block; width: 100%; height: auto; }
+.figure figcaption { max-width: 65ch; color: color-mix(in srgb, var(--ink) 75%, transparent); font-size: .72rem; line-height: 1.5; }
+.baseline { fill: none; stroke: color-mix(in srgb, var(--ink) 27%, transparent); stroke-width: 2; }
+.plateSide { fill: var(--metal); stroke: var(--metal-edge); stroke-width: 2; }
+.plateFace { fill: var(--metal-edge); }
+.dielectric { fill: color-mix(in srgb, var(--signal) 28%, transparent); stroke: var(--signal); stroke-width: 2; }
+.charges { fill: var(--charge); font: 800 26px var(--font-physics-numeric), system-ui, sans-serif; }
+.measure, .areaMeasure { fill: none; stroke: var(--signal); stroke-width: 3; stroke-linejoin: round; }
+.measureLabel, .areaLabel { fill: var(--signal); font: 800 21px var(--font-physics-numeric), system-ui, sans-serif; }
+.dielectricLabel { fill: var(--signal); font: 800 24px var(--font-physics-numeric), system-ui, sans-serif; }
+.readout { display: grid; align-content: center; gap: .85rem; border-left: 1px solid color-mix(in srgb, var(--ink) 22%, transparent); padding-left: clamp(.75rem, 2vw, 1.35rem); }
+.readout p { display: grid; gap: .2rem; margin: 0; }
+.readout span { font-size: .75rem; line-height: 1.4; }
+.readout strong { font: 800 clamp(1rem, 2vw, 1.3rem) var(--font-physics-numeric), system-ui, sans-serif; }
+.readout .fixed strong { color: var(--charge); }
+.readout .voltage { border-top: 2px solid var(--signal); padding-top: .65rem; }
+.readout .relation { display: block; color: color-mix(in srgb, var(--ink) 80%, transparent); font-size: .78rem; }
+.readout .relation span { margin-inline: .25rem; }
+.inference, .boundary { max-width: 72ch; margin: 0; font-size: .86rem; line-height: 1.55; }
+.boundary { color: color-mix(in srgb, var(--ink) 75%, transparent); font-size: .76rem; }
+:global([data-theme="dark"]) .notebook { --ink: #e8f1f2; --paper: #111d26; --metal: #9babb3; --metal-edge: #506573; --signal: #66d5e7; --charge: #e8ae78; }
+@media (max-width: 760px) {
+  .notebook { margin-inline: -.4rem; border-radius: 1rem; }
+  .controls { grid-template-columns: 1fr; gap: .75rem; }
+  .control { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .control > span { grid-column: 1 / -1; }
+  .control button { padding-inline: .25rem; }
+  .observation { grid-template-columns: 1fr; }
+  .readout { grid-template-columns: repeat(2, minmax(0, 1fr)); border-left: 0; border-top: 1px solid color-mix(in srgb, var(--ink) 22%, transparent); padding: .75rem 0 0; }
+  .readout .voltage, .readout .relation { grid-column: 1 / -1; }
+  .readout strong { font-size: 1.05rem; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .plateSide, .plateFace, .dielectric, .areaMeasure, .measure { transition: d .18s ease, opacity .18s ease; }
+}

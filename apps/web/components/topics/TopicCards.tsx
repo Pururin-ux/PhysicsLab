@@ -4,25 +4,34 @@ import Link from "next/link";
 import { topics } from "../../lib/topics";
 
 const topicArt = {
+  measurements: "/images/mio/textbook-measurement-v1.png",
   kinematics: "/art/production/topic-kinematics-cozy.webp",
   dynamics: "/art/production/topic-dynamics.webp",
   electrodynamics: "/art/production/topic-electricity.webp",
   thermodynamics: "/art/production/topic-thermodynamics-clean-v2.webp",
   optics: "/art/production/topic-optics.webp",
+  quantum: "/images/mio/textbook-bohr-spectra-v1.webp",
 } as const;
 
 // Порядок соответствует крупным разделам школьной программы. Визуальный вес
 // у разделов одинаковый: без данных о прогрессе каталог не назначает ученику
 // «главную» тему от себя.
 const topicOrder = [
+  "measurements",
   "kinematics",
   "dynamics",
   "thermodynamics",
   "electrodynamics",
   "optics",
+  "quantum",
 ] as const;
 
 const topicPresentation = {
+  measurements: {
+    accent: "var(--mode-learn-accent)",
+    label: "var(--mode-learn-accent)",
+    imagePosition: "object-[66%_center]",
+  },
   kinematics: {
     accent: "var(--topic-kinematics-accent)",
     label: "var(--topic-kinematics-label)",
@@ -46,6 +55,11 @@ const topicPresentation = {
   optics: {
     accent: "var(--topic-optics-accent)",
     label: "var(--topic-optics-label)",
+    imagePosition: "object-center",
+  },
+  quantum: {
+    accent: "var(--action-primary)",
+    label: "var(--action-primary)",
     imagePosition: "object-center",
   },
 } as const;

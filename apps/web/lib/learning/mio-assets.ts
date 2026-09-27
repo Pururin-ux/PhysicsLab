@@ -33,6 +33,13 @@ export const MIO_SCENES = {
   path: "/images/mio/textbook-path-v1.png",
   average: "/images/mio/textbook-average-v1.png",
   acceleration: "/images/mio/textbook-acceleration-v1.png",
+  capacitorEnergy: "/images/mio/textbook-capacitor-energy-v2.webp",
+  oscillations: "/images/mio/textbook-mechanical-oscillations-v2.webp",
+  mechanicalWaves: "/images/mio/textbook-mechanical-waves-v1.webp",
+  soundWaves: "/images/mio/textbook-sound-waves-v1.webp",
+  resonance: "/images/mio/textbook-mechanical-resonance-v1.webp",
+  pendulum: "/images/mio/textbook-mathematical-pendulum-v1.webp",
+  electrolytes: "/images/mio/textbook-electrolytes-v1.webp",
 } as const;
 
 export type MioScene = keyof typeof MIO_SCENES;

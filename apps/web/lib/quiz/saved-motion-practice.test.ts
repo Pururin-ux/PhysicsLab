@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { buildSnapshot, fingerprintTasks, snapshotMatches } from "./active-session-snapshot.ts";
 import type { QuizTask } from "../../components/quiz/quiz-session-store.ts";
-import { readSavedMotionPractice, writeSavedMotionPractice, SAVED_MOTION_PRACTICE_KEY, resetSavedMotionPractice } from "./saved-motion-practice.ts";
+import { preferNewerTabSnapshotOverSaved, readSavedMotionPractice, writeSavedMotionPractice, SAVED_MOTION_PRACTICE_KEY, resetSavedMotionPractice } from "./saved-motion-practice.ts";
 import { buildExportFile, applyImport, summarizeExport } from "../stores/progress-export.ts";
 
 const snapshot = buildSnapshot({
@@ -87,4 +87,14 @@ test("changed content with the same task ID cannot receive an old answer", () =>
     topicId: snapshot.topicId, sessionKind: snapshot.sessionKind, taskIds: snapshot.taskIds, taskFingerprint: original };
   assert.ok(snapshotMatches({ ...snapshot, taskFingerprint: original }, context));
   assert.equal(snapshotMatches({ ...snapshot, taskFingerprint: original }, { ...context, taskFingerprint: changed }), false);
+});
+
+test("a newer fingerprinted tab draft takes precedence over an older durable draft", () => {
+  const tab = { ...snapshot, attemptId: "attempt-motion-0002", savedAt: 1, taskFingerprint: "v1:current" };
+  assert.equal(preferNewerTabSnapshotOverSaved(tab, snapshot, "average-speed-segments", "practice"), true);
+  assert.equal(preferNewerTabSnapshotOverSaved(tab, { ...snapshot, taskFingerprint: "v1:old" }, "average-speed-segments", "practice"), true);
+  assert.equal(preferNewerTabSnapshotOverSaved({ ...tab, savedAt: snapshot.savedAt }, snapshot, "average-speed-segments", "practice"), false);
+  assert.equal(preferNewerTabSnapshotOverSaved({ ...tab, taskFingerprint: undefined }, snapshot, "average-speed-segments", "practice"), false);
+  assert.equal(preferNewerTabSnapshotOverSaved({ ...tab, template: "other" }, snapshot, "average-speed-segments", "practice"), false);
+  assert.equal(preferNewerTabSnapshotOverSaved(tab, snapshot, "average-speed-segments", "exam"), false);
 });

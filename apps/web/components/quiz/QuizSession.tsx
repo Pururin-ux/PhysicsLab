@@ -31,6 +31,7 @@ import {
   buildSnapshot,
   fingerprintTasks,
   clearActiveQuizSnapshot,
+  clearActiveQuizSnapshotIfUnchanged,
   readActiveQuizSnapshot,
   snapshotMatches,
   writeActiveQuizSnapshot,
@@ -38,7 +39,7 @@ import {
   type QuizSessionKind,
 } from "../../lib/quiz/active-session-snapshot";
 import { newAttemptId } from "../../lib/quiz/attempt-id";
-import { isMotionPractice, readSavedMotionPractice, writeSavedMotionPractice } from "../../lib/quiz/saved-motion-practice";
+import { isMotionPractice, preferNewerTabSnapshotOverSaved, readSavedMotionPractice, writeSavedMotionPractice } from "../../lib/quiz/saved-motion-practice";
 import { integrityError } from "../../lib/quiz/quiz-load-error";
 import { Button } from "../ui/Button";
 import { getTaskFocus } from "../../lib/learning/task-focus";
@@ -70,22 +71,14 @@ interface QuizSessionProps {
   helpOpen?: boolean;
   helpButtonRef?: RefObject<HTMLButtonElement | null>;
   recoveryMode?: "auto" | "fresh";
-  freshAttemptId?: string;
   generatedCount?: GeneratedQuizCount;
   restartLabel?: string;
   nextHref?: string;
   nextLabel?: string;
+  nextConcept?: { href: string; label: string } | null;
   preAnswerGuidance?: "guided" | "unlabelled";
   summaryVariant?: "diagnostic" | "exam";
 }
-
-const nextStepByTopic: Record<string, { href: string; label: string }> = {
-  kinematics: { href: "/practice/dynamics-lesson", label: "Дальше: Динамика" },
-  dynamics: { href: "/practice/electro-lesson", label: "Дальше: Электричество" },
-  electrodynamics: { href: "/practice/density-lesson", label: "Дальше: Плотность" },
-  thermodynamics: { href: "/practice/optics-lesson", label: "Дальше: Оптика" },
-  optics: { href: "/practice/exam-demo", label: "Дальше: диагностика" },
-};
 
 const emptyTasks: QuizData["tasks"] = [];
 
@@ -100,11 +93,11 @@ export function QuizSession({
   helpOpen = false,
   helpButtonRef,
   recoveryMode = "auto",
-  freshAttemptId,
   generatedCount = 10,
   restartLabel,
   nextHref,
   nextLabel,
+  nextConcept,
   preAnswerGuidance = "guided",
   summaryVariant,
 }: QuizSessionProps) {
@@ -119,34 +112,35 @@ export function QuizSession({
   // batch=0 не выполняется (I4). Разметка первого рендера от этого не
   // зависит (всегда loading-карточка), поэтому hydration mismatch нет.
   const pendingRestoreRef = useRef<ActiveQuizSnapshot | null | undefined>(undefined);
+  const tabSnapshotPresentRef = useRef(false);
   const initializedSessionRef = useRef<string | null>(null);
   if (pendingRestoreRef.current === undefined) {
     if (typeof window === "undefined") {
       pendingRestoreRef.current = null;
     } else {
-      let result = readActiveQuizSnapshot();
-      const tabHasFutureSnapshot = !result.ok && result.reason === "future-version";
+      const tabResult = readActiveQuizSnapshot();
+      let result = tabResult;
+      tabSnapshotPresentRef.current = tabResult.ok;
+      const tabHasFutureSnapshot = !tabResult.ok && tabResult.reason === "future-version";
       if (durablePractice) {
         const saved = readSavedMotionPractice();
         savedTokenRef.current = saved.token;
         savedBlockedRef.current = !saved.result.ok && saved.result.reason !== "empty";
-        if (saved.result.ok) result = saved.result;
+        if (saved.result.ok) {
+          if (tabResult.ok && preferNewerTabSnapshotOverSaved(
+            tabResult.snapshot, saved.result.snapshot, generatedTemplate, sessionKind,
+          )) {
+            savedBlockedRef.current = true;
+          } else {
+            result = saved.result;
+          }
+        }
       }
       snapshotWriteBlockedRef.current = tabHasFutureSnapshot || (!result.ok && result.reason === "future-version");
       if (recoveryMode === "fresh") {
-        const isDiscardedAttempt =
-          result.ok &&
-          result.snapshot.attemptId === freshAttemptId &&
-          result.snapshot.template === generatedTemplate &&
-          result.snapshot.sessionKind === sessionKind;
-        // A snapshot replaced between gate rendering and the click is not the
-        // attempt the user discarded. Preserve it rather than overwriting it.
-        if (result.ok && !isDiscardedAttempt) {
-          snapshotWriteBlockedRef.current = true;
-        }
-        if (isDiscardedAttempt) {
-          clearActiveQuizSnapshot();
-        }
+        // The exam gate already discarded the exact original record. Any
+        // record visible now was written afterward and must remain untouched.
+        if (result.ok) snapshotWriteBlockedRef.current = true;
         pendingRestoreRef.current = null;
       } else {
         pendingRestoreRef.current =
@@ -168,10 +162,17 @@ export function QuizSession({
     () => pendingRestoreRef.current?.attemptId ?? newAttemptId(),
   );
   const [restoredNotice, setRestoredNotice] = useState<string | null>(null);
-  const [snapshotNotice, setSnapshotNotice] = useState<string | null>(() => savedBlockedRef.current
-    ? "Сохранённую тренировку не удалось открыть. Она оставлена без изменений; новые ответы пока сохраняются только в этой вкладке."
-    : null);
+  const [snapshotNotice, setSnapshotNotice] = useState<string | null>(() =>
+    snapshotWriteBlockedRef.current
+      ? "Есть черновик, который нельзя безопасно перезаписать. Он оставлен без изменений; новые ответы пока не сохраняются."
+      : savedBlockedRef.current
+        ? "Постоянное сохранение недоступно для этой попытки; она сохраняется только в этой вкладке."
+        : null);
   const [numericDraft, setNumericDraft] = useState<ActiveQuizSnapshot["numericDraft"]>(() => pendingRestoreRef.current?.numericDraft);
+  const [incompatibleTabSnapshot, setIncompatibleTabSnapshot] = useState<ActiveQuizSnapshot | null>(null);
+  const focusAfterNextRef = useRef<"question" | "summary" | null>(null);
+  const questionPromptRef = useRef<HTMLParagraphElement>(null);
+  const summaryHeadingRef = useRef<HTMLHeadingElement>(null);
 
   function persistSavedSnapshot(snapshot: ActiveQuizSnapshot | null) {
     if (!durablePractice || savedBlockedRef.current) return;
@@ -211,6 +212,10 @@ export function QuizSession({
   const sessionId = useMemo(
     () => (tasks.length > 0 ? `${generatedTemplate}:${generatedBatch}:${attemptId}` : null),
     [attemptId, generatedBatch, generatedTemplate, tasks.length],
+  );
+  const loadedSessionIdentity = useMemo(
+    () => (sessionId ? `${sessionId}:${fingerprintTasks(tasks)}` : null),
+    [sessionId, tasks],
   );
   const { recordSessionResult, resetRecording } = useSessionRecording({
     sessionKind,
@@ -267,7 +272,7 @@ export function QuizSession({
         topicId,
         sessionKind,
         taskIds,
-        taskFingerprint: durablePractice ? fingerprintTasks(tasks) : undefined,
+        taskFingerprint: fingerprintTasks(tasks),
       })
     ) {
       // Восстанавливаем состояние сессии без повторного начисления XP.
@@ -295,11 +300,17 @@ export function QuizSession({
 
     if (pendingRestore) {
       setNumericDraft(undefined);
-      if (!snapshotWriteBlockedRef.current) clearActiveQuizSnapshot();
+      // Keep the incompatible source, including legacy snapshots without a
+      // fingerprint. A fresh attempt must not overwrite it on the next save.
+      snapshotWriteBlockedRef.current = snapshotWriteBlockedRef.current || tabSnapshotPresentRef.current;
       if (durablePractice) {
         savedBlockedRef.current = true;
-        setSnapshotNotice("Набор задач изменился. Прежний черновик сохранён без изменений; новая тренировка пока остаётся только в этой вкладке.");
+      } else {
+        setIncompatibleTabSnapshot(pendingRestore);
       }
+      setSnapshotNotice(snapshotWriteBlockedRef.current
+        ? "Набор задач изменился или прежний черновик нельзя проверить. Прежняя запись сохранена без изменений; новая попытка пока не сохраняется."
+        : "Набор задач изменился или прежний черновик нельзя проверить. Прежнее сохранение не изменено; новая попытка сохраняется только в этой вкладке.");
     }
 
     // Fresh-старт: если attemptId был позаимствован у не совпавшего снапшота,
@@ -335,7 +346,7 @@ export function QuizSession({
       sessionKind,
       batch: generatedBatch,
       taskIds: tasks.map((task) => task.id),
-      taskFingerprint: durablePractice ? fingerprintTasks(tasks) : undefined,
+      taskFingerprint: fingerprintTasks(tasks),
       session,
       numericDraft: durablePractice && numericDraft?.taskId === tasks[session.currentIndex]?.id && session.phase !== "answered" ? numericDraft : undefined,
     });
@@ -350,6 +361,17 @@ export function QuizSession({
       onHelpTargetChange?.(currentHelpTarget);
     }
   }, [currentHelpTarget, onHelpTargetChange]);
+
+  useEffect(() => {
+    const target = focusAfterNextRef.current;
+    if (target === "question" && session.phase === "active" && questionPromptRef.current) {
+      questionPromptRef.current.focus();
+      focusAfterNextRef.current = null;
+    } else if (target === "summary" && session.phase === "completed" && summaryHeadingRef.current) {
+      summaryHeadingRef.current.focus();
+      focusAfterNextRef.current = null;
+    }
+  }, [session.phase, session.currentIndex]);
 
   // После ответа не двигаем страницу без необходимости: на desktop контекст
   // выбранного варианта важнее автоскролла, на mobile мягко подводим feedback
@@ -459,10 +481,8 @@ export function QuizSession({
       if (!snapshotWriteBlockedRef.current) clearCurrentSnapshot();
     }
 
-    const moved = moveToNextTask();
-    if (!moved) return;
-
-    if (isLastTask) return;
+    focusAfterNextRef.current = isLastTask ? "summary" : "question";
+    if (!moveToNextTask()) focusAfterNextRef.current = null;
 
   }
 
@@ -486,15 +506,48 @@ export function QuizSession({
     setRestoredNotice(null);
     clearCurrentSnapshot();
     setNumericDraft(undefined);
-    snapshotWriteBlockedRef.current = false;
     // Новая попытка получает новый идентификатор, даже если template/batch/
     // набор задач совпадут с предыдущими.
     setAttemptId(newAttemptId());
     setGeneratedBatch((current) => current + 1);
   }
 
-  // Do not mount the input with an unvalidated draft, even for one render.
-  if (tasks.length > 0 && pendingRestoreRef.current) return <QuizLoadingCard title={generatedTitle} />;
+  function handleDiscardIncompatibleTabSnapshot() {
+    if (!incompatibleTabSnapshot) return;
+    if (!clearActiveQuizSnapshotIfUnchanged(incompatibleTabSnapshot)) {
+      setSnapshotNotice("Черновик уже изменился. Его не удалили; обнови страницу, чтобы проверить сохранённую попытку.");
+      return;
+    }
+    snapshotWriteBlockedRef.current = false;
+    setIncompatibleTabSnapshot(null);
+    setSnapshotNotice(null);
+    handleRestart();
+  }
+
+  if (generatedStatus === "loading" || generatedStatus === "idle") {
+    return <QuizLoadingCard title={generatedTitle} />;
+  }
+
+  if (generatedStatus === "error") {
+    return <QuizLoadErrorCard error={generatedError ?? integrityError()} onRetry={retryGeneratedLoad} />;
+  }
+
+  // Wait for the current task batch to initialize the shared quiz store.
+  // Otherwise a completed result from another route or an older batch can
+  // flash before its own tasks are ready.
+  if (!activeData) {
+    return <QuizLoadErrorCard error={integrityError()} onRetry={retryGeneratedLoad} />;
+  }
+
+  if (tasks.length > 0 && (
+    pendingRestoreRef.current || initializedSessionRef.current !== loadedSessionIdentity
+  )) {
+    return <QuizLoadingCard title={generatedTitle} />;
+  }
+
+  if (tasks.length === 0) {
+    return <QuizLoadErrorCard error={integrityError()} onRetry={retryGeneratedLoad} />;
+  }
 
   if (session.phase === "completed") {
     const nextStep =
@@ -502,12 +555,13 @@ export function QuizSession({
         ? { href: nextHref, label: nextLabel ?? "Дальше" }
         : sessionKind === "exam"
         ? { href: "/topics", label: "К темам" }
-        : topicId
-          ? nextStepByTopic[topicId]
-          : undefined;
+        : sessionKind === "practice"
+        ? { href: "/topics", label: "Выбрать следующую тему" }
+        : undefined;
 
     return (
       <SessionSummary
+        headingRef={summaryHeadingRef}
         score={session.score}
         total={session.total}
         weakTraps={weakTraps}
@@ -521,17 +575,10 @@ export function QuizSession({
         focus={getTaskLearningMetadata(generatedTemplate)}
         nextHref={nextStep?.href}
         nextLabel={nextStep?.label}
+        nextConcept={sessionKind === "practice" && !summaryVariant ? nextConcept : null}
         variant={summaryVariant}
       />
     );
-  }
-
-  if (generatedStatus === "loading" || generatedStatus === "idle") {
-    return <QuizLoadingCard title={generatedTitle} />;
-  }
-
-  if (generatedStatus === "error" && generatedError) {
-    return <QuizLoadErrorCard error={generatedError} onRetry={retryGeneratedLoad} />;
   }
 
   // Ready, но текущей задачи нет (integrity-дыра): восстановимая ошибка
@@ -561,7 +608,7 @@ export function QuizSession({
     latestIsCorrect
       ? currentTask.coach_lines.correct
       : latestAnswer?.selectedMisconception
-        ? `Ты ${latestAnswer.selectedMisconception}.`
+        ? `Похоже, ты ${latestAnswer.selectedMisconception}.`
         : latestAnswer?.format === "numeric_input"
           ? currentTask.trap
           : currentTask.coach_lines.wrong;
@@ -588,6 +635,11 @@ export function QuizSession({
         </p>
       ) : null}
       {snapshotNotice && <p role="alert" className="rounded-option border border-[var(--border-strong)] p-3 text-sm leading-relaxed text-[var(--text-primary)]">{snapshotNotice}</p>}
+      {incompatibleTabSnapshot && (
+        <Button type="button" variant="ghost" onClick={handleDiscardIncompatibleTabSnapshot}>
+          Удалить старый черновик и начать заново
+        </Button>
+      )}
 
       <PracticeToolbar
         progressLabel={progressLabel}
@@ -601,15 +653,21 @@ export function QuizSession({
       />
 
       <QuestionCard
+        promptRef={questionPromptRef}
         type={currentTask.type}
         difficulty={currentTask.difficulty}
         text={currentTask.text}
+        scaleParams={currentTask.blueprint === "graduated-scale-reading" ? currentTask.params : undefined}
         graph={currentTask.graph}
         diagram={currentTask.diagram}
         // «Сейчас тренируем» — приминг перед ответом; после ответа его
         // работа сделана, и он лишь конкурирует с разбором за внимание.
         focus={visibleTaskFocus}
-        showSolutionContent={session.phase === "answered"}
+        // Первая ошибка ещё допускает повторную попытку: численную разность
+        // на новой мензурке не раскрываем до завершения задачи.
+        showSolutionContent={session.phase === "answered" && (
+          currentTask.diagram?.kind !== "displacement-volume" || !firstWrongAttempt
+        )}
         showMetadata={false}
       />
 

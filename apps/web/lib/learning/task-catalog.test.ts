@@ -46,6 +46,20 @@ test("task catalog entries have complete student-facing metadata and active topi
   }
 });
 
+test("measurement practice remains in the catalog without a claimed exam section", () => {
+  const measurementIds = new Set([
+    "length-unit-conversion",
+    "graduated-scale-reading",
+    "rectangular-block-volume",
+    "irregular-body-volume",
+  ]);
+  const measurements = filterTaskCatalog(catalog, "", "measurements");
+
+  assert.deepEqual(new Set(measurements.map((entry) => entry.id)), measurementIds);
+  assert.ok(measurements.every((entry) => entry.examSection === null));
+  assert.ok(catalog.filter((entry) => entry.topicId !== "measurements").every((entry) => entry.examSection !== null));
+});
+
 test("all task families keep one semantic contract across generator, reference and catalog", () => {
   const formulaEntriesBySkill = new Map(
     catalog.map((entry) => [

@@ -31,10 +31,11 @@ test("concept graph maps every registered task family exactly once", () => {
   for (const template of templateRegistry) {
     const node = getConceptNodeForTaskFamily(template.id);
     assert.ok(node, `${template.id} must resolve to a concept node`);
+    const expectedDomain = template.group;
     assert.equal(
       node.domainId,
-      template.group,
-      `${template.id} is mapped to ${node.domainId}, expected ${template.group}`,
+      expectedDomain,
+      `${template.id} is mapped to ${node.domainId}, expected ${expectedDomain}`,
     );
   }
 
@@ -113,7 +114,8 @@ test("next topic follows introductory nodes in the concept graph", () => {
   assert.equal(getNextActiveTopicId("dynamics"), "electrodynamics");
   assert.equal(getNextActiveTopicId("electrodynamics"), "thermodynamics");
   assert.equal(getNextActiveTopicId("thermodynamics"), "optics");
-  assert.equal(getNextActiveTopicId("optics"), null);
+  assert.equal(getNextActiveTopicId("optics"), "quantum");
+  assert.equal(getNextActiveTopicId("quantum"), null);
 });
 
 test("every active topic has one introductory learnable concept", () => {

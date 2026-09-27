@@ -1,0 +1,137 @@
+.notebook {
+  --electric: var(--action-primary);
+  --magnetic: #99631c;
+  display: grid;
+  gap: clamp(1.25rem, 2.5vw, 1.8rem);
+  padding: clamp(1.1rem, 3vw, 2.2rem);
+  border: 1px solid var(--border-strong);
+  background: var(--surface-primary);
+  color: var(--text-primary);
+  font-family: var(--font-manrope), system-ui, sans-serif;
+}
+
+.heading { padding-left: clamp(.65rem, 2vw, 1.6rem); border-left: 3px solid var(--electric); }
+.eyebrow, .sectionLabel, .panelHeading span {
+  margin: 0;
+  color: var(--electric);
+  font-size: .72rem;
+  font-weight: 850;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+}
+.heading h2 { max-width: 27ch; margin: .55rem 0 .7rem; font-size: clamp(1.55rem, 3vw, 2.45rem); line-height: 1.11; letter-spacing: -.035em; }
+
+.controls { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .9rem 1.5rem; }
+.choiceGroup { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .45rem; min-width: 0; margin: 0; padding: 0; border: 0; }
+.choiceGroup legend { margin-bottom: .55rem; padding: 0; color: var(--text-primary); font-size: .84rem; font-weight: 800; }
+.choiceGroup button {
+  min-height: 44px;
+  padding: .55rem .8rem;
+  border: 1px solid var(--border-strong);
+  background: var(--surface-primary);
+  color: var(--text-primary);
+  font: inherit;
+  font-size: .88rem;
+  font-weight: 740;
+  line-height: 1.25;
+  cursor: pointer;
+}
+.choiceGroup button:hover { background: var(--surface-secondary); }
+.choiceGroup button[aria-pressed="true"] { border-color: var(--electric); background: color-mix(in srgb, var(--electric) 10%, var(--surface-primary)); box-shadow: inset 0 -3px var(--electric); }
+.choiceGroup button:focus-visible { outline: 3px solid var(--electric); outline-offset: 3px; }
+.phaseGroup { grid-column: 1 / -1; grid-template-columns: repeat(5, minmax(0, 1fr)); }
+.phaseGroup button { display: grid; align-content: center; gap: .18rem; min-height: 56px; text-align: left; }
+.phaseGroup button strong { font-family: var(--font-physics-numeric), system-ui, sans-serif; font-size: 1rem; font-weight: 800; }
+.phaseGroup button small { color: var(--text-secondary); font-size: .68rem; line-height: 1.25; }
+
+.experiment { display: grid; grid-template-columns: minmax(0, 1.03fr) minmax(0, .97fr); border-block: 1px solid var(--border-strong); }
+.apparatus { min-width: 0; margin: 0; padding: 1.1rem clamp(.6rem, 2vw, 1.5rem) 1rem 0; }
+.readings { min-width: 0; padding: 1.1rem 0 1rem clamp(1rem, 2.6vw, 2rem); border-left: 1px solid var(--border-strong); }
+.panelHeading { display: grid; gap: .25rem; }
+.panelHeading strong { font-size: clamp(.95rem, 1.7vw, 1.12rem); line-height: 1.35; }
+.circuit { display: block; width: 100%; height: auto; margin: .15rem auto 0; }
+.apparatus figcaption, .graphFigure figcaption { color: var(--text-secondary); font-size: .78rem; line-height: 1.5; }
+.apparatus figcaption { max-width: 58ch; }
+
+.wire path { fill: none; stroke: var(--text-primary); stroke-width: 3.5; stroke-linecap: round; stroke-linejoin: round; }
+.wire .capacitorPlate { stroke: var(--electric); stroke-width: 5; }
+.switch circle { fill: var(--surface-primary); stroke: var(--text-primary); stroke-width: 2.5; }
+.switch path { fill: none; stroke: var(--text-primary); stroke-width: 3.5; stroke-linecap: round; }
+.componentLabel { fill: var(--text-primary); font: 800 21px var(--font-physics-numeric), system-ui, sans-serif; }
+.chargeSign { fill: var(--electric); font: 850 29px var(--font-physics-numeric), system-ui, sans-serif; }
+.neutralCharge { fill: var(--text-secondary); font: 750 23px var(--font-physics-numeric), system-ui, sans-serif; }
+.currentArrow { fill: none; stroke: var(--magnetic); stroke-width: 4; stroke-linecap: round; }
+.arrowHead { fill: var(--magnetic); }
+.currentLabel { fill: var(--magnetic); font: 800 20px var(--font-physics-numeric), system-ui, sans-serif; }
+.diagramCaption { fill: var(--text-secondary); font: 650 15px var(--font-manrope), system-ui, sans-serif; }
+
+.readingList { margin: .65rem 0 0; }
+.readingList > div { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; padding: .68rem 0; border-top: 1px solid var(--border-subtle); }
+.readingList dt { color: var(--text-secondary); font-size: .79rem; line-height: 1.4; }
+.readingList dd { flex: none; margin: 0; font-family: var(--font-physics-numeric), system-ui, sans-serif; font-size: clamp(.94rem, 1.9vw, 1.18rem); font-weight: 800; font-variant-numeric: tabular-nums; }
+.readingList dd small { color: var(--text-secondary); font-family: var(--font-manrope), system-ui, sans-serif; font-size: .68em; font-weight: 700; }
+.readingList > div:nth-child(3) dd { color: var(--electric); }
+.readingList > div:nth-child(4) dd { color: var(--magnetic); }
+.energyBalance { padding-top: .8rem; border-top: 1px solid var(--border-strong); }
+.energyLabels { display: flex; justify-content: space-between; gap: .8rem; font-size: .72rem; font-weight: 800; }
+.energyLabels span:first-child { color: var(--electric); }
+.energyLabels span:last-child { color: var(--magnetic); text-align: right; }
+.energyTrack { display: flex; width: 100%; height: 12px; margin-top: .5rem; background: var(--surface-secondary); }
+.electricFill { height: 100%; background: var(--electric); }
+.magneticFill { height: 100%; background: var(--magnetic); }
+.energyBalance p { margin: .45rem 0 0; font-size: .76rem; font-weight: 750; }
+.observation { margin: 1rem 0 0; padding-left: .8rem; border-left: 3px solid var(--magnetic); font-size: .86rem; font-weight: 650; line-height: 1.55; }
+
+.graphFigure { min-width: 0; margin: 0; }
+.graphHeader { display: flex; justify-content: space-between; align-items: end; gap: 1rem; }
+.legend { display: flex; gap: 1rem; flex: none; font-family: var(--font-physics-numeric), system-ui, sans-serif; font-size: .85rem; font-weight: 800; }
+.legend span { white-space: nowrap; }
+.legend span::before { display: inline-block; width: 1.1rem; height: 3px; margin: 0 .4rem .25rem 0; background: var(--electric); content: ""; vertical-align: middle; }
+.legend span:last-child::before { background: var(--magnetic); }
+.graph { display: block; width: 100%; height: auto; max-height: 285px; margin: .65rem auto .25rem; overflow: visible; }
+.compactGraph { display: none; }
+.graphGrid path { fill: none; stroke: var(--border-subtle); stroke-width: 1; }
+.zeroAxis { fill: none; stroke: var(--text-secondary); stroke-width: 1.3; }
+.chargeCurve, .currentCurve { fill: none; stroke-width: 3.4; stroke-linecap: round; stroke-linejoin: round; }
+.chargeCurve { stroke: var(--electric); }
+.currentCurve { stroke: var(--magnetic); }
+.phaseLine { fill: none; stroke: var(--text-primary); stroke-width: 1.6; stroke-dasharray: 4 5; }
+.chargePoint { fill: var(--electric); stroke: var(--surface-primary); stroke-width: 2; }
+.currentPoint { fill: var(--magnetic); stroke: var(--surface-primary); stroke-width: 2; }
+.graphLabels text { fill: var(--text-secondary); font: 650 14px var(--font-physics-numeric), system-ui, sans-serif; }
+.graphFigure figcaption { margin-top: .1rem; }
+
+.periodNote { display: grid; grid-template-columns: minmax(170px, .55fr) minmax(0, 1.45fr); gap: clamp(1rem, 3vw, 2rem); padding-block: 1rem; border-block: 1px solid var(--border-strong); }
+.periodNote > div:first-child { display: grid; align-content: center; gap: .4rem; }
+.periodNote output { color: var(--electric); font-family: var(--font-physics-numeric), system-ui, sans-serif; font-size: clamp(1.6rem, 3.2vw, 2.3rem); font-weight: 800; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.periodFormula { padding-left: clamp(1rem, 3vw, 2rem); border-left: 1px solid var(--border-subtle); }
+.periodFormula > span { font-size: 1.17rem; }
+.periodFormula p { max-width: 70ch; margin: .5rem 0 0; color: var(--text-secondary); font-size: .86rem; line-height: 1.55; }
+.modelLimit { margin: -.3rem 0 0; color: var(--text-secondary); font-size: .76rem; line-height: 1.5; }
+
+:global([data-theme="dark"]) .notebook { --magnetic: #f2be61; }
+
+@media (max-width: 760px) {
+  .experiment { grid-template-columns: 1fr; }
+  .apparatus { padding: 1rem 0; }
+  .readings { padding: 1rem 0; border-top: 1px solid var(--border-strong); border-left: 0; }
+  .circuit { max-width: 500px; }
+}
+
+@media (max-width: 520px) {
+  .notebook { gap: 1.15rem; padding: 1rem .85rem; }
+  .controls { grid-template-columns: 1fr; gap: .9rem; }
+  .phaseGroup { grid-column: auto; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .phaseGroup button { padding: .45rem .5rem; }
+  .phaseGroup button small { font-size: .62rem; }
+  .graphHeader { display: grid; gap: .6rem; }
+  .regularGraph { display: none; }
+  .compactGraph { display: block; max-height: none; }
+  .compactGraph .graphLabels text { font-size: 15px; }
+  .periodNote { grid-template-columns: 1fr; gap: .7rem; }
+  .periodFormula { padding-left: 0; border-left: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .notebook * { scroll-behavior: auto !important; transition: none !important; }
+}

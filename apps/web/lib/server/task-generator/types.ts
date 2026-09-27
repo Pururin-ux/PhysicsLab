@@ -1,5 +1,6 @@
 import type { AnswerFormat } from "../../answer/numeric-answer.ts";
 import type { CircuitDiagramSpec } from "../../physics/circuit-diagram-spec.ts";
+import type { DisplacementVolumeDiagramSpec } from "../../physics/displacement-volume-diagram.ts";
 import type { OpticsDiagramSpec } from "../../physics/optics-diagram-spec.ts";
 import type { VectorDiagramSpec } from "../../physics/vector-diagram-spec.ts";
 
@@ -7,11 +8,13 @@ export type Difficulty = 1 | 2 | 3;
 // Числовая семантика ответа — отдельная ось от формата ввода (answerFormat).
 export type AnswerKind = "positive" | "magnitude" | "signed";
 export type TemplateGroup =
+  | "measurements"
   | "kinematics"
   | "dynamics"
   | "electrodynamics"
   | "thermodynamics"
-  | "optics";
+  | "optics"
+  | "quantum";
 
 export type Params = Record<string, number>;
 
@@ -25,6 +28,7 @@ export interface ParamRange {
 }
 
 export interface DistractorRule {
+  // Пишется после «Похоже, ты …»; начинай с действия, а не с формы третьего лица или существительного.
   label: string;
   compute: (p: Params) => number;
 }
@@ -34,7 +38,8 @@ export interface DistractorRule {
 export type TaskDiagram =
   | { kind: "vector"; spec: VectorDiagramSpec }
   | { kind: "circuit"; spec: CircuitDiagramSpec }
-  | { kind: "optics"; spec: OpticsDiagramSpec };
+  | { kind: "optics"; spec: OpticsDiagramSpec }
+  | { kind: "displacement-volume"; spec: DisplacementVolumeDiagramSpec };
 
 export interface GraphSpec {
   type: "vt" | "xt" | "at";

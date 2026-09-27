@@ -1,4 +1,6 @@
 import { MistakesList } from "../../components/mistakes/MistakesList";
+import { textbookChapters } from "../../lib/learning/textbook";
+import { projectTextbookReviewChapter } from "../../lib/learning/textbook-review";
 
 export const metadata = {
   title: "К чему вернуться | PhysicsLab",
@@ -6,6 +8,8 @@ export const metadata = {
 };
 
 export default function MistakesPage() {
+  const textbookReviewChapters = textbookChapters.map(projectTextbookReviewChapter);
+
   return (
     <div className="mx-auto flex w-full max-w-[1120px] min-w-0 flex-col gap-7">
       <header className="flex max-w-[680px] flex-col gap-2 pt-1">
@@ -17,7 +21,7 @@ export default function MistakesPage() {
         </p>
       </header>
 
-      <MistakesList />
+      <MistakesList chapters={textbookReviewChapters} />
     </div>
   );
 }

@@ -8,6 +8,7 @@ import {
   type ReviewPlanItem,
   type ReviewUrgency,
 } from "./review-plan.ts";
+import type { ReviewResumeCandidate } from "./review-resume.ts";
 import { skillMetadata, type TopicId } from "./taxonomy.ts";
 
 export type ReviewTopicTone = "neutral" | "cyan" | "gold";
@@ -110,7 +111,7 @@ function buildRecoveryCopy(plan: ReviewPlanItem[]) {
   if (first.isPending) {
     return {
       recoveryLabel: "Есть незавершённая задача",
-      recoveryNote: `Ответ в задаче «${first.skillTitle}» уже сохранён. Можно продолжить с того же места.`,
+      recoveryNote: `Ответ в задаче «${first.skillTitle}» есть в черновике. Открой попытку, чтобы продолжить.`,
     };
   }
 
@@ -138,6 +139,7 @@ function buildRecoveryCopy(plan: ReviewPlanItem[]) {
 export function buildReviewDashboard(
   progress: AppProgress,
   now = new Date(),
+  resumeCandidates: readonly ReviewResumeCandidate[] = [],
 ): ReviewDashboard {
   const weakTraps = combineWeakTraps(progress);
   const totalWeaknesses = Object.keys(weakTraps).length;
@@ -145,7 +147,7 @@ export function buildReviewDashboard(
     (sum, count) => sum + count,
     0,
   );
-  const plan = buildReviewPlan(progress, Math.max(totalWeaknesses, 1), now);
+  const plan = buildReviewPlan(progress, Math.max(totalWeaknesses, 1), now, resumeCandidates);
   const dueToday = countByUrgency(plan, "today");
   const nextSession = countByUrgency(plan, "next-session");
   const later = countByUrgency(plan, "later");

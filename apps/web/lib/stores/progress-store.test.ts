@@ -69,7 +69,7 @@ test("progress store records completed topic sessions as aggregates", () => {
   assert.equal(typeof progress.lastPracticedAt, "string");
 });
 
-test("миграция v1 -> v6: даты, оптика, pending и evidence дополняются", () => {
+test("миграция v1 -> v7: даты, темы, pending и evidence дополняются", () => {
   const storedV1 = {
     version: 1,
     topics: {
@@ -94,10 +94,12 @@ test("миграция v1 -> v6: даты, оптика, pending и evidence д�
   assert.equal(migrated.topics.optics.solved, 0);
   assert.deepEqual(migrated.topics.optics.weakTraps, {});
   assert.deepEqual(migrated.topics.optics.skillEvidence, {});
+  assert.equal(migrated.topics.measurements.solved, 0);
+  assert.deepEqual(migrated.topics.measurements.weakTraps, {});
   assert.deepEqual(migrated.pendingMistakes, {});
 });
 
-test("миграция v2 -> v6: старые темы сохраняются, новые поля дополняются", () => {
+test("миграция v2 -> v7: старые темы сохраняются, новые поля дополняются", () => {
   const storedV2 = {
     version: 2,
     topics: {
@@ -126,7 +128,7 @@ test("миграция v2 -> v6: старые темы сохраняются, �
   assert.deepEqual(migrated.pendingMistakes, {});
 });
 
-test("миграция v3 -> v6 сохраняет темы и добавляет pendingMistakes", () => {
+test("миграция v3 -> v7 сохраняет темы и добавляет pendingMistakes", () => {
   const storedV3 = {
     version: 3,
     topics: {
@@ -160,7 +162,7 @@ test("миграция v3 -> v6 сохраняет темы и добавляе�
   assert.equal(malformed.topics.optics.solved, 0);
 });
 
-test("миграция v4 -> v6 сохраняет pendingMistake и добавляет безопасный resumeHref", () => {
+test("миграция v4 -> v7 сохраняет pendingMistake и добавляет безопасный resumeHref", () => {
   const migrated = migrateStoredProgress({
     version: 4,
     topics: {},
@@ -184,7 +186,7 @@ test("миграция v4 -> v6 сохраняет pendingMistake и добав�
   );
 });
 
-test("миграция v5 -> v6 сохраняет resumeHref и добавляет skillEvidence", () => {
+test("миграция v5 -> v7 сохраняет resumeHref и добавляет skillEvidence", () => {
   const migrated = migrateStoredProgress({
     version: 5,
     topics: {
@@ -203,6 +205,115 @@ test("миграция v5 -> v6 сохраняет resumeHref и добавля�
   assert.ok(migrated);
   assert.equal(migrated.version, PROGRESS_VERSION);
   assert.deepEqual(migrated.topics.kinematics.skillEvidence, {});
+});
+
+test("миграция v6 -> v7 переносит только точные измерительные записи, сохраняя агрегаты", () => {
+  const measuredKeys = [
+    "length-unit-conversion:направление",
+    "graduated-scale-reading:промежутки",
+    "rectangular-block-volume:третье ребро",
+  ];
+  const motionKey = "unit-conversion-speed:время";
+  const lookalikeKey = "length-unit-conversion-extra:похожий префикс";
+  const evidence = { transferPassedAt: "2026-09-25T10:00:00.000Z", delayedRecallPassedAt: null };
+  const legacy = {
+    version: 6,
+    topics: {
+      kinematics: {
+        solved: 23,
+        correct: 17,
+        completedSessions: 5,
+        weakTraps: Object.fromEntries([...measuredKeys, motionKey, lookalikeKey].map((key) => [key, 1])),
+        weakTrapLastSeenAt: Object.fromEntries([...measuredKeys, motionKey, lookalikeKey].map((key) => [key, "2026-09-25T10:00:00.000Z"])),
+        skillEvidence: {
+          "length-unit-conversion": evidence,
+          "graduated-scale-reading": evidence,
+          "rectangular-block-volume": evidence,
+          "unit-conversion-speed": evidence,
+          "length-unit-conversion-extra": evidence,
+        },
+        lastPracticedAt: "2026-09-25T10:00:00.000Z",
+      },
+    },
+    pendingMistakes: {
+      "old::length": {
+        sessionId: "old",
+        taskId: "length",
+        topicId: "kinematics",
+        blueprint: "length-unit-conversion",
+        misconception: "направление",
+        recordedAt: "2026-09-25T10:00:00.000Z",
+        resumeHref: "/practice/family/length-unit-conversion",
+      },
+      "old::motion": {
+        sessionId: "old",
+        taskId: "motion",
+        topicId: "kinematics",
+        blueprint: "unit-conversion-speed",
+        misconception: "время",
+        recordedAt: "2026-09-25T10:00:00.000Z",
+        resumeHref: "/practice/kinematics-demo",
+      },
+    },
+  };
+
+  const migrated = migrateStoredProgress(legacy);
+  assert.ok(migrated);
+  assert.equal(migrated.version, PROGRESS_VERSION);
+  assert.equal(migrated.legacyKinematicsTotalsMayIncludeMeasurements, true);
+  assert.deepEqual(
+    [migrated.topics.kinematics.solved, migrated.topics.kinematics.correct, migrated.topics.kinematics.completedSessions, migrated.topics.kinematics.lastPracticedAt],
+    [23, 17, 5, "2026-09-25T10:00:00.000Z"],
+  );
+  assert.deepEqual(
+    [migrated.topics.measurements.solved, migrated.topics.measurements.correct, migrated.topics.measurements.completedSessions, migrated.topics.measurements.lastPracticedAt],
+    [0, 0, 0, null],
+  );
+  for (const key of measuredKeys) {
+    assert.equal(migrated.topics.measurements.weakTraps[key], 1);
+    assert.equal(migrated.topics.measurements.weakTrapLastSeenAt[key], "2026-09-25T10:00:00.000Z");
+    assert.equal(migrated.topics.kinematics.weakTraps[key], undefined);
+    assert.equal(migrated.topics.kinematics.weakTrapLastSeenAt[key], undefined);
+  }
+  for (const blueprint of ["length-unit-conversion", "graduated-scale-reading", "rectangular-block-volume"]) {
+    assert.deepEqual(migrated.topics.measurements.skillEvidence[blueprint], evidence);
+    assert.equal(migrated.topics.kinematics.skillEvidence[blueprint], undefined);
+  }
+  for (const key of [motionKey, lookalikeKey]) {
+    assert.equal(migrated.topics.kinematics.weakTraps[key], 1);
+    assert.equal(migrated.topics.kinematics.weakTrapLastSeenAt[key], "2026-09-25T10:00:00.000Z");
+    assert.equal(migrated.topics.measurements.weakTraps[key], undefined);
+  }
+  assert.deepEqual(migrated.topics.kinematics.skillEvidence["unit-conversion-speed"], evidence);
+  assert.deepEqual(migrated.topics.kinematics.skillEvidence["length-unit-conversion-extra"], evidence);
+  assert.equal(migrated.pendingMistakes["old::length"].topicId, "measurements");
+  assert.equal(migrated.pendingMistakes["old::motion"].topicId, "kinematics");
+  assert.deepEqual(migrateStoredProgress(migrated), migrated);
+
+  $appProgress.set(migrated);
+  recordCompletedSession({
+    topicId: "measurements",
+    score: 1,
+    total: 1,
+    answers: [{
+      format: "single_choice",
+      taskId: "new-length-task",
+      response: { kind: "single_choice", optionId: "correct" },
+      selectedOptionId: "correct",
+      correctOptionId: "correct",
+      isCorrect: true,
+      attempt: 1,
+      blueprint: "length-unit-conversion",
+      taskTrap: "",
+    }],
+    sessionId: "new-session",
+  });
+  assert.equal($appProgress.get().pendingMistakes["old::length"], undefined);
+  assert.equal($appProgress.get().topics.measurements.weakTraps[measuredKeys[0]], 2);
+  assert.equal($appProgress.get().topics.measurements.solved, 1);
+  assert.equal($appProgress.get().topics.kinematics.solved, 23);
+  assert.equal($appProgress.get().legacyKinematicsTotalsMayIncludeMeasurements, true);
+  resetProgress();
 });
 
 test("unlabelled transfer требует first try и повтор через 24 часа", () => {

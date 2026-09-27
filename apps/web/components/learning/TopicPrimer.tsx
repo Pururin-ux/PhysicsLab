@@ -430,7 +430,7 @@ export function TopicPrimer({ config, className }: TopicPrimerProps) {
         <p className={styles.eyebrow}>
           {eyebrow ?? TOPIC_PRIMER_STAGES[stage].label}
         </p>
-        <h3 data-lesson-stage-heading tabIndex={-1}>{title}</h3>
+        <h2 data-lesson-stage-heading tabIndex={-1}>{title}</h2>
         {body ? <div className={styles.lead}>{body}</div> : null}
       </div>
     );
@@ -618,7 +618,10 @@ export function TopicPrimer({ config, className }: TopicPrimerProps) {
     const current = config.transfer;
     return (
       <div className={styles.summaryStage}>
-        {stageHeading("Итог", "Что осталось главным?", "Запиши связь своими словами — так будет проще узнать её в следующей задаче.")}
+        {stageHeading("Итог", "Что осталось главным?", "Если хочешь сохранить объяснение для себя, запиши связь своими словами. К задачам можно перейти и без записи.")}
+        <div className={styles.practiceFinish}>
+          <Link className={styles.practiceLink} href={current.practiceHref}>{current.practiceLabel}</Link>
+        </div>
         <label className={styles.selfPrompt} htmlFor={`${id}-summary`}>
           Объяснение для себя
         </label>
@@ -657,14 +660,13 @@ export function TopicPrimer({ config, className }: TopicPrimerProps) {
           Сохранить итог
         </button>
         {summaryTried && !summaryReady ? (
-          <p className={styles.summaryError} role="alert">Добавь ещё немного слов — хотя бы одну законченную мысль.</p>
+          <p className={styles.summaryError} role="alert">Чтобы сохранить итог, добавь ещё немного слов — хотя бы одну законченную мысль.</p>
         ) : null}
         {summarySaved && !lessonDraft.error ? (
           <div className={styles.practiceFinish}>
             <p>Итог сохранён в этом браузере. Это твоя запись, а не автоматическая оценка объяснения.</p>
             <p>{current.completionText ?? "Итог сохранён в этом браузере. Можно потренироваться ещё."}</p>
             <Link className={styles.practiceLink} href="/profile/notebook">Открыть свою тетрадь</Link>
-            <Link className={styles.practiceLink} href={current.practiceHref}>{current.practiceLabel}</Link>
           </div>
         ) : null}
       </div>
@@ -678,7 +680,7 @@ export function TopicPrimer({ config, className }: TopicPrimerProps) {
       identity={
         <div className={styles.identity}>
           <p>{config.topic}</p>
-          <h2 id={`${id}-title`}>{config.title}</h2>
+          <h1 id={`${id}-title`}>{config.title}</h1>
           {config.meta ? <span>{config.meta}</span> : null}
         </div>
       }

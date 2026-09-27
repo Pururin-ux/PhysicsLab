@@ -22,9 +22,9 @@ function relativeHumidity(params: Params): number {
 }
 
 const distractors: DistractorRule[] = [
-  { label: "увеличивает отношение на десять процентных пунктов", compute: p => p.phi + 10 },
-  { label: "уменьшает отношение на десять процентных пунктов", compute: p => p.phi - 10 },
-  { label: "делит найденную долю ещё раз пополам", compute: p => p.phi / 2 },
+  { label: "увеличиваешь отношение на десять процентных пунктов", compute: p => p.phi + 10 },
+  { label: "уменьшаешь отношение на десять процентных пунктов", compute: p => p.phi - 10 },
+  { label: "делишь найденную долю ещё раз пополам", compute: p => p.phi / 2 },
 ];
 
 export const relativeHumidityPressureBlueprint: TaskBlueprint = {

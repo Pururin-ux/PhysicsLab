@@ -3,15 +3,26 @@ import test from "node:test";
 import { templateRegistry } from "../server/task-generator/generate.ts";
 import { buildCoverageSections, EXAM_PROGRAM_SOURCE } from "./coverage.ts";
 
-test("coverage map accounts for every generated family exactly once", () => {
+test("exam coverage accounts for eligible families and explicitly excludes measurements", () => {
   const familyIds = templateRegistry.map((template) => template.id);
   const coverage = buildCoverageSections(familyIds);
   const coveredFamilyIds = coverage.flatMap((section) => section.familyIds);
+  const unverifiedExamFamilies = new Set<string>([
+    "length-unit-conversion",
+    "graduated-scale-reading",
+    "rectangular-block-volume",
+    "irregular-body-volume",
+  ]);
 
   assert.equal(coverage.length, 6);
-  assert.equal(coveredFamilyIds.length, familyIds.length);
-  assert.deepEqual(new Set(coveredFamilyIds), new Set(familyIds));
-  assert.equal(new Set(coveredFamilyIds).size, familyIds.length);
+  assert.deepEqual(
+    new Set(templateRegistry.filter((template) => template.group === "measurements").map((template) => template.id)),
+    unverifiedExamFamilies,
+  );
+  assert.equal(coveredFamilyIds.length + unverifiedExamFamilies.size, familyIds.length);
+  assert.deepEqual(new Set([...coveredFamilyIds, ...unverifiedExamFamilies]), new Set(familyIds));
+  assert.equal(new Set(coveredFamilyIds).size, coveredFamilyIds.length);
+  assert.ok(coveredFamilyIds.every((familyId) => !unverifiedExamFamilies.has(familyId)));
 });
 
 test("coverage map remains explicit about partial and absent sections", () => {
@@ -22,8 +33,8 @@ test("coverage map remains explicit about partial and absent sections", () => {
 
   assert.equal(mechanics?.status, "partial");
   assert.ok((mechanics?.familyCount ?? 0) > 0);
-  assert.equal(quantum?.status, "not-covered");
-  assert.equal(quantum?.familyCount, 0);
+  assert.equal(quantum?.status, "partial");
+  assert.equal(quantum?.familyCount, 1);
   assert.equal(atomic?.status, "not-covered");
   assert.equal(atomic?.familyCount, 0);
   assert.ok(coverage.every((section) => section.knownGaps.length > 0));
@@ -34,11 +45,13 @@ test("coverage map remains explicit about partial and absent sections", () => {
     })).sort((a,b)=>a.id.localeCompare(b.id)),
     [
       { id: "family:density-volume-ratio", familyCount: 1 },
-      { id: "topic:dynamics", familyCount: 18 },
-      { id: "topic:kinematics", familyCount: 9 },
+      { id: "topic:dynamics", familyCount: 30 },
+      { id: "topic:kinematics", familyCount: 13 },
     ],
   );
-  assert.deepEqual(quantum?.catalogDestinations, []);
+  assert.deepEqual(quantum?.catalogDestinations, [
+    { id: "topic:quantum", label: "Физика атома", href: "/tasks?topic=quantum", familyCount: 1 },
+  ]);
   assert.deepEqual(atomic?.catalogDestinations, []);
 });
 
@@ -66,4 +79,6 @@ test("coverage status follows the actual available catalog",()=>{
   assert.ok(buildCoverageSections([]).every(section=>section.status==="not-covered"&&section.familyCount===0));
   const onlyPressure=buildCoverageSections(["contact-pressure"]);
   assert.deepEqual(onlyPressure.filter(section=>section.status==="partial").map(section=>section.id),["mechanics"]);
+  const onlyMeasurements = buildCoverageSections(["length-unit-conversion", "graduated-scale-reading", "rectangular-block-volume", "irregular-body-volume"]);
+  assert.ok(onlyMeasurements.every((section) => section.status === "not-covered" && section.familyCount === 0));
 });

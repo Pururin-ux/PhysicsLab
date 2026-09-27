@@ -1,6 +1,7 @@
 import { atom } from "nanostores";
 import type { OptionState } from "./OptionItem";
 import type { CircuitDiagramSpec } from "../../lib/physics/circuit-diagram-spec";
+import type { DisplacementVolumeDiagramSpec } from "../../lib/physics/displacement-volume-diagram";
 import type { OpticsDiagramSpec } from "../../lib/physics/optics-diagram-spec";
 import type { VectorDiagramSpec } from "../../lib/physics/vector-diagram-spec";
 import {
@@ -33,12 +34,14 @@ export type QuizGraph = {
 export type QuizDiagram =
   | { kind: "vector"; spec: VectorDiagramSpec }
   | { kind: "circuit"; spec: CircuitDiagramSpec }
-  | { kind: "optics"; spec: OpticsDiagramSpec };
+  | { kind: "optics"; spec: OpticsDiagramSpec }
+  | { kind: "displacement-volume"; spec: DisplacementVolumeDiagramSpec };
 
 // Общая часть задачи, не зависящая от формата ответа.
 type QuizTaskBase = {
   id: string;
   blueprint: string;
+  params?: Record<string, number>;
   skill?: string;
   difficulty: 1 | 2 | 3;
   text: string;

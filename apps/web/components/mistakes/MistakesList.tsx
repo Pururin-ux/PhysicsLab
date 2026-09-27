@@ -5,11 +5,12 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { buildReviewDashboard } from "../../lib/learning/review-intelligence";
 import type { ReviewPlanItem } from "../../lib/learning/review-plan";
+import { readReviewResumeCandidates, type ReviewResumeCandidate } from "../../lib/learning/review-resume";
 import { getLearningDestination } from "../../lib/learning/learning-links";
 import { lessonDraftExportCodecs, readLessonDraft } from "../../lib/learning/lesson-draft";
-import { textbookChapters } from "../../lib/learning/textbook";
 import {
   buildTextbookReviewItem,
+  type TextbookReviewChapter,
   type TextbookReviewItem,
 } from "../../lib/learning/textbook-review";
 import { $appProgress } from "../../lib/stores/progress-store";
@@ -53,7 +54,7 @@ function ReviewActions({
     return (
       <div className="flex flex-col items-stretch gap-2 sm:items-start">
         <Button asChild className={prominent ? "w-full sm:w-auto" : undefined}>
-          <Link href={practiceHref}>Продолжить задачу</Link>
+          <Link href={practiceHref}>Открыть попытку</Link>
         </Button>
         {explanation ? (
           <Link
@@ -194,16 +195,21 @@ function TextbookReviewCard({ item }: { item: TextbookReviewItem }) {
   );
 }
 
-export function MistakesList() {
+export function MistakesList({ chapters }: { chapters: TextbookReviewChapter[] }) {
   const progress = useStore($appProgress);
-  const dashboard = useMemo(() => buildReviewDashboard(progress), [progress]);
+  const [resumeCandidates, setResumeCandidates] = useState<ReviewResumeCandidate[]>([]);
+  const dashboard = useMemo(
+    () => buildReviewDashboard(progress, new Date(), resumeCandidates),
+    [progress, resumeCandidates],
+  );
   const [mounted, setMounted] = useState(false);
   const [textbookReview, setTextbookReview] = useState<TextbookReviewItem[] | null>(null);
 
   useEffect(() => {
     setMounted(true);
-    const refreshTextbookReview = () => {
-      const items = textbookChapters.flatMap((chapter) => {
+    const refreshReview = () => {
+      setResumeCandidates(readReviewResumeCandidates());
+      const items = chapters.flatMap((chapter) => {
         const codec = lessonDraftExportCodecs.find(
           (item) => item.key === `physicslab-lesson-draft-textbook-check-${chapter.id}`,
         );
@@ -216,16 +222,16 @@ export function MistakesList() {
       setTextbookReview(items.slice(0, MAX_TEXTBOOK_REVIEW_ITEMS));
     };
 
-    refreshTextbookReview();
-    window.addEventListener("storage", refreshTextbookReview);
-    window.addEventListener("focus", refreshTextbookReview);
-    window.addEventListener("pageshow", refreshTextbookReview);
+    refreshReview();
+    window.addEventListener("storage", refreshReview);
+    window.addEventListener("focus", refreshReview);
+    window.addEventListener("pageshow", refreshReview);
     return () => {
-      window.removeEventListener("storage", refreshTextbookReview);
-      window.removeEventListener("focus", refreshTextbookReview);
-      window.removeEventListener("pageshow", refreshTextbookReview);
+      window.removeEventListener("storage", refreshReview);
+      window.removeEventListener("focus", refreshReview);
+      window.removeEventListener("pageshow", refreshReview);
     };
-  }, []);
+  }, [chapters]);
 
   if (!mounted || textbookReview === null) {
     return <ReviewLoadingState />;
@@ -255,7 +261,7 @@ export function MistakesList() {
           <div className="min-w-0 max-w-[720px]">
             <div className="flex flex-wrap items-center gap-3">
               <Badge tone={primaryAction.isPending ? "cyan" : "blue"}>
-                {primaryAction.isPending ? "Ответ сохранён" : "Начать отсюда"}
+                {primaryAction.isPending ? "Ответ в черновике" : "Начать отсюда"}
               </Badge>
               {repeated ? (
                 <span className="text-[12px] font-semibold text-white/58">{repeated}</span>
@@ -266,7 +272,7 @@ export function MistakesList() {
             </h2>
             <p className="mt-3 max-w-[660px] text-[14px] leading-[1.7] text-white/68">
               {primaryAction.isPending ? (
-                "Условие и ответ сохранились. Можно продолжить с того же места."
+                "Ответ найден в черновике. Открой попытку, чтобы продолжить."
               ) : (
                 <MathText text={primaryAction.hint} />
               )}

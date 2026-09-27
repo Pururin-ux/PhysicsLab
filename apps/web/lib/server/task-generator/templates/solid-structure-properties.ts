@@ -40,7 +40,7 @@ function answerFor(): number {
 
 function shiftedAnswer(offset: number): DistractorRule {
   return {
-    label: `выбран неверный вывод о строении твёрдого тела ${offset}`,
+    label: `выбираешь неверный вывод о строении твёрдого тела (${offset})`,
     compute: () => offset + 1,
   };
 }

@@ -72,6 +72,8 @@ export function useGeneratedQuizData({
   // retry() повторяет ТОТ ЖЕ template/count/batch: меняется только attempt.
   // Новый batch создают только явные Restart / «Ещё 10 задач» / «Новый вариант».
   const [attempt, setAttempt] = useState(0);
+  const requestKey = JSON.stringify([enabled, template, topic, title, batch, count, attempt]);
+  const [stateKey, setStateKey] = useState(requestKey);
   // Поколение запроса: устаревший ответ (смена template/batch/attempt или
   // unmount) не имеет права перезаписать состояние нового запроса.
   const generationRef = useRef(0);
@@ -82,6 +84,7 @@ export function useGeneratedQuizData({
 
   useEffect(() => {
     if (!enabled) {
+      setStateKey(requestKey);
       setData(null);
       setStatus("idle");
       setError(null);
@@ -106,6 +109,7 @@ export function useGeneratedQuizData({
     }
 
     async function loadGeneratedTasks() {
+      setStateKey(requestKey);
       setData(null);
       setStatus("loading");
       setError(null);
@@ -181,7 +185,11 @@ export function useGeneratedQuizData({
       clearTimeout(timer);
       controller.abort();
     };
-  }, [attempt, batch, count, enabled, template, title, topic]);
+  }, [attempt, batch, count, enabled, requestKey, template, title, topic]);
 
-  return { data, error, status, retry };
+  // A changed template, batch or retry must never expose the previous
+  // request's tasks, error, or ready state during the render before this effect.
+  return stateKey === requestKey
+    ? { data, error, status, retry }
+    : { data: null, error: null, status: enabled ? "loading" as const : "idle" as const, retry };
 }

@@ -7,7 +7,8 @@ export type ExamSectionId =
   | "mechanics"
   | "mkt-thermodynamics"
   | "electrodynamics"
-  | "optics-srt";
+  | "optics-srt"
+  | "quantum";
 
 export type TaskVisualKind = "graph" | "diagram";
 
@@ -18,7 +19,8 @@ export type TaskTypeCatalogEntry = {
   shortDescription: string;
   topicId: TopicId;
   topicLabel: string;
-  examSection: ExamSectionId;
+  // null means no CE/CT section has been verified for this practice family.
+  examSection: ExamSectionId | null;
   skillLabel: string;
   searchTerms: string[];
   formulaAliases: string[];

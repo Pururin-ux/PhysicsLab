@@ -20,7 +20,7 @@ function answerFor(params: Params): number {
 
 function otherAnswer(offset: number): DistractorRule {
   return {
-    label: `другая модель тени ${offset}`,
+    label: `выбираешь другую модель тени (${offset})`,
     compute: params => ((answerFor(params) - 1 + offset) % 4) + 1,
   };
 }

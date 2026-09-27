@@ -1,0 +1,174 @@
+.figure {
+  display: grid;
+  gap: 4px;
+  width: min(100%, 360px);
+  min-width: 0;
+  margin: 0 auto;
+  padding: 4px;
+}
+
+.diagram {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.water {
+  fill: color-mix(in srgb, var(--action-primary) 19%, transparent);
+}
+
+.rise {
+  fill: color-mix(in srgb, var(--action-primary) 14%, transparent);
+}
+
+.glass,
+.rim,
+.base {
+  fill: none;
+  stroke: var(--text-primary);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.rim {
+  stroke-width: 2.5;
+}
+
+.glassHighlight {
+  fill: none;
+  stroke: var(--surface-primary);
+  stroke-width: 3;
+  stroke-linecap: round;
+  opacity: .85;
+}
+
+.stone {
+  fill: color-mix(in srgb, var(--text-primary) 48%, var(--surface-primary));
+  stroke: var(--text-primary);
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+}
+
+.stoneDetail {
+  fill: none;
+  stroke: var(--surface-primary);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+}
+
+.meniscus {
+  fill: none;
+  stroke: var(--action-primary);
+  stroke-width: 2.6;
+  stroke-linecap: round;
+}
+
+.previousLevel {
+  fill: none;
+  stroke: var(--text-secondary);
+  stroke-width: 2;
+  stroke-dasharray: 5 4;
+}
+
+.readingPoint {
+  fill: var(--action-primary);
+}
+
+.bracket {
+  fill: none;
+  stroke: var(--action-primary);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+}
+
+.rail {
+  fill: none;
+  stroke: var(--border-strong);
+  stroke-width: 1.4;
+}
+
+.majorTick,
+.minorTick {
+  fill: none;
+  stroke: var(--text-primary);
+  stroke-width: 1.6;
+}
+
+.minorTick {
+  stroke: var(--text-secondary);
+  stroke-width: 1;
+}
+
+.apparatusLabel,
+.unitLabel,
+.tickLabel {
+  fill: var(--text-primary);
+  font-family: inherit;
+}
+
+.apparatusLabel {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .07em;
+}
+
+.unitLabel {
+  fill: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.tickLabel {
+  font-size: 14px;
+  font-weight: 750;
+  font-variant-numeric: tabular-nums;
+}
+
+.caption {
+  display: grid;
+  gap: 3px;
+  padding: 0 6px 4px;
+  color: var(--text-secondary);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.reading {
+  display: grid;
+  grid-template-columns: 15px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.reading strong {
+  color: var(--text-primary);
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.previousKey,
+.finalKey {
+  width: 15px;
+  border-top: 2px solid var(--text-secondary);
+}
+
+.previousKey {
+  border-top-style: dashed;
+}
+
+.finalKey {
+  border-top-color: var(--action-primary);
+}
+
+.difference {
+  margin: 6px 0 0;
+  padding-top: 8px;
+  border-top: 1px solid var(--border-subtle);
+  color: var(--action-primary);
+  font-size: 14px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}

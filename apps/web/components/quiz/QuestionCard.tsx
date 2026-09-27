@@ -1,24 +1,29 @@
+import dynamic from "next/dynamic";
+import type { Ref } from "react";
 import { Badge } from "../ui/Badge";
 import { Card } from "../ui/Card";
-import { MathText } from "../ui/MathText";
-import { ModelVisual } from "../theory/ModelVisual";
-import { VectorDiagram } from "../diagrams/VectorDiagram";
-import { CircuitDiagram } from "../diagrams/CircuitDiagram";
-import { OpticsDiagram } from "../diagrams/OpticsDiagram";
 import { cn } from "../../lib/utils";
 import type { TaskFocus } from "../../lib/learning/task-focus";
+import { getGraduatedScaleTask } from "../../lib/physics/graduated-scale-task";
 import type { QuizDiagram, QuizGraph } from "./quiz-session-store";
+
+const QuestionVisual = dynamic(
+  () => import("./QuestionVisual").then(module => module.QuestionVisual),
+  { loading: () => <p role="status" className="text-sm leading-relaxed text-[var(--text-secondary)]">Загружаю визуализацию задачи…</p> },
+);
 
 interface QuestionCardProps {
   type: string;
   difficulty: 1 | 2 | 3;
   text: string;
+  scaleParams?: Record<string, number>;
   graph?: QuizGraph | null;
   diagram?: QuizDiagram | null;
   focus?: TaskFocus;
   showSolutionContent?: boolean;
   showMetadata?: boolean;
   className?: string;
+  promptRef?: Ref<HTMLParagraphElement>;
 }
 
 const difficultyLabels: Record<QuestionCardProps["difficulty"], string> = {
@@ -36,33 +41,16 @@ export function QuestionCard({
   type,
   difficulty,
   text,
+  scaleParams,
   graph,
   diagram,
   focus,
   showSolutionContent = false,
   showMetadata = true,
   className,
+  promptRef,
 }: QuestionCardProps) {
-  const graphConfig = graph
-    ? {
-        ...graph,
-        color: graph.color ?? "cyan",
-      }
-    : null;
-  const graphTitle =
-    graph?.type === "vt"
-      ? "График v(t)"
-      : graph?.type === "xt"
-        ? graph.yLabel.trim().toLowerCase().startsWith("s")
-          ? "График s(t)"
-          : "График x(t)"
-        : "График a(t)";
-  const showArea = graph?.showArea ?? (graph?.type === "vt" && graph.series.length > 2);
-  const visualActivityLabel = diagram
-    ? "Работа с диаграммой"
-    : graphConfig
-      ? "Работа с графиком"
-      : null;
+  const scale = scaleParams ? getGraduatedScaleTask(scaleParams) : null;
 
   return (
     <Card
@@ -76,50 +64,20 @@ export function QuestionCard({
         </div>
       ) : null}
 
-      <p className="text-[15px] font-normal leading-[1.75] text-[var(--text-primary)]/88 md:text-[16px]">
-        {text}
+      <p ref={promptRef} tabIndex={-1} className="text-[15px] font-normal leading-[1.75] text-[var(--text-primary)]/88 md:text-[16px]">
+        {scale ? "Какой объём воды показывает мензурка? Ответ дай в миллилитрах." : text}
       </p>
 
-      {/* «Физика, которую можно увидеть»: визуализация — герой задачи. Она
-          лежит на отдельной тёмной поверхности-верстаке с тёплой подсветкой
-          снизу, а не втиснута в общий поток текста. */}
-      {diagram?.kind === "vector" ? (
-        <div className="physics-stage">
-          <VectorDiagram spec={diagram.spec} />
-        </div>
-      ) : null}
-      {diagram?.kind === "circuit" ? (
-        <div className="physics-stage">
-          <CircuitDiagram spec={diagram.spec} />
-        </div>
-      ) : null}
-      {diagram?.kind === "optics" ? (
-        <div className="physics-stage">
-          {/* Решение (отражённый луч, изображение) появляется только после
-              ответа — до этого его нет ни в DOM, ни в accessibility tree. */}
-          <OpticsDiagram spec={diagram.spec} showSolution={showSolutionContent} />
-        </div>
-      ) : null}
-
-      {graphConfig ? (
-        <div className="physics-stage">
-          <ModelVisual
-            config={graphConfig}
-            title={graphTitle}
-            framed={false}
-            compact
-            showArea={showArea}
-          />
-        </div>
-      ) : null}
-
-      {/* Подсказка к визуализации — тихая строка с тёплой кромкой, без
-          капслочного ярлыка: он дублировал то, что и так видно на сцене. */}
-      {visualActivityLabel && focus?.visualPrompt && !showSolutionContent ? (
-        <p className="border-l-2 border-[var(--ambient-warm)]/40 pl-3.5 text-[13px] leading-[1.65] text-[var(--text-secondary)]">
-          <MathText text={focus.visualPrompt} />
-        </p>
-      ) : null}
+      {(scale || diagram || graph) && (
+        <QuestionVisual
+          scale={scale}
+          text={text}
+          diagram={diagram}
+          graph={graph}
+          focus={focus}
+          showSolutionContent={showSolutionContent}
+        />
+      )}
 
     </Card>
   );

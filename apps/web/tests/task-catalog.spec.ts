@@ -308,6 +308,52 @@ test("focused drill восстанавливает correction и restart зап�
   expect(restartedSnapshot!.attemptId).not.toBe(previousAttemptId);
 });
 
+test("после итога ошибка нового набора показывает retry без старого результата", async ({ page, request }) => {
+  test.skip(test.info().project.name !== "desktop", "Один целевой сценарий состояния.");
+
+  const family = "length-unit-conversion";
+  const firstTasks = await fetchFamilyTasks(request, family, 0);
+  const nextTasks = await fetchFamilyTasks(request, family, 1);
+  const requestedBatches: number[] = [];
+  let nextBatchCalls = 0;
+  let releaseFailure!: () => void;
+  const failureGate = new Promise<void>((resolve) => { releaseFailure = resolve; });
+
+  await page.route("**/api/tasks?*", async (route) => {
+    const url = new URL(route.request().url());
+    if (url.searchParams.get("template") !== family) return route.continue();
+    const batch = Number(url.searchParams.get("batch"));
+    requestedBatches.push(batch);
+    if (batch === 1 && ++nextBatchCalls === 1) {
+      await failureGate;
+      return route.fulfill({ status: 503, contentType: "application/json", body: "{}" });
+    }
+    return route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({ tasks: batch === 0 ? firstTasks : nextTasks }),
+    });
+  });
+
+  await page.goto(`/practice/family/${family}`, { waitUntil: "domcontentloaded" });
+  for (const task of firstTasks) {
+    await answerCorrectly(page, task);
+    await page.getByTestId("next-task-button").click();
+  }
+  await expect(page.getByText("Итог тренировки", { exact: true })).toBeVisible();
+
+  await page.getByRole("button", { name: "Ещё 5 задач" }).click();
+  await expect(page.getByTestId("quiz-loading-card")).toBeVisible();
+  await expect(page.getByText("Итог тренировки", { exact: true })).toHaveCount(0);
+  releaseFailure();
+  await expect(page.getByTestId("quiz-load-error-card")).toBeVisible();
+  await expect(page.getByText("Итог тренировки", { exact: true })).toHaveCount(0);
+
+  await page.getByTestId("quiz-load-retry").click();
+  await expect(page.getByTestId("practice-progress")).toHaveText("Задание 1 из 5");
+  expect(requestedBatches).toEqual([0, 1, 1]);
+});
+
 test("topic и mixed training сохраняют стандартные 10 задач", async ({ page }) => {
   test.skip(test.info().project.name !== "desktop", "Контракт count проверяется один раз.");
 

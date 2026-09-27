@@ -1,0 +1,103 @@
+.notebook {
+  --induction: var(--action-primary);
+  --signal: #aa6638;
+  display: grid;
+  gap: clamp(1.15rem, 2.7vw, 1.8rem);
+  padding: clamp(1rem, 3vw, 2rem);
+  border: 1px solid var(--border-strong);
+  background: var(--surface-primary);
+  color: var(--text-primary);
+  font-family: var(--font-manrope), system-ui, sans-serif;
+}
+
+.heading { max-width: 67ch; padding-left: clamp(.7rem, 2vw, 1.3rem); border-left: 3px solid var(--induction); }
+.eyebrow { color: var(--induction); font-size: .72rem; font-weight: 850; letter-spacing: .09em; text-transform: uppercase; }
+.heading h2 { margin: .55rem 0 .6rem; font-size: clamp(1.55rem, 3vw, 2.25rem); line-height: 1.14; letter-spacing: -.035em; }
+.heading p { margin: 0; color: var(--text-secondary); font-size: .91rem; line-height: 1.55; }
+
+.controls { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem 1.5rem; }
+.controls fieldset { min-width: 0; margin: 0; padding: 0; border: 0; }
+.controls fieldset:last-child { grid-column: 1 / -1; }
+.controls legend { margin-bottom: .52rem; padding: 0; font-size: .84rem; font-weight: 800; }
+.choices { display: flex; flex-wrap: wrap; gap: .45rem; }
+.choices button {
+  min-height: 44px;
+  min-width: 5.6rem;
+  padding: .58rem .8rem;
+  border: 1px solid var(--border-strong);
+  border-radius: .38rem;
+  background: var(--surface-primary);
+  color: var(--text-primary);
+  font: inherit;
+  font-size: .84rem;
+  font-weight: 750;
+  cursor: pointer;
+}
+.choices button:hover { background: var(--surface-secondary); }
+.choices button[aria-pressed="true"] { border-color: var(--induction); background: color-mix(in srgb, var(--induction) 10%, var(--surface-primary)); box-shadow: inset 0 -3px var(--induction); }
+.choices button:focus-visible { outline: 3px solid var(--induction); outline-offset: 3px; }
+
+.experiment { display: grid; border-block: 1px solid var(--border-strong); }
+.figure { min-width: 0; margin: 0; padding: 1.1rem 0; overflow: clip; }
+.apparatus { display: block; width: 100%; max-width: 720px; height: auto; margin-inline: auto; overflow: hidden; }
+.compactApparatus { display: none; }
+.figure figcaption { max-width: 57ch; margin-top: .35rem; color: var(--text-secondary); font-size: .76rem; line-height: 1.5; }
+.evidence { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; gap: .8rem 1.5rem; min-width: 0; padding: 1rem 0 1.1rem; border-top: 1px solid var(--border-subtle); }
+.beforeAfter { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: .3rem; }
+.beforeAfter > div:not(.interval) { display: grid; gap: .18rem; min-width: 0; }
+.beforeAfter span { color: var(--text-secondary); font-size: .68rem; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; }
+.beforeAfter strong { white-space: nowrap; font-family: var(--font-physics-numeric), system-ui, sans-serif; font-size: clamp(.9rem, 1.8vw, 1.05rem); font-variant-numeric: tabular-nums; }
+.beforeAfter small { color: var(--text-secondary); font-family: var(--font-physics-numeric), system-ui, sans-serif; font-size: .68rem; white-space: nowrap; }
+.interval { display: grid; justify-items: center; align-self: center; gap: .15rem; padding-inline: .15rem; }
+.interval span { color: var(--induction); font-size: 1.2rem; line-height: 1; }
+.interval small { font-size: .62rem; }
+.result { padding: 0 0 .35rem clamp(.9rem, 2vw, 1.5rem); border-left: 1px solid var(--border-subtle); }
+.result > span { display: block; color: var(--induction); font-size: .75rem; font-weight: 800; line-height: 1.5; }
+.result output { display: block; margin-top: .3rem; font-family: var(--font-physics-numeric), system-ui, sans-serif; font-size: clamp(2.25rem, 5vw, 3.75rem); font-weight: 850; letter-spacing: -.055em; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.result output small { color: var(--signal); font-size: .47em; letter-spacing: 0; }
+.result p { margin: .3rem 0 0; color: var(--text-secondary); font-size: .73rem; line-height: 1.4; }
+.verdict { grid-column: 1 / -1; margin: 0; padding-left: .7rem; border-left: 3px solid var(--signal); font-size: .84rem; font-weight: 680; line-height: 1.55; }
+.boundary { margin: 0; color: var(--text-secondary); font-size: .79rem; line-height: 1.6; }
+
+.benchEdge { fill: none; stroke: var(--border-strong); stroke-width: 2; }
+.benchTop { fill: var(--surface-secondary); stroke: var(--border-strong); stroke-width: 1.5; }
+.benchLegs { fill: none; stroke: var(--text-secondary); stroke-width: 3; }
+.magnetCase { stroke: #5e6a76; stroke-width: 1.5; stroke-linejoin: round; }
+.magnetTop { fill: #dce4e6; }
+.magnetSide { fill: #687b87; }
+.poleFace { fill: #667d88; stroke: #314859; stroke-width: 2; }
+.magnetCase text { fill: #152e3e; stroke: none; font: 850 42px var(--font-physics-numeric), system-ui, sans-serif; }
+.magnetCase .compactPoleLabel { fill: var(--text-primary); font-size: 25px; }
+.field { fill: none; stroke: var(--induction); stroke-width: 5; stroke-linecap: round; }
+.arrowhead { fill: var(--induction); }
+.coilBody { fill: #6b7d85; stroke: #3b5360; stroke-width: 2; }
+.flange { fill: #b9c3c4; stroke: #5b6c72; stroke-width: 2; }
+.winding { fill: none; stroke-width: 5; stroke-linejoin: round; }
+.coilLowerRim { fill: none; stroke: #683e2c; stroke-width: 4; }
+.coilStand { fill: none; stroke: #50616b; stroke-width: 4; }
+.coilFoot { fill: none; stroke: #50616b; stroke-width: 8; stroke-linecap: round; }
+.coilLabel, .normalLabel { fill: var(--text-primary); font: 800 17px var(--font-manrope), system-ui, sans-serif; }
+.normalArrow { fill: none; stroke: var(--induction); stroke-width: 3; }
+.circuit > path:nth-child(-n+3) { fill: none; stroke: #9c623b; stroke-width: 3; stroke-linecap: round; }
+.contact { fill: #d0a16b; stroke: #72462e; stroke-width: 1.5; }
+.switchBridge { fill: none; stroke: #a36639; stroke-width: 4; stroke-linecap: round; }
+.switchLabel { fill: var(--text-secondary); font: 700 13px var(--font-manrope), system-ui, sans-serif; }
+.meterCase { fill: #506273; stroke: #293a4a; stroke-width: 2; }
+.meterFace { fill: var(--surface-primary); stroke: #b4c2c3; stroke-width: 2; }
+.meterScale, .meterTicks { fill: none; stroke: var(--text-secondary); stroke-width: 2; }
+.needle { stroke: var(--signal); stroke-width: 3.5; stroke-linecap: round; }
+.needlePivot { fill: var(--signal); }
+.meterLabel, .diagramHeading { fill: var(--text-secondary); font: 700 15px var(--font-manrope), system-ui, sans-serif; }
+.diagramHeading { font-size: 16px; }
+
+@media (max-width: 690px) {
+  .controls { grid-template-columns: 1fr; gap: .9rem; }
+  .controls fieldset:last-child { grid-column: auto; }
+  .figure { padding: .95rem 0 .85rem; }
+  .wideApparatus { display: none; }
+  .compactApparatus { display: block; }
+  .evidence { grid-template-columns: 1fr; padding: .95rem 0 1rem; }
+  .result { padding: .85rem 0 .55rem; border-top: 1px solid var(--border-subtle); border-left: 0; }
+  .result output { font-size: clamp(2.5rem, 10vw, 3.6rem); }
+  .verdict { grid-column: auto; }
+}

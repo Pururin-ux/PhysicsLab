@@ -79,7 +79,7 @@ export function NewtonThirdLawNotebook() {
         <span>Мио разделяет рисунок по телам до сложения сил. Так пара третьего закона не исчезает ошибочно в одной сумме.</span>
       </header>
 
-      <div className={styles.pairStage} role="img" aria-label="Две тележки разъезжаются: сила первой тележки на вторую равна по модулю и противоположна силе второй на первую">
+      <div className={styles.pairStage} role="img" aria-label="Две тележки соприкасаются бамперами: сила первой тележки на вторую равна по модулю и противоположна силе второй на первую">
         <section className={styles.bodyZone} aria-label="Тележка А">
           <div className={`${styles.pairCart} ${styles.leftCart}`}><Image src={cartImage} alt="" width={520} height={347} priority /></div>
           <ArrowDiagram direction="left" />

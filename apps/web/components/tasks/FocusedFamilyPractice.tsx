@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { getFocusedPracticeNextConcept } from "../../lib/learning/focused-practice-next";
 import { getLearningDestinationForFamily } from "../../lib/learning/learning-links";
 import type { TaskTypeCatalogEntry } from "../../lib/learning/task-catalog";
 import { topicHelpSections } from "../../lib/learning/topic-help";
@@ -8,16 +9,19 @@ import { CompactHelpCard } from "../theory/CompactHelpCard";
 import { PracticeWithHelp } from "../quiz/PracticeWithHelp";
 
 const accentByTopic = {
+  measurements: "cyan",
   kinematics: "cyan",
   dynamics: "gold",
   electrodynamics: "blue",
   thermodynamics: "ember",
   optics: "cyan",
+  quantum: "blue",
 } as const;
 
 export function FocusedFamilyPractice({ entry }: { entry: TaskTypeCatalogEntry }) {
   const sections = topicHelpSections[entry.topicId];
   const explanation = getLearningDestinationForFamily(entry.id)?.explanation;
+  const nextConcept = getFocusedPracticeNextConcept(entry.id);
 
   return (
     <div className="flex flex-col gap-4">
@@ -30,7 +34,8 @@ export function FocusedFamilyPractice({ entry }: { entry: TaskTypeCatalogEntry }
       generatedCount={5}
       restartLabel="Ещё 5 задач"
       nextHref={explanation?.href ?? `/tasks/${entry.id}`}
-      nextLabel={explanation?.label ?? "Вернуться к разбору этого типа"}
+      nextLabel={explanation?.label ?? "К описанию типа задач"}
+      nextConcept={nextConcept}
       accent={accentByTopic[entry.topicId]}
       drawerTitle="Справка"
       subtopics={sections}

@@ -10,7 +10,7 @@ import {
   templateRegistry,
 } from "./generate.ts";
 
-const groups = ["kinematics", "dynamics", "electrodynamics", "thermodynamics", "optics"] as const;
+const groups = ["kinematics", "dynamics", "electrodynamics", "thermodynamics", "optics", "quantum"] as const;
 
 async function api(template: string, batch = 0, count = 10) {
   const response = await GET(new Request(

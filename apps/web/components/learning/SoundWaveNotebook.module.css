@@ -1,0 +1,54 @@
+.notebook {
+  --sound-ink: var(--text-primary);
+  --sound-paper: var(--surface-secondary);
+  --sound-accent: var(--action-primary);
+  display: grid;
+  gap: clamp(.9rem, 2vw, 1.25rem);
+  min-width: 0;
+  padding: clamp(1rem, 2.5vw, 1.5rem);
+  border: 1px solid color-mix(in srgb, var(--sound-ink) 18%, transparent);
+  border-radius: 1.2rem;
+  background: var(--sound-paper);
+  color: var(--sound-ink);
+  font-family: var(--font-manrope), system-ui, sans-serif;
+}
+
+.heading { display: grid; gap: .4rem; }
+.heading > span { color: var(--sound-accent); font-size: .75rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+.heading h2 { margin: 0; font-size: clamp(1.2rem, 2.5vw, 1.65rem); line-height: 1.3; }
+.heading p { max-width: 60ch; margin: 0; font-size: .9rem; line-height: 1.55; }
+
+.graph { min-width: 0; margin: 0; }
+.graph svg { display: block; width: 100%; height: auto; overflow: visible; }
+.grid { stroke: color-mix(in srgb, var(--sound-ink) 12%, transparent); stroke-dasharray: 2 5; }
+.axis { stroke: color-mix(in srgb, var(--sound-ink) 55%, transparent); stroke-width: 1.5; }
+.signal { fill: none; stroke: var(--sound-accent); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+.tick, .axisLabel { fill: color-mix(in srgb, var(--sound-ink) 75%, transparent); font-family: var(--font-physics-numeric), system-ui, sans-serif; font-size: 18px; }
+.graph figcaption { margin-top: .45rem; font-size: .76rem; line-height: 1.45; color: color-mix(in srgb, var(--sound-ink) 75%, transparent); }
+
+.spectrum { min-width: 0; margin: 0; padding-top: .9rem; border-top: 1px solid color-mix(in srgb, var(--sound-ink) 16%, transparent); }
+.spectrumHeading { display: flex; align-items: baseline; justify-content: space-between; gap: .6rem 1rem; flex-wrap: wrap; }
+.spectrumHeading h3 { margin: 0; font-size: .95rem; line-height: 1.35; }
+.spectrumHeading p { margin: 0; font-size: .76rem; line-height: 1.45; color: color-mix(in srgb, var(--sound-ink) 72%, transparent); }
+.spectrum svg { display: block; width: 100%; height: auto; overflow: visible; }
+.component { stroke: var(--sound-accent); stroke-width: 3; stroke-linecap: round; }
+.componentDot { fill: var(--sound-accent); }
+.spectrum figcaption { margin-top: .35rem; font-size: .78rem; line-height: 1.5; color: color-mix(in srgb, var(--sound-ink) 78%, transparent); }
+
+.controls { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem 1.4rem; }
+.controls fieldset { min-width: 0; margin: 0; padding: .8rem 0 0; border: 0; border-top: 1px solid color-mix(in srgb, var(--sound-ink) 20%, transparent); }
+.controls legend { margin-bottom: .55rem; padding: 0; font-size: .85rem; font-weight: 800; }
+.options { display: flex; flex-wrap: wrap; gap: .45rem; }
+.options button { min-height: 2.8rem; padding: .45rem .7rem; border: 1px solid color-mix(in srgb, var(--sound-ink) 28%, transparent); border-radius: .65rem; background: transparent; color: inherit; font: 750 .88rem var(--font-physics-numeric), system-ui, sans-serif; cursor: pointer; }
+.options button[aria-pressed="true"] { border-color: var(--sound-accent); background: color-mix(in srgb, var(--sound-accent) 13%, var(--sound-paper)); }
+.options button:focus-visible { outline: 3px solid var(--sound-accent); outline-offset: 3px; }
+.controls fieldset p { margin: .5rem 0 0; font-size: .78rem; line-height: 1.5; }
+.conclusion { margin: 0; color: var(--sound-accent); font-size: .88rem; font-weight: 800; line-height: 1.5; }
+.boundary { margin: 0; color: color-mix(in srgb, var(--sound-ink) 72%, transparent); font-size: .76rem; line-height: 1.55; }
+
+@media (max-width: 540px) {
+  .controls { grid-template-columns: minmax(0, 1fr); gap: .85rem; }
+  .graph figcaption { max-width: 40ch; }
+  .spectrumHeading { display: grid; }
+  .spectrum figcaption { max-width: 42ch; }
+}

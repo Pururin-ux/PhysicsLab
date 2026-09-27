@@ -14,9 +14,13 @@ export type HelpSectionId =
   | "uniform-motion-graphs"
   | "accelerated-motion"
   | "circular-motion"
+  | "oscillations"
   | "motion-graphs"
   | "average-speed"
   | "units-conversion"
+  | "graduated-scale"
+  | "rectangular-block-volume"
+  | "irregular-body-volume"
   | "vectors-relative-motion"
   | "gravity-force"
   | "gravitation-distance"
@@ -40,8 +44,25 @@ export type HelpSectionId =
   | "elementary-charge"
   | "full-circuit"
   | "charge-sharing"
+  | "coulomb-force"
+  | "electric-field-strength"
+  | "electric-field-superposition"
+  | "electrostatic-field-work"
+  | "point-charge-potential"
+  | "multi-source-potential"
+  | "uniform-field-voltage"
+  | "parallel-plate-capacitance"
   | "capacitor-energy"
+  | "lc-period"
+  | "ac-oscillogram-frequency"
+  | "induced-emf-magnitude"
+  | "ampere-force-magnitude"
+  | "lorentz-force-magnitude"
+  | "metal-temperature-current"
+  | "electrolyte-ion-transport"
+  | "self-induction-emf"
   | "electric-power"
+  | "household-load-current"
   | "magnetic-field"
   | "ideal-gas"
   | "amount-of-substance"
@@ -53,6 +74,10 @@ export type HelpSectionId =
   | "liquid-structure"
   | "vapor-equilibrium"
   | "air-humidity"
+  | "internal-energy-gas"
+  | "gas-work"
+  | "first-law"
+  | "heat-engine"
   | "heat-amount"
   | "heat-balance"
   | "fuel-combustion"
@@ -68,7 +93,8 @@ export type HelpSectionId =
   | "lens-image-properties"
   | "vision-correction"
   | "optical-power"
-  | "magnification";
+  | "magnification"
+  | "atomic-transitions";
 
 export type HelpReason = "task" | "mistake" | "fallback";
 
@@ -101,6 +127,36 @@ export type HelpableQuizTask = {
 };
 
 export const topicHelpSections: Record<TopicId, TopicHelpSection[]> = {
+  measurements: [
+    {
+      id: "units-conversion",
+      label: "Перевод единиц длины",
+      shortHint: "Из км в м число увеличивается; из дм, см и мм в м — уменьшается. Длина остаётся прежней.",
+      formula: "1\\ \\text{км}=1000\\ \\text{м},\\quad 1\\ \\text{дм}=0{,}1\\ \\text{м},\\quad 1\\ \\text{см}=0{,}01\\ \\text{м}",
+      mistake: "Сначала определи, какая единица крупнее, затем проверь направление изменения числа.",
+    },
+    {
+      id: "graduated-scale",
+      label: "Чтение шкалы мензурки",
+      shortHint: "Отними один от числа штрихов, чтобы получить число промежутков. Мениск отсчитывай от подписанной отметки.",
+      formula: "N_{\\text{пр}}=N_{\\text{отм}}-1,\\quad c=\\frac{V_2-V_1}{N_{\\text{пр}}},\\quad V=V_1+kc",
+      mistake: "Считай промежутки между штрихами. Для воды отсчёт веди по нижней точке мениска на уровне глаз.",
+    },
+    {
+      id: "rectangular-block-volume",
+      label: "Объём прямоугольного бруска",
+      shortHint: "Измеренные рёбра вырази в сантиметрах и перемножь; объём получится в см³.",
+      formula: "V=abc,\\quad 10\\,\\text{мм}=1\\,\\text{см}",
+      mistake: "Произведение двух рёбер даёт площадь в см². Для объёма нужно третье ребро; складывать длины нельзя.",
+    },
+    {
+      id: "irregular-body-volume",
+      label: "Объём по вытеснению воды",
+      shortHint: "При полном погружении без потери воды разность двух показаний равна объёму тела.",
+      formula: "V=V_2-V_1,\\quad 1\\,\\text{мл}=1\\,\\text{см}^3",
+      mistake: "Второе показание включает воду и тело. Не принимай его за объём одного тела.",
+    },
+  ],
   kinematics: [
     {
       id: "uniform-motion",
@@ -139,10 +195,10 @@ export const topicHelpSections: Record<TopicId, TopicHelpSection[]> = {
     },
     {
       id: "units-conversion",
-      label: "Единицы скорости",
-      shortHint: "Перед расчетом пути приведи скорость и время к согласованным единицам.",
-      formula: "1\\ \\text{км/ч}=\\frac{1}{3{,}6}\\ \\text{м/с}",
-      mistake: "Не умножай км/ч на секунды напрямую: сначала переведи скорость в м/с.",
+      label: "Перевод единиц",
+      shortHint: "Сравни, во сколько раз отличаются единицы. Например, 1 км = 1000 м, а 1 см = 0,01 м.",
+      formula: "1\\ \\text{км}=1000\\ \\text{м},\\quad 1\\ \\text{см}=0{,}01\\ \\text{м},\\quad 1\\ \\text{км/ч}=\\frac{1}{3{,}6}\\ \\text{м/с}",
+      mistake: "Число меняется в направлении, обратном изменению единицы. Для скорости переведи и расстояние, и время до подстановки в формулу.",
     },
     {
       id: "vectors-relative-motion",
@@ -160,6 +216,13 @@ export const topicHelpSections: Record<TopicId, TopicHelpSection[]> = {
     },
   ],
   dynamics: [
+    {
+      id: "oscillations",
+      label: "Механические колебания",
+      shortHint: "Период — время полного цикла. У идеального пружинного маятника энергия движения и энергия пружины меняются при постоянной сумме.",
+      formula: "T=\\frac{\\Delta t}{N},\\quad \\nu=\\frac{N}{\\Delta t}=\\frac{1}{T},\\quad W_k+W_p=const",
+      mistake: "Учитывай полный цикл, а при расчёте энергии сначала найди полную энергию системы.",
+    },
     {
       id: "archimedes-force",
       label: "Сила Архимеда",
@@ -321,11 +384,123 @@ export const topicHelpSections: Record<TopicId, TopicHelpSection[]> = {
       mistake: "Заряды разных знаков частично компенсируют друг друга до деления.",
     },
     {
+      id: "coulomb-force",
+      label: "Закон Кулона",
+      shortHint: "Модуль силы зависит от модулей зарядов и квадрата расстояния. Знаки задают притяжение или отталкивание.",
+      formula: "F=k\\frac{|q_1q_2|}{\\varepsilon r^2}",
+      mistake: "При удвоении расстояния сила уменьшается в четыре раза. Для вакуума ε=1.",
+    },
+    {
+      id: "electric-field-strength",
+      label: "Напряжённость поля",
+      shortHint: "Источник создаёт поле; для точечного заряда его модуль в выбранной точке зависит от Q и расстояния.",
+      formula: "E=k\\frac{|Q|}{\\varepsilon r^2}",
+      mistake: "Не подставляй заряд пробного тела вместо Q. При удвоении r напряжённость уменьшается в четыре раза.",
+    },
+    {
+      id: "electric-field-superposition",
+      label: "Суперпозиция электрических полей",
+      shortHint: "Поле каждого неподвижного источника найди отдельно, затем сложи векторы в выбранной точке.",
+      formula: "\\vec E=\\vec E_1+\\vec E_2+\\cdots+\\vec E_n",
+      mistake: "Не складывай модули автоматически: сначала установи направление каждого поля в точке, затем сложи проекции.",
+    },
+    {
+      id: "electrostatic-field-work",
+      label: "Работа электростатического поля",
+      shortHint: "В однородном поле работу определяет проекция всего смещения на E, а не длина пути.",
+      formula: "A=qE\\Delta x,\\quad \\Delta W_{\\text{п}}=-A",
+      mistake: "Для отрицательного заряда сила противоположна E. Изменение потенциальной энергии имеет знак, противоположный работе поля.",
+    },
+    {
+      id: "point-charge-potential",
+      label: "Потенциал точечного заряда",
+      shortHint: "При нуле на бесконечности потенциал одного точечного источника в вакууме равен kQ/r.",
+      formula: "\\varphi=k\\frac{Q}{r}",
+      mistake: "Потенциал убывает как 1/r, не как 1/r². В формулу подставляют Q вместе со знаком.",
+    },
+    {
+      id: "multi-source-potential",
+      label: "Потенциал нескольких источников",
+      shortHint: "Потенциалы источников в одной точке складываются алгебраически.",
+      formula: "\\varphi=\\varphi_1+\\varphi_2+\\cdots+\\varphi_n",
+      mistake: "Потенциал — скалярная величина: положение заряда не задаёт знак слагаемого, его задаёт знак источника.",
+    },
+    {
+      id: "uniform-field-voltage",
+      label: "Напряжение между точками поля",
+      shortHint: "В однородном поле напряжение от A к B определяется проекцией A→B вдоль E.",
+      formula: "U_{AB}=\\varphi_A-\\varphi_B=E\\Delta x",
+      mistake: "При перестановке A и B знак меняется. Формула E=U/d без модуля относится к порядку точек по направлению поля.",
+    },
+    {
+      id: "parallel-plate-capacitance",
+      label: "Ёмкость плоского конденсатора",
+      shortHint: "C=εε₀S/d: большее перекрытие и диэлектрик увеличивают C, больший зазор уменьшает её.",
+      formula: "C=\\varepsilon\\varepsilon_0\\frac{S}{d}",
+      mistake: "Ёмкость определяется геометрией обкладок и средой. При неизменной конструкции заряд и напряжение меняются вместе, а C остаётся постоянной.",
+    },
+    {
       id: "capacitor-energy",
       label: "Конденсатор",
-      shortHint: "Энергия конденсатора зависит от U² и коэффициента 1/2.",
-      formula: "W=\\frac{CU^2}{2}",
-      mistake: "Не теряй квадрат напряжения и коэффициент 1/2.",
+      shortHint: "Выбирай форму W=qU/2=CU²/2=q²/(2C) по известным величинам.",
+      formula: "W=\\frac{qU}{2}=\\frac{CU^2}{2}=\\frac{q^2}{2C}",
+      mistake: "Проверь, что используешь модуль заряда одной обкладки, квадрат U и коэффициент 1/2.",
+    },
+    {
+      id: "lc-period",
+      label: "Период колебаний в LC-контуре",
+      shortHint: "Для идеального контура T = 2π√(LC). Подставляй L в Гн, C в Ф, а секунды переводи в мс.",
+      formula: "T=2\\pi\\sqrt{LC}",
+      mistake: "1 мкФ = 10⁻⁶ Ф; сопротивлением в идеальной модели пренебрегают.",
+    },
+    {
+      id: "ac-oscillogram-frequency",
+      label: "Частота тока по двум максимумам",
+      shortHint: "Два соседних максимума одного знака разделены периодом T. Вычти их времена, затем переведи мс в с.",
+      formula: "T=(t_2-t_1)\\cdot10^{-3}\\,\\text{с},\\quad\\nu=\\frac{1}{T}",
+      mistake: "Соседние максимумы одного знака разделены целым периодом, а не половиной; частота выражается в герцах.",
+    },
+    {
+      id: "induced-emf-magnitude",
+      label: "Модуль ЭДС индукции катушки",
+      shortHint: "При одинаковом изменении потока через каждый виток умножь изменение одного витка на N и раздели на время.",
+      formula: "|\\mathcal E_{\\text{инд}}|=N\\frac{|\\Delta\\Phi_1|}{\\Delta t}",
+      mistake: "Для мВб и мс множители 10⁻³ сокращаются. Само наличие потока не создаёт ЭДС, если он не меняется.",
+    },
+    {
+      id: "ampere-force-magnitude",
+      label: "Сила Ампера в однородном поле",
+      shortHint: "Умножь B, I, длину участка в поле и синус угла между током и полем.",
+      formula: "F_{\\text{А}}=BI\\ell\\sin\\alpha",
+      mistake: "Переведи мТл в Тл и см в м. При 30° синус равен 0,5; при 90° — единице.",
+    },
+    {
+      id: "lorentz-force-magnitude",
+      label: "Сила Лоренца для движения поперёк поля",
+      shortHint: "Умножь модуль заряда, скорость и индукцию в теслах.",
+      formula: "F_{\\text{Л}}=|q|vB",
+      mistake: "Модуль силы не зависит от знака заряда. Миллитеслы переводи в теслы.",
+    },
+    {
+      id: "metal-temperature-current",
+      label: "Нагрев металла и условие об источнике",
+      shortHint: "У обычного металла при нагреве сопротивление растёт. Уточни, что удерживает источник.",
+      formula: "I=\\frac{U}{R}",
+      mistake: "При постоянном U ток уменьшается. При постоянном I для той же спирали требуется большее U.",
+    },
+    {
+      id: "electrolyte-ion-transport",
+      label: "Носители заряда в электролите",
+      shortHint: "Раствор соли может содержать подвижные ионы. Проверь знак иона и знак электрода.",
+      formula: "\\mathrm{CuCl_2}\\rightarrow\\mathrm{Cu}^{2+}+2\\mathrm{Cl}^{-}",
+      mistake: "Положительный Cu²⁺ движется к отрицательному катоду, отрицательный Cl⁻ — к положительному аноду. В металлическом проводе носители другие.",
+    },
+    {
+      id: "self-induction-emf",
+      label: "Модуль ЭДС самоиндукции",
+      shortHint: "Умножь индуктивность катушки на модуль изменения тока и раздели на время изменения.",
+      formula: "|\\mathcal E_{\\text{си}}|=L\\frac{|\\Delta I|}{\\Delta t}",
+      mistake: "Миллигенри и миллисекунды переводят вместе: множители 10⁻³ сокращаются. ЭДС противодействует изменению тока.",
     },
     {
       id: "electric-power",
@@ -333,6 +508,13 @@ export const topicHelpSections: Record<TopicId, TopicHelpSection[]> = {
       shortHint: "Мощность участка цепи можно считать как P=UI или P=I²R.",
       formula: "P=UI=I^2R",
       mistake: "Не останавливайся на напряжении U=IR: для мощности нужен еще множитель I.",
+    },
+    {
+      id: "household-load-current",
+      label: "Общий ток приборов",
+      shortHint: "Для параллельных приборов сложи мощности и раздели сумму на одно и то же напряжение сети из условия.",
+      formula: "I_{\\Sigma}=\\frac{P_1+P_2}{U}",
+      mistake: "Не сравнивай с пределом мощность в ваттах: сначала вычисли ток в амперах.",
     },
     {
       id: "magnetic-field",
@@ -435,6 +617,34 @@ export const topicHelpSections: Record<TopicId, TopicHelpSection[]> = {
       mistake: "Не сравнивай значения, относящиеся к разным температурам: предел насыщения меняется при нагревании и охлаждении.",
     },
     {
+      id: "internal-energy-gas",
+      label: "Внутренняя энергия одноатомного газа",
+      shortHint: "Для данной порции одноатомного идеального газа внутренняя энергия определяется абсолютной температурой.",
+      formula: "U=\\frac32\\nu RT;\\qquad \\Delta U=\\frac32\\nu R\\Delta T",
+      mistake: "Не смешивай путь процесса с изменением внутренней энергии: ΔU задают только начальное и конечное состояния.",
+    },
+    {
+      id: "gas-work",
+      label: "Работа газа при постоянном давлении",
+      shortHint: "Работа газа при изобарном расширении определяется давлением и изменением объёма.",
+      formula: "A=p\\Delta V=p(V_2-V_1)",
+      mistake: "Не подставляй конечный объём вместо его изменения. Вертикальный участок графика p(V) работы не даёт.",
+    },
+    {
+      id: "first-law",
+      label: "Первый закон термодинамики",
+      shortHint: "Теплота, полученная газом, идёт на изменение его внутренней энергии и работу газа.",
+      formula: "\\Delta U=Q-A_{\\text{газа}};\\qquad Q=\\Delta U+A_{\\text{газа}}",
+      mistake: "Работа внешних сил имеет знак, противоположный работе газа. При отдаче теплоты Q отрицательно.",
+    },
+    {
+      id: "heat-engine",
+      label: "Термический КПД теплового двигателя",
+      shortHint: "За полный цикл рабочее тело возвращается в исходное состояние: полученная теплота делится на работу и теплоту холодильника.",
+      formula: "\\eta_{\\text{т}}=\\frac{Q_1-|Q_2|}{Q_1}\\cdot100\\%",
+      mistake: "Не считай теплоту холодильника работой. Термический КПД относится к теплоте, полученной рабочим телом от нагревателя, а не ко всей энергии топлива.",
+    },
+    {
       id: "fuel-combustion",
       label: "Горение топлива",
       shortHint: "Удельная теплота сгорания относится к одному килограмму; при полном сгорании Q=qm.",
@@ -534,6 +744,15 @@ export const topicHelpSections: Record<TopicId, TopicHelpSection[]> = {
       mistake: "Не путай высоту предмета h с высотой изображения H и не переворачивай отношение dᵢ/dₒ.",
     },
   ],
+  quantum: [
+    {
+      id: "atomic-transitions",
+      label: "Энергия перехода атома",
+      shortHint: "Частота и длина волны фотона определяются разностью энергий двух уровней водорода.",
+      formula: "\\Delta E=|E_i-E_f|=h\\nu=\\frac{hc}{\\lambda}",
+      mistake: "Не складывай модули энергий и не бери энергию только одного уровня: нужен модуль разности начального и конечного уровней.",
+    },
+  ],
 };
 
 const blueprintTargets: Partial<
@@ -548,7 +767,18 @@ const blueprintTargets: Partial<
   "uniform-coordinate-law": { topicId: "kinematics", sectionId: "uniform-motion-graphs" },
   "uniform-motion-graphs": { topicId: "kinematics", sectionId: "uniform-motion-graphs" },
   "unit-conversion-speed": { topicId: "kinematics", sectionId: "units-conversion" },
+  "length-unit-conversion": { topicId: "measurements", sectionId: "units-conversion" },
+  "graduated-scale-reading": { topicId: "measurements", sectionId: "graduated-scale" },
+  "rectangular-block-volume": { topicId: "measurements", sectionId: "rectangular-block-volume" },
+  "irregular-body-volume": { topicId: "measurements", sectionId: "irregular-body-volume" },
   "rotation-frequency": { topicId: "kinematics", sectionId: "circular-motion" },
+  "oscillation-frequency": { topicId: "dynamics", sectionId: "oscillations" },
+  "spring-oscillation-period": { topicId: "dynamics", sectionId: "oscillations" },
+  "mathematical-pendulum-period": { topicId: "dynamics", sectionId: "oscillations" },
+  "oscillation-energy": { topicId: "dynamics", sectionId: "oscillations" },
+  "mechanical-wave-speed": { topicId: "dynamics", sectionId: "oscillations" },
+  "echo-ranging": { topicId: "dynamics", sectionId: "oscillations" },
+  "resonance-frequency-match": { topicId: "dynamics", sectionId: "oscillations" },
   "centripetal-acceleration": { topicId: "kinematics", sectionId: "circular-motion" },
   "nth-second-displacement": { topicId: "kinematics", sectionId: "accelerated-motion" },
   "graph-area": { topicId: "kinematics", sectionId: "motion-graphs" },
@@ -584,15 +814,37 @@ const blueprintTargets: Partial<
   "magnetic-field-direction": { topicId: "electrodynamics", sectionId: "magnetic-field" },
   "resistor-network": { topicId: "electrodynamics", sectionId: "ohms-law" },
   "source-internal-resistance": { topicId: "electrodynamics", sectionId: "full-circuit" },
+  "source-efficiency": { topicId: "electrodynamics", sectionId: "full-circuit" },
   "charge-sharing": { topicId: "electrodynamics", sectionId: "charge-sharing" },
+  "coulomb-force": { topicId: "electrodynamics", sectionId: "coulomb-force" },
+  "electric-field-strength": { topicId: "electrodynamics", sectionId: "electric-field-strength" },
+  "electric-field-superposition": { topicId: "electrodynamics", sectionId: "electric-field-superposition" },
+  "electrostatic-field-work": { topicId: "electrodynamics", sectionId: "electrostatic-field-work" },
+  "point-charge-potential": { topicId: "electrodynamics", sectionId: "point-charge-potential" },
+  "multi-source-potential": { topicId: "electrodynamics", sectionId: "multi-source-potential" },
+  "uniform-field-voltage": { topicId: "electrodynamics", sectionId: "uniform-field-voltage" },
+  "parallel-plate-capacitance": { topicId: "electrodynamics", sectionId: "parallel-plate-capacitance" },
   "capacitor-energy": { topicId: "electrodynamics", sectionId: "capacitor-energy" },
+  "lc-period": { topicId: "electrodynamics", sectionId: "lc-period" },
+  "ac-oscillogram-frequency": { topicId: "electrodynamics", sectionId: "ac-oscillogram-frequency" },
+  "induced-emf-magnitude": { topicId: "electrodynamics", sectionId: "induced-emf-magnitude" },
+  "ampere-force-magnitude": { topicId: "electrodynamics", sectionId: "ampere-force-magnitude" },
+  "lorentz-force-magnitude": { topicId: "electrodynamics", sectionId: "lorentz-force-magnitude" },
+  "metal-temperature-current": { topicId: "electrodynamics", sectionId: "metal-temperature-current" },
+  "electrolyte-ion-transport": { topicId: "electrodynamics", sectionId: "electrolyte-ion-transport" },
+  "self-induction-emf": { topicId: "electrodynamics", sectionId: "self-induction-emf" },
   "electric-power": { topicId: "electrodynamics", sectionId: "electric-power" },
+  "household-load-current": { topicId: "electrodynamics", sectionId: "household-load-current" },
   "ideal-gas-state": { topicId: "thermodynamics", sectionId: "gas-equation" },
   "ideal-gas-isoprocess": { topicId: "thermodynamics", sectionId: "gas-isoprocesses" },
   "solid-structure-properties": { topicId: "thermodynamics", sectionId: "solid-structure" },
   "liquid-structure-properties": { topicId: "thermodynamics", sectionId: "liquid-structure" },
   "vapor-dynamic-equilibrium": { topicId: "thermodynamics", sectionId: "vapor-equilibrium" },
   "relative-humidity-pressure": { topicId: "thermodynamics", sectionId: "air-humidity" },
+  "monoatomic-internal-energy": { topicId: "thermodynamics", sectionId: "internal-energy-gas" },
+  "isobaric-gas-work": { topicId: "thermodynamics", sectionId: "gas-work" },
+  "first-law-energy-balance": { topicId: "thermodynamics", sectionId: "first-law" },
+  "heat-engine-efficiency": { topicId: "thermodynamics", sectionId: "heat-engine" },
   "molecule-count-from-mass": { topicId: "thermodynamics", sectionId: "amount-of-substance" },
   "particle-concentration": { topicId: "thermodynamics", sectionId: "particle-concentration" },
   "molecular-kinetic-energy": { topicId: "thermodynamics", sectionId: "molecular-kinetic-energy" },
@@ -613,6 +865,7 @@ const blueprintTargets: Partial<
   "lens-image-height": { topicId: "optics", sectionId: "magnification" },
   "lens-image-properties": { topicId: "optics", sectionId: "lens-image-properties" },
   "vision-correction": { topicId: "optics", sectionId: "vision-correction" },
+  "bohr-transition-radiation": { topicId: "quantum", sectionId: "atomic-transitions" },
 };
 
 function normalize(value: string | undefined) {
@@ -744,6 +997,7 @@ function inferSection(task: HelpableQuizTask, topicId: TopicId): HelpSectionId {
   if (topicId === "electrodynamics") {
     if (/элементар|10⁻¹⁹|10\^?-?19|электрон|\|q\|\/?e/.test(text)) return "elementary-charge";
     if (/заряд|поровну|дели|усредн/.test(text)) return "charge-sharing";
+    if (/электро[её]мк|площад.{0,12}обклад|зазор|диэлектр/.test(text)) return "parallel-plate-capacitance";
     if (/конденс|cu\^?2|u\^?2|микрофарад/.test(text)) return "capacitor-energy";
     if (/эдс|внутрен|полная цеп|r \+ r|r\+r/.test(text)) return "full-circuit";
     return "ohms-law";

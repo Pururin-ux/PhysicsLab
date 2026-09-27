@@ -18,19 +18,23 @@ interface TaskCatalogBrowserProps {
 }
 
 const topicVisual: Record<TopicId, { dot: string }> = {
+  measurements: { dot: "bg-[var(--mode-learn-accent)]" },
   kinematics: { dot: "bg-[var(--topic-kinematics-accent)]" },
   dynamics: { dot: "bg-[var(--topic-dynamics-accent)]" },
   electrodynamics: { dot: "bg-[var(--topic-electrodynamics-accent)]" },
   thermodynamics: { dot: "bg-[var(--topic-thermodynamics-accent)]" },
   optics: { dot: "bg-[var(--topic-optics-accent)]" },
+  quantum: { dot: "bg-[var(--action-primary)]" },
 };
 
 const compactTopicTitle: Record<TopicId, string> = {
+  measurements: "Измерения",
   kinematics: "Кинематика",
   dynamics: "Динамика",
   electrodynamics: "Ток и цепи",
   thermodynamics: "Теплота",
   optics: "Оптика",
+  quantum: "Физика атома",
 };
 
 function isTopicFilter(value: string | null): value is TopicId {
