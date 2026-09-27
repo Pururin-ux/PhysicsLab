@@ -124,6 +124,8 @@ export const textbookChapterIds = [
   "lc-oscillations",
   "alternating-current",
   "transformer",
+  "electric-energy-transmission",
+  "energy-sources-and-environment",
   "photoelectric-effect",
   "light-pressure-and-duality",
   "rutherford-scattering",

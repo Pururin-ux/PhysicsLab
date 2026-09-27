@@ -1,0 +1,61 @@
+.notebook {
+  border-block: 1px solid var(--border-strong);
+  color: var(--text-primary);
+}
+.header { max-width: 680px; padding: clamp(1.2rem, 3vw, 2rem); }
+.header p, .header h2 { margin: 0; }
+.eyebrow {
+  color: var(--action-primary);
+  font-size: .78rem;
+  font-weight: 800;
+  letter-spacing: .045em;
+  text-transform: uppercase;
+}
+.header h2 {
+  margin-block: .6rem .9rem;
+  font-size: clamp(1.55rem, 3vw, 2rem);
+  line-height: 1.18;
+  letter-spacing: -.025em;
+}
+.header > p:last-child { color: var(--text-secondary); line-height: 1.6; }
+.routes { margin: 0 clamp(1.2rem, 3vw, 2rem); padding: 0; list-style: none; }
+.routes li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr) minmax(0, 1.6fr);
+  gap: clamp(.7rem, 2vw, 1.5rem);
+  padding: 1rem 0;
+  border-top: 1px solid var(--border-strong);
+  align-items: start;
+}
+.routes h3, .routes p { margin: 0; line-height: 1.5; }
+.routes h3 { font-size: 1rem; font-weight: 800; }
+.path { font-weight: 650; }
+.consequence { color: var(--text-secondary); }
+.reflection {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  margin-top: 1rem;
+  border-top: 1px solid var(--border-strong);
+}
+.scene {
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  background: var(--surface-secondary);
+}
+.scene img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 62% center; }
+.result { align-self: center; margin: clamp(1.2rem, 3vw, 2rem); border-top: 2px solid var(--action-primary); }
+.result summary { min-height: 48px; padding: .9rem 0; cursor: pointer; font-weight: 750; line-height: 1.4; }
+.result summary:focus-visible { outline: 3px solid var(--action-primary); outline-offset: 3px; }
+.result p { margin: .7rem 0; line-height: 1.6; }
+.result del { color: var(--text-secondary); }
+.limit { color: var(--text-secondary); font-size: .9rem; }
+@media (max-width: 700px) {
+  .routes li { display: block; }
+  .routes h3 { margin-bottom: .3rem; }
+  .routes .path { margin-bottom: .4rem; }
+  .reflection { grid-template-columns: minmax(0, 1fr); }
+  .scene { aspect-ratio: 1280 / 650; }
+  .scene img { object-position: center 58%; }
+  .result { margin-top: 1rem; }
+}

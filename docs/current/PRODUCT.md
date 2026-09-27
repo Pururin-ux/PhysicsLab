@@ -43,7 +43,7 @@ and fuel respectively.
 Repeat and explanation remain available. This is a provisional connection,
 not a required sequence or a mastery claim.
 
-The textbook at `/learn` currently connects 126 chapters for
+The textbook at `/learn` currently connects 128 chapters for
 selected grade 7, grade 8, grade 9, grade 10 and grade 11 topics. Grade 11 now has
 seven connected but partial chapters on mechanical oscillations and waves, with
 focused practice for cycle frequency, spring-pendulum period,
@@ -72,9 +72,20 @@ while the page gives the ideal turn and voltage ratios in text. The result is
 initially hidden for prediction. A focused numeric family checks the
 secondary-to-primary ratio with effective AC voltages; the worked example
 treats power only with an active load and explicit ideal-loss assumption.
-The contextual illustration is not a calibrated winding diagram. Power
-transmission, electromagnetic waves, reactive loads and broader energy/graph
-practice remain open.
+The contextual illustration is not a calibrated winding diagram. An optional
+question then reaches the partial § 10 energy-transmission chapter. Mio's
+classroom observation leads to a comparison of the same resistive line at
+fixed active power entering the line: higher voltage gives lower current,
+and heating falls with the square of that current. The result disclosure
+shows 10 W versus 0.4 W of line loss for the stated model, while the focused
+numeric family checks other input powers, voltages and resistances. The art
+does not provide measurements. A further optional § 11 question distinguishes
+thermal, hydro, nuclear and wind energy paths and their different environmental
+questions. Mio compares contextual photographs, while the DOM explanation
+and exact self-check reject the inference that lower line loss erases every
+production impact. The photos are not measurements or Belarus-specific sites.
+Real-grid effects, quantitative ecological assessment, electromagnetic waves,
+reactive loads and broader energy/graph practice remain open.
 Two further partial grade 11 chapters connect photoelectric effect (§§ 27–28)
 with light pressure and wave-particle duality (§ 29). Their explanations and
 models are linked; light-pressure comparison is qualitative and does not add a

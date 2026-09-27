@@ -397,6 +397,12 @@ export const misconceptionMetadataById: Record<string, MisconceptionMetadata> = 
     helpSectionId: "transformer-voltage-ratio",
     shortHint: "Для напряжения вторичной обмотки умножай U₁ на N₂/N₁, а не на N₁/N₂.",
   },
+  "line-loss-missing-square": {
+    id: "line-loss-missing-square",
+    label: "забывает квадрат тока при расчёте нагрева",
+    helpSectionId: "transmission-line-loss",
+    shortHint: "Сначала вычисли ток P/U; мощность нагрева того же провода равна I²R.",
+  },
   "induction-missing-turns": {
     id: "induction-missing-turns",
     label: "забывает число витков",
@@ -1064,6 +1070,15 @@ export const taskLearningMetadataByTemplateId: Record<string, TaskLearningMetada
     focusLabel: "Напряжение вторичной обмотки",
     shortHint: "Сравни витки первичной и вторичной обмоток, затем найди U₂ по отношению N₂/N₁.",
     misconceptionIds: ["transformer-inverts-turns"],
+  },
+  "transmission-line-loss": {
+    templateId: "transmission-line-loss",
+    topicId: "electrodynamics",
+    helpSectionId: "transmission-line-loss",
+    skillId: "transmission-line-loss",
+    focusLabel: "Мощность нагрева линии",
+    shortHint: "При прежней мощности на входе найди ток P/U, затем возведи его в квадрат и умножь на сопротивление линии.",
+    misconceptionIds: ["line-loss-missing-square"],
   },
   "induced-emf-magnitude": {
     templateId: "induced-emf-magnitude",

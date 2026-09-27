@@ -79,6 +79,7 @@ const explanationByFamily: Partial<Record<TemplateId, ExactExplanation>> = {
   "lc-period": { href: "/learn/lc-oscillations?practice=lc-period", chapterId: "lc-oscillations", label: "Как найти период колебаний в LC-контуре" },
   "ac-oscillogram-frequency": { href: "/learn/alternating-current?practice=ac-oscillogram-frequency", chapterId: "alternating-current", label: "Как найти частоту тока по двум максимумам" },
   "transformer-voltage-ratio": { href: "/learn/transformer?practice=transformer-voltage-ratio", chapterId: "transformer", label: "Как напряжение зависит от числа витков" },
+  "transmission-line-loss": { href: "/learn/electric-energy-transmission?practice=transmission-line-loss", chapterId: "electric-energy-transmission", label: "Почему провод нагревается при передаче энергии" },
   "induced-emf-magnitude": { href: "/learn/electromagnetic-induction?practice=induced-emf-magnitude", chapterId: "electromagnetic-induction", label: "Как изменение потока создаёт ЭДС индукции" },
   "ampere-force-magnitude": { href: "/learn/magnetic-field-and-ampere-force?practice=ampere-force-magnitude", chapterId: "magnetic-field-and-ampere-force", label: "Почему сила Ампера зависит от угла и тока" },
   "lorentz-force-magnitude": { href: "/learn/lorentz-force-and-charge-motion?practice=lorentz-force-magnitude", chapterId: "lorentz-force-and-charge-motion", label: "Почему заряд отклоняется в магнитном поле" },

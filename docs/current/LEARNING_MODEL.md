@@ -33,6 +33,17 @@ Scope: current behaviour implemented in `apps/web`.
   rotating-frame model; the new Grade X induction explanation is an optional
   foundation, not a completion gate or mastery evidence
   ([decision 0013](../decisions/0013-driven-ac-after-free-lc.md)).
+- The alternating-current question can optionally lead to the ideal
+  transformer and then to a bounded transmission-line comparison. The
+  second scene keeps sent power and line resistance fixed, reveals the
+  heating result after prediction, and links exact-family practice.
+  Neither link is a gate or mastery claim ([decision 0014](../decisions/0014-provisional-transformer-after-ac.md);
+  [decision 0015](../decisions/0015-provisional-transmission-after-transformer.md)).
+- The transmission comparison can optionally lead to a partial environmental
+  question. Four energy paths and an exact self-check distinguish a measured
+  line loss from unmeasured production impacts; this is neither an impact
+  ranking nor proof of mastery
+  ([decision 0016](../decisions/0016-provisional-environment-after-transmission.md)).
 - The Grade X magnetic-force chapter starts from the Grade VIII observation of
   a field and distinguishes the prescribed external induction B from the force
   on a straight current-carrying segment. Its angle graph shows the magnitude

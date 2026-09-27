@@ -115,15 +115,23 @@ test("topic entries keep direct chapter practice beside the explanation", () => 
   assert.equal(firstEntry.resources.some(resource => resource.href === "/learn/scientific-method"), false);
 });
 
-test("XI oscillations, alternating current and transformer offer optional exact next questions", () => {
+test("XI electricity questions reach transmission and its environmental context without a required sequence", () => {
   const lc = learningEntries.find(entry => entry.id === "lc-oscillations");
   const ac = learningEntries.find(entry => entry.id === "alternating-current");
   const transformer = learningEntries.find(entry => entry.id === "transformer");
   const transformerChapter = textbookChapters.find(chapter => chapter.id === "transformer");
+  const transmission = learningEntries.find(entry => entry.id === "electric-energy-transmission");
+  const transmissionChapter = textbookChapters.find(chapter => chapter.id === "electric-energy-transmission");
+  const environment = learningEntries.find(entry => entry.id === "energy-sources-and-environment");
+  const environmentChapter = textbookChapters.find(chapter => chapter.id === "energy-sources-and-environment");
   assert.ok(lc);
   assert.ok(ac);
   assert.ok(transformer);
   assert.ok(transformerChapter);
+  assert.ok(transmission);
+  assert.ok(transmissionChapter);
+  assert.ok(environment);
+  assert.ok(environmentChapter);
   assert.equal(lc.connection?.href, "/learn/alternating-current");
   assert.equal(ac.question, "Почему ток меняет направление при вращении рамки?");
   assert.equal(ac.connection?.href, "/learn/transformer");
@@ -133,7 +141,15 @@ test("XI oscillations, alternating current and transformer offer optional exact 
   assert.equal(transformerChapter.source.section, "§ 9");
   assert.equal(transformerChapter.practice.href, "/practice/family/transformer-voltage-ratio");
   assert.ok(transformer.resources.some(resource => resource.href === transformerChapter.practice.href));
-  assert.equal(transformer.connection, undefined);
+  assert.equal(transformer.connection?.href, "/learn/electric-energy-transmission");
+  assert.equal(transmissionChapter.source.section, "§ 10");
+  assert.equal(transmissionChapter.practice.href, "/practice/family/transmission-line-loss");
+  assert.ok(transmission.resources.some(resource => resource.href === transmissionChapter.practice.href));
+  assert.equal(transmission.connection?.href, "/learn/energy-sources-and-environment");
+  assert.equal(environmentChapter.source.section, "§ 11");
+  assert.equal(environmentChapter.practice.href, "/learn/energy-sources-and-environment#self-check");
+  assert.ok(environment.resources.some(resource => resource.href === environmentChapter.practice.href));
+  assert.equal(environment.connection, undefined);
 });
 
 test("Grade X magnetic force, induction and self-induction connect to exact practice and optional XI foundations", () => {

@@ -95,6 +95,7 @@ import { mathematicalPendulumPeriodBlueprint } from "./templates/mathematical-pe
 import { lcPeriodBlueprint } from "./templates/lc-period.ts";
 import { acOscillogramFrequencyBlueprint } from "./templates/ac-oscillogram-frequency.ts";
 import { transformerVoltageRatioBlueprint } from "./templates/transformer-voltage-ratio.ts";
+import { transmissionLineLossBlueprint } from "./templates/transmission-line-loss.ts";
 import { inducedEmfMagnitudeBlueprint } from "./templates/induced-emf-magnitude.ts";
 import { ampereForceMagnitudeBlueprint } from "./templates/ampere-force-magnitude.ts";
 import { lorentzForceMagnitudeBlueprint } from "./templates/lorentz-force-magnitude.ts";
@@ -157,6 +158,7 @@ export const blueprints = {
   "lc-period": lcPeriodBlueprint,
   "ac-oscillogram-frequency": acOscillogramFrequencyBlueprint,
   "transformer-voltage-ratio": transformerVoltageRatioBlueprint,
+  "transmission-line-loss": transmissionLineLossBlueprint,
   "induced-emf-magnitude": inducedEmfMagnitudeBlueprint,
   "ampere-force-magnitude": ampereForceMagnitudeBlueprint,
   "lorentz-force-magnitude": lorentzForceMagnitudeBlueprint,

@@ -43,6 +43,8 @@ export const MIO_SCENES = {
   gasDischarge: "/images/mio/textbook-gas-discharge-v1.webp",
   semiconductorLight: "/images/mio/textbook-semiconductor-light-v1.webp",
   transformer: "/images/mio/textbook-transformer-v1.webp",
+  energyTransmission: "/images/mio/textbook-energy-transmission-v1.webp",
+  energySources: "/images/mio/textbook-energy-sources-v1.webp",
 } as const;
 
 export type MioScene = keyof typeof MIO_SCENES;

@@ -73,6 +73,7 @@ export type SkillId =
   | "lc-period"
   | "ac-oscillogram-frequency"
   | "transformer-voltage-ratio"
+  | "transmission-line-loss"
   | "induced-emf-magnitude"
   | "ampere-force-magnitude"
   | "lorentz-force-magnitude"
@@ -651,6 +652,14 @@ export const skillMetadata: Record<SkillId, SkillMetadata> = {
     title: "Напряжение трансформатора по числу витков",
     shortTitle: "Напряжение трансформатора",
     description: "Напряжение вторичной обмотки идеального трансформатора при известном отношении числа витков.",
+  },
+  "transmission-line-loss": {
+    id: "transmission-line-loss",
+    topicId: "electrodynamics",
+    sectionId: "electrodynamics",
+    title: "Нагрев линии передачи",
+    shortTitle: "Потери в линии",
+    description: "Мощность нагрева провода при заданной мощности на входе, напряжении и активном сопротивлении линии.",
   },
   "induced-emf-magnitude": {
     id: "induced-emf-magnitude",

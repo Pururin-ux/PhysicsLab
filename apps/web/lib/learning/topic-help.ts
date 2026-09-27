@@ -56,6 +56,7 @@ export type HelpSectionId =
   | "lc-period"
   | "ac-oscillogram-frequency"
   | "transformer-voltage-ratio"
+  | "transmission-line-loss"
   | "induced-emf-magnitude"
   | "ampere-force-magnitude"
   | "lorentz-force-magnitude"
@@ -471,6 +472,13 @@ export const topicHelpSections: Record<TopicId, TopicHelpSection[]> = {
       mistake: "Проверь порядок обмоток: первичная получает заданное U₁, вторичная даёт искомое U₂.",
     },
     {
+      id: "transmission-line-loss",
+      label: "Нагрев линии передачи",
+      shortHint: "При той же мощности на входе большему напряжению соответствует меньший ток.",
+      formula: "I=\\frac{P_{\\text{вх}}}{U_{\\text{вх}}},\\quad P_{\\text{наг}}=I^2R_{\\text{л}}",
+      mistake: "Потеря в ваттах — это часть мощности источника, ушедшая в нагрев; ток в формуле нужно возвести в квадрат.",
+    },
+    {
       id: "induced-emf-magnitude",
       label: "Модуль ЭДС индукции катушки",
       shortHint: "При одинаковом изменении потока через каждый виток умножь изменение одного витка на N и раздели на время.",
@@ -852,6 +860,7 @@ const blueprintTargets: Partial<
   "lc-period": { topicId: "electrodynamics", sectionId: "lc-period" },
   "ac-oscillogram-frequency": { topicId: "electrodynamics", sectionId: "ac-oscillogram-frequency" },
   "transformer-voltage-ratio": { topicId: "electrodynamics", sectionId: "transformer-voltage-ratio" },
+  "transmission-line-loss": { topicId: "electrodynamics", sectionId: "transmission-line-loss" },
   "induced-emf-magnitude": { topicId: "electrodynamics", sectionId: "induced-emf-magnitude" },
   "ampere-force-magnitude": { topicId: "electrodynamics", sectionId: "ampere-force-magnitude" },
   "lorentz-force-magnitude": { topicId: "electrodynamics", sectionId: "lorentz-force-magnitude" },

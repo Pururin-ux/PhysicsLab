@@ -166,3 +166,15 @@ exec-8cdce50d-4476-410d-9b9d-8de97c832357.png с исходным портрет
 - Runtime: textbook-transformer-v1.webp (1280×853, 112 KB), optimized from preserved built-in imagegen source exec-117b6245-c833-4646-907e-2cbe47846c59.png.
 - Identity reference: mio-thinking-v1.png; style/context reference: textbook-semiconductor-light-v1.webp. Mio keeps the viewer-left cyan forelock and viewer-right star, with a closed-mouth skeptical expression.
 - Mio compares two electrically separate windings on one closed teaching core, with a low-voltage AC source nearby. The voltmeter leads are visibly disconnected. The artwork is contextual: the exact number of turns, output voltage and power are conveyed only by DOM text and calculation.
+
+## Energy transmission · 2026-09-27
+
+- Runtime: textbook-energy-transmission-v1.webp (1280×853, 113 KB), optimized from preserved built-in imagegen source exec-4080faab-ea04-4aef-a693-0e38b6984634.png.
+- Identity reference: textbook-transformer-v1.webp. Mio keeps the viewer-left cyan forelock and viewer-right gold star. Her skeptical gaze follows an insulated teaching wire in a clear guard; distant transmission pylons connect this safe classroom observation to the grid question.
+- The wire is contextual, not a calibrated full circuit. No current, voltage, temperature or line loss is read from the artwork. DOM comparison carries the idealized values; real grid apparatus and mains are outside the activity.
+
+## Energy sources · 2026-09-27
+
+- Runtime: textbook-energy-sources-v1.webp (1280×853, 175 KB), optimized from preserved built-in imagegen source exec-2b7583f6-242b-4060-a9de-9cfe08a5626e.png.
+- Identity reference: textbook-energy-transmission-v1.webp. Mio keeps the viewer-left cyan forelock and viewer-right gold star, but changes to a seated, skeptical comparison pose.
+- Three prints show a thermal station, hydro dam and wind turbines as distinct cases; they are not Belarus-specific site photographs, a ranking, or numerical evidence. DOM text separately includes the nuclear-station question and explains the different physical paths and consequences.
