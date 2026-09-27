@@ -112,6 +112,7 @@ export const textbookChapterIds = [
   "self-induction",
   "electric-current-in-metals",
   "electric-current-in-electrolytes",
+  "electric-current-in-gases",
   "mechanical-oscillations",
   "mechanical-spring-period",
   "mathematical-pendulum",

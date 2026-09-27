@@ -77,6 +77,7 @@ export type SkillId =
   | "lorentz-force-magnitude"
   | "metal-temperature-current"
   | "electrolyte-ion-transport"
+  | "gas-discharge-conditions"
   | "self-induction-emf"
   | "electric-power"
   | "household-load-current"
@@ -680,6 +681,14 @@ export const skillMetadata: Record<SkillId, SkillMetadata> = {
     title: "Ток в электролите",
     shortTitle: "Ток в растворе",
     description: "Почему раствор соли проводит ток и к каким электродам движутся ионы.",
+  },
+  "gas-discharge-conditions": {
+    id: "gas-discharge-conditions",
+    topicId: "electrodynamics",
+    sectionId: "electrodynamics",
+    title: "Ток в газе",
+    shortTitle: "Газовый разряд",
+    description: "Когда воздух получает свободные носители и чем самостоятельный разряд отличается от несамостоятельного.",
   },
   "self-induction-emf": {
     id: "self-induction-emf",

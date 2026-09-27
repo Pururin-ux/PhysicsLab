@@ -60,6 +60,7 @@ export type HelpSectionId =
   | "lorentz-force-magnitude"
   | "metal-temperature-current"
   | "electrolyte-ion-transport"
+  | "gas-discharge-conditions"
   | "self-induction-emf"
   | "electric-power"
   | "household-load-current"
@@ -496,6 +497,13 @@ export const topicHelpSections: Record<TopicId, TopicHelpSection[]> = {
       mistake: "Положительный Cu²⁺ движется к отрицательному катоду, отрицательный Cl⁻ — к положительному аноду. В металлическом проводе носители другие.",
     },
     {
+      id: "gas-discharge-conditions",
+      label: "Условия газового разряда",
+      shortHint: "Найди внешний ионизатор и проверь, сохраняется ли разряд после его удаления.",
+      formula: "\\mathrm{A}+\\text{энергия}\\rightarrow\\mathrm{A}^{+}+e^{-}",
+      mistake: "Нагревание создаёт свободные носители в газе. В слабом поле разряд без него прекращается; при других условиях поле может поддерживать самостоятельный разряд.",
+    },
+    {
       id: "self-induction-emf",
       label: "Модуль ЭДС самоиндукции",
       shortHint: "Умножь индуктивность катушки на модуль изменения тока и раздели на время изменения.",
@@ -832,6 +840,7 @@ const blueprintTargets: Partial<
   "lorentz-force-magnitude": { topicId: "electrodynamics", sectionId: "lorentz-force-magnitude" },
   "metal-temperature-current": { topicId: "electrodynamics", sectionId: "metal-temperature-current" },
   "electrolyte-ion-transport": { topicId: "electrodynamics", sectionId: "electrolyte-ion-transport" },
+  "gas-discharge-conditions": { topicId: "electrodynamics", sectionId: "gas-discharge-conditions" },
   "self-induction-emf": { topicId: "electrodynamics", sectionId: "self-induction-emf" },
   "electric-power": { topicId: "electrodynamics", sectionId: "electric-power" },
   "household-load-current": { topicId: "electrodynamics", sectionId: "household-load-current" },

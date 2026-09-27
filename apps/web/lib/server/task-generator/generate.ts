@@ -99,6 +99,7 @@ import { ampereForceMagnitudeBlueprint } from "./templates/ampere-force-magnitud
 import { lorentzForceMagnitudeBlueprint } from "./templates/lorentz-force-magnitude.ts";
 import { metalTemperatureCurrentBlueprint } from "./templates/metal-temperature-current.ts";
 import { electrolyteIonTransportBlueprint } from "./templates/electrolyte-ion-transport.ts";
+import { gasDischargeConditionsBlueprint } from "./templates/gas-discharge-conditions.ts";
 import { selfInductionEmfBlueprint } from "./templates/self-induction-emf.ts";
 import { oscillationEnergyBlueprint } from "./templates/oscillation-energy.ts";
 import { mechanicalWaveSpeedBlueprint } from "./templates/mechanical-wave-speed.ts";
@@ -158,6 +159,7 @@ export const blueprints = {
   "lorentz-force-magnitude": lorentzForceMagnitudeBlueprint,
   "metal-temperature-current": metalTemperatureCurrentBlueprint,
   "electrolyte-ion-transport": electrolyteIonTransportBlueprint,
+  "gas-discharge-conditions": gasDischargeConditionsBlueprint,
   "self-induction-emf": selfInductionEmfBlueprint,
   "oscillation-energy": oscillationEnergyBlueprint,
   "mechanical-wave-speed": mechanicalWaveSpeedBlueprint,

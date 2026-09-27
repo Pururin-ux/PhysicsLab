@@ -421,6 +421,12 @@ export const misconceptionMetadataById: Record<string, MisconceptionMetadata> = 
     helpSectionId: "electrolyte-ion-transport",
     shortHint: "В растворе соли заряд переносят ионы; положительные движутся к отрицательному катоду, отрицательные — к аноду.",
   },
+  "gas-ionizer-condition": {
+    id: "gas-ionizer-condition",
+    label: "не различает внешний и самостоятельный газовый разряд",
+    helpSectionId: "gas-discharge-conditions",
+    shortHint: "Смотри, продолжится ли разряд после удаления внешнего ионизатора при заданных условиях поля.",
+  },
   "self-induction-missing-time": {
     id: "self-induction-missing-time",
     label: "не учитывает время изменения тока",
@@ -1082,6 +1088,15 @@ export const taskLearningMetadataByTemplateId: Record<string, TaskLearningMetada
     focusLabel: "Носители заряда в растворе соли",
     shortHint: "Растворение не всегда даёт ионы. В растворе соли проверь знак иона и полярность электрода.",
     misconceptionIds: ["electrolyte-carrier-polarity"],
+  },
+  "gas-discharge-conditions": {
+    templateId: "gas-discharge-conditions",
+    topicId: "electrodynamics",
+    helpSectionId: "gas-discharge-conditions",
+    skillId: "gas-discharge-conditions",
+    focusLabel: "Условия и носители тока в газе",
+    shortHint: "В обычном воздухе мало свободных зарядов. Различи внешнюю ионизацию и разряд, сохраняющийся после её удаления.",
+    misconceptionIds: ["gas-ionizer-condition"],
   },
   "self-induction-emf": {
     templateId: "self-induction-emf",

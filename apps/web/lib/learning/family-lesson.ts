@@ -13,6 +13,7 @@ const lessons:Partial<Record<TemplateId,{href:string;label:string}>>={
   "lorentz-force-magnitude":{href:"/learn/lorentz-force-and-charge-motion",label:"Учебник: движение заряда в магнитном поле"},
   "metal-temperature-current":{href:"/learn/electric-current-in-metals",label:"Учебник: ток в металлах при нагреве"},
   "electrolyte-ion-transport":{href:"/learn/electric-current-in-electrolytes",label:"Учебник: ток в растворе соли и электролиз"},
+  "gas-discharge-conditions":{href:"/learn/electric-current-in-gases",label:"Учебник: газовый разряд и плазма"},
   "self-induction-emf":{href:"/learn/self-induction",label:"Учебник: ток, ЭДС и самоиндукция катушки"},
   "oscillation-energy":{href:"/learn/mechanical-oscillation-energy",label:"Учебник: энергия гармонических колебаний"},
   "resonance-frequency-match":{href:"/learn/mechanical-forced-oscillations",label:"Учебник: вынужденные колебания и резонанс"},

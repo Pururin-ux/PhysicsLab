@@ -228,7 +228,13 @@ solution from electron transport in the metal wires, identifies the new cathode
 after polarity reversal and limits the conductivity conclusion to the observed
 lamp. `electrolyte-ion-transport` practices those distinctions. The authored
 illustration is contextual, not a measured experiment or a visualization of
-individual ions; gases and semiconductors remain open.
+individual ions. The next Grade X chapter, `/learn/electric-current-in-gases`,
+uses § 36 and a teacher-led plate-gap demonstration to distinguish external
+ionization from a discharge that can sustain itself under other field conditions.
+Mio records the changed electrometer reading; the image does not depict visible
+ions, a spark, measured current or a safe home experiment. Its qualitative
+`gas-discharge-conditions` practice checks carriers, ionizer removal and plasma.
+Semiconductors and real laboratory demonstrations remain open.
 This remains partial grade 10 coverage. Chapters
 include interactive models, worked examples and persistent self-checks; existing
 staged lessons keep their own drafts. The contents can filter unfinished or

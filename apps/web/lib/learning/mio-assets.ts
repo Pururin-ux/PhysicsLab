@@ -40,6 +40,7 @@ export const MIO_SCENES = {
   resonance: "/images/mio/textbook-mechanical-resonance-v1.webp",
   pendulum: "/images/mio/textbook-mathematical-pendulum-v1.webp",
   electrolytes: "/images/mio/textbook-electrolytes-v1.webp",
+  gasDischarge: "/images/mio/textbook-gas-discharge-v1.webp",
 } as const;
 
 export type MioScene = keyof typeof MIO_SCENES;

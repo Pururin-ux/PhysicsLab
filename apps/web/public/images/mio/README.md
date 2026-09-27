@@ -149,3 +149,8 @@ exec-8cdce50d-4476-410d-9b9d-8de97c832357.png с исходным портрет
 - Runtime: `textbook-electrolytes-v1.webp` (1280×853, 103 KB), optimized from preserved built-in imagegen source `exec-ca107511-ca7e-4326-b6cd-be559efb130f.png`.
 - Identity reference: `mio-thinking-v1.png`; style reference: `textbook-bohr-spectra-v1.webp`. Mio records a calm, skeptical observation at a transparent vessel with two graphite electrodes; her forelock, star, face and jacket match the approved identity. The two leads leave frame, so the image does not assign polarity.
 - Artwork shows the apparatus before any result: no visible ions, deposit, gas, lamp or numeric reading. DOM text and disclosures carry the three observations, electrode signs and safety limit. The source stays in Codex generated images; this WebP is the reviewed runtime derivative.
+
+## Gas discharge · 2026-09-27
+- Runtime: `textbook-gas-discharge-v1.webp` (1280×853, 103 KB), optimized from preserved built-in imagegen source `exec-9a77ce83-56c5-406e-83d4-d7d1bde3370a.png`.
+- Identity reference: `mio-thinking-v1.png`; style reference: `textbook-electrolytes-v1.webp`. Mio records a skeptical observation while looking toward the plate gap, behind a demonstration shield. Her turquoise forelock and gold star remain on their established sides.
+- Artwork shows the externally heated moment of a teacher-led demonstration, with no spark or drawn ions. The electrometer is only partly visible; DOM observations state what it showed. The plate gap and the modest flame are legible, but image geometry is not a calibrated diagram or a procedure for repeating the experiment.

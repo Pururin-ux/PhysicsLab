@@ -197,4 +197,17 @@ test("Grade X electrolyte lesson connects observations, ions and exact-family pr
   assert.equal(chapter.practice.href, "/practice/family/electrolyte-ion-transport");
   assert.equal(entry.resources.filter(item => item.href === chapter.practice.href).length, 1);
   assert.ok(chapter.sections.some(section => section.paragraphs.some(paragraph => paragraph.includes("Cu²⁺"))));
+  assert.equal(entry.connection?.href, "/learn/electric-current-in-gases");
+});
+
+test("Grade X gas lesson distinguishes the external ionizer from a self-sustained discharge", () => {
+  const chapter = textbookChapters.find(item => item.id === "electric-current-in-gases");
+  const entry = learningEntries.find(item => item.id === "electric-current-in-gases");
+  assert.ok(chapter);
+  assert.ok(entry);
+  assert.equal(chapter.grade, 10);
+  assert.equal(chapter.source.section, "§ 36");
+  assert.equal(chapter.practice.href, "/practice/family/gas-discharge-conditions");
+  assert.equal(entry.resources.filter(item => item.href === chapter.practice.href).length, 1);
+  assert.ok(chapter.sections.some(section => section.paragraphs.some(paragraph => paragraph.includes("рекомбинировать"))));
 });

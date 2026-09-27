@@ -83,6 +83,7 @@ const explanationByFamily: Partial<Record<TemplateId, ExactExplanation>> = {
   "lorentz-force-magnitude": { href: "/learn/lorentz-force-and-charge-motion?practice=lorentz-force-magnitude", chapterId: "lorentz-force-and-charge-motion", label: "Почему заряд отклоняется в магнитном поле" },
   "metal-temperature-current": { href: "/learn/electric-current-in-metals?practice=metal-temperature-current", chapterId: "electric-current-in-metals", label: "Почему нагрев меняет ток в металле" },
   "electrolyte-ion-transport": { href: "/learn/electric-current-in-electrolytes?practice=electrolyte-ion-transport", chapterId: "electric-current-in-electrolytes", label: "Почему раствор соли проводит ток" },
+  "gas-discharge-conditions": { href: "/learn/electric-current-in-gases?practice=gas-discharge-conditions", chapterId: "electric-current-in-gases", label: "Почему воздух начинает проводить ток" },
   "self-induction-emf": { href: "/learn/self-induction?practice=self-induction-emf", chapterId: "self-induction", label: "Почему катушка противодействует изменению тока" },
   "source-internal-resistance": { href: "/learn/full-circuit-ohms-law?practice=source-internal-resistance", chapterId: "full-circuit-ohms-law", label: "Почему напряжение источника падает под нагрузкой" },
   "source-efficiency": { href: "/learn/full-circuit-ohms-law?practice=source-efficiency", chapterId: "full-circuit-ohms-law", label: "Какую долю мощности источника получает нагрузка" },

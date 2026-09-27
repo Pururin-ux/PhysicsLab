@@ -1021,6 +1021,19 @@ export const formulaReference: FormulaReferenceGroup[] = [
         limitation: "Это пример для раствора CuCl₂, а не правило для любого растворённого вещества. Схема не даёт численного тока, количества осадка или состава продуктов другого электролита.",
       },
       {
+        id: "gas-discharge-conditions",
+        relatedSkillIds: ["gas-discharge-conditions"],
+        title: "Образование носителей заряда в газе",
+        formula: "\\mathrm{A}+\\text{энергия}\\rightarrow\\mathrm{A}^{+}+e^{-}",
+        caption: "условная запись ионизации нейтральной частицы газа",
+        symbols: [
+          { latex: "\\mathrm{A}", description: "условная нейтральная частица газа" },
+          { latex: "\\mathrm{A}^{+}", description: "положительный ион после отрыва электрона" },
+          { latex: "e^{-}", description: "свободный электрон" },
+        ],
+        limitation: "Это схема появления носителей, а не формула для расчёта тока. В реальном газе могут образовываться и отрицательные ионы; сохранение разряда зависит от условий поля и среды.",
+      },
+      {
         id: "induced-emf-magnitude",
         relatedSkillIds: ["induced-emf-magnitude"],
         title: "Модуль ЭДС электромагнитной индукции",
