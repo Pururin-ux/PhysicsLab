@@ -8,6 +8,7 @@ import type {
   ValidationResult,
 } from "./types.ts";
 import { GENERATED_TASK_VARIANT } from "./types.ts";
+import { isNumericAnswerCorrect, toleranceFor } from "../../answer/numeric-answer.ts";
 
 const formulaCache = new Map<string, ValidationIssue | null>();
 
@@ -154,6 +155,12 @@ export function validateGeneratedTask(
           `Ответ ${answer} совпал с дистрактором "${distractor.label}".`,
         ),
       );
+    } else if (task.answerFormat === "numeric_input" &&
+      isNumericAnswerCorrect(distractor.value, { value: answer, tolerance: toleranceFor(answer) })) {
+      issues.push(issue(
+        "numeric_distractor_tolerance",
+        'Дистрактор "' + distractor.label + '" попал в допуск числового ответа ' + answer + ".",
+      ));
     }
   }
 

@@ -4,6 +4,8 @@ import { GET } from "../../../app/api/tasks/route.ts";
 import {
   blueprints,
   generateTasks,
+  getCandidateParams,
+  getTemplateIdsByGroup,
   templateRegistry,
   type TemplateId,
 } from "./generate.ts";
@@ -12,18 +14,8 @@ import {
   isNumericAnswerCorrect,
   toleranceFor,
 } from "../../answer/numeric-answer.ts";
-
-const NUMERIC_PILOTS = [
-  "archimedes-force",
-  "average-speed-segments",
-  "work-force-distance",
-  "electric-power",
-  "heat-balance-simple",
-  "plane-mirror-separation",
-  "refractive-index-speed",
-  "thin-lens-image-distance",
-  "lens-optical-power",
-] as const satisfies readonly TemplateId[];
+import { NUMERIC_TEMPLATE_IDS } from "./test-fixtures.ts";
+import { validateGeneratedTask } from "./validator.ts";
 
 type ApiJson = {
   tasks: {
@@ -47,14 +39,14 @@ test("явно перечисленные семейства использую�
     .filter((entry) => blueprints[entry.id].answerFormat === "numeric_input")
     .map((entry) => entry.id);
 
-  assert.deepEqual(new Set(numeric), new Set<string>(NUMERIC_PILOTS));
+  assert.deepEqual(new Set(numeric), new Set<string>(NUMERIC_TEMPLATE_IDS));
 
   const single = templateRegistry.filter(
     (entry) => (blueprints[entry.id].answerFormat ?? "single_choice") === "single_choice",
   );
 
-  assert.equal(numeric.length, NUMERIC_PILOTS.length);
-  assert.equal(single.length, templateRegistry.length - NUMERIC_PILOTS.length);
+  assert.equal(numeric.length, NUMERIC_TEMPLATE_IDS.length);
+  assert.equal(single.length, templateRegistry.length - NUMERIC_TEMPLATE_IDS.length);
   assert.ok(single.some(({ id }) => id === "contact-pressure"));
   assert.ok(single.some(({ id }) => id === "refraction-direction"));
 });
@@ -75,9 +67,9 @@ test("focused API batch returns exactly five tasks from one requested family", a
   assert.deepEqual(new Set(payload.tasks.map((task) => task.blueprint)), new Set(["ohm-law"]));
 });
 
-for (const pilot of NUMERIC_PILOTS) {
-  test(`${pilot}: numeric-ответ самосогласован на 200 вариантах`, () => {
-    const tasks = generateTasks(pilot, 200);
+for (const pilot of NUMERIC_TEMPLATE_IDS) {
+  test(`${pilot}: numeric-ответ самосогласован на всём пуле и не менее 200 вариантов`, () => {
+    const tasks = generateTasks(pilot, Math.max(200, getCandidateParams(pilot).length));
 
     for (const task of tasks) {
       const spec = { value: task.answerValue, tolerance: toleranceFor(task.answerValue) };
@@ -116,6 +108,23 @@ for (const pilot of NUMERIC_PILOTS) {
   });
 }
 
+test("validator rejects a numeric distractor inside the answer tolerance", () => {
+  const blueprint = blueprints["coulomb-force"];
+  const task = {
+    ...generateTasks(blueprint.id, 1)[0],
+    params: { q1: 2, q2: 2, rCm: 40, epsilon: 2, sign: 1 },
+    answer: "b" as const,
+    answerValue: 0.1,
+    options: [
+      { id: "a" as const, text: "0,05", value: 0.05, misconception: "забываешь модуль второго заряда" },
+      { id: "b" as const, text: "0,1", value: 0.1 },
+      { id: "c" as const, text: "4", value: 4, misconception: "делишь на расстояние вместо его квадрата" },
+      { id: "d" as const, text: "100", value: 100, misconception: "путаешь микро- и миллиньютоны" },
+    ],
+  };
+  assert.ok(validateGeneratedTask(task, blueprint).issues.some(issue => issue.code === "numeric_distractor_tolerance"));
+});
+
 test("average-speed-segments: ответы целые, как в бланке ЦТ/ЦЭ", () => {
   const tasks = generateTasks("average-speed-segments", 500);
 
@@ -142,8 +151,8 @@ test("work-force-distance: signed — встречаются и отрицате
   assert.equal(values.some((value) => value > 0), true, "нет положительных ответов");
 });
 
-test("API: numeric pilots отдают числовой контракт без фиктивных вариантов", async () => {
-  for (const pilot of NUMERIC_PILOTS) {
+test("API: все numeric-семейства отдают числовой контракт без фиктивных вариантов", async () => {
+  for (const pilot of NUMERIC_TEMPLATE_IDS) {
     const data = await fetchTasks(`template=${pilot}&count=4&batch=2`);
 
     for (const task of data.tasks) {
@@ -159,8 +168,8 @@ test("API: numeric pilots отдают числовой контракт без 
       };
       assert.equal(typeof answer.value, "number");
       assert.equal(answer.unit, task.answerUnit);
-      assert.equal(typeof answer.decimals, "number");
-      assert.equal(answer.tolerance > 0, true);
+      assert.equal(answer.decimals, decimalsOf(answer.value));
+      assert.equal(answer.tolerance, toleranceFor(answer.value));
       assert.ok(["positive", "magnitude", "signed"].includes(answer.sign));
       assert.equal(Array.isArray(task.misconceptions), true);
     }
@@ -177,8 +186,8 @@ test("API: single_choice-шаблон сохраняет варианты", asyn
   }
 });
 
-test("каждое numeric pilot-семейство достижимо в topic-mixed на 10 задач", async () => {
-  const pilotMixes: { template: string; pilot: string }[] = [
+test("numeric pilot-семейства достижимы за полный цикл topic-mixed", async () => {
+  const pilotMixes: { template: string; pilot: TemplateId }[] = [
     { template: "mixed", pilot: "average-speed-segments" },
     { template: "dynamics-mixed", pilot: "work-force-distance" },
     { template: "electro-mixed", pilot: "electric-power" },
@@ -186,12 +195,13 @@ test("каждое numeric pilot-семейство достижимо в topic-
   ];
 
   for (const { template, pilot } of pilotMixes) {
+    const batchLimit = 2 * getTemplateIdsByGroup(blueprints[pilot].group).length;
     let found = false;
-    for (let batch = 0; batch < 5 && !found; batch += 1) {
+    for (let batch = 0; batch < batchLimit && !found; batch += 1) {
       const data = await fetchTasks(`template=${template}&count=10&batch=${batch}`);
       found = data.tasks.some((task) => task.blueprint === pilot);
     }
-    assert.equal(found, true, `${pilot} не встретился в ${template} за 5 батчей по 10 задач`);
+    assert.equal(found, true, `${pilot} не встретился в ${template} за полный цикл`);
   }
 });
 

@@ -128,6 +128,7 @@ import {
   normalizeAnswerValue,
 } from "./validator.ts";
 import { calibratedVariantDifficulty } from "./difficulty.ts";
+import { isNumericAnswerCorrect, toleranceFor } from "../../answer/numeric-answer.ts";
 
 const optionIds: GeneratedOption["id"][] = ["a", "b", "c", "d"];
 const candidateCache = new Map<string, Params[]>();
@@ -416,8 +417,36 @@ function isValidCandidate(blueprint: TaskBlueprint, params: Params): boolean {
   return (
     isAnswerValueAllowed(blueprint.answerKind, answer) &&
     values.every((value) => Number.isFinite(value)) &&
-    new Set(values).size === values.length
+    new Set(values).size === values.length &&
+    (blueprint.answerFormat !== "numeric_input" ||
+      values.slice(1).every(value =>
+        !isNumericAnswerCorrect(value, { value: answer, tolerance: toleranceFor(answer) }),
+      ))
   );
+}
+
+function validCandidatesFor(blueprint: TaskBlueprint): Params[] {
+  const cached = candidateCache.get(blueprint.id);
+  if (cached) return cached;
+
+  const seen = new Set<string>();
+  const candidates = enumerateBlueprintParams(blueprint).filter(params => {
+    if (!isValidCandidate(blueprint, params)) return false;
+    const answer = normalizeAnswerValue(blueprint.solver(params));
+    // Hidden variants and unused parameters do not create a new problem.
+    // Include visual data: equal prompts with different diagrams are distinct.
+    const content = JSON.stringify([
+      blueprint.textTemplate(params, answer),
+      answerUnitFor(blueprint, params),
+      graphFor(blueprint, params),
+      diagramFor(blueprint, params),
+    ]);
+    if (seen.has(content)) return false;
+    seen.add(content);
+    return true;
+  });
+  candidateCache.set(blueprint.id, candidates);
+  return candidates;
 }
 
 function createTask(blueprint: TaskBlueprint, params: Params, index: number): GeneratedTask {
@@ -484,10 +513,7 @@ export function generateTasks(
   }
 
   const blueprint = getBlueprint(templateId);
-  const validCandidates =
-    candidateCache.get(blueprint.id) ??
-    enumerateBlueprintParams(blueprint).filter((params) => isValidCandidate(blueprint, params));
-  candidateCache.set(blueprint.id, validCandidates);
+  const validCandidates = validCandidatesFor(blueprint);
 
   const selectedCandidates = difficulty
     ? difficultyCandidateCache.get(`${blueprint.id}:${difficulty}`) ??
@@ -515,10 +541,7 @@ export function generateTasks(
 
 export function getCandidateParams(templateId: string, difficulty?: Difficulty): readonly Params[] {
   const blueprint = getBlueprint(templateId);
-  const valid =
-    candidateCache.get(blueprint.id) ??
-    enumerateBlueprintParams(blueprint).filter((params) => isValidCandidate(blueprint, params));
-  candidateCache.set(blueprint.id, valid);
+  const valid = validCandidatesFor(blueprint);
   return difficulty
     ? valid.filter((params) => difficultyForCandidate(blueprint, params) === difficulty)
     : valid;

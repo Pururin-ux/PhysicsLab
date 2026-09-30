@@ -28,7 +28,7 @@ export const resonanceFrequencyMatchBlueprint: TaskBlueprint = {
   answerFormat: "numeric_input",
   solver: naturalFrequency,
   distractors,
-  textTemplate: params => `Собственная частота маятника равна ${formatMathValue(naturalFrequency(params))} Гц. В простой модели при какой частоте внешних толчков амплитуда будет особенно большой? Считай условием резонанса близость частот. Ответ дай в герцах.`,
+  textTemplate: params => `Собственная частота маятника равна ${formatAnswerValue(naturalFrequency(params))} Гц. В простой модели при какой частоте внешних толчков амплитуда будет особенно большой? Считай условием резонанса близость частот. Ответ дай в герцах.`,
   explanationTemplate: params => `Резонанс возникает, когда частота внешней силы близка к собственной частоте системы: \\nu_{\\text{внеш}}\\approx\\nu_0=${formatMathValue(naturalFrequency(params))} Гц.`,
   trap: "Сопоставь частоту толчков с собственной частотой маятника, а не с периодом.",
   coachLines: {

@@ -11,6 +11,8 @@ import {
 } from "./generate.ts";
 import type { GeneratedTask, TaskBlueprint } from "./types.ts";
 import { formatAnswerValue, validateGeneratedTask } from "./validator.ts";
+import { FINITE_TEXT_POOLS } from "./test-fixtures.ts";
+import { schoolChecks } from "../../learning/school-checks.ts";
 
 const kinematicsTemplateIds = [
   "free-fall",
@@ -120,29 +122,18 @@ const electrodynamicsTemplateIds = [
   "parallel-plate-capacitance",
   "electric-power",
   "household-load-current",
+  "ampere-force-magnitude",
+  "lorentz-force-magnitude",
+  "metal-temperature-current",
+  "electrolyte-ion-transport",
+  "gas-discharge-conditions",
+  "semiconductor-carriers",
+  "self-induction-emf",
+  "transformer-voltage-ratio",
+  "transmission-line-loss",
+  "em-wavelength-vacuum",
 ] as const;
 
-// Шаблоны на пифагоровых тройках имеют естественно малый пул параметров:
-// пар с целым ответом немного, тексты множатся только сюжетами.
-const uniqueTextPoolBySkill: Record<string, number> = {
-  // Свободное падение: 4 времени × 8 правдоподобных сюжетов — контексты
-  // намеренно привязаны к масштабу высоты, поэтому пул меньше дефолтных 50.
-  "free-fall": 30,
-  "gravitation-distance": 50,
-  "relative-velocity-vectors": 36,
-  "resultant-force-2d": 24,
-  // Оптика: кураторские наборы параметров имеют естественно меньший пул.
-  "reflection-angle": 45,
-  "plane-mirror-separation": 39,
-  "refraction-direction": 4,
-  "refractive-index-speed": 15,
-  "snell-index-ratio": 12,
-  "lens-optical-power": 12,
-  "magnetic-field-direction": 4,
-  "conductor-resistance": 20,
-  "lc-period": 5,
-  "ac-oscillogram-frequency": 5,
-};
 const thermodynamicsTemplateIds = [
   "density-volume-ratio",
   "molecule-count-from-mass",
@@ -241,7 +232,7 @@ for (const templateId of kinematicsTemplateIds) {
 
     // Пул relative-velocity-vectors ограничен пифагоровыми тройками:
     // 12 пар × 3 сюжета = 36 уникальных текстов, дальше цикл повторяется.
-    const uniqueBatchSize = Math.min(uniqueTextPoolBySkill[templateId] ?? 50, 50);
+    const uniqueBatchSize = Math.min(FINITE_TEXT_POOLS[templateId] ?? 50, 50);
     const firstBatchTexts = tasks.slice(0, uniqueBatchSize).map((task) => task.text);
     assert.equal(
       new Set(firstBatchTexts).size,
@@ -673,7 +664,7 @@ test("production templates keep enough variants and explanations", () => {
     const blueprint = getBlueprint(id);
 
     assert.equal(tasks.length, 200, `${id} should generate 200 tasks`);
-    const minUniqueTexts = uniqueTextPoolBySkill[id] ?? 50;
+    const minUniqueTexts = FINITE_TEXT_POOLS[id] ?? 50;
     assert.equal(
       new Set(tasks.map((task) => task.text)).size >= minUniqueTexts,
       true,
@@ -694,6 +685,16 @@ test("production templates keep enough variants and explanations", () => {
   }
 });
 
+test("finite authored pools exhaust distinct conditions before repeating", () => {
+  for (const [id, poolSize] of Object.entries(FINITE_TEXT_POOLS)) {
+    assert.equal(getCandidateParams(id).length, poolSize, id + ": inflated or missing candidates");
+    const tasks = generateTasks(id, poolSize + 1);
+    assert.equal(new Set(tasks.slice(0, poolSize).map(task => task.text)).size, poolSize, id);
+    assert.equal(tasks[poolSize].text, tasks[0].text, id + ": cycle starts after exhaustion");
+    assert.deepEqual(tasks, generateTasks(id, poolSize + 1), id + ": deterministic cycle");
+  }
+});
+
 // Условие и варианты ответа рисует QuestionCard/OptionList обычным текстом, без
 // MathText. Любой $…$ в этих полях ученик увидит долларами (так вылезло
 // «$c = 4200$» в задачах на количество теплоты). Разбор и подсказки идут через
@@ -702,13 +703,13 @@ test("task text and options stay free of raw LaTeX markers", () => {
   for (const { id } of templateRegistry) {
     for (const task of generateTasks(id, 60)) {
       assert.equal(
-        /\$|\\frac|\\Delta|\\cdot/.test(task.text),
+        /\$|\\frac|\\Delta|\\cdot|\{,\}/.test(task.text),
         false,
         `${id}: условие показывается без MathText, а содержит разметку: ${task.text}`,
       );
       for (const option of task.options) {
         assert.equal(
-          /\$|\\frac|\\Delta|\\cdot/.test(option.text),
+          /\$|\\frac|\\Delta|\\cdot|\{,\}/.test(option.text),
           false,
           `${id}: вариант ответа содержит разметку: ${option.text}`,
         );
@@ -745,6 +746,20 @@ test("registry groups every template exactly once", () => {
     new Set(getTemplateIdsByGroup("thermodynamics")),
     new Set(thermodynamicsTemplateIds),
   );
+  assert.deepEqual(new Set(getTemplateIdsByGroup("optics")), new Set([
+    "reflection-angle", "plane-mirror-separation", "refraction-direction",
+    "shadow-and-penumbra", "refractive-index-speed", "snell-index-ratio",
+    "thin-lens-image-distance", "lens-optical-power", "lens-image-height",
+    "lens-image-properties", "vision-correction",
+  ]));
+  assert.deepEqual(new Set(getTemplateIdsByGroup("quantum")), new Set(["bohr-transition-radiation"]));
+  const grouped = [
+    ...measurementTemplateIds, ...kinematicsTemplateIds, ...dynamicsTemplateIds,
+    ...electrodynamicsTemplateIds, ...thermodynamicsTemplateIds,
+    ...getTemplateIdsByGroup("optics"), ...getTemplateIdsByGroup("quantum"),
+  ];
+  assert.equal(grouped.length, templateRegistry.length);
+  assert.equal(new Set(grouped).size, grouped.length);
 });
 
 test("ohm-law: покрывает все три искомые величины с единицами", () => {
@@ -847,14 +862,19 @@ for (const templateId of [
       assert.notEqual(task.explanation, task.coach_lines.correct);
     }
 
-    const answerDistribution = new Set(tasks.map((task) => task.answerValue));
+    // Categorical values are option indices; their semantic answers are the
+    // labels. Numerical tasks still compare the displayed numerical values.
+    const answerDistribution = new Set(tasks.map(task =>
+      task.options.find(option => option.id === task.answer)?.text,
+    ));
+    const minimumAnswers = templateId === "oscillation-frequency" || templateId === "molecular-kinetic-energy" ? 3 : 4;
     assert.equal(
-      answerDistribution.size >= 4,
+      answerDistribution.size >= minimumAnswers,
       true,
-      `${templateId} should produce at least 4 different answers`,
+      `${templateId} should produce at least ${minimumAnswers} different semantic answers`,
     );
 
-    const batchSize = Math.min(uniqueTextPoolBySkill[templateId] ?? 50, 50);
+    const batchSize = Math.min(FINITE_TEXT_POOLS[templateId] ?? 50, 50);
     const firstBatchTexts = tasks.slice(0, batchSize).map((task) => task.text);
     assert.equal(
       new Set(firstBatchTexts).size,
@@ -962,20 +982,6 @@ test("API route делает batch детерминированным и мен�
   );
 });
 
-test("API route dynamics-mixed покрывает все навыки динамики", async () => {
-  const response = await GET(
-    new Request(`http://localhost/api/tasks?template=dynamics-mixed&count=${dynamicsTemplateIds.length}&batch=7`),
-  );
-  const data = (await response.json()) as ApiTaskResponse;
-
-  assert.equal(response.status, 200);
-  assert.equal(data.tasks.length, dynamicsTemplateIds.length);
-  assert.deepEqual(
-    new Set(data.tasks.map((task) => task.blueprint)),
-    new Set(dynamicsTemplateIds),
-  );
-});
-
 test("conductor-resistance: R = rho l / S и согласованные единицы", () => {
   const tasks = generateTasks("conductor-resistance", 80);
   for (const task of tasks) {
@@ -1019,69 +1025,57 @@ test("movable-pulley: две несущие ветви делят вес пор�
   }
 });
 
-test("school checks rotate through available families between batches", async () => {
-  const [firstResponse, nextResponse, gradeNineResponse] = await Promise.all([
-    GET(new Request("http://localhost/api/tasks?template=school-check-7&count=5&batch=0")),
-    GET(new Request("http://localhost/api/tasks?template=school-check-7&count=5&batch=1")),
-    GET(new Request("http://localhost/api/tasks?template=school-check-9&count=5&batch=0")),
-  ]);
-  const first = (await firstResponse.json()) as ApiTaskResponse;
-  const next = (await nextResponse.json()) as ApiTaskResponse;
-  const gradeNine = (await gradeNineResponse.json()) as ApiTaskResponse;
-
-  assert.equal(firstResponse.status, 200);
-  assert.equal(nextResponse.status, 200);
-  assert.equal(gradeNineResponse.status, 200);
-  assert.equal(first.tasks.length, 5);
-  assert.equal(next.tasks.length, 5);
-  assert.notDeepEqual(
-    first.tasks.map((task) => task.blueprint),
-    next.tasks.map((task) => task.blueprint),
-  );
-  assert.ok(gradeNine.tasks.some((task) => task.blueprint === "archimedes-force"));
+test("school checks rotate through the full authored grade-specific set", async () => {
+  for (const check of schoolChecks) {
+    const seen = new Set<string>();
+    let firstFamilies: string[] = [];
+    for (let batch = 0; batch < Math.ceil(check.familyIds.length / 5); batch++) {
+      const url = `http://localhost/api/tasks?template=${check.template}&count=5&batch=${batch}`;
+      const response = await GET(new Request(url));
+      const data = (await response.json()) as ApiTaskResponse;
+      assert.equal(response.status, 200);
+      assert.equal(data.tasks.length, 5);
+      const families = data.tasks.map(task => task.blueprint);
+      if (batch === 0) {
+        firstFamilies = families;
+        assert.deepEqual(families, check.familyIds.slice(0, 5));
+        const repeat = await GET(new Request(url));
+        assert.deepEqual((await repeat.json()).tasks, data.tasks);
+      } else {
+        assert.notDeepEqual(families, firstFamilies);
+      }
+      families.forEach(id => seen.add(id));
+    }
+    assert.deepEqual(seen, new Set(check.familyIds), check.template);
+  }
 });
 
-test("API route mixed покрывает все навыки кинематики", async () => {
-  const response = await GET(
-    new Request("http://localhost/api/tasks?template=mixed&count=10&batch=7"),
-  );
-  const data = (await response.json()) as ApiTaskResponse;
-
-  assert.equal(response.status, 200);
-  assert.equal(data.tasks.length, 10);
-  assert.deepEqual(
-    new Set(data.tasks.map((task) => task.blueprint)),
-    new Set(kinematicsTemplateIds),
-  );
-});
-
-test("API route electro-mixed покрывает все навыки электродинамики", async () => {
-  const response = await GET(
-    new Request(`http://localhost/api/tasks?template=electro-mixed&count=${electrodynamicsTemplateIds.length}&batch=7`),
-  );
-  const data = (await response.json()) as ApiTaskResponse;
-
-  assert.equal(response.status, 200);
-  assert.equal(data.tasks.length, electrodynamicsTemplateIds.length);
-  assert.deepEqual(
-    new Set(data.tasks.map((task) => task.blueprint)),
-    new Set(electrodynamicsTemplateIds),
-  );
-});
-
-test("API route thermo-mixed покрывает все навыки термодинамики", async () => {
-  const response = await GET(
-    new Request("http://localhost/api/tasks?template=thermo-mixed&count=12&batch=7"),
-  );
-  const data = (await response.json()) as ApiTaskResponse;
-
-  assert.equal(response.status, 200);
-  assert.equal(data.tasks.length, 12);
-  assert.deepEqual(
-    new Set(data.tasks.map((task) => task.blueprint)),
-    new Set(thermodynamicsTemplateIds),
-  );
-});
+for (const [template, families] of [
+  ["mixed", kinematicsTemplateIds],
+  ["dynamics-mixed", dynamicsTemplateIds],
+  ["electro-mixed", electrodynamicsTemplateIds],
+  ["thermo-mixed", thermodynamicsTemplateIds],
+  ["optics-mixed", getTemplateIdsByGroup("optics")],
+] as const) {
+  test(`API route ${template} covers every family over a bounded batch cycle`, async () => {
+    const seen = new Set<string>();
+    // A session is capped at 20 and count=10 reserves 5/3/2 difficulty
+    // slots. Covering the bank requires rotation, not one oversized request.
+    for (let batch = 0; batch < 2 * families.length && seen.size < families.length; batch++) {
+      const response = await GET(new Request(
+        `http://localhost/api/tasks?template=${template}&count=10&batch=${batch}`,
+      ));
+      const data = (await response.json()) as ApiTaskResponse;
+      assert.equal(response.status, 200);
+      assert.equal(data.tasks.length, 10);
+      for (const task of data.tasks) {
+        assert.ok((families as readonly string[]).includes(task.blueprint), task.blueprint);
+        seen.add(task.blueprint);
+      }
+    }
+    assert.deepEqual(seen, new Set(families), template);
+  });
+}
 
 test("API route exam собирает сбалансированную смешанную тренировку", async () => {
   const url = "http://localhost/api/tasks?template=exam&count=10&batch=3";
@@ -1099,8 +1093,7 @@ test("API route exam собирает сбалансированную смеш�
     "измерения VII класса не занимают неподтверждённые экзаменационные слоты",
   );
 
-  // Квоты на 10 задач: 4 механики (2 кинематика + 2 динамика),
-  // 3 электродинамики, 3 термодинамики — как в route.ts.
+  // Учебная диагностика: две задачи каждого из пяти включённых разделов.
   const groupOf = (blueprint: string) =>
     (kinematicsTemplateIds as readonly string[]).includes(blueprint)
       ? "kinematics"
@@ -1131,8 +1124,7 @@ test("API route exam собирает сбалансированную смеш�
   const ids = new Set(first.tasks.map((task) => task.id));
   assert.equal(ids.size, first.tasks.length, "id задач в exam должны быть уникальны");
 
-  // Термо-квота (3) больше числа термо-шаблонов (2): один шаблон входит
-  // дважды и обязан дать две разные задачи, а не одну и ту же.
+  // Повторное семейство должно давать разные условия внутри сессии.
   const texts = new Set(first.tasks.map((task) => task.text));
   assert.equal(texts.size, first.tasks.length, "в exam не должно быть одинаковых задач");
 

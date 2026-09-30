@@ -41,7 +41,7 @@ export const mechanicalWaveSpeedBlueprint: TaskBlueprint = {
   distractors,
   textTemplate: params => {
     const value = speed(params);
-    return `По натянутой струне распространяется поперечная волна. Длина волны равна ${formatMathValue(value.wavelengthM)} м, частота источника — ${value.frequencyHz} Гц. Найди скорость распространения волны в м/с.`;
+    return `По натянутой струне распространяется поперечная волна. Длина волны равна ${formatAnswerValue(value.wavelengthM)} м, частота источника — ${value.frequencyHz} Гц. Найди скорость распространения волны в м/с.`;
   },
   explanationTemplate: (params, answer) => {
     const value = speed(params);
