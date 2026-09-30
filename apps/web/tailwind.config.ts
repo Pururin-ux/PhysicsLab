@@ -33,7 +33,7 @@ const config: Config = {
         },
       },
       fontFamily: {
-        sans: ['var(--font-manrope)', 'system-ui', 'sans-serif'],
+        sans: ['var(--font-inter)', 'var(--font-manrope)', 'system-ui', 'sans-serif'],
         display: ['var(--font-unbounded)', 'var(--font-manrope)', 'system-ui', 'sans-serif'],
       },
       borderRadius: {

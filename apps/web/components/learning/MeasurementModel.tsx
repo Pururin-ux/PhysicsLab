@@ -97,9 +97,19 @@ export function MeasurementModel() {
   return <div className={styles.study}>
     <div className={styles.notebook}>
       <header className={styles.intro}>
-        <p className={styles.kicker}>Измерительная линза</p>
         <h2>Один уровень воды. Две шкалы.</h2>
-        <p id="scale-reading-order">Сначала запиши приблизительный отсчёт по крупной шкале, затем уточни его по мелкой. Уровень воды не изменится.</p>
+        <p id="scale-reading-order">Сначала запиши отсчёт по крупной шкале, затем уточни его по мелкой. Воды столько же.</p>
+        <figure className={styles.observation}>
+          <Image
+            className={styles.observationImage}
+            src={MIO_SCENES.measurement}
+            alt="Мио смотрит на поверхность воды в мензурке сбоку, расположив глаза на уровне мениска"
+            width={1536}
+            height={1024}
+            sizes="(max-width: 370px) 100vw, (max-width: 700px) 36vw, 240px"
+          />
+          <figcaption>Мио читает мениск на уровне глаз.</figcaption>
+        </figure>
       </header>
 
       <div className={styles.scaleSwitch} role="group" aria-label="Разметка мензурки">
@@ -169,16 +179,5 @@ export function MeasurementModel() {
       </details>}
     </div>
 
-    <figure className={styles.observation}>
-      <Image
-        className={styles.observationImage}
-        src={MIO_SCENES.measurement}
-        alt="Мио смотрит на поверхность воды в мензурке сбоку, расположив глаза на уровне мениска"
-        width={1536}
-        height={1024}
-        sizes="(max-width: 700px) 100vw, 260px"
-      />
-      <figcaption>Мио проверяет уровень глаз. Подписанную шкалу исследуй в измерительной линзе.</figcaption>
-    </figure>
   </div>;
 }

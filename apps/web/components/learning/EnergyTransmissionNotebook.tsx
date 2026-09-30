@@ -11,7 +11,7 @@ export function EnergyTransmissionNotebook() {
           src={MIO_SCENES.energyTransmission}
           width={1280}
           height={853}
-          sizes="(max-width: 700px) 260px, 600px"
+          sizes="(max-width: 700px) 130px, 600px"
           alt="Мио рассматривает изолированный учебный провод в защитном коробе; числовых показаний на рисунке нет."
         />
       </figure>

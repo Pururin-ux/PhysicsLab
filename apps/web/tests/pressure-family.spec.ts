@@ -1,7 +1,7 @@
 import {test,expect} from "@playwright/test";
 test("pressure chapter leads through five tasks and back to the same explanation",async({page})=>{
   await page.goto("/learn/pressure");
-  await page.getByRole("link",{name:"Решить 5 задач на давление опоры",exact:true}).click();
+  await page.getByRole("link",{name:"Решить задачи по этому параграфу",exact:true}).click();
   const targets=new Set<string>();
   for(let i=0;i<5;i++){
     await expect(page.getByText(`Задание ${i+1} из 5`,{exact:true})).toBeVisible();
@@ -28,5 +28,5 @@ test("pressure chapter leads through five tasks and back to the same explanation
   expect([...targets].sort()).toEqual(["area","force","pressure"]);
   await expect(page.getByText(/4 \/ 5/)).toBeVisible();
   await page.getByRole("link",{name:"Повторить силу и площадь опоры",exact:true}).click();
-  await expect(page.getByRole("heading",{name:"Давление: сила и площадь опоры",exact:true})).toBeVisible();
+  await expect(page.getByRole("heading",{name:"§ 28. Давление: сила и площадь опоры",exact:true})).toBeVisible();
 });

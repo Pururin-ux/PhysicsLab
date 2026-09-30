@@ -14,11 +14,12 @@ interface ButtonProps extends ComponentPropsWithoutRef<"button"> {
 
 const variantClasses: Record<ButtonVariant, string> = {
   // Основное действие выделяется цветом и контрастом, а не большой неоновой
-  // подушкой: тень маленькая и направленная.
+  // подушкой. Оба варианта читают семантические токены, поэтому одинаково
+  // работают в светлой и тёмной темах.
   primary:
-    "border-transparent bg-[var(--action-primary)] text-[var(--action-ink)] shadow-[0_6px_16px_rgba(6,186,213,.2)] hover:bg-[var(--action-hover)] hover:shadow-[0_8px_20px_rgba(6,186,213,.26)] disabled:hover:bg-[var(--action-primary)]",
+    "border-transparent bg-[var(--accent)] text-[var(--accent-ink)] hover:bg-[var(--accent-hover)] disabled:hover:bg-[var(--accent)]",
   ghost:
-    "border-white/[.14] bg-white/[.03] text-white/82 hover:border-nova-blue/45 hover:bg-white/[.06] hover:text-white",
+    "border-[var(--border-strong)] bg-transparent text-[var(--text-primary)] hover:border-[var(--accent)] hover:text-[var(--accent-text)]",
 };
 
 const sizeClasses: Record<ButtonSize, string> = {

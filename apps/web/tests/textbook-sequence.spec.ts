@@ -12,6 +12,6 @@ test("textbook reading order agrees with the contents and never loops back",asyn
   await page.getByRole("link",{name:"Следующее объяснение: Сила и динамометр →",exact:true}).click();
   await expect(page.getByRole("heading",{name:"Сила и динамометр",exact:true})).toBeVisible();
   await page.getByRole("link",{name:"Дальше: как сила и площадь создают давление",exact:true}).click();
-  await expect(page.getByRole("heading",{name:"Давление: сила и площадь опоры",exact:true})).toBeVisible();
+  await expect(page.getByRole("heading",{name:"§ 28. Давление: сила и площадь опоры",exact:true})).toBeVisible();
   await expect(page.getByRole("link",{name:/Следующее объяснение:/})).toHaveCount(0);
 });

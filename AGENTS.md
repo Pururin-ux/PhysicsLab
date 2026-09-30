@@ -21,3 +21,11 @@ Sites/Vinext и design-sync — необязательные инструмен�
 
 Следуй docs/current/QUALITY.md и применимому Skill. Проверка — по риску, а не обязательный ритуал: браузер нужен при существенном визуальном, responsive, browser-only или interaction вопросе либо по просьбе пользователя. Связанные UI-изменения группируй; при необходимости делай один целевой просмотр изменённого экрана. После локальной правки не запускай полный test/E2E/visual/a11y suite или production build без конкретной причины.
 В CI сначала смотри сводку job/step; полный лог читай только для конкретного неясного падения. Не перечитывай прежний лог и не опрашивай running workflow циклически.
+
+## PhysicsLab tool policy
+
+- docs/current/ и docs/current/QUALITY.md имеют приоритет над общими defaults Skills и plugins; QUALITY.md задаёт бюджет проверок.
+- frontend-design — default для существенной работы с UI; отрисованный результат проверяй, когда задаче нужны rendered evidence.
+- Внешние design, research и generation workflows подключай под конкретный пробел; не складывай перекрывающиеся workflows.
+- Vendor/plugin files и cached skills не редактируй.
+- Временные debugging learnings не записывай в AGENTS.md без моей прямой просьбы.

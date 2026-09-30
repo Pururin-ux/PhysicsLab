@@ -87,6 +87,17 @@ exec-8cdce50d-4476-410d-9b9d-8de97c832357.png с исходным портрет
 
 `textbook-pressure-v1.png`: exec-b287dd61-1edd-4bbf-a7a6-c9e3ce819a7f.png, 1536×1024. Мио наблюдает два бруска на разных гранях и мягких опорах; руки не давят на них. Закрытая сосредоточенная мимика. Растр показывает качественный опыт; численные сила, площадь и давление задаются отдельно в PressureModel.
 
+Крупные планы контакта для этого же опыта — crops уже одобренного
+`textbook-pressure-v1.png`, а не отдельная генерация или изменение персонажа:
+
+- `textbook-pressure-lens-wide-v1.png`: crop `(548, 566, 1044, 1010)`, 496×444.
+- `textbook-pressure-lens-narrow-v1.png`: crop `(1030, 566, 1526, 1010)`, 496×444.
+
+Координаты указаны в пикселях исходника как `(left, top, right, bottom)`,
+правый и нижний края не включены. Масштабирование и ретушь не применялись;
+сравнение 30.09.2026 подтвердило совпадение каждого RGB-пикселя с исходником.
+SHA-256 исходника: `561e574a9ff1fc1be1be8a3018c0263bd6d2736c9a9c5345c35a7ec75864cd68`.
+
 ## Force chapter · 2026-09-08
 - Asset: textbook-force-v1.png. Built-in imagegen, source exec-d21f94a8-f183-4636-adb9-df2bacbfee68.png (original preserved).
 - Identity reference: mio-thinking-v1.png. New action: recording a suspended spring dynamometer observation.

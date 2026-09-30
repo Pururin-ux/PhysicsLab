@@ -1,0 +1,44 @@
+.crumbs {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
+
+.item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.sep {
+  color: var(--text-muted);
+}
+
+.link {
+  display: inline-flex;
+  min-height: 2.25rem;
+  align-items: center;
+  color: var(--accent-text);
+  font-weight: 650;
+}
+
+.link:hover {
+  color: var(--text-primary);
+}
+
+.current {
+  display: inline-flex;
+  min-height: 2.25rem;
+  align-items: center;
+  color: var(--text-secondary);
+  font-weight: 650;
+}
+
+.link:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 3px;
+  border-radius: 6px;
+}

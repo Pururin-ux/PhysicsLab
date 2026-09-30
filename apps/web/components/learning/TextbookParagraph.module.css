@@ -1,0 +1,547 @@
+/* Параграф (§) как самостоятельный учебный материал: заголовок, локальный
+   указатель разделов, сами разделы, пример, краткий конспект, самопроверка и
+   переход по курсу. Материал тем — из семантических токенов, поэтому light и
+   dark отличаются поверхностями, а не структурой. */
+
+.paragraph {
+  display: grid;
+  gap: 0;
+}
+
+/* --- Заголовок параграфа --- */
+.header {
+  display: grid;
+  gap: 8px;
+}
+
+.meta {
+  margin: 6px 0 0;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.title {
+  margin: 0;
+  max-width: 34ch;
+  font-size: clamp(2rem, 3.6vw, 2.75rem);
+  line-height: 1.08;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+
+.number {
+  color: var(--accent-text);
+  font-variant-numeric: tabular-nums;
+}
+
+.lead {
+  margin: 4px 0 0;
+  max-width: 48ch;
+  color: var(--text-secondary);
+  font-size: 1.0625rem;
+  line-height: 1.6;
+}
+
+/* --- Локальный указатель разделов параграфа: не оглавление курса --- */
+.outline {
+  display: none;
+}
+
+.outlineDisclosure {
+  margin-top: 16px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-surface);
+  background: var(--surface-primary);
+}
+
+.outlineDisclosure summary {
+  display: flex;
+  min-height: 3rem;
+  align-items: center;
+  padding: 0 14px;
+  cursor: pointer;
+  color: var(--text-primary);
+  font-size: 0.9375rem;
+  font-weight: 700;
+  list-style-position: inside;
+}
+
+.outlineDisclosure ul {
+  padding: 0 14px 14px;
+}
+
+.outlineLabel {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.outlineList {
+  display: grid;
+  gap: 4px;
+  margin: 10px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.outlineLink {
+  display: inline-flex;
+  min-height: 1.75rem;
+  align-items: center;
+  color: var(--accent-text);
+  font-size: 0.875rem;
+  font-weight: 650;
+  line-height: 1.35;
+}
+
+.outlineLink:hover {
+  color: var(--text-primary);
+}
+
+.outlineLink:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+@media (min-width: 900px) {
+  .outlineDisclosure {
+    display: none;
+  }
+
+  .outline {
+    position: sticky;
+    z-index: 20;
+    top: 72px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 14px;
+    margin-top: 14px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border-subtle);
+    background: var(--page-bg);
+  }
+
+  .outlineLabel {
+    margin-right: 4px;
+  }
+
+  .outlineList {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 14px;
+    margin: 0;
+  }
+}
+
+/* --- Внутренние разделы параграфа --- */
+.section,
+.wideSection {
+  scroll-margin-top: 128px;
+}
+
+.section {
+  margin-top: 44px;
+  padding-top: 34px;
+  border-top: 1px solid var(--border-subtle);
+  max-width: 46rem;
+}
+
+.wideSection {
+  margin-top: 30px;
+}
+
+.sectionTitle {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: clamp(1.5625rem, 2.4vw, 1.8125rem);
+  line-height: 1.2;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.text {
+  margin: 14px 0 0;
+  color: var(--text-primary);
+  font-size: 1.0625rem;
+  line-height: 1.7;
+}
+
+/* Формула — визуальный центр раздела: сам блок и расшифровка величин рядом. */
+.formula {
+  display: grid;
+  justify-items: center;
+  gap: 16px;
+  margin-top: 20px;
+  padding: clamp(16px, 2.4vw, 24px);
+}
+
+.formula:has(.legend) {
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  justify-items: stretch;
+  gap: clamp(18px, 3vw, 40px);
+}
+
+/* Связь без расшифровки — компактная запись, а не широкий плакат. */
+.formula:not(:has(.legend)) {
+  width: fit-content;
+  margin-inline: auto;
+  padding: 14px 28px;
+}
+
+.formula:not(:has(.legend)) .formulaDisplay {
+  font-size: clamp(1.25rem, 1.8vw, 1.5rem);
+}
+
+.formulaDisplay {
+  display: block;
+  font-size: clamp(1.625rem, 2.4vw, 2rem);
+}
+
+.legend {
+  display: grid;
+  gap: 9px;
+  margin: 0;
+}
+
+.legend > div {
+  display: grid;
+  grid-template-columns: 1.5rem minmax(0, 1fr);
+  align-items: baseline;
+  gap: 10px;
+}
+
+.legend dt {
+  color: var(--accent-text);
+  font-weight: 700;
+}
+
+.legend dd {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 0.9375rem;
+  line-height: 1.5;
+}
+
+/* Один согласованный тип выделенного вывода во всём параграфе. */
+.callout {
+  margin: 22px 0 0;
+  border-left-width: 4px;
+  border-left-color: var(--accent);
+  padding: 16px 18px;
+  font-size: 1.0625rem;
+  font-weight: 700;
+  line-height: 1.55;
+}
+
+.conversions {
+  display: grid;
+  max-width: 26rem;
+  margin: 20px 0 0;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.conversions > div {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+  padding: 10px 2px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.conversions dt,
+.conversions dd {
+  margin: 0;
+  color: var(--text-primary);
+  font-family: var(--font-physics-numeric);
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.conversionArrow {
+  color: var(--text-muted);
+}
+
+.calculations {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(14px, 2.4vw, 24px);
+  margin-top: 22px;
+}
+
+.calculation {
+  display: grid;
+  align-content: start;
+  gap: 12px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-surface);
+  background: var(--surface-primary);
+  padding: 16px;
+}
+
+.stepLines {
+  display: grid;
+  gap: 7px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 1rem;
+  line-height: 1.5;
+  text-wrap: pretty;
+}
+
+/* Полоса показывает давление на общей шкале 0–40 кПа: длина равна числу. */
+.barTrack {
+  position: relative;
+  display: block;
+  height: 10px;
+  border-radius: 999px;
+  background: var(--surface-secondary);
+  overflow: hidden;
+}
+
+.barFill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  border-radius: 999px;
+  background: var(--accent);
+}
+
+.list {
+  display: grid;
+  gap: 8px;
+  margin: 18px 0 0;
+  padding-left: 22px;
+  font-size: 1.0625rem;
+  line-height: 1.6;
+  text-wrap: pretty;
+  /* preflight снимает маркеры списков — возвращаем их явно. */
+  list-style: disc outside;
+}
+
+.list li::marker {
+  color: var(--accent);
+}
+
+/* --- Разберём пример: школьная структура Дано / Найти / Решение / Ответ --- */
+.example {
+  display: grid;
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+  gap: clamp(16px, 2.6vw, 30px);
+  margin-top: 20px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-surface);
+  background: var(--surface-primary);
+  padding: clamp(16px, 2.2vw, 24px);
+}
+
+.exampleData {
+  display: grid;
+  align-content: start;
+  gap: 18px;
+}
+
+.exampleGroup {
+  display: grid;
+}
+
+.exampleLabel {
+  margin: 0 0 8px;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.exampleList,
+.exampleLine {
+  display: grid;
+  gap: 5px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 1.0625rem;
+  line-height: 1.5;
+  text-wrap: pretty;
+}
+
+.exampleSolution {
+  min-width: 0;
+}
+
+.exampleSteps {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding-left: 24px;
+  font-size: 1.0625rem;
+  line-height: 1.55;
+  list-style: decimal outside;
+}
+
+.exampleSteps li::marker {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.exampleAnswer {
+  margin: 18px 0 0;
+  font-size: 1.0625rem;
+}
+
+.exampleAnswer b {
+  color: var(--accent-text);
+  font-weight: 800;
+}
+
+.exampleNote {
+  margin: 10px 0 0;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+
+/* --- Коротко --- */
+.summary {
+  margin-top: 18px;
+  padding: 18px 20px;
+}
+
+.summary ul {
+  display: grid;
+  gap: 9px;
+  margin: 0;
+  padding-left: 22px;
+  font-size: 1.0625rem;
+  line-height: 1.6;
+  list-style: disc outside;
+}
+
+.summary li::marker {
+  color: var(--accent);
+}
+
+/* --- Проверь себя --- */
+.check {
+  margin-top: 18px;
+  padding: clamp(16px, 2vw, 22px);
+}
+
+.check :global(legend) {
+  font-size: 1.0625rem;
+  line-height: 1.5;
+}
+
+.check :global(label) {
+  border-color: var(--border-strong);
+  background: var(--surface-primary);
+  color: var(--text-primary);
+}
+
+.check :global(label:hover) {
+  border-color: var(--accent);
+}
+
+.check :global(label:has(:checked)) {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.check :global(input[type="radio"]) {
+  width: 1.125rem;
+  height: 1.125rem;
+  margin-top: 4px;
+  flex: 0 0 auto;
+  accent-color: var(--accent);
+}
+
+/* --- Итог параграфа: задачи и связь с курсом --- */
+.footer {
+  display: grid;
+  gap: 18px;
+  max-width: 46rem;
+  margin-top: 56px;
+  padding-top: 28px;
+  border-top: 1px solid var(--border-strong);
+}
+
+.footerNav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 26px;
+  font-size: 0.9375rem;
+  font-weight: 650;
+}
+
+.footerLink,
+.footerNext {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  color: var(--accent-text);
+}
+
+.footerLink:hover,
+.footerNext:hover {
+  color: var(--text-primary);
+}
+
+.source {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+
+.source summary {
+  display: flex;
+  min-height: 2.75rem;
+  align-items: center;
+  cursor: pointer;
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+.source p {
+  margin: 0 0 10px;
+}
+
+.sourceLink {
+  display: inline-flex;
+  min-height: 2.5rem;
+  align-items: center;
+  color: var(--accent-text);
+}
+
+@media (max-width: 720px) {
+  .section {
+    margin-top: 36px;
+    padding-top: 28px;
+  }
+
+  .wideSection {
+    margin-top: 24px;
+  }
+
+  .calculations,
+  .example {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .formula:has(.legend) {
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: center;
+  }
+
+  .footer {
+    margin-top: 40px;
+  }
+}

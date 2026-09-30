@@ -9,7 +9,8 @@ import styles from "./TextbookContents.module.css";
 const actionLabels:Record<TextbookCheckState,string>={untouched:"Открыть",draft:"Продолжить",retry:"Повторить",correct:"Вернуться",updated:"Ответить снова",unavailable:"Открыть"};
 const needsReview=(state?:TextbookCheckState)=>state==="retry"||state==="draft"||state==="updated";
 const normalize=(text:string)=>text.toLocaleLowerCase("ru").replace(/ё/g,"е");
-const topicCountLabel=(count:number)=>`${count} ${count%10===1&&count%100!==11?"тема":[2,3,4].includes(count%10)&&![12,13,14].includes(count%100)?"темы":"тем"}`;
+// Внутри класса лежат параграфы (§), а не «темы»: ученик выбирает параграф.
+const topicCountLabel=(count:number)=>`${count} ${count%10===1&&count%100!==11?"параграф":[2,3,4].includes(count%10)&&![12,13,14].includes(count%100)?"параграфа":"параграфов"}`;
 export function TextbookContents({items,initialGrade,schoolCheckGrades}:{items:TextbookContentsItem[];initialGrade:number|null;schoolCheckGrades:readonly number[]}){
   const [states,setStates]=useState<Record<string,TextbookCheckState>|null>(null);
   const [reviewOnly,setReviewOnly]=useState(false);
@@ -85,13 +86,13 @@ export function TextbookContents({items,initialGrade,schoolCheckGrades}:{items:T
   }));
   return <>
     <div className={styles.toolbar}>
-      <label className={styles.search}><span className="sr-only">Найти тему</span><input type="search" placeholder="Найти тему" value={query} onChange={event=>setQuery(event.target.value)}/></label>
+      <label className={styles.search}><span className="sr-only">Найти параграф</span><input type="search" placeholder="Найти параграф" value={query} onChange={event=>setQuery(event.target.value)}/></label>
       <div className={styles.filters} role="group" aria-label="Класс"><button aria-pressed={grade===null} onClick={()=>chooseGrade(null)}>Все классы</button>{grades.map(value=><button key={value} aria-pressed={grade===value} onClick={()=>chooseGrade(value)}>{value} класс</button>)}</div>
       {(count>0||reviewOnly)&&<button className={styles.review} aria-pressed={reviewOnly} disabled={!states} onClick={()=>setReviewOnly(!reviewOnly)}>Повторить{states?` · ${count}`:""}</button>}
     </div>
-    {states&&Object.values(states).includes("unavailable")&&<p role="alert" className={styles.notice}>Часть ответов не загрузилась. Читать темы по-прежнему можно.</p>}
+    {states&&Object.values(states).includes("unavailable")&&<p role="alert" className={styles.notice}>Часть ответов не загрузилась. Читать параграфы по-прежнему можно.</p>}
     <p role="status" aria-atomic="true" className={styles.resultsStatus}>{shown.length===0
-      ? reviewOnly?"Нет тем для повторения с этими фильтрами.":"Тема не найдена. Попробуй другое название."
+      ? reviewOnly?"Нет параграфов для повторения с этими фильтрами.":"Параграф не найден. Попробуй другое название."
       : `Найдено: ${topicCountLabel(shown.length)}.`}</p>
     {groups.map((group,index)=><section key={group.grade} aria-labelledby={`grade-${index}`} className={styles.group}>
       <div className={styles.groupHeading}><h2 id={`grade-${index}`}>{group.grade} класс</h2><p>{group.items.length===group.total?topicCountLabel(group.total):`${group.items.length} из ${topicCountLabel(group.total)}`}</p></div>

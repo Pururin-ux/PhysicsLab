@@ -2,159 +2,173 @@
 
 import Image from "next/image";
 import { useState } from "react";
-import { MathText } from "../ui/MathText";
 import { MIO_SCENES } from "../../lib/learning/mio-assets";
-import shared from "./TextbookScene.module.css";
+import { useLessonDraft } from "../../lib/learning/use-lesson-draft";
 import styles from "./PressureModel.module.css";
 
-const predictions = [
-  { id: "narrow", label: "У узкой грани — площадь меньше" },
-  { id: "same", label: "Одинаковое — бруски одинаковые" },
-  { id: "wide", label: "У широкой грани — площадь больше" },
-] as const;
+type ExplanationId = "area" | "force";
 
-type PredictionId = (typeof predictions)[number]["id"];
-type Force = 40 | 80;
+const initialDraft = { explanation: "" as ExplanationId | "" };
 
-const areas = {
-  narrow: 20,
-  wide: 40,
-} as const;
+const answerOptions: { id: ExplanationId; label: string }[] = [
+  { id: "force", label: "Брусок справа давит с большей силой" },
+  { id: "area", label: "Та же сила приходится на меньшую площадь" },
+];
 
-function pressureKPa(force: Force, areaCm2: number) {
-  return force / (areaCm2 / 10_000) / 1_000;
-}
+const answerFeedback: Record<ExplanationId, string> = {
+  force: "Оба бруска давят с силой 40 Н. Сила не изменилась. Сравни грани, которые касаются губок.",
+  area: "Да. Та же сила приходится на меньшую площадь, поэтому давление больше.",
+};
 
+/** Наблюдение параграфа о давлении: сцена и объяснение разного смятия губок.
+ *  Расчёт и остальная теория — разделы параграфа ниже, а не часть этого блока. */
 export function PressureModel() {
-  const [prediction, setPrediction] = useState<PredictionId | null>(null);
-  const [compared, setCompared] = useState(false);
-  const [wideForce, setWideForce] = useState<Force>(40);
+  const [state, setState] = useState(initialDraft);
+  const [helpOpen, setHelpOpen] = useState(false);
+  const draft = useLessonDraft(
+    "textbook-pressure",
+    state,
+    setState,
+    1,
+    "lesson",
+    { saveInitial: false },
+  );
 
-  const choosePrediction = (value: PredictionId) => {
-    setPrediction(value);
-    setCompared(false);
+  if (!draft.ready) {
+    return <p role="status">Открываю урок…</p>;
+  }
+
+  // В старых черновиках мог остаться ответ «время» — такого варианта больше нет.
+  // Считаем это «ответа нет», не сбрасывая остальные сохранённые данные.
+  const explanation =
+    state.explanation === "area" || state.explanation === "force" ? state.explanation : null;
+  const solved = explanation === "area";
+
+  const chooseAnswer = (value: ExplanationId) => {
+    setHelpOpen(false);
+    setState({ explanation: value });
   };
 
-  const narrowPressure = pressureKPa(40, areas.narrow);
-  const widePressure = pressureKPa(40, areas.wide);
-  const changedForcePressure = pressureKPa(wideForce, areas.wide);
+  const optionState = (id: ExplanationId) => {
+    if (id !== explanation) return "idle";
+    return explanation === "area" ? "correct" : "wrong";
+  };
 
   return (
-    <div className={shared.experiment}>
-      <div className={styles.study}>
-        <figure className={styles.observation}>
-          <Image
-            className={styles.observationImage}
-            src={MIO_SCENES.pressure}
-            alt="Мио сравнивает следы двух одинаковых брусков: один стоит на широкой грани, другой — на узкой"
-            fill
-            sizes="(max-width: 640px) 100vw, 430px"
-            priority
-          />
-          <figcaption>
-            Мио поставила одинаковые бруски на разные грани. Узкая грань продавила
-            опору сильнее.
+    <div className={styles.model}>
+      <section className={styles.spread} aria-label="Наблюдение с Мио и опытом о давлении">
+        <figure className={styles.scene}>
+          <div className={styles.sceneFrame}>
+            <Image
+              className={styles.sceneImage}
+              src={MIO_SCENES.pressure}
+              alt="Мио поставила два одинаковых бруска на одинаковые губки: слева брусок лежит на широкой грани, справа стоит на узкой"
+              fill
+              sizes="(max-width: 900px) 100vw, 58vw"
+              priority
+            />
+          </div>
+          <div className={styles.sceneLabels}>
+            <span className={styles.sceneLabelWide}>Широкая грань · 40 см²</span>
+            <span className={styles.sceneLabelNarrow}>Узкая грань · 20 см²</span>
+          </div>
+          <figcaption className={styles.sceneCaption}>
+            Это площади граней, которыми бруски касаются губок. Каждый брусок давит с силой 40 Н.
           </figcaption>
         </figure>
 
-        <div className={styles.question}>
-          <p className={styles.kicker}>Одна сила · разная площадь</p>
-          <h2>Где давление больше?</h2>
-          <p>
-            В модели сила давления каждого бруска равна 40 Н. Площадь узкой грани —
-            20 см², широкой — 40 см². Сначала сделай прогноз.
-          </p>
-          <div className={styles.predictions} role="group" aria-label="Прогноз о давлении">
-            {predictions.map((option) => (
+        <header className={styles.head}>
+          <h2 className={styles.title}>
+            Почему один брусок <span className={styles.titleAccent}>сильнее сминает губку?</span>
+          </h2>
+          <p className={styles.lead}>Бруски одинаковые и давят с одной силой. Губки тоже одинаковые.</p>
+        </header>
+
+        <div className={styles.body}>
+          <section className={`lesson-card ${styles.questionCard}`} aria-label="Твой ответ">
+            <div className={styles.choices} role="group" aria-label="Выбери объяснение">
+              {answerOptions.map((option, index) => (
+                <button
+                  key={option.id}
+                  type="button"
+                  data-state={optionState(option.id)}
+                  aria-pressed={explanation === option.id}
+                  onClick={() => chooseAnswer(option.id)}
+                >
+                  <span className={styles.choiceLetter} aria-hidden="true">
+                    {index === 0 ? "А" : "Б"}
+                  </span>
+                  <span className={styles.choiceText}>{option.label}</span>
+                </button>
+              ))}
+            </div>
+            {!solved ? (
               <button
-                key={option.id}
                 type="button"
-                aria-pressed={prediction === option.id}
-                onClick={() => choosePrediction(option.id)}
+                className={`lesson-button-secondary ${styles.helpButton}`}
+                aria-expanded={helpOpen}
+                onClick={() => setHelpOpen((open) => !open)}
               >
-                {option.label}
+                Пока не понимаю
               </button>
-            ))}
-          </div>
-          <button
-            className={styles.compare}
-            type="button"
-            disabled={!prediction}
-            onClick={() => setCompared(true)}
-          >
-            Сравнить давление
-          </button>
+            ) : null}
+            {helpOpen && !solved ? (
+              <p className={`lesson-note ${styles.helpNote}`} role="note">
+                Посмотри, какой частью брусок касается губки. Справа эта площадка меньше, хотя сила та же.
+              </p>
+            ) : null}
+            {explanation ? (
+              <p
+                className={explanation === "area" ? styles.feedbackCorrect : styles.feedbackRetry}
+                role="status"
+                data-testid="pressure-explanation-feedback"
+              >
+                {answerFeedback[explanation]}
+              </p>
+            ) : null}
+            {solved ? (
+              <p className={styles.nextStep}>
+                Дальше — разделы параграфа: как давление связано с силой и площадью.
+              </p>
+            ) : null}
+          </section>
+
+          <aside className={styles.lenses} aria-label="Крупные планы контакта брусков с губками">
+            <figure className={styles.lens}>
+              <Image
+                src={MIO_SCENES.pressureLensWide}
+                alt="Крупный план: брусок на широкой грани, губка сминается слабо"
+                width={496}
+                height={444}
+                sizes="(max-width: 560px) 44vw, 220px"
+              />
+              <figcaption>
+                <b>Широкая грань · 40 см²</b>
+                <span>Губка сминается слабо</span>
+              </figcaption>
+            </figure>
+            <figure className={styles.lens}>
+              <Image
+                src={MIO_SCENES.pressureLensNarrow}
+                alt="Крупный план: брусок на узкой грани, губка сминается сильнее"
+                width={496}
+                height={444}
+                sizes="(max-width: 560px) 44vw, 220px"
+              />
+              <figcaption>
+                <b>Узкая грань · 20 см²</b>
+                <span>Губка сминается сильнее</span>
+              </figcaption>
+            </figure>
+          </aside>
         </div>
-      </div>
+      </section>
 
-      {compared ? (
-        <section className={styles.result} aria-labelledby="pressure-result-title">
-          <div className={styles.resultHeading}>
-            <p>Сила в обоих случаях</p>
-            <strong>40 Н</strong>
-          </div>
-
-          <div className={styles.comparison} aria-label="Сравнение давления на узкой и широкой грани">
-            <article className={styles.narrowCase}>
-              <p>Узкая грань</p>
-              <dl>
-                <div><dt>Площадь</dt><dd>20 см²</dd></div>
-                <div><dt>Давление</dt><dd>{narrowPressure} кПа</dd></div>
-              </dl>
-              <MathText text={String.raw`$p=\frac{40\ \text{Н}}{0{,}002\ \text{м}^2}=20\ \text{кПа}$`} />
-            </article>
-            <article className={styles.wideCase}>
-              <p>Широкая грань</p>
-              <dl>
-                <div><dt>Площадь</dt><dd>40 см²</dd></div>
-                <div><dt>Давление</dt><dd>{widePressure} кПа</dd></div>
-              </dl>
-              <MathText text={String.raw`$p=\frac{40\ \text{Н}}{0{,}004\ \text{м}^2}=10\ \text{кПа}$`} />
-            </article>
-          </div>
-
-          <div className={styles.conclusion} role="status">
-            <strong id="pressure-result-title">
-              {prediction === "narrow"
-                ? "Верно: меньшая площадь дала большее давление."
-                : "Давление больше у узкой грани."}
-            </strong>
-            <p>
-              Площадь увеличилась вдвое, а сила осталась прежней — поэтому давление
-              уменьшилось с 20 до 10 кПа, тоже вдвое.
-            </p>
-          </div>
-        </section>
+      {draft.error ? (
+        <p role="alert" className={styles.storageError}>
+          {draft.error}
+        </p>
       ) : null}
-
-      <details className={styles.forceCheck}>
-        <summary>А если увеличить силу?</summary>
-        <div className={styles.forceCheckBody}>
-          <p>Оставим площадь широкой грани равной 40 см² и изменим только силу.</p>
-          <div className={styles.forceOptions} role="group" aria-label="Сила давления на широкую грань">
-            {([40, 80] as const).map((force) => (
-              <button
-                key={force}
-                type="button"
-                aria-pressed={wideForce === force}
-                onClick={() => setWideForce(force)}
-              >
-                {force} Н
-              </button>
-            ))}
-          </div>
-          <div className={styles.forceReading} aria-live="polite">
-            <MathText
-              text={String.raw`$p=\frac{${wideForce}\ \text{Н}}{0{,}004\ \text{м}^2}=${changedForcePressure}\ \text{кПа}$`}
-            />
-            <p>
-              {wideForce === 80
-                ? "При той же площади сила выросла вдвое — давление тоже выросло вдвое."
-                : "Это исходное давление на широкую грань."}
-            </p>
-          </div>
-        </div>
-      </details>
     </div>
   );
 }

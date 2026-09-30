@@ -1,8 +1,5 @@
 .study {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(180px, 260px);
-  align-items: start;
-  gap: clamp(16px, 2.5vw, 26px);
+  display: block;
   min-width: 0;
 }
 
@@ -18,19 +15,21 @@
 
 .intro p,
 .intro h2 { margin: 0; }
-.intro { display: grid; gap: 7px; }
-.kicker {
-  color: var(--action-primary);
-  font-size: 12px;
-  font-weight: 800;
-  letter-spacing: .06em;
-  text-transform: uppercase;
+.intro {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(200px, 240px);
+  align-items: center;
+  column-gap: clamp(14px, 2.5vw, 24px);
+  row-gap: 7px;
 }
+.intro h2,
+.intro > p { grid-column: 1; }
 .intro h2 {
   font-size: clamp(23px, 3vw, 29px);
   line-height: 1.2;
 }
-.intro p:last-child {
+.intro > p {
+  margin: 0;
   color: var(--text-secondary);
   font-size: 15px;
   line-height: 1.55;
@@ -216,11 +215,17 @@
 }
 
 .observation { min-width: 0; margin: 0; }
+.intro .observation {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+}
 .observationImage {
   display: block;
   width: 100%;
-  height: auto;
-  border-radius: 16px;
+  aspect-ratio: 1.5;
+  object-fit: cover;
+  object-position: center 40%;
+  border-radius: 12px;
 }
 .observation figcaption {
   margin-top: 9px;
@@ -239,19 +244,32 @@
 }
 
 @media (max-width: 700px) {
-  .study { grid-template-columns: minmax(0, 1fr); }
   .notebook { gap: 16px; }
-  .observation {
-    width: min(100%, 440px);
-    justify-self: center;
+  .intro {
+    grid-template-columns: minmax(0, 1fr) minmax(120px, 36%);
+    align-items: start;
+    column-gap: 12px;
+    row-gap: 8px;
   }
-  .observationImage {
-    max-height: 220px;
-    object-fit: cover;
-    object-position: center 40%;
+  .intro h2 {
+    grid-column: 1 / -1;
+    font-size: 21px;
+  }
+  .intro .observation {
+    grid-column: 2;
+    grid-row: 2;
+  }
+  .observation figcaption {
+    margin-top: 6px;
+    font-size: 12px;
   }
 }
 
 @media (max-width: 370px) {
+  .intro { grid-template-columns: minmax(0, 1fr); }
+  .intro h2,
+  .intro > p,
+  .intro .observation { grid-column: 1; }
+  .intro .observation { grid-row: auto; width: min(100%, 240px); }
   .records { grid-template-columns: 1fr; }
 }

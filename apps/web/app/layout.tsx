@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Manrope, Unbounded } from "next/font/google";
+import { Inter, Manrope, Unbounded } from "next/font/google";
 import { ConditionalAppShell } from "../components/layout/ConditionalAppShell";
 import { PersistenceHydrator } from "../components/layout/PersistenceHydrator";
 import { PersistenceNotice } from "../components/layout/PersistenceNotice";
@@ -9,6 +9,14 @@ const manrope = Manrope({
   subsets: ["latin", "cyrillic"],
   weight: ["400", "500", "600", "700", "800"],
   variable: "--font-manrope",
+  display: "swap",
+});
+
+// Inter — текст и интерфейс; Manrope остаётся для крупных заголовков.
+const inter = Inter({
+  subsets: ["latin", "cyrillic"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-inter",
   display: "swap",
 });
 
@@ -39,7 +47,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={`${manrope.variable} ${unbounded.variable} font-sans`}>
+      <body className={`${inter.variable} ${manrope.variable} ${unbounded.variable} font-sans`}>
         <PersistenceHydrator />
         <ConditionalAppShell>{children}</ConditionalAppShell>
         <PersistenceNotice />

@@ -27,6 +27,8 @@ export const MIO_SCENES = {
   relative: "/images/mio/textbook-relative-v1.png",
   force: "/images/mio/textbook-force-v1.png",
   pressure: "/images/mio/textbook-pressure-v1.png",
+  pressureLensWide: "/images/mio/textbook-pressure-lens-wide-v1.png",
+  pressureLensNarrow: "/images/mio/textbook-pressure-lens-narrow-v1.png",
   inertia: "/images/mio/textbook-inertia-v1.png",
   density: "/images/mio/textbook-density-v1.png",
   measurement: "/images/mio/textbook-measurement-v1.png",

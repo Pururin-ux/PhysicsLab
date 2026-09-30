@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { TextbookCheck } from "../../../components/learning/TextbookCheck";
 import { TextbookScene } from "../../../components/learning/TextbookScene";
 import { TextbookStaticStory } from "../../../components/learning/TextbookStaticStory";
+import { TextbookParagraph } from "../../../components/learning/TextbookParagraph";
 import { ModernPhysicsScene } from "../../../components/learning/ModernPhysicsScene";
 import { MathText } from "../../../components/ui/MathText";
 import { Button } from "../../../components/ui/Button";
@@ -75,15 +76,22 @@ export default async function TextbookChapterPage({ params, searchParams }: Prop
   const nextExplanation = nextQuestion?.href.startsWith("/learn/") ? nextQuestion : null;
   const book: TextbookBook = chapter.source.book ?? physics9Book;
   const isSpeed = chapter.id === "average-speed";
+  const isPressure = chapter.id === "pressure";
   const hasChapterHandoff = chapter.practice.href.startsWith("/learn/");
   const defaultPractice = isSpeed ? { href: "/practice/family/average-speed-segments", label: "Решать задачи на среднюю скорость" } : chapter.practice;
   const practiceHref = practiceReturn?.href ?? defaultPractice.href;
   const practiceLabel = practiceReturn ? `Вернуться к задачам: ${practiceReturn.label}` : defaultPractice.label;
+  const selfCheck = <section id="self-check" className="scroll-mt-24"><h2 className="type-h2 mb-5">Проверь понимание</h2><TextbookCheck key={chapter.id} chapterId={chapter.id} check={chapter.check} /></section>;
   const explanation = <>
     {chapter.sections.map((section, i) => <section key={section.title} id={`idea-${i}`} className="scroll-mt-24"><h2 className="type-h2">{section.title}</h2><div className="mt-4 space-y-4 text-[17px] leading-[1.8]">{section.paragraphs.map(text => <p key={text}><MathText text={text} /></p>)}</div></section>)}
     {CurrentCarriersComparison && <CurrentCarriersComparison />}
     <section className="rounded-2xl border border-[var(--border-strong)] bg-[var(--surface-primary)] p-5 sm:p-7" aria-labelledby="worked-example"><h2 id="worked-example" className="type-h2">Разберём пример</h2><p className="my-5 text-[17px] leading-relaxed"><MathText text={chapter.example.question} /></p><ol className="list-decimal space-y-4 pl-5 leading-[1.8]">{chapter.example.steps.map(step => <li key={step}><MathText text={step} /></li>)}</ol><p className="mt-5 border-l-2 border-[var(--action-primary)] pl-4 leading-relaxed">{chapter.example.conclusion}</p></section>
   </>;
+  // Параграф давления — пилот модели «класс → оглавление → параграф»:
+  // заголовок с подтверждённым § , разделы внутри, пример, конспект, самопроверка.
+  if (isPressure) {
+    return <TextbookParagraph chapter={chapter} practiceReturn={practiceReturn} />;
+  }
   return <article className="mx-auto flex w-full max-w-[800px] flex-col gap-8 text-[var(--text-primary)]">
     <header>
       {practiceReturn && <Link href={practiceReturn.href} className="inline-flex min-h-11 items-center text-sm text-[var(--action-primary)] underline underline-offset-4">Вернуться к задачам: {practiceReturn.label} →</Link>}
@@ -97,7 +105,7 @@ export default async function TextbookChapterPage({ params, searchParams }: Prop
       <details className="text-sm text-[var(--text-secondary)]"><summary className="min-h-11 cursor-pointer py-3">В этой теме</summary><nav aria-label="В этом объяснении" className="flex flex-wrap gap-x-5 gap-y-3 py-3 text-[var(--action-primary)]">{chapter.sections.map((section, i) => <Link key={section.title} href={`#idea-${i}`}>{section.title}</Link>)}<Link href="#self-check">Самопроверка</Link></nav></details>
       {explanation}
     </>}
-    <section id="self-check" className="scroll-mt-24"><h2 className="type-h2 mb-5">Проверь понимание</h2><TextbookCheck key={chapter.id} chapterId={chapter.id} check={chapter.check} /></section>
+    {selfCheck}
     <Button asChild size="lg"><Link href={practiceHref}>{practiceLabel}</Link></Button>
     {practiceReturn && defaultPractice.href !== practiceReturn.href && !hasChapterHandoff && <Link href={defaultPractice.href} className="inline-flex min-h-11 items-center text-[var(--action-primary)]">{defaultPractice.label} →</Link>}
     {chapter.relatedPractice && chapter.relatedPractice.href !== practiceReturn?.href && <Link href={chapter.relatedPractice.href} className="inline-flex min-h-11 items-center text-[var(--action-primary)]">{chapter.relatedPractice.label} →</Link>}

@@ -1,298 +1,356 @@
-.study {
+/* Наблюдение параграфа о давлении. Расчёт, формула, пример и самопроверка —
+   разделы параграфа (TextbookParagraph), поэтому здесь остаётся только сцена,
+   вопрос и обратная связь. Материалы берутся из семантических токенов, поэтому
+   light и dark отличаются поверхностями, а не геометрией. */
+
+.model {
   display: grid;
-  grid-template-columns: minmax(350px, 1.08fr) minmax(0, 0.92fr);
-  gap: clamp(24px, 4vw, 48px);
-  align-items: center;
-  padding-bottom: 26px;
+  gap: clamp(16px, 2vw, 24px);
 }
 
-.observation {
+.spread {
+  display: grid;
+  grid-template-columns: minmax(0, 1.12fr) minmax(340px, 0.88fr);
+  grid-template-areas:
+    "scene head"
+    "scene body";
+  align-items: start;
+  gap: clamp(20px, 2.6vw, 36px);
+}
+
+/* --- Физическая сцена --- */
+.scene {
+  grid-area: scene;
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  min-width: 0;
+  position: sticky;
+  /* Ниже липкой строки разделов параграфа (TextbookParagraph .outline). */
+  top: 128px;
+}
+
+.sceneFrame {
   position: relative;
-  min-height: 430px;
   overflow: hidden;
-  border-radius: 34px 8px 34px 8px;
-  background: var(--surface-secondary);
+  /* Паспарту: в тёмной теме тёплый cream, в светлой — белый с тонкой рамкой.
+     Пропорция 3:2 совпадает с исходным кадром, поэтому изображение не
+     обрезается и выноски попадают точно к основаниям брусков. */
+  aspect-ratio: 3 / 2;
+  border: 1px solid var(--plate-mat-border);
+  border-radius: 16px;
+  background: var(--plate-mat);
+  box-shadow: var(--shadow-surface);
 }
 
-.observation::after {
-  position: absolute;
-  inset: 0;
-  content: "";
-  pointer-events: none;
-  border-radius: inherit;
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--border-strong) 80%, transparent);
-}
-
-.observationImage {
+.sceneImage {
   object-fit: cover;
-  object-position: 58% 50%;
+  object-position: center;
 }
 
-.observation figcaption {
+.sceneLabels {
+  position: relative;
+  height: 2.25rem;
+}
+
+.sceneLabelWide,
+.sceneLabelNarrow {
   position: absolute;
-  inset: auto 14px 14px;
-  z-index: 1;
-  max-width: 410px;
-  padding: 10px 12px;
-  border-radius: 10px;
-  background: color-mix(in srgb, var(--surface-canvas) 88%, transparent);
-  color: var(--text-primary);
-  font-size: 13px;
-  line-height: 1.5;
-  backdrop-filter: blur(10px);
+  top: 0;
+  transform: translateX(-50%);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  background: var(--surface-secondary);
+  padding: 5px 11px;
+  color: var(--text-secondary);
+  font-family: var(--font-physics-numeric);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  white-space: nowrap;
 }
 
-.question {
+/* Центры губок на исходном кадре: 53% и 81% ширины. */
+.sceneLabelWide {
+  left: 53%;
+}
+
+.sceneLabelNarrow {
+  left: 81%;
+}
+
+.sceneCaption {
+  margin: 0;
+  max-width: 54ch;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  line-height: 1.55;
+}
+
+/* --- Вопрос наблюдения --- */
+.head {
+  grid-area: head;
+  display: grid;
+  gap: 10px;
   min-width: 0;
 }
 
-.kicker {
-  color: var(--action-primary);
-  font-size: 12px;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.question h2 {
-  margin-top: 8px;
-  font-size: clamp(25px, 4vw, 35px);
-  line-height: 1.14;
-  font-weight: 780;
-  letter-spacing: -0.025em;
-}
-
-.question > p:not(.kicker) {
-  margin-top: 14px;
-  color: var(--text-secondary);
-  font-size: 16px;
-  line-height: 1.7;
-}
-
-.predictions {
-  display: grid;
-  gap: 9px;
-  margin-top: 22px;
-}
-
-.predictions button,
-.forceOptions button {
-  min-height: 52px;
-  padding: 12px 15px;
-  border-block: 1px solid var(--border-strong);
+.title {
+  margin: 0;
   color: var(--text-primary);
+  font-size: clamp(1.5625rem, 2.2vw, 1.8125rem);
+  line-height: 1.15;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+.titleAccent {
+  color: var(--accent-text);
+}
+
+.lead {
+  margin: 0;
+  max-width: 46ch;
+  color: var(--text-secondary);
+  font-size: 1.0625rem;
+  line-height: 1.6;
+}
+
+.body {
+  grid-area: body;
+  display: grid;
+  gap: clamp(16px, 2vw, 22px);
+  min-width: 0;
+  margin-top: clamp(14px, 2vw, 22px);
+}
+
+.questionCard {
+  display: grid;
+  gap: 12px;
+  padding: clamp(16px, 2vw, 20px);
+}
+
+.choices {
+  display: grid;
+  gap: 8px;
+}
+
+.choices button {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  min-height: 52px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-control);
+  background: var(--surface-primary);
+  padding: 11px 14px;
+  color: var(--text-primary);
+  font: inherit;
+  font-size: 0.9375rem;
+  font-weight: 650;
+  line-height: 1.35;
   text-align: left;
-  line-height: 1.45;
-  transition: border-color 160ms ease, color 160ms ease, background-color 160ms ease;
+  cursor: pointer;
+  transition: border-color 150ms ease, background-color 150ms ease;
 }
 
-.predictions button:hover,
-.forceOptions button:hover {
-  border-color: var(--action-primary);
+.choices button:hover {
+  border-color: var(--accent);
 }
 
-.predictions button[aria-pressed="true"],
-.forceOptions button[aria-pressed="true"] {
-  border-color: var(--action-primary);
-  background: color-mix(in srgb, var(--action-primary) 9%, transparent);
-  color: var(--action-primary);
+.choiceLetter {
+  display: grid;
+  width: 1.75rem;
+  height: 1.75rem;
+  place-items: center;
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  background: var(--surface-secondary);
+  color: var(--text-secondary);
+  font-size: 0.8125rem;
+  font-weight: 800;
 }
 
-.compare {
-  width: 100%;
-  min-height: 50px;
-  margin-top: 14px;
-  padding: 12px 18px;
-  border-radius: 10px;
-  background: var(--action-primary);
-  color: var(--surface-canvas);
-  font-weight: 780;
+.choiceText {
+  min-width: 0;
 }
 
-.compare:disabled {
-  cursor: not-allowed;
-  opacity: 0.42;
+.choices button[data-state="correct"] {
+  border-color: color-mix(in srgb, var(--success) 60%, transparent);
+  background: color-mix(in srgb, var(--success) 12%, transparent);
 }
 
-.predictions button:focus-visible,
-.forceOptions button:focus-visible,
-.compare:focus-visible,
-.forceCheck summary:focus-visible {
-  outline: 3px solid var(--action-primary);
+.choices button[data-state="correct"] .choiceLetter {
+  border-color: transparent;
+  background: var(--success);
+  color: #ffffff;
+}
+
+.choices button[data-state="wrong"] {
+  border-color: color-mix(in srgb, var(--danger) 55%, transparent);
+  background: color-mix(in srgb, var(--danger) 10%, transparent);
+}
+
+.choices button[data-state="wrong"] .choiceLetter {
+  border-color: transparent;
+  background: var(--danger);
+  color: #ffffff;
+}
+
+.choices button:focus-visible {
+  outline: 2px solid var(--focus-ring);
   outline-offset: 3px;
 }
 
-.result {
-  padding-block: 6px 28px;
+.helpButton {
+  justify-self: start;
+  min-height: 2.5rem;
 }
 
-.resultHeading {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 18px;
-  padding: 0 2px 12px;
-  color: var(--text-secondary);
-}
-
-.resultHeading strong {
-  color: var(--text-primary);
-  font-size: 24px;
-}
-
-.comparison {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1px;
-  background: var(--border-strong);
-}
-
-.comparison article {
-  padding: clamp(18px, 3vw, 25px);
-  background: var(--surface-primary);
-}
-
-.comparison article > p {
-  color: var(--text-secondary);
-  font-size: 13px;
-  font-weight: 750;
-}
-
-.comparison dl {
-  margin-block: 15px 18px;
-}
-
-.comparison dl > div {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 16px;
-  min-height: 44px;
-  padding-block: 8px;
-  border-bottom: 1px solid var(--border-strong);
-}
-
-.comparison dt {
-  color: var(--text-secondary);
-  font-size: 13px;
-}
-
-.comparison dd {
-  flex: 0 0 auto;
-  font-size: 22px;
-  font-weight: 780;
-}
-
-.narrowCase dd:last-child {
-  color: var(--action-primary);
-}
-
-.comparison article > span,
-.forceReading > span {
-  display: block;
-  max-width: 100%;
-  overflow-x: auto;
-  padding-block: 5px;
-  color: var(--text-primary);
-  font-size: 17px;
-}
-
-.conclusion {
-  margin-top: 18px;
-  padding: 17px 20px;
-  border-left: 3px solid var(--action-primary);
-  background: color-mix(in srgb, var(--action-primary) 7%, var(--surface-primary));
-}
-
-.conclusion strong {
-  font-size: 17px;
-}
-
-.conclusion p {
-  margin-top: 6px;
-  color: var(--text-secondary);
-  line-height: 1.65;
-}
-
-.forceCheck {
-  border-block: 1px solid var(--border-strong);
-}
-
-.forceCheck summary {
-  min-height: 52px;
-  padding-block: 15px;
-  cursor: pointer;
-  font-weight: 750;
-}
-
-.forceCheckBody {
-  padding: 2px 0 22px;
-}
-
-.forceCheckBody > p,
-.forceReading p {
-  max-width: 680px;
-  color: var(--text-secondary);
-  line-height: 1.7;
-}
-
-.forceOptions {
+.helpNote {
   display: flex;
   gap: 10px;
-  margin-block: 16px;
+  margin: 0;
+  padding: 12px 14px;
+  font-size: 0.9375rem;
+  line-height: 1.55;
 }
 
-.forceOptions button {
-  min-width: 100px;
-  text-align: center;
+.helpNote::before {
+  content: "Мио";
+  flex: 0 0 auto;
+  color: var(--accent-text);
+  font-weight: 800;
 }
 
-.forceReading {
-  padding: 16px 18px;
-  border-left: 3px solid var(--action-primary);
-  background: var(--surface-secondary);
+.feedbackCorrect,
+.feedbackRetry {
+  margin: 0;
+  border: 1px solid color-mix(in srgb, var(--success) 45%, transparent);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--success) 10%, transparent);
+  padding: 12px 14px;
+  font-size: 0.9375rem;
+  line-height: 1.55;
 }
 
-.forceReading p {
-  margin-top: 7px;
+.feedbackRetry {
+  border-color: color-mix(in srgb, var(--warning) 45%, transparent);
+  background: color-mix(in srgb, var(--warning) 10%, transparent);
+}
+
+.nextStep {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  line-height: 1.55;
+}
+
+/* --- Крупные планы: отдельная панель сравнения на телефоне --- */
+.lenses {
+  display: none;
+}
+
+.storageError {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  line-height: 1.55;
+}
+
+/* --- Планшет: одна колонка, сцена сверху --- */
+@media (max-width: 900px) {
+  .spread {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "scene"
+      "head"
+      "body";
+  }
+
+  .scene {
+    position: static;
+  }
+
+  .body {
+    margin-top: 0;
+  }
+}
+
+/* --- Телефон: сцена → вопрос → крупные планы --- */
+@media (max-width: 560px) {
+  .model {
+    gap: 18px;
+  }
+
+  .spread {
+    gap: 16px;
+  }
+
+  .sceneLabels {
+    height: auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .sceneLabelWide,
+  .sceneLabelNarrow {
+    position: static;
+    transform: none;
+    justify-self: stretch;
+    padding: 5px 8px;
+    font-size: 0.75rem;
+    text-align: center;
+  }
+
+  .lenses {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-surface);
+    background: var(--surface-primary);
+    padding: 14px;
+  }
+
+  .lens {
+    display: grid;
+    align-content: start;
+    gap: 8px;
+    margin: 0;
+    min-width: 0;
+  }
+
+  .lens img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border: 1px solid var(--border-subtle);
+    border-radius: 10px;
+  }
+
+  .lens figcaption {
+    display: grid;
+    gap: 2px;
+  }
+
+  .lens figcaption b {
+    color: var(--text-primary);
+    font-size: 0.8125rem;
+    font-weight: 800;
+  }
+
+  .lens figcaption span {
+    color: var(--text-secondary);
+    font-size: 0.8125rem;
+    line-height: 1.45;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .predictions button,
-  .forceOptions button {
+  .choices button {
     transition: none;
-  }
-}
-
-@media (max-width: 640px) {
-  .study {
-    grid-template-columns: 1fr;
-    gap: 20px;
-  }
-
-  .observation {
-    min-height: 325px;
-    margin-inline: -16px;
-    border-radius: 0 0 28px 0;
-  }
-
-  .observationImage {
-    object-position: 58% 48%;
-  }
-
-  .question h2 {
-    font-size: 27px;
-  }
-
-  .predictions button {
-    min-height: 56px;
-  }
-
-  .comparison {
-    grid-template-columns: 1fr;
-  }
-
-  .resultHeading {
-    padding-bottom: 10px;
   }
 }
